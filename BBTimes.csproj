@@ -25,8 +25,14 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>Dependencies\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="MTM101BaldAPI">
+      <HintPath>Dependencies\MTM101BaldAPI.dll</HintPath>
+    </Reference>
     <Reference Include="netstandard">
       <HintPath>Dependencies\netstandard.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Dependencies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
   </ItemGroup>
   

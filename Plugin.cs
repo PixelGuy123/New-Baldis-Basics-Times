@@ -1,24 +1,56 @@
 ﻿using BBTimes.Helpers;
-using BBTimes.NPCs;
 using BepInEx;
 using HarmonyLib;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection.Emit;
+using MTM101BaldAPI.Registers;
+using BBTimes.Manager;
+using System.Linq;
 using UnityEngine;
+using MTM101BaldAPI;
+using MTM101BaldAPI.AssetTools;
 
 
 namespace BBTimes.Plugin
 {
+    [BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)] // let's not forget this
     [BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
-    public class Plugin : BaseUnityPlugin
+    public class BasePlugin : BaseUnityPlugin
     {
         private void Awake()
         {
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAll();
+
+			MTM101BaldiDevAPI.SaveGamesHandler = SavedGameDataHandler.Modded;
+			_modPath = AssetLoader.GetModPath(this);
+
+			LoadingEvents.RegisterOnAssetsLoaded(() => BBTimesManager.InitializeContentCreation(this), false);
+
+			GeneratorManagement.Register(this, GenerationModType.Addend, (floorName, floorNum, ld) =>
+			{
+				var floordata = BBTimesManager.floorDatas.FirstOrDefault(x => x.Floor == floorName);
+				if (floordata == null)
+				{
+					Debug.LogWarning("Failed to get floor data for level: " + ld.name);
+					return;
+				}
+
+				ld.potentialNPCs.AddRange(floordata.NPCs);
+				ld.items = ld.items.AddRangeToArray([.. floordata.Items]);
+
+				for (int i = 0; i < ld.previousLevels.Length; i++)
+					ld.previousLevels[i] = Instantiate(ld.previousLevels[i]); // Make a clone, so the next floors don't get affected by custom npcs
+				
+
+			});
         }
-    }
+
+		static string _modPath = string.Empty;
+
+		public static string ModPath => _modPath;
+
+	}
 
 	static class ModInfo
 	{
@@ -27,20 +59,7 @@ namespace BBTimes.Plugin
 
 		public const string PLUGIN_NAME = "Baldi\'s Basics Times";
 
-		public const string PLUGIN_VERSION = "0.0.1";
-	}
-
-	[HarmonyPatch(typeof(NameManager), "Awake")]
-	internal static class AddOfficeChair
-	{
-		[HarmonyPrefix]
-		static void AddIt()
-		{
-			var ld = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.name == "Main1");
-			ld.potentialNPCs.Add(new() { selection = NPCCreator.CreateNPC<OfficeChair>("OfficeChair", true), weight = 1000 });
-			ld.minExtraRooms = 1;
-			ld.maxExtraRooms = 1;
-		}
+		public const string PLUGIN_VERSION = "0.1.0";
 	}
 
 	// Some cheats
