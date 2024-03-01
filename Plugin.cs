@@ -17,8 +17,8 @@ namespace BBTimes.Plugin
     [BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
     public class BasePlugin : BaseUnityPlugin
     {
-        private void Awake()
-        {
+		private void Awake()
+		{
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAll();
 
@@ -36,15 +36,12 @@ namespace BBTimes.Plugin
 					return;
 				}
 
+
 				ld.potentialNPCs.AddRange(floordata.NPCs);
 				ld.items = ld.items.AddRangeToArray([.. floordata.Items]);
 
-				for (int i = 0; i < ld.previousLevels.Length; i++)
-					ld.previousLevels[i] = Instantiate(ld.previousLevels[i]); // Make a clone, so the next floors don't get affected by custom npcs
-				
-
 			});
-        }
+		}
 
 		static string _modPath = string.Empty;
 

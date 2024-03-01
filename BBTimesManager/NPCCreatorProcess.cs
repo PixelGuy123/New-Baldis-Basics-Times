@@ -1,13 +1,13 @@
 ﻿using BBTimes.CustomComponents.CustomDatas;
+using BBTimes.CustomContent.NPCs;
 using BBTimes.Extensions;
 using BBTimes.Helpers;
-using BBTimes.NPCs;
 using BepInEx;
 using MTM101BaldAPI.Registers;
 
 namespace BBTimes.Manager
 {
-	internal static partial class BBTimesManager
+    internal static partial class BBTimesManager
 	{
 		static void CreateNPCs(BaseUnityPlugin plug)
 		{
@@ -18,9 +18,8 @@ namespace BBTimes.Manager
 			NPC npc;
 
 			// Office Chair
-			npc = CreatorExtensions.CreateNPC<OfficeChair, OfficeChairCustomData>("OfficeChair", 20f, 40f, [RoomCategory.Office, RoomCategory.Faculty], [], "PST_OFC_Name", "PST_OFC_Desc", true).AddMeta(plug, "OfficeChair", NPCFlags.Standard).value;
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 1000 }); // This is how it's gonna work
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1000 });
+			npc = CreatorExtensions.CreateNPC<OfficeChair, OfficeChairCustomData>("OfficeChair", 35f, 60f, [RoomCategory.Office, RoomCategory.Faculty], [], "PST_OFC_Name", "PST_OFC_Desc", true, ignorePlayerOnSpawn: true).AddMeta(plug, "OfficeChair", NPCFlags.Standard).value;
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 50 }); // This is how it's gonna work
 		}
 
 		

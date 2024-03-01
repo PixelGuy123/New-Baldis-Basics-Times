@@ -13,8 +13,8 @@ namespace BBTimes.Helpers
 {
 	public static partial class CreatorExtensions
 	{
-		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f) where T : NPC where C : CustomNPCData => CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset);
-		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f) where T : NPC where C : CustomNPCData
+		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false) where T : NPC where C : CustomNPCData => CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset, ignorePlayerOnSpawn);
+		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false) where T : NPC where C : CustomNPCData
 		{
 			var npc = Instantiate(GetBeans()).gameObject;
 			npc.name = name;
@@ -46,11 +46,11 @@ namespace BBTimes.Helpers
 			}
 
 			AccessTools.Field(typeof(T), "poster").SetValue(comp, poster);
-			comp.spriteBase = comp.transform.GetChild(0).gameObject; // Only child anyways
+			comp.spriteBase = comp.transform.Find("SpriteBase").gameObject; // Only child anyways
 			comp.spriteBase.transform.localPosition += Vector3.up * spriteYOffset;
 			comp.spriteRenderer = comp.spriteBase.transform.GetChild(0).GetComponents<SpriteRenderer>(); // Only available sprite render (in an array)
 			comp.spriteRenderer[0].sprite = sprites[1]; // Use the main sprite set in the npc's folder
-			comp.baseTrigger = npc.GetComponents<CapsuleCollider>(); // More than one collider actually
+			comp.baseTrigger = [.. npc.GetComponents<CapsuleCollider>().Where(x => x.isTrigger)]; // More than one collider actually
 			comp.looker = npc.GetComponent<Looker>(); // Set looker
 			comp.looker.enabled = !disableLooker;
 			comp.spawnableRooms = [.. rooms];
@@ -59,6 +59,7 @@ namespace BBTimes.Helpers
 
 			// Setup the entity component
 			AccessTools.Field(typeof(Entity), "iEntityTrigger").SetValue(entity, new IEntityTrigger[1] { comp }); // Sets the trigger to itself
+			entity.ReflectionSetVariable("rendererBase", comp.spriteBase.transform);
 
 			// Setup for navigator component
 			var nav = npc.GetComponent<Navigator>();
@@ -73,6 +74,12 @@ namespace BBTimes.Helpers
 			var man = npc.GetComponent<PropagatedAudioManager>();
 			AccessTools.Field(typeof(PropagatedAudioManager), "minDistance").SetValue(man, audioMinDistance);
 			AccessTools.Field(typeof(PropagatedAudioManager), "maxDistance").SetValue(man, audioMaxDistance); // Set the audio distance, temporarily disabled
+			if (man.audioDevice.gameObject != npc.gameObject)
+				Destroy(man.audioDevice.gameObject);
+			man.sourceId = 0; //reset source id
+			AudioManager.totalIds--; //decrement total ids
+
+			comp.ReflectionSetVariable("ignorePlayerOnSpawn", ignorePlayerOnSpawn); // Should ignore player on spawn
 
 			// Setup for CustomNPCData
 			if (sprites.Length > 2)

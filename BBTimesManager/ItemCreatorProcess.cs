@@ -1,5 +1,5 @@
 ﻿using BBTimes.CustomComponents.CustomDatas;
-using BBTimes.CustomItems;
+using BBTimes.CustomContent.Items;
 using BBTimes.Extensions;
 using BBTimes.Helpers;
 using BepInEx;
@@ -22,7 +22,7 @@ namespace BBTimes.Manager
 			floorDatas[0].Items.Add(new()
 			{
 				selection = item,
-				weight = 1000
+				weight = 45
 			});
 		}
 	}
