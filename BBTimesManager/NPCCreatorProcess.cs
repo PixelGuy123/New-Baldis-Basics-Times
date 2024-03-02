@@ -20,6 +20,10 @@ namespace BBTimes.Manager
 			// Office Chair
 			npc = CreatorExtensions.CreateNPC<OfficeChair, OfficeChairCustomData>("OfficeChair", 35f, 60f, [RoomCategory.Office, RoomCategory.Faculty], [], "PST_OFC_Name", "PST_OFC_Desc", true, ignorePlayerOnSpawn: true).AddMeta(plug, "OfficeChair", NPCFlags.Standard).value;
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 50 }); // This is how it's gonna work
+
+			npc = CreatorExtensions.CreateCustomNPCFromExistent<GottaSweep, ClassicGottaSweepCustomData>(Character.Sweep, "ClassicGottaSweep").MarkAsReplacement(Character.Sweep);
+			npc.AddMetaPrefab();
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 100 });
 		}
 
 		

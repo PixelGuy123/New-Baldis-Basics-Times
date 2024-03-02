@@ -8,6 +8,6 @@ namespace BBTimes.CustomComponents.CustomDatas
     {
 		protected string SoundPath => System.IO.Path.Combine(BasePlugin.ModPath, "npcs", name, "Audios");
 
-		public Character npcBeingReplaced = Character.Null;
+		public Character[] npcsBeingReplaced = [];
     }
 }

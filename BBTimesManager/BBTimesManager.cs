@@ -1,6 +1,9 @@
-﻿using BepInEx;
+﻿using BBTimes.Extensions.ObjectCreationExtensions;
+using BepInEx;
 using MTM101BaldAPI.AssetTools;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace BBTimes.Manager
 {
@@ -8,10 +11,16 @@ namespace BBTimes.Manager
     {
         internal static void InitializeContentCreation(BaseUnityPlugin plug)
         {
+			SetMaterials();
             CreateNPCs(plug);
 			CreateItems(plug);
 			CreateEvents(plug);
         }
+
+		static void SetMaterials()
+		{
+			ObjectCreationExtension.defaultMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "LockerTest"); // Actually a good material, has even lightmap
+		}
 
         internal readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")];
 

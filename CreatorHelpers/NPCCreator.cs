@@ -3,9 +3,9 @@ using BBTimes.Plugin;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
-using MTM101BaldAPI.Reflection;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -13,73 +13,79 @@ namespace BBTimes.Helpers
 {
 	public static partial class CreatorExtensions
 	{
-		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false) where T : NPC where C : CustomNPCData => CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset, ignorePlayerOnSpawn);
-		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false) where T : NPC where C : CustomNPCData
+		// Some fields that the api misses
+		readonly static FieldInfo _npc_ignorePlayerOnSpawn = AccessTools.Field(typeof(NPC), "ignorePlayerOnSpawn");
+		readonly static FieldInfo _npc_ignoreBelts = AccessTools.Field(typeof(NPC), "ignoreBelts");
+		readonly static FieldInfo _npc_poster = AccessTools.Field(typeof(NPC), "poster");
+
+		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false) where T : NPC where C : CustomNPCData
 		{
-			var npc = Instantiate(GetBeans()).gameObject;
-			npc.name = name;
-			Destroy(npc.GetComponent<Beans>()); // Removes the component already
-			var comp = npc.AddComponent<T>();
-			var entity = npc.GetComponent<Entity>();
-			var data = npc.AddComponent<C>();
-			entity.ReflectionSetVariable("active", false); // Set this to false manually to not affect layers
-			npc.SetActive(false);
-			DontDestroyOnLoad(npc); // Prefab of course
-			Destroy(npc.GetComponent<Animator>()); // Useless
+			var sprites = GetAllNpcSpritesFrom(name);
+			var npc = ObjectCreators.CreateNPC<T>(name, EnumExtensions.ExtendEnum<Character>(name), ObjectCreators.CreateCharacterPoster(sprites[0].texture, posterNameKey, posterDescKey), !disableLooker, usesHeatMap, hasTrigger, audioMinDistance, audioMaxDistance, rooms);
 
+			// Set some other npc parameters
+			npc.potentialRoomAssets = potentialRoomAssets;
+			_npc_ignorePlayerOnSpawn.SetValue(npc, ignorePlayerOnSpawn);
+			npc.spriteRenderer[0].sprite = sprites[1]; // Sets to default sprite
+			_npc_ignoreBelts.SetValue(npc, ignoreBelts);
 
-			// Setup the npc component
-			AccessTools.Field(typeof(T), "navigator").SetValue(comp, npc.GetComponent<Navigator>());
+			npc.spriteBase.transform.position += Vector3.up * spriteYOffset;
+
+			var data = npc.gameObject.AddComponent<C>();
+			
+			// Setup for CustomNPCData
+			if (sprites.Length > 2)
+				data.storedSprites = [.. sprites.Skip(1)]; // Excludes necessary sprites
+
+			data.GetAudioClips(); // Of course
+			data.SetupPrefab();
+			
+
+			return npc;
+		}
+
+		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false) where T : NPC where C : CustomNPCData =>
+			CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset, true, usesHeatMap, hasTrigger, ignoreBelts);
+
+		public static T InstantiateRuntimeNPC<T>(this T npc, EnvironmentController ec, IntVector2 pos, Vector3 offset) where T : NPC
+		{
+			ec.SpawnNPC(npc, pos);
+			var cnpc = ec.Npcs[ec.Npcs.Count - 1];
+			cnpc.transform.position += offset;
+			ec.Npcs.RemoveAt(ec.Npcs.Count - 1); // Removes the runtime npc from the list to not be affected by the environment
+			return (T)cnpc;
+		}
+		public static T InstantiateRuntimeNPC<T>(this T npc, EnvironmentController ec, IntVector2 pos) where T : NPC => InstantiateRuntimeNPC(npc, ec, pos, Vector3.zero);
+
+		public static T CreateCustomNPCFromExistent<T, C>(Character target, string name, float spriteYOffset = 0f) where T : NPC where C : CustomNPCData
+		{
+			var npc = Instantiate((T)target.GetFirstInstance());
+			npc.gameObject.name = name;
+			DontDestroyOnLoad(npc.gameObject);
+			npc.GetComponent<Entity>().SetActive(false); //disable the entity
+			npc.gameObject.SetActive(false); // Some copy paste from the API, because we aren't changing the npc itself
+			npc.gameObject.layer = LayerMask.NameToLayer("NPCs");
+
+			// handle audio manager stuff
+			PropagatedAudioManager audMan = npc.GetComponent<PropagatedAudioManager>();
+			Destroy(audMan.audioDevice.gameObject);
+			audMan.sourceId = 0; //reset source id
+			AudioManager.totalIds--; //decrement total ids
+			
+
 
 			var sprites = GetAllNpcSpritesFrom(name);
+			// Set some fields
+			npc.spriteRenderer[0].sprite = sprites[1];
+			npc.spriteBase.transform.position += Vector3.up * spriteYOffset;
 
-			var poster = Instantiate((PosterObject)beans.ReflectionGetVariable("poster")); // Setups poster
-			poster.textData[0].textKey = posterNameKey;
-			poster.textData[1].textKey = posterDescKey;
-			poster.baseTexture = sprites[0].texture;
-			for (int i = 0; i < poster.material.Length; i++)
-			{
-				poster.material[i] = new(poster.material[i]) // Materials are the same, better change it
-				{
-					mainTexture = sprites[0].texture
-				};
-			}
+			var poster = (PosterObject)_npc_poster.GetValue(npc);
+			poster.baseTexture = sprites[0].texture; // Set posters textures
 
-			AccessTools.Field(typeof(T), "poster").SetValue(comp, poster);
-			comp.spriteBase = comp.transform.Find("SpriteBase").gameObject; // Only child anyways
-			comp.spriteBase.transform.localPosition += Vector3.up * spriteYOffset;
-			comp.spriteRenderer = comp.spriteBase.transform.GetChild(0).GetComponents<SpriteRenderer>(); // Only available sprite render (in an array)
-			comp.spriteRenderer[0].sprite = sprites[1]; // Use the main sprite set in the npc's folder
-			comp.baseTrigger = [.. npc.GetComponents<CapsuleCollider>().Where(x => x.isTrigger)]; // More than one collider actually
-			comp.looker = npc.GetComponent<Looker>(); // Set looker
-			comp.looker.enabled = !disableLooker;
-			comp.spawnableRooms = [.. rooms];
-			comp.potentialRoomAssets = [.. potentialRoomAssets]; // Temporary too as there aren't custom rooms yet
-			comp.ReflectionSetVariable("character", EnumExtensions.ExtendEnum<Character>(name)); // extend enum
+			foreach (var mat in poster.material)
+				mat.mainTexture = sprites[0].texture;
 
-			// Setup the entity component
-			AccessTools.Field(typeof(Entity), "iEntityTrigger").SetValue(entity, new IEntityTrigger[1] { comp }); // Sets the trigger to itself
-			entity.ReflectionSetVariable("rendererBase", comp.spriteBase.transform);
-
-			// Setup for navigator component
-			var nav = npc.GetComponent<Navigator>();
-			nav.npc = comp; // Set npc reference
-			AccessTools.Field(typeof(Navigator), "entity").SetValue(nav, entity); // hardly set entity reference
-			AccessTools.Field(typeof(Navigator), "collider").SetValue(nav, comp.baseTrigger[0]); // Use by default the first trigger
-
-			// Setup for looker component
-			AccessTools.Field(typeof(Looker), "npc").SetValue(comp.looker, comp);
-
-			// Additional field changes
-			var man = npc.GetComponent<PropagatedAudioManager>();
-			AccessTools.Field(typeof(PropagatedAudioManager), "minDistance").SetValue(man, audioMinDistance);
-			AccessTools.Field(typeof(PropagatedAudioManager), "maxDistance").SetValue(man, audioMaxDistance); // Set the audio distance, temporarily disabled
-			if (man.audioDevice.gameObject != npc.gameObject)
-				Destroy(man.audioDevice.gameObject);
-			man.sourceId = 0; //reset source id
-			AudioManager.totalIds--; //decrement total ids
-
-			comp.ReflectionSetVariable("ignorePlayerOnSpawn", ignorePlayerOnSpawn); // Should ignore player on spawn
+			var data = npc.gameObject.AddComponent<C>();
 
 			// Setup for CustomNPCData
 			if (sprites.Length > 2)
@@ -89,28 +95,19 @@ namespace BBTimes.Helpers
 			data.SetupPrefab();
 
 
-			return comp;
+
+			return npc;
 		}
 
-		private static Beans GetBeans()
+		public static T MarkAsReplacement<T>(this T npc, params Character[] targets) where T : NPC // I think that's what's called "Builder design"
 		{
-			beans ??= (Beans)Character.Beans.GetFirstInstance();
-
-			return beans;
+			var comp = npc.GetComponent<CustomNPCData>();
+			if (comp != null)
+				comp.npcsBeingReplaced = targets;
+			
+			return npc;
 		}
 
-		/*private static PosterTextData CloneTextData(this PosterTextData text) =>
-			new()
-			{
-				font = text.font,
-				alignment = text.alignment,
-				position = text.position,
-				color = text.color,
-				fontSize = text.fontSize,
-				size = text.size,
-				style = text.style,
-				textKey = text.textKey
-			}; Not used (for now, until I'm sure)*/
 
 		static Sprite[] GetAllNpcSpritesFrom(string name)
 		{
@@ -163,8 +160,5 @@ namespace BBTimes.Helpers
 		}
 
 		const string posterNamePrefix = "pri_", mainSpritePrefix = "mainSpr_";
-
-
-		static Beans beans;
 	}
 }

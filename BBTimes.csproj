@@ -40,6 +40,10 @@
     </Reference>
   </ItemGroup>
   
+  <ItemGroup>
+    <Folder Include="TemporaryFeatures\" />
+  </ItemGroup>
+  
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\bin\Cheat\net46\BBTimes.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;" />
   </Target>

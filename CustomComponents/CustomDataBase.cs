@@ -12,13 +12,11 @@ namespace BBTimes.CustomComponents.CustomDatas
 
         public void GetAudioClips() => soundObjects = GenerateSoundObjects();
 
-		public void SetupPrefab() => SetupPrefabObject();
-
         protected virtual SoundObject[] GenerateSoundObjects()
         {
             return [];
         }
 
-		protected virtual void SetupPrefabObject() { }
+		public virtual void SetupPrefab() { }
     }
 }

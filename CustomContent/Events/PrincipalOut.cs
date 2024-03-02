@@ -1,6 +1,7 @@
 ﻿using BBTimes.CustomComponents.CustomDatas;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace BBTimes.CustomContent.Events
 {
@@ -12,7 +13,8 @@ namespace BBTimes.CustomContent.Events
 			office = ec.offices[crng.Next(0, ec.offices.Count)];
 			foreach (NPC npc in ec.Npcs)
 			{
-				if (npc.Navigator.enabled && (npc.Character == Character.Principal || npc.GetComponent<CustomNPCData>()?.npcBeingReplaced == Character.Principal)) // Reminder to change for 
+				var data = npc.GetComponent<CustomNPCData>();
+				if (npc.Navigator.enabled && (npc.Character == Character.Principal || (data != null && data.npcsBeingReplaced.Contains(Character.Principal)))) // Reminder to change for 
 				{
 					NavigationState_PrincipalOut navigationState_PartyEvent = new(npc, 16, office.RandomEventSafeCellNoGarbage().FloorWorldPosition);
 					navigationStates.Add(navigationState_PartyEvent);

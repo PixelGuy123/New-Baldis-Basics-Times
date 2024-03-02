@@ -1,5 +1,4 @@
-﻿using BBTimes.Helpers;
-using BepInEx;
+﻿using BepInEx;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -9,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
+using BBTimes.CustomComponents.CustomDatas;
 
 
 namespace BBTimes.Plugin
@@ -19,10 +19,12 @@ namespace BBTimes.Plugin
     {
 		private void Awake()
 		{
+			
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAll();
 
 			MTM101BaldiDevAPI.SaveGamesHandler = SavedGameDataHandler.Modded;
+			
 			_modPath = AssetLoader.GetModPath(this);
 
 			LoadingEvents.RegisterOnAssetsLoaded(() => BBTimesManager.InitializeContentCreation(this), false);
@@ -36,8 +38,14 @@ namespace BBTimes.Plugin
 					return;
 				}
 
-
-				ld.potentialNPCs.AddRange(floordata.NPCs);
+				foreach(var npc in floordata.NPCs)
+				{
+					if (npc.selection.GetComponent<CustomNPCData>().npcsBeingReplaced.Length == 0)
+						ld.potentialNPCs.Add(npc); // Only non-replacement Npcs
+					else
+						ld.forcedNpcs = ld.forcedNpcs.AddToArray(npc.selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
+				}
+				
 				ld.items = ld.items.AddRangeToArray([.. floordata.Items]);
 				ld.randomEvents.AddRange(floordata.Events);
 
