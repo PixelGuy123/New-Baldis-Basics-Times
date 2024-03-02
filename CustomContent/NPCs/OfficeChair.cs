@@ -10,7 +10,6 @@ namespace BBTimes.CustomContent.NPCs
         public override void Initialize()
         {
             base.Initialize();
-            aggroed = true; // Temporarily here... I think i'll leave it here though
 
             behaviorStateMachine.ChangeState(new OfficeChair_FindOffice(this, true));
 
@@ -63,7 +62,7 @@ namespace BBTimes.CustomContent.NPCs
             Debug.Log($"(Office Chair): {cells.Count} < Amount of tiles in the array");
             Debug.Log($"(Office Chair): {cells.Count} < Amount of tiles in the array");
 #endif
-            ChangeNavigationState(new NavigationState_TargetPosition(chair, 1, cells[Random.Range(0, cells.Count)].FloorWorldPosition));
+            ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, cells[Random.Range(0, cells.Count)].FloorWorldPosition));
             man.QueueAudio(dat.soundObjects[0], true);
             man.SetLoop(true);
             if (target != null)
@@ -144,6 +143,7 @@ namespace BBTimes.CustomContent.NPCs
 
         public override void Enter()
         {
+			chair.navigationStateMachine.ChangeState(new NavigationState_DoNothing(chair, 64));
             base.Enter();
             if (cooldown > 0f)
                 chair.StartCoroutine(Cooldown());

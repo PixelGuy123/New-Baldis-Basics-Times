@@ -39,6 +39,7 @@ namespace BBTimes.Plugin
 
 				ld.potentialNPCs.AddRange(floordata.NPCs);
 				ld.items = ld.items.AddRangeToArray([.. floordata.Items]);
+				ld.randomEvents.AddRange(floordata.Events);
 
 			});
 		}

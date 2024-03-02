@@ -24,5 +24,12 @@ namespace BBTimes.Extensions
 			NPCMetaStorage.Instance.Add(meta);
 			return meta;
 		}
+
+		public static RandomEventMetadata AddMeta(this RandomEvent e, BaseUnityPlugin i, string name, RandomEventFlags flags)
+		{
+			var meta = new RandomEventMetadata(i.Info, e, flags); // Temporary, I'll wait for the api to implement it properly
+			RandomEventMetaStorage.Instance.Add(meta);
+			return meta;
+		}
 	}
 }

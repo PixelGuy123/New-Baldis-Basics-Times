@@ -10,6 +10,7 @@ namespace BBTimes.Manager
         {
             CreateNPCs(plug);
 			CreateItems(plug);
+			CreateEvents(plug);
         }
 
         internal readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")];
@@ -28,5 +29,8 @@ namespace BBTimes.Manager
 
         readonly List<WeightedItemObject> _items = [];
         public List<WeightedItemObject> Items => _items;
-    }
+
+		readonly List<WeightedRandomEvent> _events = [];
+		public List<WeightedRandomEvent> Events => _events;
+	}
 }

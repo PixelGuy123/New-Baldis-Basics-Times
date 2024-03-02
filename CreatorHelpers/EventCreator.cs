@@ -1,12 +1,20 @@
-﻿using MTM101BaldAPI.Reflection;
-using MTM101BaldAPI;
+﻿using MTM101BaldAPI;
 using UnityEngine;
 using static UnityEngine.Object;
+using System.Reflection;
+using HarmonyLib;
 
 namespace BBTimes.Helpers
 {
     public static partial class CreatorExtensions
 	{
+		// Fields
+		readonly static FieldInfo _ev_randomEventType = AccessTools.Field(typeof(RandomEvent), "eventType");
+		readonly static FieldInfo _ev_minEventTime = AccessTools.Field(typeof(RandomEvent), "minEventTime");
+		readonly static FieldInfo _ev_maxEventTime = AccessTools.Field(typeof(RandomEvent), "maxEventTime");
+		readonly static FieldInfo _ev_potentialRoomAssets = AccessTools.Field(typeof(RandomEvent), "potentialRoomAssets");
+		readonly static FieldInfo _ev_eventDescKey = AccessTools.Field(typeof(RandomEvent), "eventDescKey");
+
 		public static E CreateEvent<E>(string name, string eventDescriptionKey, float minEventTime, float maxEventTime, WeightedRoomAsset[] rooms) where E : RandomEvent
 		{
 			// Object setup
@@ -15,11 +23,11 @@ namespace BBTimes.Helpers
 			DontDestroyOnLoad(ev.gameObject);
 
 			// Fields setup
-			ev.ReflectionSetVariable("RandomEventType", EnumExtensions.ExtendEnum<EventType>(name)); // Enum
-			ev.ReflectionSetVariable("minEventTime", minEventTime);
-			ev.ReflectionSetVariable("maxEventTime", maxEventTime);
-			ev.ReflectionSetVariable("potentialRoomAssets", rooms);
-			ev.ReflectionSetVariable("eventDescKey", eventDescriptionKey);
+			_ev_randomEventType.SetValue(ev, EnumExtensions.ExtendEnum<RandomEventType>(name)); // Enum
+			_ev_minEventTime.SetValue(ev, minEventTime);
+			_ev_maxEventTime.SetValue(ev, maxEventTime);
+			_ev_potentialRoomAssets.SetValue(ev, rooms);
+			_ev_eventDescKey.SetValue(ev, eventDescriptionKey);
 
 
 			return ev;
