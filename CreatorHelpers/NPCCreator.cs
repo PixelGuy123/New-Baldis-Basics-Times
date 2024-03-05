@@ -34,7 +34,7 @@ namespace BBTimes.Helpers
 			var data = npc.gameObject.AddComponent<C>();
 			
 			// Setup for CustomNPCData
-			if (sprites.Length > 2)
+			if (sprites.Length >= 2)
 				data.storedSprites = [.. sprites.Skip(1)]; // Excludes necessary sprites
 
 			data.GetAudioClips(); // Of course
@@ -80,15 +80,18 @@ namespace BBTimes.Helpers
 			npc.spriteBase.transform.position += Vector3.up * spriteYOffset;
 
 			var poster = (PosterObject)_npc_poster.GetValue(npc);
+			poster = Instantiate(poster); // Obviously instantiate it to not affect the og
 			poster.baseTexture = sprites[0].texture; // Set posters textures
 
 			foreach (var mat in poster.material)
 				mat.mainTexture = sprites[0].texture;
 
+			_npc_poster.SetValue(npc, poster);
+
 			var data = npc.gameObject.AddComponent<C>();
 
 			// Setup for CustomNPCData
-			if (sprites.Length > 2)
+			if (sprites.Length >= 2)
 				data.storedSprites = [.. sprites.Skip(1)]; // Excludes necessary sprites
 
 			data.GetAudioClips(); // Of course

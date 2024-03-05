@@ -4,20 +4,23 @@ namespace BBTimes.Extensions.ObjectCreationExtensions
 {
 	public static partial class ObjectCreationExtension
 	{
-		public static GameObject CreateCube(Texture2D tex)
+		public static GameObject CreateCube(Texture2D tex, bool useUVMap = true)
 		{
 			var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
 			/*
 			 * Mesh script made thanks for Ilkinulas (http://ilkinulas.github.io/development/unity/2016/05/06/uv-mapping.html)
 			 */
-			Mesh mesh = cube.GetComponent<MeshFilter>().mesh; // Setup Mesh
-			mesh.Clear();
-			mesh.vertices = vertices;
-			mesh.triangles = triangles;
-			mesh.uv = uvs;
-			mesh.Optimize();
-			mesh.RecalculateNormals();
+			if (useUVMap)
+			{
+				Mesh mesh = cube.GetComponent<MeshFilter>().mesh; // Setup Mesh
+				mesh.Clear();
+				mesh.vertices = vertices;
+				mesh.triangles = triangles;
+				mesh.uv = uvs;
+				mesh.Optimize();
+				mesh.RecalculateNormals();
+			}
 
 			var renderer = cube.GetComponent<MeshRenderer>(); // Put right material
 			renderer.material = defaultMaterial;	
@@ -99,24 +102,24 @@ namespace BBTimes.Extensions.ObjectCreationExtensions
 		*/
 
 		static readonly Vector2[] uvs = [
-				new(0, 0.6655518f),
-			new(0.25f, 0.6655518f),
+				new(0, 0.66f),
+			new(0.25f, 0.66f),
 			new(0, 0.33f),
-			new(0.25f, 0.33f),
+			new(0.25f, 0.34f),
 
-			new(0.5f, 0.6655518f),
-			new(0.5f, 0.33f),
-			new(0.75f, 0.66f),
-			new(0.75f, 0.33f),
+			new(0.5f, 0.66f),
+			new(0.5f, 0.34f),
+			new(0.75f, 0.65f),
+			new(0.75f, 0.34f),
 
 			new(1, 0.66f),
-			new(1, 0.33f),
+			new(1, 0.34f),
 
-			new(0.2525f, 1),
-			new(0.495f, 1),
+			new(0.25f, 1),
+			new(0.5f, 1),
 
-			new(0.2525f, 0),
-			new(0.495f, 0),
+			new(0.25f, 0),
+			new(0.5f, 0),
 		];
 
 	}

@@ -12,8 +12,19 @@ namespace BBTimes.ModPatches
 	[HarmonyPatch(typeof(PlayerMovement))]
 	internal class Editor
 	{
+		
+		[HarmonyPatch("Start")]
+		[HarmonyPostfix]
+		private static void GottaGoFAST(PlayerMovement __instance)
+		{
+			__instance.walkSpeed *= 3;
+			__instance.runSpeed *= 3;
+		}
+		
+
+		[HarmonyPostfix]
 		[HarmonyPatch("PlayerMove")]
-		private static void Postfix(PlayerMovement __instance)
+		private static void EditorNow(PlayerMovement __instance)
 		{
 			if (Input.GetKeyDown(KeyCode.C))
 			{

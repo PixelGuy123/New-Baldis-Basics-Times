@@ -31,5 +31,12 @@ namespace BBTimes.Extensions
 			RandomEventMetaStorage.Instance.Add(meta);
 			return meta;
 		}
+
+		public static ObjectBuilderMeta AddMeta(this ObjectBuilder e, BaseUnityPlugin i)
+		{
+			var meta = new ObjectBuilderMeta(i.Info, e); // Temporary, I'll wait for the api to implement it properly
+			ObjectBuilderMetaStorage.Instance.Add(meta);
+			return meta;
+		}
 	}
 }

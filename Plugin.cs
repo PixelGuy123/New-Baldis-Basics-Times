@@ -48,6 +48,9 @@ namespace BBTimes.Plugin
 				
 				ld.items = ld.items.AddRangeToArray([.. floordata.Items]);
 				ld.randomEvents.AddRange(floordata.Events);
+				ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddRangeToArray([.. floordata.ForcedObjectBuilders]);
+				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
+				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
 
 			});
 		}

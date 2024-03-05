@@ -16,7 +16,7 @@ namespace BBTimes.Manager
 			// 3 - END
 			RandomEvent e;
 
-			// Office Chair
+			// Principal out
 			e = CreatorExtensions.CreateEvent<PrincipalOut>("PrincipalOut", "Event_PriOut", 40f, 80f, []).AddMeta(plug, RandomEventFlags.CharacterSpecific).value;
 			floorDatas[0].Events.Add(new() { selection = e, weight = 5022 }); // This is how it's gonna work
 		}

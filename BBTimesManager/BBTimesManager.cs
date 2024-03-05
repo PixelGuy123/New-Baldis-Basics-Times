@@ -15,11 +15,13 @@ namespace BBTimes.Manager
             CreateNPCs(plug);
 			CreateItems(plug);
 			CreateEvents(plug);
+			CreateObjBuilders(plug);
         }
 
 		static void SetMaterials()
 		{
 			ObjectCreationExtension.defaultMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "LockerTest"); // Actually a good material, has even lightmap
+			ObjectCreationExtension.defaultDustMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "DustTest"); // Actually a good material, has even lightmap
 		}
 
         internal readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")];
@@ -41,5 +43,20 @@ namespace BBTimes.Manager
 
 		readonly List<WeightedRandomEvent> _events = [];
 		public List<WeightedRandomEvent> Events => _events;
+
+
+		// Object Builders
+
+		readonly List<ObjectBuilder> _forcedObjBuilders = [];
+		public List<ObjectBuilder> ForcedObjectBuilders => _forcedObjBuilders;
+
+		readonly List<WeightedObjectBuilder> _weightedObjectBlders = [];
+		public List<WeightedObjectBuilder> WeightedObjectBuilders => _weightedObjectBlders;
+
+		readonly List<RandomHallBuilder> _hallBuilders = [];
+		public List<RandomHallBuilder> HallBuilders => _hallBuilders;
+
+		//readonly List<GenericHallBuilder> _genericHallBuilders = [];
+		//public List<GenericHallBuilder> GenericHallBuilders => _genericHallBuilders;
 	}
 }
