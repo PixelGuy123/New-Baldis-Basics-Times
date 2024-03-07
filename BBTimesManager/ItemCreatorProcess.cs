@@ -18,12 +18,13 @@ namespace BBTimes.Manager
 			ItemObject item;
 			// Hammer
 			item = CreatorExtensions.CreateItem<Hammer, CustomItemData>("Hammer", "HAM_Name", "HAM_Desc", 25, 30).AddMeta(plug, ItemFlags.NoUses).value;
-
-			floorDatas[0].Items.Add(new()
-			{
-				selection = item,
-				weight = 45
-			});
+			floorDatas[0].Items.Add(new() { selection = item, weight = 45});
+			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 65 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 85 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 85 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 75 });
 		}
 	}
 }

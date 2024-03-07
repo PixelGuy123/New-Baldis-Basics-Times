@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace BBTimes.Extensions
 {
@@ -22,6 +23,15 @@ namespace BBTimes.Extensions
 				}
 			}
 			return false;
+		}
+
+		public static List<Transform> AllChilds(this Transform transform)
+		{
+			List<Transform> cs = [];
+			int count = transform.childCount;
+			for (int i = 0; i < count; i++)
+				cs.Add(transform.GetChild(i));
+			return cs;
 		}
 	}
 }

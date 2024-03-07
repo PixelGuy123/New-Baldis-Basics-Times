@@ -109,12 +109,34 @@ namespace BBTimes.CustomComponents.CustomDatas
 			// Making of vent connections
 
 			var connection = ObjectCreationExtension.CreateCube(AssetLoader.TextureFromFile(System.IO.Path.Combine(TexturePath, "ventConnection.png")), false);
+			Destroy(connection.GetComponent<BoxCollider>());
 			connection.name = "VentPrefab_Connection";
-			connection.transform.localScale = new(2f, 0.6f, 2f);
+			connection.transform.localScale = new(connectionSize, 0.6f, connectionSize);
 			connection.SetActive(false);
 			DontDestroyOnLoad(connection);
 
 			builder.ventConnectionPrefab = connection;
+
+
+
+			var connection2 = Instantiate(connection);
+
+			for (int i = 0; i < 4; i++)
+			{
+				var dir = Directions.All()[i];
+				var con = Instantiate(connection2, connection.transform);
+				con.transform.localPosition = dir.ToVector3() * 1.5f;
+				con.transform.rotation = dir.ToRotation();
+				con.transform.localScale = new Vector3(1f, 1f, 2.01f);
+				con.name = "VentPrefab_Connection_" + dir;
+				Destroy(con.GetComponent<BoxCollider>());
+			}
+
+			Destroy(connection2);
+
+			
 		}
+
+		const float connectionSize = 2f;
 	}
 }

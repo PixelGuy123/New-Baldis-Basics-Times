@@ -80,7 +80,7 @@ namespace BBTimes.CustomContent.Objects
 
 		private void BlockAllDirections(bool block)
 		{
-
+			Enabled = block;
 			gasLeakVentAudioMan.SetLoop(true);
 			foreach (var dir in Directions.All()) 
 			{
@@ -91,6 +91,7 @@ namespace BBTimes.CustomContent.Objects
 			colliders.Do(x => x.enabled = block);
 			if (block)
 				cooldown = UnityEngine.Random.Range(minCooldown, maxCooldown);
+			
 		}
 
 		private void SwitchVent() => nextVents[UnityEngine.Random.Range(0, nextVents.Count)].BlockMe();
@@ -108,7 +109,7 @@ namespace BBTimes.CustomContent.Objects
 			}	
 		}
 
-		private void OnTriggerEnter(Collider other)
+		private void OnTriggerStay(Collider other)
 		{
 			var entity = other.GetComponent<Entity>();
 			if (entity == null) return;
@@ -116,7 +117,7 @@ namespace BBTimes.CustomContent.Objects
 			entity.AddForce(new((entity.transform.position - transform.position).normalized, 5f, -5f));
 		}
 
-		bool Enabled => colliders[0].enabled; // The second must be enabled aswell
+		bool Enabled = false;
 
 		float cooldown;
 

@@ -18,10 +18,9 @@ namespace BBTimes.Manager
 			ObjectBuilder e;
 
 			e = CreatorExtensions.CreateObjectBuilder<VentBuilder, VentBuilderCustomData>("Vent").AddMeta(plug).value;
-			floorDatas[0].ForcedObjectBuilders.Add(e);
-			floorDatas[1].ForcedObjectBuilders.Add(e);
-			floorDatas[2].ForcedObjectBuilders.Add(e);
-			floorDatas[3].ForcedObjectBuilders.Add(e);
+			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = e, weight = 65 });
+			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = e, weight = 105 });
+			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = e, weight = 45 });
 
 		}
 

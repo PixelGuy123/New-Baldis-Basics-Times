@@ -6,7 +6,6 @@ using MTM101BaldAPI.Registers;
 using BBTimes.Manager;
 using System.Linq;
 using UnityEngine;
-using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using BBTimes.CustomComponents.CustomDatas;
 
@@ -22,8 +21,6 @@ namespace BBTimes.Plugin
 			
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAll();
-
-			MTM101BaldiDevAPI.SaveGamesHandler = SavedGameDataHandler.Modded;
 			
 			_modPath = AssetLoader.GetModPath(this);
 
@@ -51,6 +48,8 @@ namespace BBTimes.Plugin
 				ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddRangeToArray([.. floordata.ForcedObjectBuilders]);
 				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
 				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
+				ld.shopItems = ld.shopItems.AddRangeToArray([.. floordata.ShopItems]);
+				ld.fieldTripItems.AddRange(floordata.FieldTripItems);
 
 			});
 		}

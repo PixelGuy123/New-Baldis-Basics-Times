@@ -1,7 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using BBTimes.CustomContent.Objects;
 using System.Collections.Generic;
+using BBTimes.Extensions;
+using BBTimes.ModPatches;
 
 namespace BBTimes.CustomContent.Builders
 {
@@ -23,20 +24,21 @@ namespace BBTimes.CustomContent.Builders
 
 			foreach (var cell in web)
 			{
-				if (!cell.HasAnyHardCoverage && !cell.open && !cell.doorHere && (cell.shape == TileShape.Corner || cell.shape == TileShape.Single))
+				if (cell.HardCoverageFits(CellCoverage.Up | CellCoverage.Center) && !cell.open && !cell.doorHere && (cell.shape == TileShape.Corner || cell.shape == TileShape.Single))
 				{
 					var vent = Instantiate(ventPrefab, room.transform);
 					vent.transform.position = cell.FloorWorldPosition;
 					vent.SetActive(true);
 					var v = vent.GetComponent<Vent>();
 					v.ec = ec;
+					cell.HardCoverEntirely();
 					vents.Add(v);
 				}
 				if (vents.Count >= ventAmount)
 					break;
 			}
 
-			List<IntVector2> connectionpos = [];
+			Dictionary<IntVector2, GameObject> connectionpos = [];
 
 			foreach (var vent in vents)
 			{
@@ -44,16 +46,40 @@ namespace BBTimes.CustomContent.Builders
 				for (int i = 0; i < vents.Count; i++)
 				{
 					if (vents[i] == vent) continue; // Not make a path to itself of course
+					EnvironmentControllerPatch.data = new(RoomType.Hall, true); // Limit to only hallways
 					ec.FindPath(center, ec.CellFromPosition(vents[i].transform.position), PathType.Const, out var path, out bool success);
+					EnvironmentControllerPatch.ResetData();
 					if (!success) continue;
 					foreach (var t in path)
 					{
-						if (connectionpos.Contains(t.position)) continue;
-						connectionpos.Add(t.position);
+						if (connectionpos.ContainsKey(t.position)) continue;
 						var c = Instantiate(ventConnectionPrefab);
+						t.HardCover(CellCoverage.Center | CellCoverage.Up);
 						c.transform.SetParent(t.TileTransform);
+
+						t.AddRenderer(c.GetComponent<MeshRenderer>());
+
 						c.transform.localPosition = Vector3.up * 9.5f;
 						c.SetActive(true);
+						connectionpos.Add(t.position, c);
+
+						List<Cell> neighbors = [];
+						ec.GetNavNeighbors(t, neighbors, PathType.Const);
+						foreach (var n in neighbors)
+						{
+							if (connectionpos.TryGetValue(n.position, out var c2))
+							{
+								var dir = Directions.DirFromVector3(c2.transform.position - c.transform.position, 45f); // 90° angle
+								var child = c.transform.Find("VentPrefab_Connection_" + dir);
+								child?.gameObject.SetActive(true);
+
+								child = c2.transform.Find("VentPrefab_Connection_" + dir.GetOpposite());
+								child?.gameObject.SetActive(true);
+							}
+						}
+
+						foreach (var c2 in c.transform.AllChilds())
+							t.AddRenderer(c2.GetComponent<MeshRenderer>());
 					}
 				}
 				var v = vent.GetComponent<Vent>();
