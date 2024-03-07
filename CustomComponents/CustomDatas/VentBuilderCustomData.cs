@@ -28,6 +28,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var blockObj = new GameObject("VentPrefab_RaycastBlock");
 			blockObj.transform.SetParent(vent.transform);
 			blockObj.transform.localPosition = Vector3.zero;
+			blockObj.transform.localScale = new(1.2f, 10f, 1.2f);
 
 			var box2 = blockObj.AddComponent<BoxCollider>();
 			box2.size = new Vector3(10f, 10f, 10f);
@@ -68,11 +69,12 @@ namespace BBTimes.CustomComponents.CustomDatas
 			vent.SetActive(false);
 			DontDestroyOnLoad(vent);
 
-			GetComponent<VentBuilder>().ventPrefab = vent;
+			var builder = GetComponent<VentBuilder>();
+			builder.ventPrefab = vent;
 
 			// Making of particles
 
-			var particle = new GameObject("VentPrefab_ParticleEmitter").AddComponent<ParticleSystem>();
+			var particle = new GameObject("VentPrefab_ParticleEmitter", typeof(BillboardRotator)).AddComponent<ParticleSystem>();
 			particle.transform.SetParent(vent.transform);
 			particle.transform.localPosition = Vector3.up * 10f;
 			particle.transform.localRotation = Quaternion.Euler(15f, 0f, 0f);
@@ -91,8 +93,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			var vp = particle.velocityOverLifetime;
 			vp.enabled = true;
-			vp.xMultiplier = 0.6f;
-			vp.zMultiplier = 0.6f;
+			vp.zMultiplier = -4f;
 			vp.yMultiplier = -24f;
 			vp.radialMultiplier = 6f;
 
@@ -106,6 +107,14 @@ namespace BBTimes.CustomComponents.CustomDatas
 			particle.GetComponent<ParticleSystemRenderer>().material = ObjectCreationExtension.defaultDustMaterial;
 
 			// Making of vent connections
+
+			var connection = ObjectCreationExtension.CreateCube(AssetLoader.TextureFromFile(System.IO.Path.Combine(TexturePath, "ventConnection.png")), false);
+			connection.name = "VentPrefab_Connection";
+			connection.transform.localScale = new(2f, 0.6f, 2f);
+			connection.SetActive(false);
+			DontDestroyOnLoad(connection);
+
+			builder.ventConnectionPrefab = connection;
 		}
 	}
 }

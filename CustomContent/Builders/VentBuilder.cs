@@ -36,6 +36,8 @@ namespace BBTimes.CustomContent.Builders
 					break;
 			}
 
+			List<IntVector2> connectionpos = [];
+
 			foreach (var vent in vents)
 			{
 				Cell center = ec.CellFromPosition(vent.transform.position);
@@ -44,7 +46,15 @@ namespace BBTimes.CustomContent.Builders
 					if (vents[i] == vent) continue; // Not make a path to itself of course
 					ec.FindPath(center, ec.CellFromPosition(vents[i].transform.position), PathType.Const, out var path, out bool success);
 					if (!success) continue;
-
+					foreach (var t in path)
+					{
+						if (connectionpos.Contains(t.position)) continue;
+						connectionpos.Add(t.position);
+						var c = Instantiate(ventConnectionPrefab);
+						c.transform.SetParent(t.TileTransform);
+						c.transform.localPosition = Vector3.up * 9.5f;
+						c.SetActive(true);
+					}
 				}
 				var v = vent.GetComponent<Vent>();
 				v.nextVents = new(vents);
@@ -63,6 +73,9 @@ namespace BBTimes.CustomContent.Builders
 
 		[SerializeField]
 		public GameObject ventPrefab;
+
+		[SerializeField]
+		public GameObject ventConnectionPrefab;
 
 
 		const int minAmount = 6, maxAmount = 10;

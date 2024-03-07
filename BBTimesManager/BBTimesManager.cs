@@ -11,11 +11,18 @@ namespace BBTimes.Manager
     {
         internal static void InitializeContentCreation(BaseUnityPlugin plug)
         {
-			SetMaterials();
-            CreateNPCs(plug);
-			CreateItems(plug);
-			CreateEvents(plug);
-			CreateObjBuilders(plug);
+			try
+			{
+				SetMaterials();
+				CreateNPCs(plug);
+				CreateItems(plug);
+				CreateEvents(plug);
+				CreateObjBuilders(plug);
+			}
+			catch(System.Exception e)
+			{
+				MTM101BaldAPI.MTM101BaldiDevAPI.CauseCrash(plug.Info, e); // just in case
+			}
         }
 
 		static void SetMaterials()
