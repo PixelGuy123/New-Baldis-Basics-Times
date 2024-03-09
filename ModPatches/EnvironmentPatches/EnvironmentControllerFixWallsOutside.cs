@@ -42,8 +42,9 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						i--;
 					}
 				}
-				t.permanentLight = true;
-				__instance.GenerateLight(t, Color.white, 1); // Always should work
+
+
+				__instance.ForceAddPermanentLighting(t, Color.white);
 
 				if (dirs.Count == 0) continue;
 
@@ -54,6 +55,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					p.transform.localRotation = Quaternion.Euler(90f, q.eulerAngles.y, q.eulerAngles.z);
 					p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * 5f);
 					//__instance.CellFromPosition(t.position + dir.ToIntVector2()).AddRenderer(p.GetComponent<MeshRenderer>()); // Should keep this on. Because the render is messed up outside school
+					p.SetActive(true);
 				}
 				
 			}
@@ -73,12 +75,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				if (!t.Null || t.Hidden || t.offLimits) continue;
 				var p = Instantiate(plane, planeCover.transform);
 				p.transform.localPosition = t.FloorWorldPosition;
-				t.permanentLight = true;
-				__instance.GenerateLight(t, Color.white, 1);
+				__instance.ForceAddPermanentLighting(t, Color.white);
+				
 				if (decorations.Length > 0)
 				{
 
 				}
+
+				p.SetActive(true);
 			}
 
 			end:

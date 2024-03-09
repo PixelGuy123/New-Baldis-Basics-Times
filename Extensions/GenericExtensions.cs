@@ -1,11 +1,15 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace BBTimes.Extensions
 {
 	public static class GenericExtensions
 	{
+
+		static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
 		public static void ReplaceAt<T>(this IList<T> list, int index, T replacement)
 		{
 			list.RemoveAt(index);
@@ -71,6 +75,22 @@ namespace BBTimes.Extensions
 				}
 			}
 			return list;
+		}
+
+		public static void ForceAddPermanentLighting(this EnvironmentController ec, Cell tile, Color color)
+		{
+			tile.permanentLight = true;
+			LightController[,] lightMap = ( LightController[,])ec_lightMap.GetValue(ec);
+			tile.hasLight = true;
+			tile.lightOn = true;
+			tile.lightStrength = 1;
+			tile.lightColor = color;
+
+			lightMap[tile.position.x, tile.position.z].AddSource(tile, 1);
+			Singleton<CoreGameManager>.Instance.UpdateLighting(color, tile.position);
+			lightMap[tile.position.x, tile.position.z].UpdateLighting();
+
+			ec_lightMap.SetValue(ec, lightMap);
 		}
 	}
 }

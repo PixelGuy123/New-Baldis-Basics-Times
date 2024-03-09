@@ -33,6 +33,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		static void WindowsPointingOutside()
 		{
 			artificallySpawnedWindows.Clear();
+
 			var window = Resources.FindObjectsOfTypeAll<WindowObject>().Where(x => x.name == "WoodWindow").First(); // TEMPORARY METHOD, METAL WINDOW UNBREAK FEATURE IS ON THE WAY!!
 			var ec = i.Ec;
 			Dictionary<Cell, Direction[]> tiles = [];

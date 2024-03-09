@@ -48,6 +48,7 @@ namespace BBTimes.Manager
 			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
 			basePlane.GetComponent<MeshRenderer>().material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase");
 			Object.DontDestroyOnLoad(basePlane);
+			basePlane.SetActive(false);
 			basePlane.name = "PlaneTemplate";
 			man.Add("PlaneTemplate", basePlane);
 
@@ -57,6 +58,7 @@ namespace BBTimes.Manager
 			// Sprite Billboard object
 			var baseSprite = new GameObject("SpriteBillBoard").AddComponent<SpriteRenderer>();
 			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_Billboard");
+			baseSprite.gameObject.SetActive(false);
 			Object.DontDestroyOnLoad(baseSprite.gameObject);
 			man.Add("SpriteBillboardTemplate", baseSprite.gameObject);
 		}
