@@ -85,8 +85,10 @@ namespace BBTimes.CustomContent.Objects
 			foreach (var dir in Directions.All()) 
 			{
 				var cell = ec.CellFromPosition(transform.position);
-				cell.Block(dir, block);
-				ec.CellFromPosition(cell.position + dir.ToIntVector2()).Block(dir.GetOpposite(), block);
+				cell.SilentBlock(dir, block);
+				cell = ec.CellFromPosition(cell.position + dir.ToIntVector2());
+				if (!cell.Null)
+					cell.SilentBlock(dir.GetOpposite(), block);
 			}
 			colliders.Do(x => x.enabled = block);
 			if (block)

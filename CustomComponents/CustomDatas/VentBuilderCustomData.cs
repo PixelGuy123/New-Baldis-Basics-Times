@@ -5,6 +5,7 @@ using MTM101BaldAPI.AssetTools;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions.ComponentCreationExtensions;
 using MTM101BaldAPI;
+using System;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
@@ -134,7 +135,6 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			Destroy(connection2);
 
-			
 		}
 
 		const float connectionSize = 2f;

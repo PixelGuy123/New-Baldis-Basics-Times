@@ -7,7 +7,6 @@ using System.Linq;
 using UnityEngine;
 using System.IO;
 using MTM101BaldAPI;
-using HarmonyLib;
 
 namespace BBTimes.Manager
 {
@@ -17,8 +16,9 @@ namespace BBTimes.Manager
         {
 			try
 			{
-				LoadAssets();
 				SetMaterials();
+				CreateSpriteBillboards();
+				GetMusics();
 				CreateNPCs(plug);
 				CreateItems(plug);
 				CreateEvents(plug);
@@ -34,39 +34,42 @@ namespace BBTimes.Manager
 		{
 			ObjectCreationExtension.defaultMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "LockerTest"); // Actually a good material, has even lightmap
 			ObjectCreationExtension.defaultDustMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "DustTest"); // Actually a good material, has even lightmap
-		}
-
-		static void LoadAssets()
-		{
-			var fieldInfo = AccessTools.Field(typeof(MainGameManager), "allNotebooksNotification");
-			var sound = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_AllNotebooksNormal.wav")), "Vfx_BAL_CongratsNormal_0", SoundType.Effect, Color.green);
-			sound.additionalKeys = [
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_1", time = 2.103f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_2", time = 4.899f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_3", time = 8.174f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_4", time = 12.817f} // Tip: use audacity to know the audio length
-			];
-
-			var soundCRAZY = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_AllNotebooksFinal.wav")), "Vfx_BAL_CongratsNormal_0", SoundType.Effect, Color.green);
-			soundCRAZY.additionalKeys = [
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_1", time = 2.051f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_2", time = 4.842f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsAngry_0", time = 7.185f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_4", time = 12.694f} // Tip: use audacity to know the audio length
-			];
-
-			foreach (var man in Resources.FindObjectsOfTypeAll<MainGameManager>())
-				fieldInfo.SetValue(man, man.name == "Lvl3_MainGameManager 1" ? soundCRAZY : sound);
 			
+			// Make a transparent texture
+			var tex = new Texture2D(256, 256);
+			Color[] c = new Color[tex.width * tex.height];
+			for (int i = 0; i < c.Length; i++)
+				c[i] = new(1f, 1f, 1f, 0f);
+			tex.SetPixels(c);
+			tex.Apply();
+			ObjectCreationExtension.transparentTex = tex;
+
+			// Base plane for easy.. planes
+			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+			basePlane.GetComponent<MeshRenderer>().material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase");
+			Object.DontDestroyOnLoad(basePlane);
+			basePlane.name = "PlaneTemplate";
+			man.Add("PlaneTemplate", basePlane);
+
+			// Grass texture
+			man.Add("Tex_Grass", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Grass"));
+
+			// Sprite Billboard object
+			var baseSprite = new GameObject("SpriteBillBoard").AddComponent<SpriteRenderer>();
+			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_Billboard");
+			Object.DontDestroyOnLoad(baseSprite.gameObject);
+			man.Add("SpriteBillboardTemplate", baseSprite.gameObject);
 		}
 
 		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc");
 
-		const string AudioFolder = "Audios", TextureFolder = "Textures";
+		const string AudioFolder = "Audios", TextureFolder = "Textures", SfsFolder = "Sfs";
 
-        internal readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")];
+        public readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")];
 
 		public readonly static AssetManager man = new();
+
+		public static string CurrentFloor => Singleton<CoreGameManager>.Instance.sceneObject.levelTitle ?? "None";
 
     }
 	// Floor data
@@ -104,5 +107,9 @@ namespace BBTimes.Manager
 
 		//readonly List<GenericHallBuilder> _genericHallBuilders = [];
 		//public List<GenericHallBuilder> GenericHallBuilders => _genericHallBuilders;
+
+		// Misc Fields
+		readonly List<string> _midiFiles = [];
+		public List<string> MidiFiles => _midiFiles;
 	}
 }

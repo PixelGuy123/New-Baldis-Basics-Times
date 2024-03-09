@@ -2,11 +2,11 @@
 using BBTimes.CustomContent.Objects;
 using System.Collections.Generic;
 using BBTimes.Extensions;
-using BBTimes.ModPatches;
+using BBTimes.ModPatches.EnvironmentPatches;
 
 namespace BBTimes.CustomContent.Builders
 {
-	public class VentBuilder : ObjectBuilder
+    public class VentBuilder : ObjectBuilder
 	{
 		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
 		{
@@ -24,7 +24,7 @@ namespace BBTimes.CustomContent.Builders
 
 			foreach (var cell in web)
 			{
-				if (cell.HardCoverageFits(CellCoverage.Up | CellCoverage.Center) && !cell.open && !cell.doorHere && (cell.shape == TileShape.Corner || cell.shape == TileShape.Single))
+				if (!ec.TrapCheck(cell) && !cell.HasAnyHardCoverage && !cell.open && !cell.doorHere && (cell.shape == TileShape.Corner || cell.shape == TileShape.Single))
 				{
 					var vent = Instantiate(ventPrefab, room.transform);
 					vent.transform.position = cell.FloorWorldPosition;
@@ -38,6 +38,8 @@ namespace BBTimes.CustomContent.Builders
 					break;
 			}
 
+			if (vents.Count == 0) return;
+
 			Dictionary<IntVector2, GameObject> connectionpos = [];
 
 			foreach (var vent in vents)
@@ -46,7 +48,7 @@ namespace BBTimes.CustomContent.Builders
 				for (int i = 0; i < vents.Count; i++)
 				{
 					if (vents[i] == vent) continue; // Not make a path to itself of course
-					EnvironmentControllerPatch.data = new(RoomType.Hall, true); // Limit to only hallways
+					EnvironmentControllerPatch.data = new([TileShape.Open, TileShape.Closed], [RoomType.Hall], true); // Limit to only hallways
 					ec.FindPath(center, ec.CellFromPosition(vents[i].transform.position), PathType.Const, out var path, out bool success);
 					EnvironmentControllerPatch.ResetData();
 					if (!success) continue;
@@ -54,7 +56,7 @@ namespace BBTimes.CustomContent.Builders
 					{
 						if (connectionpos.ContainsKey(t.position)) continue;
 						var c = Instantiate(ventConnectionPrefab);
-						t.HardCover(CellCoverage.Center | CellCoverage.Up);
+						t.HardCover(CellCoverage.Up);
 						c.transform.SetParent(t.TileTransform);
 
 						t.AddRenderer(c.GetComponent<MeshRenderer>());
