@@ -1,6 +1,6 @@
 ﻿using BBTimes.CustomComponents;
-using BBTimes.Extensions;
 using BBTimes.Manager;
+using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -18,7 +18,7 @@ namespace BBTimes.ModPatches
 			.SetInstruction(Transpilers.EmitDelegate(() =>
 			{
 				var comp = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>();
-				var rng = GenericExtensions.GetRng();
+				var rng = new System.Random(PostRoomCreation.i?.controlledRNG.Next() ?? 0);
 				if (comp == null)
 					return "school";
 
@@ -43,7 +43,7 @@ namespace BBTimes.ModPatches
 			.SetInstruction(Transpilers.EmitDelegate(() =>
 			{
 				var midis = BBTimesManager.floorDatas[3].MidiFiles;
-				var rng = GenericExtensions.GetRng();
+				var rng = new System.Random(PostRoomCreation.i?.controlledRNG.Next() ?? 0);
 				if (midis.Count == 0) return "school"; // For some reason mthe MainGameManagerExtraComponent isn't added to random endless manager. So I'm manually selecting the floorData
 
 				int idx = rng.Next(midis.Count + 1);

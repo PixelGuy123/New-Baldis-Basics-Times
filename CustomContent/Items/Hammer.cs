@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using BBTimes.CustomComponents;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.Items
 {
@@ -10,7 +11,7 @@ namespace BBTimes.CustomContent.Items
             if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var raycastHit, pm.pc.reach, window, QueryTriggerInteraction.Collide) && raycastHit.transform.CompareTag("Window"))
             {
                 raycastHit.transform.GetComponent<Window>().Break(true);
-                return true;
+                return !raycastHit.transform.GetComponent<CustomWindowComponent>()?.unbreakable ?? true;
             }
             return false;
         }

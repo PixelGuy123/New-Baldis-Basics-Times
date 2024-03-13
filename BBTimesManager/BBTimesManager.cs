@@ -7,33 +7,49 @@ using System.Linq;
 using UnityEngine;
 using System.IO;
 using MTM101BaldAPI;
+using BBTimes.CustomComponents;
+using HarmonyLib;
+using BBTimes.Manager.SelectionHolders;
+using BBTimes.ModPatches;
 
 namespace BBTimes.Manager
 {
     internal static partial class BBTimesManager // basically holds the logic to create everything to the game
     {
+
         internal static void InitializeContentCreation(BaseUnityPlugin plug)
         {
 			try
 			{
-				SetMaterials();
+				AddExtraComponentsForSomeObjects();
+				SetAssets();
 				CreateSpriteBillboards();
+				CreateCubeMaps();
 				GetMusics();
 				CreateNPCs(plug);
 				CreateItems(plug);
 				CreateEvents(plug);
 				CreateObjBuilders(plug);
+				CreateWindows();
+				CreateRoomFunctions();
 			}
 			catch(System.Exception e)
 			{
+				Debug.LogException(e);
 				MTM101BaldiDevAPI.CauseCrash(plug.Info, e); // just in case
 			}
         }
 
-		static void SetMaterials()
+		static void AddExtraComponentsForSomeObjects()
+		{
+			Resources.FindObjectsOfTypeAll<MainGameManager>().Do(x => x.gameObject.AddComponent<MainGameManagerExtraComponent>()); // Adds extra component for every MainGameManager
+		}
+
+		static void SetAssets()
 		{
 			ObjectCreationExtension.defaultMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "LockerTest"); // Actually a good material, has even lightmap
 			ObjectCreationExtension.defaultDustMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "DustTest"); // Actually a good material, has even lightmap
+			ObjectCreationExtension.defaultCubemap = Resources.FindObjectsOfTypeAll<Cubemap>().First(x => x.name == "Cubemap_DayStandard");
 			
 			// Make a transparent texture
 			var tex = new Texture2D(256, 256);
@@ -46,21 +62,34 @@ namespace BBTimes.Manager
 
 			// Base plane for easy.. planes
 			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-			basePlane.GetComponent<MeshRenderer>().material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase");
+			var renderer = basePlane.GetComponent<MeshRenderer>();
+			renderer.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase");
 			Object.DontDestroyOnLoad(basePlane);
 			basePlane.SetActive(false);
 			basePlane.name = "PlaneTemplate";
+			renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+			renderer.receiveShadows = false;
 			man.Add("PlaneTemplate", basePlane);
 
 			// Grass texture
 			man.Add("Tex_Grass", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Grass"));
 
+			// Fence texture
+			man.Add("Tex_Fence", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "fence"));
+
 			// Sprite Billboard object
 			var baseSprite = new GameObject("SpriteBillBoard").AddComponent<SpriteRenderer>();
 			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_Billboard");
+			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+			baseSprite.receiveShadows = false;
+
 			baseSprite.gameObject.SetActive(false);
 			Object.DontDestroyOnLoad(baseSprite.gameObject);
 			man.Add("SpriteBillboardTemplate", baseSprite.gameObject);
+
+			// Setup Window hit audio
+
+			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Voice, Color.white);
 		}
 
 		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc");
@@ -73,7 +102,9 @@ namespace BBTimes.Manager
 
 		public static string CurrentFloor => Singleton<CoreGameManager>.Instance.sceneObject.levelTitle ?? "None";
 
-    }
+		public static FloorData CurrentFloorData => floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
+
+	}
 	// Floor data
     internal class FloorData(string floor = "none")
     {
@@ -113,5 +144,8 @@ namespace BBTimes.Manager
 		// Misc Fields
 		readonly List<string> _midiFiles = [];
 		public List<string> MidiFiles => _midiFiles;
+
+		readonly List<WindowObjectHolder> _windowObjects = [];
+		public List<WindowObjectHolder> WindowObjects => _windowObjects;
 	}
 }

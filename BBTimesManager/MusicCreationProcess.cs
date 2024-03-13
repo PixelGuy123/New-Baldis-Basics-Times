@@ -56,7 +56,7 @@ namespace BBTimes.Manager
 			foreach (var man in Resources.FindObjectsOfTypeAll<MainGameManager>()) // Main game manager
 			{
 				fieldInfo.SetValue(man, man.name == "Lvl3_MainGameManager 1" ? soundCRAZY : sound);
-				var comp = man.gameObject.AddComponent<MainGameManagerExtraComponent>();
+				var comp = man.GetComponent<MainGameManagerExtraComponent>();
 				if (man.name.StartsWith("Lvl1"))
 				{
 					fieldInfo.SetValue(man, sound);

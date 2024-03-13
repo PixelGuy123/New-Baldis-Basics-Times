@@ -8,7 +8,7 @@ using UnityEngine;
 namespace BBTimes.ModPatches.GeneratorPatches
 {
 	[HarmonyPatch(typeof(LevelGenerator))]
-	public class WindowOutsidePatch
+	public class PostRoomCreation
 	{
 		[HarmonyPatch("StartGenerate")]
 		private static void Prefix(LevelGenerator __instance) => i = __instance;
@@ -23,18 +23,19 @@ namespace BBTimes.ModPatches.GeneratorPatches
 				new(OpCodes.Ldc_I4_1),
 				new(OpCodes.Callvirt, AccessTools.Method("EnvironmentController:SetTileInstantiation")) // before setting tile instantiation on. First do some stuff
 				)
-			.InsertAndAdvance(Transpilers.EmitDelegate(WindowsPointingOutside))
+			.InsertAndAdvance(Transpilers.EmitDelegate(ExecutePostRoomTasks))
 			.InstructionEnumeration();
 
-		static LevelGenerator i;
+		public static LevelGenerator i; // Note: this is gonna be the main generator patch to get this variable
 
 
+		static void ExecutePostRoomTasks()
+		{
+			WindowsPointingOutside();
+		}
 
 		static void WindowsPointingOutside()
 		{
-			artificallySpawnedWindows.Clear();
-
-			var window = Resources.FindObjectsOfTypeAll<WindowObject>().Where(x => x.name == "WoodWindow").First(); // TEMPORARY METHOD, METAL WINDOW UNBREAK FEATURE IS ON THE WAY!!
 			var ec = i.Ec;
 			Dictionary<Cell, Direction[]> tiles = [];
 			foreach (var t in ec.mainHall.GetNewTileList())
@@ -60,12 +61,12 @@ namespace BBTimes.ModPatches.GeneratorPatches
 				{
 					var dir = tile.Value[i.controlledRNG.Next(tile.Value.Length)];
 					ec.ForceBuildWindow(tile.Key, dir, window);
-					artificallySpawnedWindows.Add(tile.Key.position, dir);
 				}
 			}
 
 		}
 
-		internal readonly static Dictionary<IntVector2, Direction> artificallySpawnedWindows = [];
+		public static WindowObject window;
+
 	}
 }

@@ -38,9 +38,6 @@ namespace BBTimes.Extensions
 			return cs;
 		}
 
-		public static System.Random GetRng() => // I made this method intentionally, so mods like Baldi Seed Extension can modify depending on the seed
-			new(Singleton<CoreGameManager>.Instance.Seed());
-
 		public static void ForceBuildWindow(this EnvironmentController ec, Cell tile, Direction dir, WindowObject wObject)
 		{
 			if (ec.ContainsCoordinates(tile.position + dir.ToIntVector2()))
@@ -86,7 +83,7 @@ namespace BBTimes.Extensions
 			tile.lightStrength = 1;
 			tile.lightColor = color;
 
-			lightMap[tile.position.x, tile.position.z].AddSource(tile, 1);
+			lightMap[tile.position.x, tile.position.z].AddSource(tile, tile.lightStrength);
 			Singleton<CoreGameManager>.Instance.UpdateLighting(color, tile.position);
 			lightMap[tile.position.x, tile.position.z].UpdateLighting();
 

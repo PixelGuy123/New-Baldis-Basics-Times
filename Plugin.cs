@@ -18,7 +18,7 @@ namespace BBTimes.Plugin
     {
 		private void Awake()
 		{
-			
+
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAll();
 			

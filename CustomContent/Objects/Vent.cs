@@ -84,9 +84,7 @@ namespace BBTimes.CustomContent.Objects
 			gasLeakVentAudioMan.SetLoop(true);
 			foreach (var dir in Directions.All()) 
 			{
-				var cell = ec.CellFromPosition(transform.position);
-				cell.SilentBlock(dir, block);
-				cell = ec.CellFromPosition(cell.position + dir.ToIntVector2());
+				var cell = ec.CellFromPosition(IntVector2.GetGridPosition(transform.position) + dir.ToIntVector2());
 				if (!cell.Null)
 					cell.SilentBlock(dir.GetOpposite(), block);
 			}
