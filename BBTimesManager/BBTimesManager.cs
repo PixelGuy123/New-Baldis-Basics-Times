@@ -61,11 +61,12 @@ namespace BBTimes.Manager
 			ObjectCreationExtension.transparentTex = tex;
 
 			// Base plane for easy.. planes
-			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			var renderer = basePlane.GetComponent<MeshRenderer>();
 			renderer.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase");
 			Object.DontDestroyOnLoad(basePlane);
 			basePlane.SetActive(false);
+			basePlane.transform.localScale = Vector3.one * 10f; // Gives the tile size
 			basePlane.name = "PlaneTemplate";
 			renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			renderer.receiveShadows = false;
@@ -81,15 +82,60 @@ namespace BBTimes.Manager
 			var baseSprite = new GameObject("SpriteBillBoard").AddComponent<SpriteRenderer>();
 			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_Billboard");
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+			baseSprite.receiveShadows = false;			
+
+			baseSprite.gameObject.SetActive(false);
+			baseSprite.gameObject.layer = LayerMask.NameToLayer("Billboard");
+			Object.DontDestroyOnLoad(baseSprite.gameObject);
+			man.Add("SpriteBillboardTemplate", baseSprite.gameObject);
+
+			// Sprite Non-Billboard object
+
+			// Sprite Billboard object
+			baseSprite = new GameObject("SpriteNoBillBoard").AddComponent<SpriteRenderer>();
+			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_NoBillboard");
+			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			baseSprite.receiveShadows = false;
 
 			baseSprite.gameObject.SetActive(false);
+			baseSprite.gameObject.layer = LayerMask.NameToLayer("Billboard");
 			Object.DontDestroyOnLoad(baseSprite.gameObject);
-			man.Add("SpriteBillboardTemplate", baseSprite.gameObject);
+			man.Add("SpriteNoBillboardTemplate", baseSprite.gameObject);
 
 			// Setup Window hit audio
 
 			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Voice, Color.white);
+
+			// Setup Gum animation
+			var gumHolder = new GameObject("gumSplash");
+			var gum = Object.Instantiate(man.Get<GameObject>("SpriteNoBillboardTemplate")); // front of the gum
+			gum.SetActive(true);
+			gum.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(
+				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "gumSplash.png"))
+				, 25f);
+			gum.layer = LayerMask.NameToLayer("Billboard");
+			gum.transform.SetParent(gumHolder.transform);
+			gum.transform.localPosition = Vector3.zero;
+
+			gum = Object.Instantiate(man.Get<GameObject>("SpriteNoBillboardTemplate")); // Back of the gum
+			gum.SetActive(true);
+			gum.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(
+				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "gumSplash_back.png"))
+				, 25f);
+			gum.transform.SetParent(gumHolder.transform);
+			gum.transform.localPosition = Vector3.zero + gum.transform.forward * -0.01f;
+			gumHolder.SetActive(false);
+			Object.DontDestroyOnLoad(gumHolder);
+
+			gumHolder.AddComponent<EmptyMonoBehaviour>(); // For coroutines
+			GumSplash.gumSplash = gumHolder.transform;
+
+			GumSplash.splash = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "gumSplash.wav")), "Vfx_GumSplash", SoundType.Voice, new(0.99609f, 0, 0.99609f));
+
+			var fogSound = AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "events", "Fog", "Audios", "new_CreepyOldComputer.wav"));
+			var field = AccessTools.Field(typeof(FogEvent), "music");
+
+			Resources.FindObjectsOfTypeAll<FogEvent>().Do(x => ((SoundObject)field.GetValue(x)).soundClip = fogSound); // Replace fog music
 		}
 
 		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc");

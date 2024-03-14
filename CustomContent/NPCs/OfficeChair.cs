@@ -168,7 +168,7 @@ namespace BBTimes.CustomContent.NPCs
         {
             while (cooldown > 0f)
             {
-                cooldown -= Time.deltaTime * chair.ec.NpcTimeScale;
+				cooldown -= Time.deltaTime * chair.TimeScale;
                 yield return null;
             }
             chair.SetEnabled(true);

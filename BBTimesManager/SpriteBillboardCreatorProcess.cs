@@ -24,7 +24,6 @@ namespace BBTimes.Manager
 			obj.SetActive(false);
 			DontDestroyOnLoad(obj);
 			obj.name = "SpriteBillboard_" + sprite.name;
-			obj.layer = LayerMask.NameToLayer("Billboard");
 			obj.AddComponent<RendererContainer>().renderers = [comp];
 			return obj;
 		}
@@ -40,6 +39,7 @@ namespace BBTimes.Manager
 			DontDestroyOnLoad(parent);
 			parent.SetActive(false);
 			parent.GetComponent<RendererContainer>().renderers = [obj.GetComponent<SpriteRenderer>()];
+			parent.layer = LayerMask.NameToLayer("Billboard");
 
 			return parent;
 		}

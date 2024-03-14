@@ -18,7 +18,9 @@ namespace BBTimes.Manager
 
 			// Principal out
 			e = CreatorExtensions.CreateEvent<PrincipalOut>("PrincipalOut", "Event_PriOut", 40f, 80f, []).AddMeta(plug, RandomEventFlags.CharacterSpecific).value;
-			floorDatas[0].Events.Add(new() { selection = e, weight = 5022 }); // This is how it's gonna work
+			floorDatas[0].Events.Add(new() { selection = e, weight = 65 }); // This is how it's gonna work
+			floorDatas[1].Events.Add(new() { selection = e, weight = 55 }); // This is how it's gonna work
+			floorDatas[3].Events.Add(new() { selection = e, weight = 75 }); // This is how it's gonna work
 		}
 
 		

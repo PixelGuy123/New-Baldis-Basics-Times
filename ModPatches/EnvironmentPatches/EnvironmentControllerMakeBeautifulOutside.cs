@@ -4,8 +4,6 @@ using BBTimes.Manager;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using System.Collections.Generic;
-using System.IO.IsolatedStorage;
-using System.Linq;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -59,15 +57,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				if (dirs.Count == 0) continue;
 
-				int max = lastFloor ? 2 : 5;
+				int max = lastFloor ? 2 : 10;
 
 				foreach (var dir in dirs)
 				{
-					for (int i = isFirstFloor ? 0 : lastFloor ? -8 : -5; i <= max; i++)
+					for (int i = isFirstFloor ? 0 : -10; i <= max; i++)
 					{
 						var p = Instantiate(plane, planeCover.transform);
-						var q = dir.GetOpposite().ToUiRotation();
-						p.transform.localRotation = Quaternion.Euler(90f, q.eulerAngles.y, q.eulerAngles.z);
+						p.transform.localRotation = dir.ToRotation();
 						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * 4.99f) + (Vector3.up * t.CenterWorldPosition.y * i);
 						// t.AddRenderer(p.GetComponent<MeshRenderer>()); // Should keep this on. Because the render is messed up outside school
 						p.SetActive(true);
@@ -80,7 +77,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			if (!isFirstFloor)
 				goto end;
 
-			plane.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+			plane.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
 			renderer.material = new(renderer.material)
 			{
 				mainTexture = grassTex
@@ -100,10 +97,9 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					int amount = rng.Next(1, 4);
 					for (int i = 0; i < amount; i++)
 					{
-						var d = Instantiate(decorations[rng.Next(decorations.Length)]);
+						var d = Instantiate(decorations[rng.Next(decorations.Length)], planeCover.transform);
 						d.SetActive(true);
-						d.transform.SetParent(p.transform);
-						d.transform.localPosition = new Vector3((float)rng.NextDouble() * 6f + -3, 0f, (float)rng.NextDouble() * 6f + -3);
+						d.transform.localPosition = t.FloorWorldPosition + new Vector3((float)rng.NextDouble() * 2f - 1, 0f, (float)rng.NextDouble() * 2f - 1);
 						d.GetComponent<RendererContainer>().renderers.Do(t.AddRenderer); // I didn't know this was valid syntax, thanks compiler!
 					}
 				}
@@ -129,8 +125,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						if (__instance.ContainsCoordinates(t.position + dir.ToIntVector2())) continue;
 
 						var p = Instantiate(plane, planeCover.transform);
-						var q = dir.GetOpposite().ToUiRotation();
-						p.transform.localRotation = Quaternion.Euler(90f, q.eulerAngles.y, q.eulerAngles.z);
+						p.transform.localRotation = dir.ToRotation();
 						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * 5f);
 						t.AddRenderer(p.GetComponent<MeshRenderer>());
 						p.SetActive(true);

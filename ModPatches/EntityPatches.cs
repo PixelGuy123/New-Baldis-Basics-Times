@@ -10,7 +10,7 @@ namespace BBTimes.ModPatches
 	 * in game
 	 * */
 	[HarmonyPatch(typeof(Entity), "Initialize")]
-	internal class ModPatches
+	internal class EntityWakeUpPatch
 	{
 		private static void Prefix(Entity __instance, ref Transform ___transform)
 		{
