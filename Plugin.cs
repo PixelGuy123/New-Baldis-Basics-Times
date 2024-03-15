@@ -83,6 +83,12 @@ namespace BBTimes.Plugin
 					ld.maxOffices = 2;
 					ld.officeStickToHallChance = 0.9f;
 					ld.specialRoomsStickToEdge = false;
+					ld.maxLightDistance += 2;
+
+					// TEMPORARY CHANGE TO REMOVE DR REFLEX AS FORCED NPC
+					var drReflex = ld.forcedNpcs.First(x => x.GetType() == typeof(DrReflex));
+					ld.forcedNpcs = [.. ld.forcedNpcs.Where(x => x.Character != Character.DrReflex)];
+					ld.potentialNPCs.Add(new() { selection = drReflex, weight = 55});
 					return;
 				}
 
@@ -114,6 +120,8 @@ namespace BBTimes.Plugin
 					ld.maxOffices = 2;
 					ld.officeStickToHallChance = 0.9f;
 					ld.specialRoomsStickToEdge = false;
+					ld.maxLightDistance += 5;
+					ld.standardLightStrength -= 2;
 					return;
 				}
 
@@ -146,6 +154,7 @@ namespace BBTimes.Plugin
 					ld.maxOffices = 3;
 					ld.minOffices = 2;
 					ld.officeStickToHallChance = 0.9f;
+					ld.maxLightDistance += 3;
 					return;
 				}
 				

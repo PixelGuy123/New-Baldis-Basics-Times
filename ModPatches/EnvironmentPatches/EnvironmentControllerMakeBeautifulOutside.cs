@@ -120,6 +120,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				foreach (var t in __instance.AllExistentCells())
 				{
+					if (!t.Null) continue;
+
 					foreach (var dir in Directions.All())
 					{
 						if (__instance.ContainsCoordinates(t.position + dir.ToIntVector2())) continue;

@@ -82,12 +82,14 @@ namespace BBTimes.CustomContent.Objects
 		{
 			Enabled = block;
 			gasLeakVentAudioMan.SetLoop(true);
+			ec.FreezeNavigationUpdates(true);
 			foreach (var dir in Directions.All()) 
 			{
 				var cell = ec.CellFromPosition(IntVector2.GetGridPosition(transform.position) + dir.ToIntVector2());
 				if (!cell.Null)
-					cell.SilentBlock(dir.GetOpposite(), block);
+					cell.Block(dir.GetOpposite(), block);
 			}
+			ec.FreezeNavigationUpdates(false);
 			colliders.Do(x => x.enabled = block);
 			if (block)
 				cooldown = UnityEngine.Random.Range(minCooldown, maxCooldown);

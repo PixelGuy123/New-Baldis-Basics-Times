@@ -1,14 +1,31 @@
 ﻿using HarmonyLib;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 using UnityEngine;
+using System.Reflection.Emit;
 
-namespace BBTimes.ModPatches
+namespace BBTimes.ModPatches.NpcPatches
 {
-	[HarmonyPatch(typeof(Principal))]
-	internal class PrincipalWhistleAnimation
+	[HarmonyPatch(typeof(Principal), "Scold")]
+	internal class PrincipalPatches
 	{
+		[HarmonyPrefix]
+		private static bool CustomScold(AudioManager ___audMan, string brokenRule)
+		{
+			if (ruleBreaks.ContainsKey(brokenRule))
+			{
+				___audMan.FlushQueue(true);
+				___audMan.QueueAudio(ruleBreaks[brokenRule]);
+
+				return false;
+			}
+
+			return true;
+		}
+
+		internal static Dictionary<string, SoundObject> ruleBreaks = [];
+
+
 		[HarmonyPatch("WhistleChance")]
 		[HarmonyPrefix]
 		private static void GetI(Principal __instance, ref AudioManager ___audMan)
@@ -32,7 +49,7 @@ namespace BBTimes.ModPatches
 			{
 				if (i == null || man == null) return;
 
-				i.StartCoroutine(Animation(i, man));
+				i.Navigator.Entity.StartCoroutine(Animation(i, man));
 			}))
 			.InstructionEnumeration();
 

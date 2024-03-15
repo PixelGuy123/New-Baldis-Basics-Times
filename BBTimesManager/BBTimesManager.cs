@@ -11,6 +11,7 @@ using BBTimes.CustomComponents;
 using HarmonyLib;
 using BBTimes.Manager.SelectionHolders;
 using BBTimes.ModPatches;
+using BBTimes.ModPatches.NpcPatches;
 
 namespace BBTimes.Manager
 {
@@ -47,6 +48,7 @@ namespace BBTimes.Manager
 
 		static void SetAssets()
 		{
+			// Some materials
 			ObjectCreationExtension.defaultMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "LockerTest"); // Actually a good material, has even lightmap
 			ObjectCreationExtension.defaultDustMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "DustTest"); // Actually a good material, has even lightmap
 			ObjectCreationExtension.defaultCubemap = Resources.FindObjectsOfTypeAll<Cubemap>().First(x => x.name == "Cubemap_DayStandard");
@@ -60,7 +62,7 @@ namespace BBTimes.Manager
 			tex.Apply();
 			ObjectCreationExtension.transparentTex = tex;
 
-			// Base plane for easy.. planes
+			// Base plane for easy.. quads
 			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			var renderer = basePlane.GetComponent<MeshRenderer>();
 			renderer.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase");
@@ -85,7 +87,7 @@ namespace BBTimes.Manager
 			baseSprite.receiveShadows = false;			
 
 			baseSprite.gameObject.SetActive(false);
-			baseSprite.gameObject.layer = LayerMask.NameToLayer("Billboard");
+			baseSprite.gameObject.layer = billboardLayer;
 			Object.DontDestroyOnLoad(baseSprite.gameObject);
 			man.Add("SpriteBillboardTemplate", baseSprite.gameObject);
 
@@ -98,7 +100,7 @@ namespace BBTimes.Manager
 			baseSprite.receiveShadows = false;
 
 			baseSprite.gameObject.SetActive(false);
-			baseSprite.gameObject.layer = LayerMask.NameToLayer("Billboard");
+			baseSprite.gameObject.layer = billboardLayer;
 			Object.DontDestroyOnLoad(baseSprite.gameObject);
 			man.Add("SpriteNoBillboardTemplate", baseSprite.gameObject);
 
@@ -113,7 +115,7 @@ namespace BBTimes.Manager
 			gum.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "gumSplash.png"))
 				, 25f);
-			gum.layer = LayerMask.NameToLayer("Billboard");
+			gum.layer = billboardLayer;
 			gum.transform.SetParent(gumHolder.transform);
 			gum.transform.localPosition = Vector3.zero;
 
@@ -132,11 +134,26 @@ namespace BBTimes.Manager
 
 			GumSplash.splash = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "gumSplash.wav")), "Vfx_GumSplash", SoundType.Voice, new(0.99609f, 0, 0.99609f));
 
+
+			// Fog music change
 			var fogSound = AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "events", "Fog", "Audios", "new_CreepyOldComputer.wav"));
 			var field = AccessTools.Field(typeof(FogEvent), "music");
 
 			Resources.FindObjectsOfTypeAll<FogEvent>().Do(x => ((SoundObject)field.GetValue(x)).soundClip = fogSound); // Replace fog music
-		}
+
+			// Principal's extra dialogues
+			AddRule("breakingproperty", "principal_nopropertybreak.wav", "Vfx_PRI_NoPropertyBreak");
+			AddRule("gumming", "principal_nospittinggums.wav", "Vfx_PRI_NoGumming");
+
+
+
+
+
+
+			// Local Methods
+			static void AddRule(string name, string audioName, string vfx) =>
+				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", audioName)), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));
+		} // 
 
 		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc");
 
@@ -149,6 +166,8 @@ namespace BBTimes.Manager
 		public static string CurrentFloor => Singleton<CoreGameManager>.Instance.sceneObject.levelTitle ?? "None";
 
 		public static FloorData CurrentFloorData => floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
+
+		
 
 	}
 	// Floor data
