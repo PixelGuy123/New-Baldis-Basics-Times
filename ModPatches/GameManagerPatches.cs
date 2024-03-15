@@ -29,6 +29,19 @@ namespace BBTimes.ModPatches
 				return comp.midis[idx];
 			}))
 			.InstructionEnumeration();
+
+		[HarmonyPatch("AllNotebooks")]
+		[HarmonyPostfix]
+		private static void BaldiAngerPhase()
+		{
+			var core = Singleton<CoreGameManager>.Instance;
+			if (core.currentMode == Mode.Free)
+			{
+				core.audMan.FlushQueue(true);
+				return;
+			}
+			// Soon....
+		}
 	}
 
 	[HarmonyPatch(typeof(EndlessGameManager))]

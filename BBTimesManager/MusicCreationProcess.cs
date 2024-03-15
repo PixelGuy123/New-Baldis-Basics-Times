@@ -1,4 +1,5 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.ModPatches;
 using HarmonyLib;
 using MidiPlayerTK;
 using MTM101BaldAPI;
@@ -13,26 +14,28 @@ namespace BBTimes.Manager
 		static void GetMusics()
 		{
 			// ******************* Sfs ********************
-			MidiPlayerGlobal.MPTK_LoadLiveSF("file://" + Path.Combine(MiscPath, SfsFolder, "GS_Wavetable_Synth.sf2"));
+			AddSf("GS_Wavetable_Synth.sf2");
 
 			// ************************ Musics **************************
 
-			string midi = AssetLoader.MidiFromFile(Path.Combine(MiscPath, AudioFolder, "mus_NewSchool.midi"), "newSchoolMusic1");
+			string midi = AddMidi("mus_NewSchool.midi");
 			floorDatas[0].MidiFiles.Add(midi);
-			midi = AssetLoader.MidiFromFile(Path.Combine(MiscPath, AudioFolder, "mus_NewSchool1.mid"), "newSchoolMusic2");
+			midi = AddMidi("mus_NewSchool1.mid");
 			floorDatas[0].MidiFiles.Add(midi);
 			floorDatas[3].MidiFiles.Add(midi);
-			midi = AssetLoader.MidiFromFile(Path.Combine(MiscPath, AudioFolder, "mus_NewSchool2.mid"), "newSchoolMusic3");
+			midi = AddMidi("mus_NewSchool2.mid");
 			floorDatas[2].MidiFiles.Add(midi);
-			midi = AssetLoader.MidiFromFile(Path.Combine(MiscPath, AudioFolder, "mus_NewSchool3.mid"), "newSchoolMusic4");
+			midi = AddMidi("mus_NewSchool3.mid");
 			floorDatas[2].MidiFiles.Add(midi);
-			midi = AssetLoader.MidiFromFile(Path.Combine(MiscPath, AudioFolder, "mus_NewSchool4.mid"), "newSchoolMusic5");
+			midi = AddMidi("mus_NewSchool4.mid");
 			floorDatas[3].MidiFiles.Add(midi);
 			floorDatas[1].MidiFiles.Add(midi);
-			midi = AssetLoader.MidiFromFile(Path.Combine(MiscPath, AudioFolder, "mus_NewSchool5.mid"), "newSchoolMusic6");
+			midi = AddMidi("mus_NewSchool5.mid");
 			floorDatas[1].MidiFiles.Add(midi);
 
+			// *********** Elevator musics **********
 
+			ElevatorScreenPatch.elevatorMidis.Add(AddMidi("mus_el_1.mid"));
 
 			//  ************************ Base Game Manager changes ******************************
 			var fieldInfo = AccessTools.Field(typeof(MainGameManager), "allNotebooksNotification");
@@ -76,6 +79,11 @@ namespace BBTimes.Manager
 					continue;
 				}
 			}
+
+			// *********** Local Methods ***********
+			static string AddMidi(string midiFileName) => AssetLoader.MidiFromFile(Path.Combine(MiscPath, AudioFolder, midiFileName), Path.GetFileNameWithoutExtension(midiFileName));
+
+			static void AddSf(string sfFileName) => MidiPlayerGlobal.MPTK_LoadLiveSF("file://" + Path.Combine(MiscPath, SfsFolder, sfFileName));
 		}
 	}
 }

@@ -57,7 +57,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				if (dirs.Count == 0) continue;
 
-				int max = lastFloor ? 2 : 10;
+				int max = lastFloor ? 3 : 10;
 
 				foreach (var dir in dirs)
 				{

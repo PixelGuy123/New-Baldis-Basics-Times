@@ -3,6 +3,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace BBTimes.ModPatches.GeneratorPatches
@@ -24,10 +25,41 @@ namespace BBTimes.ModPatches.GeneratorPatches
 				new(OpCodes.Callvirt, AccessTools.Method("EnvironmentController:SetTileInstantiation")) // before setting tile instantiation on. First do some stuff
 				)
 			.InsertAndAdvance(Transpilers.EmitDelegate(ExecutePostRoomTasks))
+
+			.Start() // Make negative and positive seeds different (NPC phase)
+			.MatchForward(true,
+				new(OpCodes.Ldloc_2),
+				new(OpCodes.Call, AccessTools.PropertyGetter(typeof(CoreGameManager), "Instance")),
+				new(OpCodes.Callvirt, AccessTools.Method("CoreGameManager:Seed")),
+				new(OpCodes.Newobj, AccessTools.Constructor(typeof(System.Random), [typeof(int)])),
+				new(CodeInstruction.StoreField(typeof(LevelBuilder), "controlledRNG"))
+				).Advance(1)
+			.InsertAndAdvance(Transpilers.EmitDelegate(SkipRngs))
+
+			.MatchForward(true, // Make negative and positive seeds different (Gen phase)
+				new(OpCodes.Ldloc_2),
+				new(OpCodes.Call, AccessTools.PropertyGetter(typeof(CoreGameManager), "Instance")),
+				new(OpCodes.Callvirt, AccessTools.Method("CoreGameManager:Seed")),
+				new(OpCodes.Ldloc_2),
+				new(CodeInstruction.LoadField(typeof(LevelBuilder), "seedOffset")),
+				new(OpCodes.Add),
+				new(OpCodes.Newobj, AccessTools.Constructor(typeof(System.Random), [typeof(int)])),
+				new(CodeInstruction.StoreField(typeof(LevelBuilder), "controlledRNG"))
+				).Advance(1)
+			.InsertAndAdvance(Transpilers.EmitDelegate(SkipRngs))
+
 			.InstructionEnumeration();
 
 		public static LevelGenerator i; // Note: this is gonna be the main generator patch to get this variable
 
+		static void SkipRngs()
+		{
+			if (i == null || Singleton<CoreGameManager>.Instance.Seed() >= 0) return;
+
+			int amount = i.controlledRNG.Next(2, 10);
+			for (int a = 0; a < amount; a++)
+				i.controlledRNG.Next();
+		}
 
 		static void ExecutePostRoomTasks()
 		{

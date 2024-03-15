@@ -16,5 +16,7 @@ namespace BBTimes.CustomComponents.CustomDatas
         }
 
 		public virtual void SetupPrefab() { }
+
+		protected virtual void Start() { } // In case of.. uh some setup in the beginning
     }
 }

@@ -146,7 +146,10 @@ namespace BBTimes.Manager
 			AddRule("gumming", "principal_nospittinggums.wav", "Vfx_PRI_NoGumming");
 
 
-
+			// Math Machine WOOOOW noises
+			MathMachinePatches.aud_BalWow = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Wow.wav")), "Vfx_Bal_WOW", SoundType.Voice, Color.green);
+			FieldTripManagerPatch.fieldTripYay = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "MUS_FieldTripWin.wav")), string.Empty, SoundType.Music, Color.white);
+			FieldTripManagerPatch.fieldTripYay.subtitle = false; // Of course
 
 
 
