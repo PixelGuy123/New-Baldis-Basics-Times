@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection.Emit;
+using System.Reflection;
 
 namespace BBTimes.ModPatches.NpcPatches
 {
-	[HarmonyPatch(typeof(Principal), "Scold")]
+	[HarmonyPatch(typeof(Principal))]
 	internal class PrincipalPatches
 	{
+		[HarmonyPatch("Scold")]
 		[HarmonyPrefix]
 		private static bool CustomScold(AudioManager ___audMan, string brokenRule)
 		{
@@ -28,11 +30,9 @@ namespace BBTimes.ModPatches.NpcPatches
 
 		[HarmonyPatch("WhistleChance")]
 		[HarmonyPrefix]
-		private static void GetI(Principal __instance, ref AudioManager ___audMan)
-		{
+		private static void GetI(Principal __instance) =>
 			i = __instance;
-			man = ___audMan;
-		}
+		
 
 		[HarmonyPatch("WhistleChance")]
 		[HarmonyTranspiler]
@@ -47,9 +47,9 @@ namespace BBTimes.ModPatches.NpcPatches
 				)
 			.InsertAndAdvance(Transpilers.EmitDelegate(() =>
 			{
-				if (i == null || man == null) return;
+				if (i == null) return;
 
-				i.Navigator.Entity.StartCoroutine(Animation(i, man));
+				i.Navigator.Entity.StartCoroutine(Animation(i, (AudioManager)audMan.GetValue(i)));
 			}))
 			.InstructionEnumeration();
 
@@ -102,6 +102,37 @@ namespace BBTimes.ModPatches.NpcPatches
 
 		static Principal i;
 
-		static AudioManager man;
+		readonly static FieldInfo audTimes = AccessTools.Field(typeof(Principal), "audTimes");
+		readonly static FieldInfo audScolds = AccessTools.Field(typeof(Principal), "audScolds");
+		readonly static FieldInfo audDetention = AccessTools.Field(typeof(Principal), "audDetention");
+		readonly static FieldInfo audMan = AccessTools.Field(typeof(Principal), "audMan");
+
+
+
+		[HarmonyPatch(typeof(Principal_ChasingNpc), "OnStateTriggerStay")]
+		[HarmonyPrefix]
+		static bool ActualNPCDetention(Collider other, ref NPC ___targetedNpc, ref Principal ___principal)
+		{
+			if (other.transform == ___targetedNpc.transform)
+			{
+				int num = Random.Range(0, ___principal.ec.offices.Count); // Stuff from the method itself
+				___targetedNpc.transform.position = ___principal.ec.offices[num].RandomEntitySafeCellNoGarbage().CenterWorldPosition;
+				___targetedNpc.SentToDetention();
+
+				// Actual detention below
+				var scolds = (SoundObject[])audScolds.GetValue(___principal);
+				var times = (SoundObject[])audTimes.GetValue(___principal);
+				var detention = (SoundObject)audDetention.GetValue(___principal);
+
+				___principal.transform.position = ___principal.ec.offices[num].RandomEntitySafeCellNoGarbage().CenterWorldPosition;
+				var man = (AudioManager)audMan.GetValue(___principal);
+				man.QueueAudio(times[0]);
+				man.QueueAudio(detention);
+				man.QueueAudio(scolds[Random.Range(0, scolds.Length)]);
+				___principal.behaviorStateMachine.ChangeState(new Principal_Detention(___principal, 3f));
+
+			}
+			return false;
+		}
 	}
 }

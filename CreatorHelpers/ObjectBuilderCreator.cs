@@ -26,7 +26,7 @@ namespace BBTimes.Helpers
 
 		public static O CreateObjectBuilder<O>(string obstacleName = null) where O : ObjectBuilder
 		{
-			var obj = new GameObject(obstacleName).AddComponent<O>();
+			var obj = new GameObject(obstacleName ?? typeof(O).Name).AddComponent<O>();
 
 			if (obstacleName != null)
 				obj.obstacle = EnumExtensions.ExtendEnum<Obstacle>(obstacleName);

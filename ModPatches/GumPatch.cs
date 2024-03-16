@@ -22,7 +22,7 @@ namespace BBTimes.ModPatches
 			{
 				__instance.Hide();
 				var gum = Instantiate(gumSplash);
-				gum.transform.position = hit.transform.position - __instance.transform.forward * 0.01f;
+				gum.transform.position = hit.transform.position - __instance.transform.forward * 0.03f;
 				gum.transform.rotation = Quaternion.Euler(0f, (__instance.transform.rotation.eulerAngles.y + 180f) % 360f, 0f); // Quaternion.Inverse doesn't reverse y with 180 and 0 angles. Wth
 				gum.transform.localScale = Vector3.zero;
 				gum.gameObject.SetActive(true);

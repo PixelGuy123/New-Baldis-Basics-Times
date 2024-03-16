@@ -3,19 +3,15 @@ using BBTimes.CreatorHelpers;
 using BBTimes.CustomContent.RoomFunctions;
 using System.IO;
 using UnityEngine;
-using HarmonyLib;
-using System.Reflection;
-using System.Collections.Generic;
 using MTM101BaldAPI;
 using System.Linq;
+using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Plugin;
 
 namespace BBTimes.Manager
 {
 	internal static partial class BBTimesManager
 	{
-		static FieldInfo _room_functions = AccessTools.Field(typeof(RoomFunctionContainer), "functions");
-
-		static FieldInfo _chalkBoardFunction_chalkBoards = AccessTools.Field(typeof(ChalkboardBuilderFunction), "chalkBoards");
 		static void CreateRoomFunctions()
 		{
 			// Random Window Function for cafe
@@ -29,6 +25,14 @@ namespace BBTimes.Manager
 
 			AddFunctionToEveryRoom<RandomPosterFunction>("Class").posters = poster;
 			AddFunctionToEveryRoom<RandomPosterFunction>("Office").posters = poster;
+
+			// High ceiling function
+			var highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>("Cafeteria");
+			highCeil.height = 5;
+			highCeil.customCeiling = ObjectCreationExtension.blackTex;
+			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "rooms", "Cafeteria", "wallFadeInBlack.png"))];
+			highCeil.chanceToHappen = 0.7f;
+			highCeil.customLight = man.Get<GameObject>("prefab_cafeHangingLight").transform;
 
 
 			static R AddFunctionToEveryRoom<R>(string prefix) where R : RoomFunction

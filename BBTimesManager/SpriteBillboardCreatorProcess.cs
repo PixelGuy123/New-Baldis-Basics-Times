@@ -21,7 +21,9 @@ namespace BBTimes.Manager
 			var obj = Instantiate(man.Get<GameObject>("SpriteBillboardTemplate"));
 			var comp = obj.GetComponent<SpriteRenderer>();
 			comp.sprite = sprite;
-			obj.SetActive(false);
+
+			prefabs.Add(obj);
+			
 			DontDestroyOnLoad(obj);
 			obj.name = "SpriteBillboard_" + sprite.name;
 			obj.AddComponent<RendererContainer>().renderers = [comp];
@@ -31,6 +33,7 @@ namespace BBTimes.Manager
 		static GameObject CreateSpriteBillboard(Sprite sprite, float yoffset)
 		{
 			var obj = CreateSpriteBillboard(sprite);
+			prefabs.RemoveAt(prefabs.Count - 1);
 			obj.SetActive(true);
 
 			var parent = new GameObject("SpriteBillBoardHolder_" + sprite.name, typeof(RendererContainer));
@@ -40,6 +43,9 @@ namespace BBTimes.Manager
 			parent.SetActive(false);
 			parent.GetComponent<RendererContainer>().renderers = [obj.GetComponent<SpriteRenderer>()];
 			parent.layer = LayerMask.NameToLayer("Billboard");
+
+			
+			prefabs.Add(parent);
 
 			return parent;
 		}

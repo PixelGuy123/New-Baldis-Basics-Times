@@ -65,9 +65,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					{
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
-						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * 4.99f) + (Vector3.up * t.CenterWorldPosition.y * i);
+						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * (BBTimesManager.TileBaseOffset / 2f - 0.01f)) + (Vector3.up * BBTimesManager.TileBaseOffset * i);
 						// t.AddRenderer(p.GetComponent<MeshRenderer>()); // Should keep this on. Because the render is messed up outside school
-						p.SetActive(true);
 					}
 				}
 
@@ -98,13 +97,11 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					for (int i = 0; i < amount; i++)
 					{
 						var d = Instantiate(decorations[rng.Next(decorations.Length)], planeCover.transform);
-						d.SetActive(true);
 						d.transform.localPosition = t.FloorWorldPosition + new Vector3((float)rng.NextDouble() * 2f - 1, 0f, (float)rng.NextDouble() * 2f - 1);
 						d.GetComponent<RendererContainer>().renderers.Do(t.AddRenderer); // I didn't know this was valid syntax, thanks compiler!
 					}
 				}
 
-				p.SetActive(true);
 
 				t.AddRenderer(p.GetComponent<MeshRenderer>());
 			}
@@ -130,7 +127,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						p.transform.localRotation = dir.ToRotation();
 						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * 5f);
 						t.AddRenderer(p.GetComponent<MeshRenderer>());
-						p.SetActive(true);
+						//p.SetActive(true);
 					}
 				}
 			}
@@ -141,7 +138,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 
 			end:
-			Destroy(plane); // Not needed anymore
+			Destroy(plane);
 
 
 		}

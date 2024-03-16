@@ -18,13 +18,14 @@ namespace BBTimes.ModPatches
 
 		static IEnumerator WaitForAudioPlay(AudioSource source)
 		{
-			while (!Singleton<MusicManager>.Instance.MidiPlaying) yield return null; // Awaits to play music so it can then wait to stop
-			while (Singleton<MusicManager>.Instance.MidiPlaying) yield return null;
+			yield return new WaitForSeconds(seconds); // Music manager makes this pain
 
 			source.PlayOneShot(aud_welcome);
 
 			yield break;
 		}
+
+		const int seconds = 4;
 
 		public static Sprite mainMenu;
 

@@ -12,6 +12,7 @@ using HarmonyLib;
 using BBTimes.Manager.SelectionHolders;
 using BBTimes.ModPatches;
 using BBTimes.ModPatches.NpcPatches;
+using System.Reflection;
 
 namespace BBTimes.Manager
 {
@@ -62,17 +63,27 @@ namespace BBTimes.Manager
 			tex.Apply();
 			ObjectCreationExtension.transparentTex = tex;
 
+			// Make a black texture
+			tex = new Texture2D(256, 256);
+			c = new Color[tex.width * tex.height];
+			for (int i = 0; i < c.Length; i++)
+				c[i] = new(0f, 0f, 0f, 1f);
+			tex.SetPixels(c);
+			tex.Apply();
+			ObjectCreationExtension.blackTex = tex;
+
 			// Base plane for easy.. quads
 			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			var renderer = basePlane.GetComponent<MeshRenderer>();
 			renderer.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase");
 			Object.DontDestroyOnLoad(basePlane);
-			basePlane.SetActive(false);
 			basePlane.transform.localScale = Vector3.one * 10f; // Gives the tile size
 			basePlane.name = "PlaneTemplate";
 			renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			renderer.receiveShadows = false;
 			man.Add("PlaneTemplate", basePlane);
+
+			prefabs.Add(basePlane);
 
 			// Grass texture
 			man.Add("Tex_Grass", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Grass"));
@@ -86,10 +97,11 @@ namespace BBTimes.Manager
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			baseSprite.receiveShadows = false;			
 
-			baseSprite.gameObject.SetActive(false);
 			baseSprite.gameObject.layer = billboardLayer;
 			Object.DontDestroyOnLoad(baseSprite.gameObject);
 			man.Add("SpriteBillboardTemplate", baseSprite.gameObject);
+
+			prefabs.Add(baseSprite.gameObject);
 
 			// Sprite Non-Billboard object
 
@@ -99,10 +111,11 @@ namespace BBTimes.Manager
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			baseSprite.receiveShadows = false;
 
-			baseSprite.gameObject.SetActive(false);
 			baseSprite.gameObject.layer = billboardLayer;
 			Object.DontDestroyOnLoad(baseSprite.gameObject);
 			man.Add("SpriteNoBillboardTemplate", baseSprite.gameObject);
+
+			prefabs.Add(baseSprite.gameObject);
 
 			// Setup Window hit audio
 
@@ -111,7 +124,6 @@ namespace BBTimes.Manager
 			// Setup Gum animation
 			var gumHolder = new GameObject("gumSplash");
 			var gum = Object.Instantiate(man.Get<GameObject>("SpriteNoBillboardTemplate")); // front of the gum
-			gum.SetActive(true);
 			gum.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "gumSplash.png"))
 				, 25f);
@@ -120,7 +132,6 @@ namespace BBTimes.Manager
 			gum.transform.localPosition = Vector3.zero;
 
 			gum = Object.Instantiate(man.Get<GameObject>("SpriteNoBillboardTemplate")); // Back of the gum
-			gum.SetActive(true);
 			gum.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "gumSplash_back.png"))
 				, 25f);
@@ -133,6 +144,8 @@ namespace BBTimes.Manager
 			GumSplash.gumSplash = gumHolder.transform;
 
 			GumSplash.splash = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "gumSplash.wav")), "Vfx_GumSplash", SoundType.Voice, new(0.99609f, 0, 0.99609f));
+
+			prefabs.Add(gumHolder);
 
 
 			// Fog music change
@@ -153,12 +166,35 @@ namespace BBTimes.Manager
 
 			// Cloudy Copter PAH
 			CloudyCopterPatch.aud_PAH = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Cloudy Copter", "CC_PAH.wav")), "Vfx_Cumulo_PAH", SoundType.Voice, Color.white);
+			FieldInfo minDistance = AccessTools.Field(typeof(PropagatedAudioManager), "minDistance");
+			FieldInfo maxDistance = AccessTools.Field(typeof(PropagatedAudioManager), "maxDistance");
+
+			Resources.FindObjectsOfTypeAll<Cumulo>().Do((x) =>
+			{
+				var audman = x.gameObject.AddComponent<PropagatedAudioManager>();
+				minDistance.SetValue(audman, 15f);
+				maxDistance.SetValue(audman, 45f);
+			});
 
 			// Main Menu Stuff
 			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "mainMenu.png")), 1f);
 			MainMenuPatch.aud_welcome = AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav"));
 
+			// Hanging ceiling light for cafeteria
+			var hangingLightHolder = new GameObject("HugeHangingCeilingLight");
+			var hangingLight = Object.Instantiate(man.Get<GameObject>("SpriteBillboardTemplate"), hangingLightHolder.transform);
 
+			hangingLight.transform.localPosition = Vector3.up * 40f;
+			hangingLight.transform.localScale = Vector3.one * 1.4f;
+			hangingLight.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cafeHangingLight.png")), 25f);
+
+			hangingLightHolder.SetActive(false);
+			Object.DontDestroyOnLoad(hangingLightHolder);
+
+
+
+			prefabs.Add(hangingLightHolder);
+			man.Add("prefab_cafeHangingLight", hangingLightHolder);
 
 
 
@@ -178,6 +214,10 @@ namespace BBTimes.Manager
 		public static string CurrentFloor => Singleton<CoreGameManager>.Instance.sceneObject.levelTitle ?? "None";
 
 		public static FloorData CurrentFloorData => floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
+
+		internal const float TileBaseOffset = 10f;
+
+		readonly internal static List<GameObject> prefabs = [];
 
 		
 

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BBTimes.Manager;
+using HarmonyLib;
 
 namespace BBTimes.ModPatches.GeneratorPatches
 {
@@ -9,8 +10,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		[HarmonyPostfix]
 		private static void PostGen(BaseGameManager __instance)
 		{
-			
-
+			BBTimesManager.prefabs.ForEach(x => x.SetActive(false));
 		}
 	}
 }

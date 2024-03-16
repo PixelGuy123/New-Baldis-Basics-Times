@@ -1,10 +1,8 @@
 ﻿using BBTimes.Extensions;
+using BBTimes.Manager;
 using HarmonyLib;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using UnityEngine;
 
 namespace BBTimes.ModPatches.GeneratorPatches
 {
@@ -12,7 +10,11 @@ namespace BBTimes.ModPatches.GeneratorPatches
 	public class PostRoomCreation
 	{
 		[HarmonyPatch("StartGenerate")]
-		private static void Prefix(LevelGenerator __instance) => i = __instance;
+		private static void Prefix(LevelGenerator __instance)
+		{
+			i = __instance;
+			BBTimesManager.prefabs.ForEach(x => x.SetActive(true)); // Makes those prefabs enable
+		}
 
 		[HarmonyPatch("Generate", MethodType.Enumerator)]
 		private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) => // Basically make windows spawn facing outside the school (REMINDER IT MUST BE UNBREAKABLE FOR AN OBVIOUS REASON)
