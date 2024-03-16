@@ -96,7 +96,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			vp.enabled = true;
 			vp.zMultiplier = -4f;
 			vp.yMultiplier = -24f;
-			vp.radialMultiplier = 6f;
+			vp.radialMultiplier = 1.5f;
 
 			var vs = particle.rotationBySpeed;
 			vs.enabled = true;

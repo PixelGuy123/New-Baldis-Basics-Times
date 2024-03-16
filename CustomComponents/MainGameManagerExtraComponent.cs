@@ -10,8 +10,5 @@ namespace BBTimes.CustomComponents
 
 		[SerializeField]
 		public Color outsideLighting = Color.white;
-
-		[SerializeField]
-		public Cubemap mapForToday;
 	}
 }

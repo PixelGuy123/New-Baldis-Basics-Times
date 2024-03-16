@@ -1,8 +1,4 @@
-﻿using BBTimes.CustomComponents;
-using BBTimes.Extensions.ObjectCreationExtensions;
-using BBTimes.Plugin;
-using HarmonyLib;
-using UnityEngine;
+﻿using HarmonyLib;
 
 namespace BBTimes.ModPatches.GeneratorPatches
 {
@@ -13,9 +9,6 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		[HarmonyPostfix]
 		private static void PostGen(BaseGameManager __instance)
 		{
-			var comp = __instance.GetComponent<MainGameManagerExtraComponent>();
-			if (BooleanStorage.SkyboxOverride)
-				Shader.SetGlobalTexture("_Skybox", comp == null || comp.mapForToday == null ? ObjectCreationExtension.defaultCubemap : comp.mapForToday);
 			
 
 		}

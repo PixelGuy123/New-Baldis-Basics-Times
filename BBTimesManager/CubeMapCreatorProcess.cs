@@ -16,25 +16,25 @@ namespace BBTimes.Manager
 
 
 			// Add lightings outside for GameManagers
-			foreach (var man in Resources.FindObjectsOfTypeAll<MainGameManager>())
+			foreach (var man in Resources.FindObjectsOfTypeAll<SceneObject>())
 			{
-				var comp = man.GetComponent<MainGameManagerExtraComponent>();
-
-				if (man.name.StartsWith("Lvl1"))
+				var comp = man.manager.GetComponent<MainGameManagerExtraComponent>();
+				if (comp == null) continue;
+				//if (man.levelTitle == "F1") By default, it's the *default* cube map
+				//{
+				//	comp.mapForToday = ObjectCreationExtension.defaultCubemap;
+				//	continue;
+				//}
+				if (man.levelTitle == "F2")
 				{
-					comp.mapForToday = ObjectCreationExtension.defaultCubemap;
+					comp.outsideLighting = new Color(0.7f, 0.7f, 0.7f, 1f);
+					man.skybox = F2Map;
 					continue;
 				}
-				if (man.name.StartsWith("Lvl2"))
+				if (man.levelTitle == "F3")
 				{
-					comp.outsideLighting = new Color(0.5f, 0.5f, 0.5f, 1f);
-					comp.mapForToday = F2Map;
-					continue;
-				}
-				if (man.name.StartsWith("Lvl3"))
-				{
-					comp.mapForToday = F3Map; // Temporary!
-					comp.outsideLighting = new Color(0.25f, 0.25f, 0.25f, 1f);
+					man.skybox = F3Map;
+					comp.outsideLighting = new Color(0.45f, 0.45f, 0.45f, 1f);
 					continue;
 				}
 			}
