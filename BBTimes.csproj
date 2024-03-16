@@ -38,6 +38,9 @@
     <Reference Include="Unity.TextMeshPro">
       <HintPath>Dependencies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Dependencies\UnityEngine.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   
   <ItemGroup>

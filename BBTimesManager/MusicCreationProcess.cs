@@ -6,6 +6,7 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using System.IO;
 using UnityEngine;
+using System;
 
 namespace BBTimes.Manager
 {
@@ -14,28 +15,34 @@ namespace BBTimes.Manager
 		static void GetMusics()
 		{
 			// ******************* Sfs ********************
-			AddSf("GS_Wavetable_Synth.sf2");
+			Directory.GetFiles(Path.Combine(MiscPath, SfsFolder)).Do(sf => MidiPlayerGlobal.MPTK_LoadLiveSF("file://" + Path.GetFullPath(sf))); // One liner aswell
 
 			// ************************ Musics **************************
 
-			string midi = AddMidi("mus_NewSchool.midi");
-			floorDatas[0].MidiFiles.Add(midi);
-			midi = AddMidi("mus_NewSchool1.mid");
-			floorDatas[0].MidiFiles.Add(midi);
-			floorDatas[3].MidiFiles.Add(midi);
-			midi = AddMidi("mus_NewSchool2.mid");
-			floorDatas[2].MidiFiles.Add(midi);
-			midi = AddMidi("mus_NewSchool3.mid");
-			floorDatas[2].MidiFiles.Add(midi);
-			midi = AddMidi("mus_NewSchool4.mid");
-			floorDatas[3].MidiFiles.Add(midi);
-			floorDatas[1].MidiFiles.Add(midi);
-			midi = AddMidi("mus_NewSchool5.mid");
-			floorDatas[1].MidiFiles.Add(midi);
+			foreach(var music in Directory.GetFiles(Path.Combine(MiscPath, AudioFolder, "School")))
+			{
+				string[] names = Path.GetFileNameWithoutExtension(music).Split('_');
+				string fullPath = Path.GetFullPath(music);
+				var m = AssetLoader.MidiFromFile(fullPath, names[0]);
+				for (int i = 1; i < names.Length; i++)
+				{
+					switch (names[i])
+					{
+						case "F1": floorDatas[0].MidiFiles.Add(m); break;
+						case "F2": floorDatas[1].MidiFiles.Add(m); break;
+						case "F3": floorDatas[2].MidiFiles.Add(m); break;
+						case "END": floorDatas[3].MidiFiles.Add(m); break;
+						default: break;
+					}
+				}
+				
+			}
 
 			// *********** Elevator musics **********
 
-			ElevatorScreenPatch.elevatorMidis.Add(AddMidi("mus_el_1.mid"));
+			Directory.GetFiles(Path.Combine(MiscPath, AudioFolder, "Elevator")).Do(audio => 
+			ElevatorScreenPatch.elevatorMidis.Add(AssetLoader.MidiFromFile(Path.GetFullPath(audio), Path.GetFileNameWithoutExtension(audio)))); // One liner basically
+			
 
 			//  ************************ Base Game Manager changes ******************************
 			var fieldInfo = AccessTools.Field(typeof(MainGameManager), "allNotebooksNotification");
@@ -79,11 +86,6 @@ namespace BBTimes.Manager
 					continue;
 				}
 			}
-
-			// *********** Local Methods ***********
-			static string AddMidi(string midiFileName) => AssetLoader.MidiFromFile(Path.Combine(MiscPath, AudioFolder, midiFileName), Path.GetFileNameWithoutExtension(midiFileName));
-
-			static void AddSf(string sfFileName) => MidiPlayerGlobal.MPTK_LoadLiveSF("file://" + Path.Combine(MiscPath, SfsFolder, sfFileName));
 		}
 	}
 }

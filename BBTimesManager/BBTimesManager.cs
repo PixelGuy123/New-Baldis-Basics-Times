@@ -151,6 +151,15 @@ namespace BBTimes.Manager
 			FieldTripManagerPatch.fieldTripYay = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "MUS_FieldTripWin.wav")), string.Empty, SoundType.Music, Color.white);
 			FieldTripManagerPatch.fieldTripYay.subtitle = false; // Of course
 
+			// Cloudy Copter PAH
+			CloudyCopterPatch.aud_PAH = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Cloudy Copter", "CC_PAH.wav")), "Vfx_Cumulo_PAH", SoundType.Voice, Color.white);
+
+			// Main Menu Stuff
+			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "mainMenu.png")), 1f);
+			MainMenuPatch.aud_welcome = AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav"));
+
+
+
 
 
 			// Local Methods
