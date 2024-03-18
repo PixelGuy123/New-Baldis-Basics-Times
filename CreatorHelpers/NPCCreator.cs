@@ -18,7 +18,7 @@ namespace BBTimes.Helpers
 		readonly static FieldInfo _npc_ignoreBelts = AccessTools.Field(typeof(NPC), "ignoreBelts");
 		readonly static FieldInfo _npc_poster = AccessTools.Field(typeof(NPC), "poster");
 
-		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false) where T : NPC where C : CustomNPCData
+		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue) where T : NPC where C : CustomNPCData
 		{
 			var sprites = GetAllNpcSpritesFrom(name);
 			var npc = ObjectCreators.CreateNPC<T>(name, EnumExtensions.ExtendEnum<Character>(name), ObjectCreators.CreateCharacterPoster(sprites[0].texture, posterNameKey, posterDescKey), !disableLooker, usesHeatMap, hasTrigger, audioMinDistance, audioMaxDistance, rooms);
@@ -30,6 +30,8 @@ namespace BBTimes.Helpers
 			_npc_ignoreBelts.SetValue(npc, ignoreBelts);
 
 			npc.spriteBase.transform.position += Vector3.up * spriteYOffset;
+
+			npc.looker.distance = lookerDistance;
 
 			var data = npc.gameObject.AddComponent<C>();
 			
@@ -44,8 +46,8 @@ namespace BBTimes.Helpers
 			return npc;
 		}
 
-		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false) where T : NPC where C : CustomNPCData =>
-			CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset, true, usesHeatMap, hasTrigger, ignoreBelts);
+		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue) where T : NPC where C : CustomNPCData =>
+			CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset, true, usesHeatMap, hasTrigger, ignoreBelts, lookerDistance);
 
 		public static T InstantiateRuntimeNPC<T>(this T npc, EnvironmentController ec, IntVector2 pos, Vector3 offset) where T : NPC
 		{
@@ -147,17 +149,18 @@ namespace BBTimes.Helpers
 			// The rest (which also follows up a pattern)
 			int z = 2;
 
-			for (int i = 0; i < files.Length; i++)
-			{
-				if (repeatedOnes.Contains(files[i])) continue; // Skip repeated ones
+				for (int i = 0; i < files.Length; i++)
+				{
+					if (repeatedOnes.Contains(files[i])) continue; // Skip repeated ones
 
-				ar = Path.GetFileNameWithoutExtension(files[i]).Split('_');
-				tex = AssetLoader.TextureFromFile(files[i]);
-				sprs[z] = AssetLoader.SpriteFromTexture2D(tex, new((float)tex.width / 2 / tex.width, (float)tex.height / 2 / tex.height), float.Parse(ar[1]));
-				sprs[z].name = ar[0];
-				repeatedOnes[z] = files[i];
-				z++; // Increment by 1
-			}
+					ar = Path.GetFileNameWithoutExtension(files[i]).Split('_');
+					tex = AssetLoader.TextureFromFile(files[i]);
+					sprs[z] = AssetLoader.SpriteFromTexture2D(tex, new((float)tex.width / 2 / tex.width, (float)tex.height / 2 / tex.height), float.Parse(ar[1]));
+					sprs[z].name = ar[0];
+					repeatedOnes[z] = files[i];
+					z++; // Increment by 1
+				}
+			
 
 			return sprs;
 		}

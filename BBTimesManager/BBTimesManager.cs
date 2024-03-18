@@ -12,6 +12,7 @@ using HarmonyLib;
 using BBTimes.Manager.SelectionHolders;
 using BBTimes.ModPatches;
 using BBTimes.ModPatches.NpcPatches;
+using BBTimes.Extensions.ComponentCreationExtensions;
 using System.Reflection;
 
 namespace BBTimes.Manager
@@ -77,10 +78,12 @@ namespace BBTimes.Manager
 			var renderer = basePlane.GetComponent<MeshRenderer>();
 			renderer.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase");
 			Object.DontDestroyOnLoad(basePlane);
-			basePlane.transform.localScale = Vector3.one * 10f; // Gives the tile size
+			basePlane.transform.localScale = Vector3.one * TileBaseOffset; // Gives the tile size
 			basePlane.name = "PlaneTemplate";
 			renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			renderer.receiveShadows = false;
+			renderer.rayTracingMode = UnityEngine.Experimental.Rendering.RayTracingMode.Off;
+			renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
 			man.Add("PlaneTemplate", basePlane);
 
 			prefabs.Add(basePlane);
@@ -163,18 +166,12 @@ namespace BBTimes.Manager
 			MathMachinePatches.aud_BalWow = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Wow.wav")), "Vfx_Bal_WOW", SoundType.Voice, Color.green);
 			FieldTripManagerPatch.fieldTripYay = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "MUS_FieldTripWin.wav")), string.Empty, SoundType.Music, Color.white);
 			FieldTripManagerPatch.fieldTripYay.subtitle = false; // Of course
+			
 
 			// Cloudy Copter PAH
 			CloudyCopterPatch.aud_PAH = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Cloudy Copter", "CC_PAH.wav")), "Vfx_Cumulo_PAH", SoundType.Voice, Color.white);
-			FieldInfo minDistance = AccessTools.Field(typeof(PropagatedAudioManager), "minDistance");
-			FieldInfo maxDistance = AccessTools.Field(typeof(PropagatedAudioManager), "maxDistance");
 
-			Resources.FindObjectsOfTypeAll<Cumulo>().Do((x) =>
-			{
-				var audman = x.gameObject.AddComponent<PropagatedAudioManager>();
-				minDistance.SetValue(audman, 15f);
-				maxDistance.SetValue(audman, 45f);
-			});
+			Resources.FindObjectsOfTypeAll<Cumulo>().Do(x => x.gameObject.CreateAudioManager(25, 45));
 
 			// Main Menu Stuff
 			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "mainMenu.png")), 1f);
@@ -195,6 +192,51 @@ namespace BBTimes.Manager
 
 			prefabs.Add(hangingLightHolder);
 			man.Add("prefab_cafeHangingLight", hangingLightHolder);
+
+			// Math Machine new Nums
+			FieldInfo nums = AccessTools.Field(typeof(MathMachine), "numberPres");
+			FieldInfo sprite = AccessTools.Field(typeof(MathMachineNumber), "sprite");
+			FieldInfo value = AccessTools.Field(typeof(MathMachineNumber), "value"); // Setup fields
+			var machines = Resources.FindObjectsOfTypeAll<MathMachine>();
+
+			var numList = (MathMachineNumber[])nums.GetValue(machines[0]);
+			var numPrefab = numList[0];
+			var numTexs = Directory.GetFiles(Path.Combine(BasePlugin.ModPath, "objects", "Math Machine", "newNumBalls")); // Get all the new numballs
+
+			List<MathMachineNumber> numbers = [];
+
+			for (int i = 0; i < numTexs.Length; i++) // Fabricate them
+			{
+				var num = Object.Instantiate(numPrefab);
+				num.GetComponent<Entity>().SetActive(false);
+				num.gameObject.layer = iClickableLayer;
+				((Transform)sprite.GetValue(num)).GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(numTexs[i]), 30f);
+				value.SetValue(num, int.Parse(Path.GetFileNameWithoutExtension(numTexs[i]).Split('_')[1]));
+				num.gameObject.SetActive(false);
+				num.name = "NumBall_" + value.GetValue(num);
+				Object.DontDestroyOnLoad(num);
+				numbers.Add(num);
+			}
+
+			
+
+			machines.Do((x) => // Now just put them to every machine
+			{
+				var numList = (MathMachineNumber[])nums.GetValue(machines[0]);
+				numList = numList.AddRangeToArray([.. numbers]);
+				nums.SetValue(x, numList);
+			});
+
+			floorDatas[1].MathNumberAmount = new(9, 12);
+			floorDatas[2].MathNumberAmount = new(12, 18);
+			floorDatas[3].MathNumberAmount = new(9, 14);
+
+			// Math Number explode sprite
+			BalloonAndNumberBalloonPatch.explodeVisual = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "Math Machine", "balExplode.png")), 30f);
+
+			// LITERALLY an empty object. Can be used for stuff like hiding those lightPre for example
+			EmptyGameObject = new("NullObject");
+			Object.DontDestroyOnLoad(EmptyGameObject);
 
 
 
@@ -218,6 +260,8 @@ namespace BBTimes.Manager
 		internal const float TileBaseOffset = 10f;
 
 		readonly internal static List<GameObject> prefabs = [];
+
+		public static GameObject EmptyGameObject;
 
 		
 
@@ -264,5 +308,7 @@ namespace BBTimes.Manager
 
 		readonly List<WindowObjectHolder> _windowObjects = [];
 		public List<WindowObjectHolder> WindowObjects => _windowObjects;
+
+		public MinMax MathNumberAmount = new(9, 9); // Default
 	}
 }

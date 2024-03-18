@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using MTM101BaldAPI.AssetTools;
 using BBTimes.CustomComponents.CustomDatas;
+using BBTimes.Extensions;
 
 
 namespace BBTimes.Plugin
@@ -122,6 +123,9 @@ namespace BBTimes.Plugin
 					ld.specialRoomsStickToEdge = false;
 					ld.maxLightDistance += 5;
 					ld.standardLightStrength -= 2;
+					ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. Resources.FindObjectsOfTypeAll<RoomAsset>() // Playground in F3
+						.Where(x => x.name.StartsWith("Playground"))
+						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
 					return;
 				}
 

@@ -2,7 +2,7 @@
 using UnityEngine;
 using BBTimes.Manager;
 
-namespace BBTimes.CustomContent.Items
+namespace BBTimes.CustomContent.CustomItems
 {
     public class Hammer : Item
     {

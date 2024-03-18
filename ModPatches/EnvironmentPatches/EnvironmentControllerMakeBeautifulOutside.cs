@@ -57,11 +57,11 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				if (dirs.Count == 0) continue;
 
-				int max = lastFloor ? 3 : 10;
+				int max = lastFloor ? 3 : 8;
 
 				foreach (var dir in dirs)
 				{
-					for (int i = isFirstFloor ? 0 : -10; i <= max; i++)
+					for (int i = isFirstFloor ? 0 : -8; i <= max; i++)
 					{
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();

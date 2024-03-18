@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace BBTimes.CustomComponents.CustomDatas
+﻿namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class OfficeChairCustomData : CustomNPCData
 	{

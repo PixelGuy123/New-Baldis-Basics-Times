@@ -1,5 +1,5 @@
 ﻿using BBTimes.CustomComponents.CustomDatas;
-using BBTimes.CustomContent.Items;
+using BBTimes.CustomContent.CustomItems;
 using BBTimes.Extensions;
 using BBTimes.Helpers;
 using BepInEx;
@@ -17,7 +17,7 @@ namespace BBTimes.Manager
 			// 3 - END
 			ItemObject item;
 			// Hammer
-			item = CreatorExtensions.CreateItem<Hammer, CustomItemData>("Hammer", "HAM_Name", "HAM_Desc", 25, 30).AddMeta(plug, ItemFlags.NoUses).value;
+			item = CreatorExtensions.CreateItem<Hammer, CustomItemData>("Hammer", "HAM_Name", "HAM_Desc", 25, 30).AddMeta(plug, ItemFlags.None).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 45});
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });

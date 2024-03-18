@@ -29,6 +29,33 @@ namespace BBTimes.Extensions
 			return false;
 		}
 
+		public static IEnumerable<C> ConvertAll<T, C>(this IEnumerable<T> sequence, Func<T, C> func)
+		{
+			foreach (var item in sequence)
+				yield return func(item);
+		}
+
+		public static CodeMatcher CustomAction(this CodeMatcher m, Action<CodeMatcher> a)
+		{
+			a(m);
+			return m;
+		}
+
+		public static CodeMatcher DebugLogAllInstructions(this CodeMatcher m)
+		{
+			if (m.Pos < 0)
+				m.Start();
+			if (m.IsInvalid)
+			{
+				m.Start();
+				return m;
+			}
+
+			Debug.Log($"{m.Pos}: {m.Opcode} >> {m.Operand}");
+			m.Advance(1);
+			return DebugLogAllInstructions(m);
+		}
+
 		public static List<Transform> AllChilds(this Transform transform)
 		{
 			List<Transform> cs = [];
@@ -38,7 +65,7 @@ namespace BBTimes.Extensions
 			return cs;
 		}
 
-		public static void ForceBuildWindow(this EnvironmentController ec, Cell tile, Direction dir, WindowObject wObject)
+		public static Window ForceBuildWindow(this EnvironmentController ec, Cell tile, Direction dir, WindowObject wObject)
 		{
 			if (ec.ContainsCoordinates(tile.position + dir.ToIntVector2()))
 			{
@@ -57,7 +84,9 @@ namespace BBTimes.Extensions
 				cell.HardCoverWall(dir.GetOpposite(), true);
 				window.transform.position = tile.FloorWorldPosition;
 				window.transform.rotation = dir.ToRotation();
+				return window;
 			}
+			return null;
 		}
 
 		public static List<Cell> AllExistentCells(this EnvironmentController ec)

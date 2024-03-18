@@ -7,6 +7,7 @@ using MTM101BaldAPI;
 using System.Linq;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Plugin;
+using HarmonyLib;
 
 namespace BBTimes.Manager
 {
@@ -31,8 +32,18 @@ namespace BBTimes.Manager
 			highCeil.height = 5;
 			highCeil.customCeiling = ObjectCreationExtension.blackTex;
 			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "rooms", "Cafeteria", "wallFadeInBlack.png"))];
-			highCeil.chanceToHappen = 0.7f;
+			highCeil.chanceToHappen = 0.8f;
 			highCeil.customLight = man.Get<GameObject>("prefab_cafeHangingLight").transform;
+
+			highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>("Library");
+			highCeil.height = 1;
+			highCeil.targetTransformNamePrefix = "Bookshelf";
+			highCeil.targetTransformOffset = 9f;
+			// highCeil.customWallProximityToCeil = [Resources.FindObjectsOfTypeAll<RoomAsset>().First(x => x.name.StartsWith("Library")).wallTex];
+			var libraryTex = Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Wall");
+
+			Resources.FindObjectsOfTypeAll<RoomAsset>().DoIf(x => x.name.StartsWith("Library"), x => x.wallTex = libraryTex);
+
 
 
 			static R AddFunctionToEveryRoom<R>(string prefix) where R : RoomFunction

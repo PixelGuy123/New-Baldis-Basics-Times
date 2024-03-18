@@ -3,6 +3,7 @@ using BBTimes.Manager;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using UnityEngine;
 
 namespace BBTimes.ModPatches.GeneratorPatches
 {
@@ -91,10 +92,15 @@ namespace BBTimes.ModPatches.GeneratorPatches
 
 			foreach (var tile in tiles)
 			{
-				if (i.controlledRNG.NextDouble() >= 0.6f)
+				if (i.controlledRNG.NextDouble() >= 0.9f)
 				{
 					var dir = tile.Value[i.controlledRNG.Next(tile.Value.Length)];
-					ec.ForceBuildWindow(tile.Key, dir, window);
+					var w = ec.ForceBuildWindow(tile.Key, dir, window);
+					if (w != null)
+					{
+						w.aTile.AddRenderer(w.transform.Find("Door_SideA").GetComponent<MeshRenderer>()); // A small optimization
+						w.aTile.AddRenderer(w.transform.Find("Door_SideB").GetComponent<MeshRenderer>());
+					}
 				}
 			}
 
