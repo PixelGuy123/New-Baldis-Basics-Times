@@ -17,8 +17,9 @@ namespace BBTimes.Helpers
 		readonly static FieldInfo _npc_ignorePlayerOnSpawn = AccessTools.Field(typeof(NPC), "ignorePlayerOnSpawn");
 		readonly static FieldInfo _npc_ignoreBelts = AccessTools.Field(typeof(NPC), "ignoreBelts");
 		readonly static FieldInfo _npc_poster = AccessTools.Field(typeof(NPC), "poster");
+		readonly static FieldInfo _nav_avoidRooms = AccessTools.Field(typeof(Navigator), "avoidRooms");
 
-		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue) where T : NPC where C : CustomNPCData
+		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue, bool avoidRooms = true) where T : NPC where C : CustomNPCData
 		{
 			var sprites = GetAllNpcSpritesFrom(name);
 			var npc = ObjectCreators.CreateNPC<T>(name, EnumExtensions.ExtendEnum<Character>(name), ObjectCreators.CreateCharacterPoster(sprites[0].texture, posterNameKey, posterDescKey), !disableLooker, usesHeatMap, hasTrigger, audioMinDistance, audioMaxDistance, rooms);
@@ -33,6 +34,8 @@ namespace BBTimes.Helpers
 
 			npc.looker.distance = lookerDistance;
 
+			_nav_avoidRooms.SetValue(npc.Navigator, avoidRooms);
+
 			var data = npc.gameObject.AddComponent<C>();
 			
 			// Setup for CustomNPCData
@@ -46,7 +49,7 @@ namespace BBTimes.Helpers
 			return npc;
 		}
 
-		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue) where T : NPC where C : CustomNPCData =>
+		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue, bool avoidRooms = true) where T : NPC where C : CustomNPCData =>
 			CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset, true, usesHeatMap, hasTrigger, ignoreBelts, lookerDistance);
 
 		public static T InstantiateRuntimeNPC<T>(this T npc, EnvironmentController ec, IntVector2 pos, Vector3 offset) where T : NPC

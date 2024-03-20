@@ -10,6 +10,9 @@ namespace BBTimes.Extensions
 	{
 
 		static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
+
+		public static bool CompareFloats(this float a, float b) =>
+			Mathf.Abs(a - b) < float.Epsilon;
 		public static void ReplaceAt<T>(this IList<T> list, int index, T replacement)
 		{
 			list.RemoveAt(index);

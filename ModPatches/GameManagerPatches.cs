@@ -1,4 +1,6 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.PlayerComponents;
+using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
@@ -35,10 +37,15 @@ namespace BBTimes.ModPatches
 		private static void BaldiAngerPhase()
 		{
 			var core = Singleton<CoreGameManager>.Instance;
-			if (core.currentMode == Mode.Free)
+			if (core.currentMode == Mode.Free) // no baldi audio
 			{
 				core.audMan.FlushQueue(true);
 				return;
+			}
+			for (int i = 0; i < core.setPlayers; i++)
+			{
+				var cam = core.GetCamera(i);
+				cam.StartCoroutine(cam.GetComponent<CustomPlayerCameraComponent>().fovModifiers.ReverseSlideFOVAnimation(new(), 35f, 5f)); // Animation (weird way, I know)
 			}
 			// Soon....
 		}
