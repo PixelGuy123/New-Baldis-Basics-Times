@@ -6,10 +6,11 @@ using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions.ComponentCreationExtensions;
 using MTM101BaldAPI;
 using System;
+using BBTimes.Misc;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
-	public class VentBuilderCustomData : CustomObjectPrefabData
+    public class VentBuilderCustomData : CustomObjectPrefabData
 	{
 		public override void SetupPrefab()
 		{

@@ -83,8 +83,9 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Exit()
 		{
 			base.Exit();
-			var cells = hh.ec.mainHall.AllEntitySafeCellsNoGarbage();
-			hh.transform.position = cells[Random.Range(0, cells.Count)].CenterWorldPosition;
+			var cells = hh.ec.mainHall.AllTilesNoGarbage(false, false);
+			if (cells.Count > 0)
+				hh.transform.position = cells[Random.Range(0, cells.Count)].CenterWorldPosition;
 			
 		}
 

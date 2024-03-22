@@ -1,10 +1,10 @@
-﻿using BBTimes.CustomComponents.Modifiers;
+﻿using BBTimes.Misc.Modifiers;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.PlayerComponents
 {
-	public class CustomPlayerCameraComponent : MonoBehaviour
+    public class CustomPlayerCameraComponent : MonoBehaviour
 	{
 		private void Awake()
 		{

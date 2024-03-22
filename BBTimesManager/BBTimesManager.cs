@@ -14,6 +14,7 @@ using BBTimes.ModPatches;
 using BBTimes.ModPatches.NpcPatches;
 using BBTimes.Extensions.ComponentCreationExtensions;
 using System.Reflection;
+using BBTimes.Misc;
 
 namespace BBTimes.Manager
 {
@@ -51,9 +52,9 @@ namespace BBTimes.Manager
 		static void SetAssets()
 		{
 			// Some materials
-			ObjectCreationExtension.defaultMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "LockerTest"); // Actually a good material, has even lightmap
-			ObjectCreationExtension.defaultDustMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "DustTest"); // Actually a good material, has even lightmap
-			ObjectCreationExtension.defaultCubemap = Resources.FindObjectsOfTypeAll<Cubemap>().First(x => x.name == "Cubemap_DayStandard");
+			ObjectCreationExtension.defaultMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "LockerTest" && x.GetInstanceID() > 0); // Actually a good material, has even lightmap
+			ObjectCreationExtension.defaultDustMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "DustTest" && x.GetInstanceID() > 0); // Actually a good material, has even lightmap
+			ObjectCreationExtension.defaultCubemap = Resources.FindObjectsOfTypeAll<Cubemap>().First(x => x.name == "Cubemap_DayStandard" && x.GetInstanceID() > 0);
 			
 			// Make a transparent texture
 			var tex = new Texture2D(256, 256);
@@ -76,7 +77,7 @@ namespace BBTimes.Manager
 			// Base plane for easy.. quads
 			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			var renderer = basePlane.GetComponent<MeshRenderer>();
-			renderer.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase");
+			renderer.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase" && x.GetInstanceID() > 0);
 			Object.DontDestroyOnLoad(basePlane);
 			basePlane.transform.localScale = Vector3.one * TileBaseOffset; // Gives the tile size
 			basePlane.name = "PlaneTemplate";
@@ -89,14 +90,14 @@ namespace BBTimes.Manager
 			prefabs.Add(basePlane);
 
 			// Grass texture
-			man.Add("Tex_Grass", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Grass"));
+			man.Add("Tex_Grass", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Grass" && x.GetInstanceID() > 0));
 
 			// Fence texture
-			man.Add("Tex_Fence", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "fence"));
+			man.Add("Tex_Fence", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "fence" && x.GetInstanceID() > 0));
 
 			// Sprite Billboard object
 			var baseSprite = new GameObject("SpriteBillBoard").AddComponent<SpriteRenderer>();
-			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_Billboard");
+			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_Billboard" && x.GetInstanceID() > 0);
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			baseSprite.receiveShadows = false;			
 
@@ -110,7 +111,7 @@ namespace BBTimes.Manager
 
 			// Sprite Billboard object
 			baseSprite = new GameObject("SpriteNoBillBoard").AddComponent<SpriteRenderer>();
-			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_NoBillboard");
+			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_NoBillboard" && x.GetInstanceID() > 0);
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			baseSprite.receiveShadows = false;
 
@@ -228,7 +229,7 @@ namespace BBTimes.Manager
 			});
 
 			floorDatas[1].MathNumberAmount = new(9, 12);
-			floorDatas[2].MathNumberAmount = new(12, 18);
+			floorDatas[2].MathNumberAmount = new(12, MaximumNumballs);
 			floorDatas[3].MathNumberAmount = new(9, 14);
 
 			// Math Number explode sprite
@@ -238,7 +239,10 @@ namespace BBTimes.Manager
 			EmptyGameObject = new("NullObject");
 			Object.DontDestroyOnLoad(EmptyGameObject);
 
-
+			// Gates for RUN
+			MainGameManagerPatches.gateTextures[0] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateR.png"));
+			MainGameManagerPatches.gateTextures[1] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateU.png"));
+			MainGameManagerPatches.gateTextures[2] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateN.png")); // R U N
 
 			// Local Methods
 			static void AddRule(string name, string audioName, string vfx) =>
@@ -248,6 +252,8 @@ namespace BBTimes.Manager
 		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc");
 
 		const string AudioFolder = "Audios", TextureFolder = "Textures", SfsFolder = "Sfs";
+
+		internal const int MaximumNumballs = 18;
 
         public readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")];
 

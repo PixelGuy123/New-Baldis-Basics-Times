@@ -40,7 +40,7 @@ namespace BBTimes.Manager
 			highCeil.targetTransformNamePrefix = "Bookshelf";
 			highCeil.targetTransformOffset = 9f;
 			// highCeil.customWallProximityToCeil = [Resources.FindObjectsOfTypeAll<RoomAsset>().First(x => x.name.StartsWith("Library")).wallTex];
-			var libraryTex = Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Wall");
+			var libraryTex = Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Wall" && x.GetInstanceID() > 0); // Any instance id > 0 is a prefab (I checked that!)
 
 			Resources.FindObjectsOfTypeAll<RoomAsset>().DoIf(x => x.name.StartsWith("Library"), x => x.wallTex = libraryTex);
 

@@ -30,7 +30,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPostfix]
 		private static void NaturalSpawnWindows(Window __instance,ref WindowObject ___windowObject)
 		{
-			if (PostRoomCreation.i.controlledRNG.NextDouble() >= 0.45d)
+			if (PostRoomCreation.i == null || PostRoomCreation.i.controlledRNG.NextDouble() >= 0.45d)
 				return;
 
 			var data = BBTimesManager.CurrentFloorData;
@@ -41,6 +41,15 @@ namespace BBTimes.ModPatches
 			if (objs.Count == 0) return;
 
 			___windowObject = WeightedSelection<WindowObject>.ControlledRandomSelectionList(objs.ConvertAll(x => x.Selection), PostRoomCreation.i.controlledRNG);
+
+			if (__instance.GetComponent<CustomWindowComponent>() == null)
+			{
+				var comp = __instance.gameObject.AddComponent<CustomWindowComponent>();
+				var compI = ___windowObject.windowPre.GetComponent<CustomWindowComponent>();
+				comp.unbreakable = compI.unbreakable;
+			}
+			
+
 			__instance.UpdateTextures();
 		}
 

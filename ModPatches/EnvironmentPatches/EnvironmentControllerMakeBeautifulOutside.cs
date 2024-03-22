@@ -15,7 +15,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		[HarmonyPostfix]
 		private static void CoverEmptyWallsFromOutside(EnvironmentController __instance)
 		{
-			if (PostRoomCreation.i == null) // Make sure this only happens in non-generated maps
+			if (PostRoomCreation.i == null) // Make sure this only happens in generated maps
 				return;
 
 			Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
@@ -58,10 +58,16 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				if (dirs.Count == 0) continue;
 
 				int max = lastFloor ? 3 : 8;
+				int start = isFirstFloor ? 0 : -8;
+
+#if CHEAT
+				max = 0;
+				start = 0; // Don't make me blind
+#endif
 
 				foreach (var dir in dirs)
 				{
-					for (int i = isFirstFloor ? 0 : -8; i <= max; i++)
+					for (int i = start; i <= max; i++)
 					{
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();

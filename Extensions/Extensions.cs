@@ -1,12 +1,15 @@
-﻿using HarmonyLib;
+﻿using BBTimes.Misc;
+using HarmonyLib;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using static UnityEngine.Object;
 
 namespace BBTimes.Extensions
 {
-	public static class GenericExtensions
+	public static class GameExtensions
 	{
 
 		static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
@@ -44,19 +47,23 @@ namespace BBTimes.Extensions
 			return m;
 		}
 
-		public static CodeMatcher DebugLogAllInstructions(this CodeMatcher m)
+		public static CodeMatcher DebugLogAllInstructions(this CodeMatcher m, int ogPos = -1)
 		{
-			if (m.Pos < 0)
+			if (ogPos < 0)
+			{
+				ogPos = m.Pos;
 				m.Start();
+			}
+
 			if (m.IsInvalid)
 			{
-				m.Start();
+				m.Advance(ogPos - m.Pos);
 				return m;
 			}
 
 			Debug.Log($"{m.Pos}: {m.Opcode} >> {m.Operand}");
 			m.Advance(1);
-			return DebugLogAllInstructions(m);
+			return DebugLogAllInstructions(m, m.Pos - ogPos);
 		}
 
 		public static List<Transform> AllChilds(this Transform transform)
@@ -120,6 +127,37 @@ namespace BBTimes.Extensions
 			lightMap[tile.position.x, tile.position.z].UpdateLighting();
 
 			ec_lightMap.SetValue(ec, lightMap);
+		}
+
+		public static IEnumerator LightChanger(this EnvironmentController ec, List<Cell> lights, bool on, float delay)
+		{
+			float time = delay;
+			while (lights.Count > 0)
+			{
+				while (time > 0f)
+				{
+					time -= Time.deltaTime;
+					yield return null;
+				}
+				time = delay;
+				int num = UnityEngine.Random.Range(0, lights.Count);
+				lights[num].lightColor = Color.red;
+				ec.SetLight(on, lights[num]);
+				lights.RemoveAt(num);
+			}
+			yield break;
+		}
+
+		public static IEnumerator InfiniteAnger(Baldi b, float increaser)
+		{
+			if (increaser <= 0f)
+				yield break;
+
+			while (true)
+			{
+				b.GetAngry(increaser * Time.deltaTime * b.TimeScale);
+				yield return null;
+			}
 		}
 	}
 }

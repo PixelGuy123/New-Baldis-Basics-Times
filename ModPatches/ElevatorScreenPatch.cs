@@ -15,5 +15,8 @@ namespace BBTimes.ModPatches
 			.InstructionEnumeration();
 
 		readonly internal static List<string> elevatorMidis = ["Elevator"]; // "Elevator" must be included in the list
+
+		private static void Postfix() =>
+			Singleton<MusicManager>.Instance.StopFile(); // Forgot about this
 	}
 }

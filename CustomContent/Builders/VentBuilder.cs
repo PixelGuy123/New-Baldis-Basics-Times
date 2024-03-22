@@ -1,13 +1,13 @@
-﻿using BBTimes.CustomComponents;
-using BBTimes.CustomContent.Objects;
+﻿using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
+using BBTimes.Misc;
 using BBTimes.ModPatches.EnvironmentPatches;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
 {
-	public class VentBuilder : ObjectBuilder
+    public class VentBuilder : ObjectBuilder
 	{
 		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
 		{

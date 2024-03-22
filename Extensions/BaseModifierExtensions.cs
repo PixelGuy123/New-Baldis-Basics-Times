@@ -1,11 +1,11 @@
-﻿using BBTimes.CustomComponents.Modifiers;
+﻿using BBTimes.Misc.Modifiers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.Extensions
 {
-	public static class BaseModifierExtensions
+    public static class BaseModifierExtensions
 	{
 		public static IEnumerator ReverseSlideFOVAnimation<T>(this IList<T> collection, T instance, float offset, float smoothness = 2f) where T : BaseModifier
 		{
