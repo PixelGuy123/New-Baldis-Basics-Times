@@ -25,6 +25,15 @@ namespace BBTimes.Manager
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 85 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 85 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 75 });
+			// Banana
+			item = CreatorExtensions.CreateItem<Banana, BananaCustomData>("Banana", "BN_Name", "BN_Desc", 45, 25).AddMeta(plug, ItemFlags.Persists | ItemFlags.CreatesEntity).value;
+			floorDatas[1].Items.Add(new() { selection = item, weight = 75 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 75 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 75 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 75 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 35 });
 		}
 	}
 }

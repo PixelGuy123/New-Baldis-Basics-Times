@@ -1,5 +1,5 @@
 ﻿using MTM101BaldAPI.AssetTools;
-using BBTimes.CreatorHelpers;
+using BBTimes.Helpers;
 using BBTimes.CustomContent.RoomFunctions;
 using System.IO;
 using UnityEngine;
@@ -8,6 +8,8 @@ using System.Linq;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Plugin;
 using HarmonyLib;
+using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
 
 namespace BBTimes.Manager
 {
@@ -16,7 +18,7 @@ namespace BBTimes.Manager
 		static void CreateRoomFunctions()
 		{
 			// Random Window Function for cafe
-			AddFunctionToEveryRoom<RandomWindowFunction>("Cafeteria").window = CreatorExtensions.CreateWindow("classicWindow", // Little tricks to make this function
+			AddFunctionToEveryRoom<RandomWindowFunction>(CafeteriaPrefix).window = CreatorExtensions.CreateWindow("classicWindow", // Little tricks to make this function
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow.png")),
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow_Broken.png")),
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow_Mask.png"))); // Yeah, it creates a window here too. But the WindowCreationprocess is for those that are supposed to spawn naturally;
@@ -24,25 +26,44 @@ namespace BBTimes.Manager
 			// Random poster functon for class and office
 			PosterObject[] poster = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "wall_clock.png"))])];
 
-			AddFunctionToEveryRoom<RandomPosterFunction>("Class").posters = poster;
-			AddFunctionToEveryRoom<RandomPosterFunction>("Office").posters = poster;
+			AddFunctionToEveryRoom<RandomPosterFunction>(ClassPrefix).posters = poster;
+			AddFunctionToEveryRoom<RandomPosterFunction>(OfficePrefix).posters = poster;
 
 			// High ceiling function
-			var highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>("Cafeteria");
+			var highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(CafeteriaPrefix);
 			highCeil.height = 5;
 			highCeil.customCeiling = ObjectCreationExtension.blackTex;
 			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "rooms", "Cafeteria", "wallFadeInBlack.png"))];
 			highCeil.chanceToHappen = 0.8f;
 			highCeil.customLight = man.Get<GameObject>("prefab_cafeHangingLight").transform;
 
-			highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>("Library");
+			highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(LibraryPrefix);
 			highCeil.height = 1;
 			highCeil.targetTransformNamePrefix = "Bookshelf";
 			highCeil.targetTransformOffset = 9f;
 			// highCeil.customWallProximityToCeil = [Resources.FindObjectsOfTypeAll<RoomAsset>().First(x => x.name.StartsWith("Library")).wallTex];
 			var libraryTex = Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Wall" && x.GetInstanceID() > 0); // Any instance id > 0 is a prefab (I checked that!)
 
-			Resources.FindObjectsOfTypeAll<RoomAsset>().DoIf(x => x.name.StartsWith("Library"), x => x.wallTex = libraryTex);
+			Resources.FindObjectsOfTypeAll<RoomAsset>().DoIf(x => x.name.StartsWith(LibraryPrefix), x => x.wallTex = libraryTex);
+
+			// Random Corner Object
+			WeightedTransform[] transforms = [
+				new() { selection =  ObjectCreationExtension.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lamp.png")), 25f), 2.9f, LayerStorage.ignoreRaycast)
+				.AddBoxCollider(Vector3.zero, new Vector3(2f, 10f, 2f), false).transform, weight = 75 },
+				new() { selection =  ObjectCreationExtension.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lightBulb.png")), 65f), 5.1f, LayerStorage.ignoreRaycast)
+				.AddBoxCollider(Vector3.zero, new Vector3(2f, 10f, 2f), false).transform, weight = 35 }
+				];
+
+			var cos = AddFunctionToEveryRoom<CornerObjectSpawner>(FacultyPrefix);
+			cos.lightPower = 0;
+			cos.objAmount = new(2, 3);
+			cos.randomObjs = transforms;
+			cos.randomChance = 0.6f;
+
+			cos = AddFunctionToEveryRoom<CornerObjectSpawner>(OfficePrefix);
+			cos.lightPower = 0;
+			cos.objAmount = new(2, 3);
+			cos.randomObjs = transforms;
 
 
 
@@ -54,5 +75,7 @@ namespace BBTimes.Manager
 				return comp;
 			}
 		}
+
+		const string CafeteriaPrefix = "Cafeteria", OfficePrefix = "Office", ClassPrefix = "Class", LibraryPrefix = "Library", FacultyPrefix = "Faculty";
 	}
 }

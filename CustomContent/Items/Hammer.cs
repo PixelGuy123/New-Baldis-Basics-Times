@@ -1,6 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using UnityEngine;
-using BBTimes.Manager;
+using PixelInternalAPI.Classes;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -9,7 +9,7 @@ namespace BBTimes.CustomContent.CustomItems
         public override bool Use(PlayerManager pm)
         {
             Destroy(gameObject);
-            if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var raycastHit, pm.pc.reach, BBTimesManager.windowLayer, QueryTriggerInteraction.Collide) && raycastHit.transform.CompareTag("Window"))
+            if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var raycastHit, pm.pc.reach, LayerStorage.windowLayer, QueryTriggerInteraction.Collide) && raycastHit.transform.CompareTag("Window"))
             {
                 raycastHit.transform.GetComponent<Window>().Break(true);
 				bool broken = !raycastHit.transform.GetComponent<CustomWindowComponent>()?.unbreakable ?? true;

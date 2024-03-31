@@ -1,11 +1,9 @@
-﻿using BBTimes.Misc;
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using static UnityEngine.Object;
 
 namespace BBTimes.Extensions
 {
@@ -13,67 +11,7 @@ namespace BBTimes.Extensions
 	{
 
 		static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
-
-		public static bool CompareFloats(this float a, float b) =>
-			Mathf.Abs(a - b) < float.Epsilon;
-		public static void ReplaceAt<T>(this IList<T> list, int index, T replacement)
-		{
-			list.RemoveAt(index);
-			list.Insert(index, replacement);
-		}
-
-		public static bool Replace<T>(this IList<T> list, Predicate<T> predicate, T replacement)
-		{
-			for (int i = 0; i < list.Count; i++)
-			{
-				if (predicate(list[i]))
-				{
-					ReplaceAt(list, i, replacement);
-					return true;
-				}
-			}
-			return false;
-		}
-
-		public static IEnumerable<C> ConvertAll<T, C>(this IEnumerable<T> sequence, Func<T, C> func)
-		{
-			foreach (var item in sequence)
-				yield return func(item);
-		}
-
-		public static CodeMatcher CustomAction(this CodeMatcher m, Action<CodeMatcher> a)
-		{
-			a(m);
-			return m;
-		}
-
-		public static CodeMatcher DebugLogAllInstructions(this CodeMatcher m, int ogPos = -1)
-		{
-			if (ogPos < 0)
-			{
-				ogPos = m.Pos;
-				m.Start();
-			}
-
-			if (m.IsInvalid)
-			{
-				m.Advance(ogPos - m.Pos);
-				return m;
-			}
-
-			Debug.Log($"{m.Pos}: {m.Opcode} >> {m.Operand}");
-			m.Advance(1);
-			return DebugLogAllInstructions(m, m.Pos - ogPos);
-		}
-
-		public static List<Transform> AllChilds(this Transform transform)
-		{
-			List<Transform> cs = [];
-			int count = transform.childCount;
-			for (int i = 0; i < count; i++)
-				cs.Add(transform.GetChild(i));
-			return cs;
-		}
+		static readonly FieldInfo funcContainer_funcs = AccessTools.Field(typeof(RoomFunctionContainer), "functions");
 
 		public static Window ForceBuildWindow(this EnvironmentController ec, Cell tile, Direction dir, WindowObject wObject)
 		{
@@ -155,9 +93,28 @@ namespace BBTimes.Extensions
 
 			while (true)
 			{
-				b.GetAngry(increaser * Time.deltaTime * b.TimeScale);
+				b.GetAngry(increaser * b.TimeScale);
 				yield return null;
 			}
 		}
+
+		public static void RemoveFunction(this RoomFunctionContainer container, RoomFunction function)
+		{
+			var list = (List<RoomFunction>)funcContainer_funcs.GetValue(container);
+			list.Remove(function);
+			funcContainer_funcs.SetValue(container, list);
+		}
+
+		public static BoxCollider AddBoxCollider(this GameObject g, Vector3 center, Vector3 size, bool isTrigger)
+		{
+			var c = g.AddComponent<BoxCollider>();
+			c.center = center;
+			c.size = size;
+			c.isTrigger = isTrigger;
+			return c;
+		}
+
+		public static WeightedTexture2D ToWeightedTexture(this WeightedSelection<Texture2D> t) =>
+			new() { selection = t.selection, weight = t.weight };
 	}
 }

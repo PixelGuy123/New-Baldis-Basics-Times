@@ -50,7 +50,7 @@ namespace BBTimes.Helpers
 		}
 
 		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue, bool avoidRooms = true) where T : NPC where C : CustomNPCData =>
-			CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset, true, usesHeatMap, hasTrigger, ignoreBelts, lookerDistance);
+			CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset, true, usesHeatMap, hasTrigger, ignoreBelts, lookerDistance, avoidRooms);
 
 		public static T InstantiateRuntimeNPC<T>(this T npc, EnvironmentController ec, IntVector2 pos, Vector3 offset) where T : NPC
 		{

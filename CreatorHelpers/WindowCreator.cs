@@ -3,7 +3,7 @@ using MTM101BaldAPI;
 using UnityEngine;
 using static UnityEngine.Object;
 
-namespace BBTimes.CreatorHelpers
+namespace BBTimes.Helpers
 {
 	public static partial class CreatorExtensions
 	{

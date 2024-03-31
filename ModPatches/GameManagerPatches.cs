@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
-using BBTimes.CustomComponents.PlayerComponents;
+using PixelInternalAPI.Components;
+using PixelInternalAPI.Classes;
 using BBTimes.CustomContent.Misc;
 using BBTimes.Extensions;
 using BBTimes.Manager;
@@ -52,7 +53,7 @@ namespace BBTimes.ModPatches
 			for (int i = 0; i < core.setPlayers; i++)
 			{
 				var cam = core.GetCamera(i);
-				cam.StartCoroutine(cam.GetComponent<CustomPlayerCameraComponent>().fovModifiers.ReverseSlideFOVAnimation(new(), 35f, 5f)); // Animation (weird way, I know)
+				cam.StartCoroutine(new BaseModifier().ReverseSlideFOVAnimation(cam.GetComponent<CustomPlayerCameraComponent>().fovModifiers, 35f, 5f)); // Animation (weird way, I know)
 			}
 		}
 
@@ -129,7 +130,7 @@ namespace BBTimes.ModPatches
 				for (int i = 0; i < core.setPlayers; i++)
 				{
 					var cam = core.GetCamera(i);
-					cam.StartCoroutine(cam.GetComponent<CustomPlayerCameraComponent>().fovModifiers.ReverseSlideFOVAnimation(new(), 55f, 9.5f)); // Animation (weird way, I know)
+					cam.StartCoroutine(new BaseModifier().ReverseSlideFOVAnimation(cam.GetComponent<CustomPlayerCameraComponent>().fovModifiers, 55f, 9.5f)); // Animation (weird way, I know)
 				}
 				core.audMan.PlaySingle(angryBal);
 
@@ -141,7 +142,7 @@ namespace BBTimes.ModPatches
 						i--;
 					}
 					else if (___ec.Npcs[i].GetType() == typeof(Baldi))
-						___ec.Npcs[i].StartCoroutine(GameExtensions.InfiniteAnger((Baldi)___ec.Npcs[i], 0.05f));
+						___ec.Npcs[i].StartCoroutine(GameExtensions.InfiniteAnger((Baldi)___ec.Npcs[i], 0.005f));
 				}
 
 				___ec.StartCoroutine(SpawnFires());

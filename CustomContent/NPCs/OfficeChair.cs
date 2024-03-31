@@ -99,7 +99,7 @@ namespace BBTimes.CustomContent.NPCs
 
             //target.SetHeight(entityBaseHeight + heightOffset);
             target.Teleport(chair.transform.position);
-            if (chair.Navigator.Entity.Frozen)
+            if (!chair || chair.Navigator.Entity.Frozen) // If chair ever becomes null, also stop this
             {
                 target.SetHeight(entityBaseHeight);
                 SetTarget(true);

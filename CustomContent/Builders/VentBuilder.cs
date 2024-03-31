@@ -1,6 +1,6 @@
 ﻿using BBTimes.CustomContent.Objects;
-using BBTimes.Extensions;
-using BBTimes.Misc;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using BBTimes.ModPatches.EnvironmentPatches;
 using System.Collections.Generic;
 using UnityEngine;

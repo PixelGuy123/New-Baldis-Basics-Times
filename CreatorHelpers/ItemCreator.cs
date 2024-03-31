@@ -17,7 +17,7 @@ namespace BBTimes.Helpers
 			var en = EnumExtensions.ExtendEnum<Items>(name); // Make enum
 
 
-			var itemobj = new GameObject(name + itemSufix, typeof(T)).AddComponent<C>();
+			var itemobj = new GameObject(name, typeof(T)).AddComponent<C>();
 
 			DontDestroyOnLoad(itemobj.gameObject);
 			itemobj.gameObject.SetActive(false);
@@ -81,8 +81,6 @@ namespace BBTimes.Helpers
 
 			return sprs;
 		}
-
-		internal const string itemSufix = "_CustomItemInstance";
 
 		const string itemBigIconPrefix = "bigicon_", itemSmallIconPrefix = "smallicon_";
 	}

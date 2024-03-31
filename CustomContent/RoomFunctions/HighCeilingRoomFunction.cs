@@ -1,4 +1,4 @@
-﻿using BBTimes.Extensions;
+﻿using PixelInternalAPI.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
 using UnityEngine;
@@ -29,14 +29,14 @@ namespace BBTimes.CustomContent.RoomFunctions
 			planeHolder.transform.SetParent(room.transform);
 			planeHolder.transform.localPosition = Vector3.zero;
 
-			var fullTex = ObjectCreationExtension.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, room.wallTex, ObjectCreationExtension.transparentTex);
+			var fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, room.wallTex, ObjectCreationExtension.transparentTex);
 
 			int offset = 0;
 
 			for (int i = 1; i <= height; i++)
 			{
 				if (i > height - customWallProximityToCeil.Length)
-					fullTex = ObjectCreationExtension.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, customWallProximityToCeil[offset++], ObjectCreationExtension.transparentTex);
+					fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, customWallProximityToCeil[offset++], ObjectCreationExtension.transparentTex);
 
 
 
@@ -94,7 +94,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			if (!hasCeiling)
 				return;
 
-			fullTex = ObjectCreationExtension.GenerateTextureAtlas(customCeiling ?? originalCeilTex, ObjectCreationExtension.transparentTex, ObjectCreationExtension.transparentTex);
+			fullTex = TextureExtensions.GenerateTextureAtlas(customCeiling ?? originalCeilTex, ObjectCreationExtension.transparentTex, ObjectCreationExtension.transparentTex);
 
 			foreach (var c in room.cells)
 			{

@@ -35,6 +35,9 @@
     <Reference Include="netstandard">
       <HintPath>Dependencies\netstandard.dll</HintPath>
     </Reference>
+    <Reference Include="PixelInternalAPI">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\PixelInternalAPI.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>Dependencies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
@@ -44,6 +47,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Folder Include="Extensions\ComponentCreationExtensions\" />
     <Folder Include="TemporaryFeatures\" />
   </ItemGroup>
   

@@ -9,12 +9,15 @@ using UnityEngine;
 using MTM101BaldAPI.AssetTools;
 using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.Extensions;
+using PixelInternalAPI.Extensions;
+using MTM101BaldAPI;
 
 
 namespace BBTimes.Plugin
 {
     [BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)] // let's not forget this
-    [BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
+	[BepInDependency("pixelguy.pixelmodding.baldiplus.pixelinternalapi", BepInDependency.DependencyFlags.HardDependency)]
+	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
     public class BasePlugin : BaseUnityPlugin
     {
 		private void Awake()
@@ -31,6 +34,9 @@ namespace BBTimes.Plugin
 #if CHEAT
 				Debug.Log($"Level Object loaded as: {floorName} with num: {floorNum}. LevelObj name: {ld.name}");
 #endif
+
+				ld.MarkAsNeverUnload(); // Maybe?
+
 				if (floorName == "F1")
 				{
 					ld.minSpecialRooms = 0; // Chance to have no special room
@@ -187,6 +193,40 @@ namespace BBTimes.Plugin
 				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
 				ld.shopItems = ld.shopItems.AddRangeToArray([.. floordata.ShopItems]);
 				ld.fieldTripItems.AddRange(floordata.FieldTripItems);
+
+				foreach (var holder in floordata.SchoolTextures) // Add the school textures
+				{
+					switch (holder.SelectionLimiters[0])
+					{
+						case RoomCategory.Hall:
+							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
+								ld.hallCeilingTexs = ld.hallCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							if (holder.TextureType == Misc.SchoolTexture.Floor)
+								ld.hallFloorTexs = ld.hallFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							if (holder.TextureType == Misc.SchoolTexture.Wall)
+								ld.hallWallTexs = ld.hallWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							break;
+						case RoomCategory.Class:
+							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
+								ld.classCeilingTexs = ld.classCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							if (holder.TextureType == Misc.SchoolTexture.Floor)
+								ld.classFloorTexs = ld.classFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							if (holder.TextureType == Misc.SchoolTexture.Wall)
+								ld.classWallTexs = ld.classWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							break;
+						case RoomCategory.Faculty:
+							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
+								ld.facultyCeilingTexs = ld.facultyCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							if (holder.TextureType == Misc.SchoolTexture.Floor)
+								ld.facultyFloorTexs = ld.facultyFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							if (holder.TextureType == Misc.SchoolTexture.Wall)
+								ld.facultyWallTexs = ld.facultyWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							break;
+						default:
+							// Operation here for custom rooms, soon.
+							break;
+					}
+				}
 
 			});
 		}

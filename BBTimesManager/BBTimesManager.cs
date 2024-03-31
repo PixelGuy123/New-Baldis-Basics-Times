@@ -9,12 +9,14 @@ using System.IO;
 using MTM101BaldAPI;
 using BBTimes.CustomComponents;
 using HarmonyLib;
-using BBTimes.Manager.SelectionHolders;
 using BBTimes.ModPatches;
 using BBTimes.ModPatches.NpcPatches;
-using BBTimes.Extensions.ComponentCreationExtensions;
+using PixelInternalAPI.Classes;
 using System.Reflection;
-using BBTimes.Misc;
+using BBTimes.Misc.SelectionHolders;
+using System;
+using static UnityEngine.Object;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -36,8 +38,18 @@ namespace BBTimes.Manager
 				CreateObjBuilders(plug);
 				CreateWindows();
 				CreateRoomFunctions();
+				CreateSchoolTextures();
+
+				for (int i = 0; i < cacheToDisableAfterSetup.Count; i++)
+				{
+					cacheToDisableAfterSetup[i].SetActive(false);
+					cacheToDisableAfterSetup.RemoveAt(i);
+					i--;
+				}
+				cacheToDisableAfterSetup = null;
+				GC.Collect(); // Get any garbage I guess
 			}
-			catch(System.Exception e)
+			catch(Exception e)
 			{
 				Debug.LogException(e);
 				MTM101BaldiDevAPI.CauseCrash(plug.Info, e); // just in case
@@ -57,28 +69,16 @@ namespace BBTimes.Manager
 			ObjectCreationExtension.defaultCubemap = Resources.FindObjectsOfTypeAll<Cubemap>().First(x => x.name == "Cubemap_DayStandard" && x.GetInstanceID() > 0);
 			
 			// Make a transparent texture
-			var tex = new Texture2D(256, 256);
-			Color[] c = new Color[tex.width * tex.height];
-			for (int i = 0; i < c.Length; i++)
-				c[i] = new(1f, 1f, 1f, 0f);
-			tex.SetPixels(c);
-			tex.Apply();
-			ObjectCreationExtension.transparentTex = tex;
+			ObjectCreationExtension.transparentTex = TextureExtensions.CreateSolidTexture(256, 256, Color.clear);
 
 			// Make a black texture
-			tex = new Texture2D(256, 256);
-			c = new Color[tex.width * tex.height];
-			for (int i = 0; i < c.Length; i++)
-				c[i] = new(0f, 0f, 0f, 1f);
-			tex.SetPixels(c);
-			tex.Apply();
-			ObjectCreationExtension.blackTex = tex;
+			ObjectCreationExtension.blackTex = TextureExtensions.CreateSolidTexture(256, 256, Color.black);
 
 			// Base plane for easy.. quads
 			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			var renderer = basePlane.GetComponent<MeshRenderer>();
 			renderer.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase" && x.GetInstanceID() > 0);
-			Object.DontDestroyOnLoad(basePlane);
+			DontDestroyOnLoad(basePlane);
 			basePlane.transform.localScale = Vector3.one * TileBaseOffset; // Gives the tile size
 			basePlane.name = "PlaneTemplate";
 			renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -86,6 +86,7 @@ namespace BBTimes.Manager
 			renderer.rayTracingMode = UnityEngine.Experimental.Rendering.RayTracingMode.Off;
 			renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
 			man.Add("PlaneTemplate", basePlane);
+			cacheToDisableAfterSetup.Add(basePlane);
 
 			prefabs.Add(basePlane);
 
@@ -101,55 +102,29 @@ namespace BBTimes.Manager
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			baseSprite.receiveShadows = false;			
 
-			baseSprite.gameObject.layer = billboardLayer;
-			Object.DontDestroyOnLoad(baseSprite.gameObject);
+			baseSprite.gameObject.layer = LayerStorage.billboardLayer;
+			DontDestroyOnLoad(baseSprite.gameObject);
 			man.Add("SpriteBillboardTemplate", baseSprite.gameObject);
+			cacheToDisableAfterSetup.Add(baseSprite.gameObject);
 
 			prefabs.Add(baseSprite.gameObject);
 
 			// Sprite Non-Billboard object
-
-			// Sprite Billboard object
 			baseSprite = new GameObject("SpriteNoBillBoard").AddComponent<SpriteRenderer>();
 			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_NoBillboard" && x.GetInstanceID() > 0);
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			baseSprite.receiveShadows = false;
 
-			baseSprite.gameObject.layer = billboardLayer;
-			Object.DontDestroyOnLoad(baseSprite.gameObject);
+			baseSprite.gameObject.layer = LayerStorage.billboardLayer;
+			DontDestroyOnLoad(baseSprite.gameObject);
 			man.Add("SpriteNoBillboardTemplate", baseSprite.gameObject);
+			cacheToDisableAfterSetup.Add(baseSprite.gameObject);
 
 			prefabs.Add(baseSprite.gameObject);
 
 			// Setup Window hit audio
 
 			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Voice, Color.white);
-
-			// Setup Gum animation
-			var gumHolder = new GameObject("gumSplash");
-			var gum = Object.Instantiate(man.Get<GameObject>("SpriteNoBillboardTemplate")); // front of the gum
-			gum.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(
-				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "gumSplash.png"))
-				, 25f);
-			gum.layer = billboardLayer;
-			gum.transform.SetParent(gumHolder.transform);
-			gum.transform.localPosition = Vector3.zero;
-
-			gum = Object.Instantiate(man.Get<GameObject>("SpriteNoBillboardTemplate")); // Back of the gum
-			gum.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(
-				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "gumSplash_back.png"))
-				, 25f);
-			gum.transform.SetParent(gumHolder.transform);
-			gum.transform.localPosition = Vector3.zero + gum.transform.forward * -0.01f;
-			gumHolder.SetActive(false);
-			Object.DontDestroyOnLoad(gumHolder);
-
-			gumHolder.AddComponent<EmptyMonoBehaviour>(); // For coroutines
-			GumSplash.gumSplash = gumHolder.transform;
-
-			GumSplash.splash = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "gumSplash.wav")), "Vfx_GumSplash", SoundType.Voice, new(0.99609f, 0, 0.99609f));
-
-			prefabs.Add(gumHolder);
 
 
 			// Fog music change
@@ -161,18 +136,13 @@ namespace BBTimes.Manager
 			// Principal's extra dialogues
 			AddRule("breakingproperty", "principal_nopropertybreak.wav", "Vfx_PRI_NoPropertyBreak");
 			AddRule("gumming", "principal_nospittinggums.wav", "Vfx_PRI_NoGumming");
+			AddRule("littering", "principal_noLittering.wav", "Vfx_PRI_NoLittering");
 
 
 			// Math Machine WOOOOW noises
 			MathMachinePatches.aud_BalWow = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Wow.wav")), "Vfx_Bal_WOW", SoundType.Voice, Color.green);
 			FieldTripManagerPatch.fieldTripYay = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "MUS_FieldTripWin.wav")), string.Empty, SoundType.Music, Color.white);
 			FieldTripManagerPatch.fieldTripYay.subtitle = false; // Of course
-			
-
-			// Cloudy Copter PAH
-			CloudyCopterPatch.aud_PAH = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Cloudy Copter", "CC_PAH.wav")), "Vfx_Cumulo_PAH", SoundType.Voice, Color.white);
-
-			Resources.FindObjectsOfTypeAll<Cumulo>().Do(x => x.gameObject.CreateAudioManager(25, 45));
 
 			// Main Menu Stuff
 			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "mainMenu.png")), 1f);
@@ -180,14 +150,14 @@ namespace BBTimes.Manager
 
 			// Hanging ceiling light for cafeteria
 			var hangingLightHolder = new GameObject("HugeHangingCeilingLight");
-			var hangingLight = Object.Instantiate(man.Get<GameObject>("SpriteBillboardTemplate"), hangingLightHolder.transform);
+			var hangingLight = Instantiate(man.Get<GameObject>("SpriteBillboardTemplate"), hangingLightHolder.transform);
 
 			hangingLight.transform.localPosition = Vector3.up * 40f;
 			hangingLight.transform.localScale = Vector3.one * 1.4f;
 			hangingLight.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cafeHangingLight.png")), 25f);
 
 			hangingLightHolder.SetActive(false);
-			Object.DontDestroyOnLoad(hangingLightHolder);
+			DontDestroyOnLoad(hangingLightHolder);
 
 
 
@@ -208,14 +178,14 @@ namespace BBTimes.Manager
 
 			for (int i = 0; i < numTexs.Length; i++) // Fabricate them
 			{
-				var num = Object.Instantiate(numPrefab);
+				var num = Instantiate(numPrefab);
 				num.GetComponent<Entity>().SetActive(false);
-				num.gameObject.layer = iClickableLayer;
+				num.gameObject.layer = LayerStorage.iClickableLayer;
 				((Transform)sprite.GetValue(num)).GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(numTexs[i]), 30f);
 				value.SetValue(num, int.Parse(Path.GetFileNameWithoutExtension(numTexs[i]).Split('_')[1]));
 				num.gameObject.SetActive(false);
 				num.name = "NumBall_" + value.GetValue(num);
-				Object.DontDestroyOnLoad(num);
+				DontDestroyOnLoad(num);
 				numbers.Add(num);
 			}
 
@@ -232,12 +202,9 @@ namespace BBTimes.Manager
 			floorDatas[2].MathNumberAmount = new(12, MaximumNumballs);
 			floorDatas[3].MathNumberAmount = new(9, 14);
 
-			// Math Number explode sprite
-			BalloonAndNumberBalloonPatch.explodeVisual = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "Math Machine", "balExplode.png")), 30f);
-
 			// LITERALLY an empty object. Can be used for stuff like hiding those lightPre for example
 			EmptyGameObject = new("NullObject");
-			Object.DontDestroyOnLoad(EmptyGameObject);
+			DontDestroyOnLoad(EmptyGameObject);
 
 			// Gates for RUN
 			MainGameManagerPatches.gateTextures[0] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateR.png"));
@@ -259,7 +226,7 @@ namespace BBTimes.Manager
 
 		public readonly static AssetManager man = new();
 
-		public static string CurrentFloor => Singleton<CoreGameManager>.Instance.sceneObject.levelTitle ?? "None";
+		public static string CurrentFloor => Singleton<CoreGameManager>.Instance?.sceneObject.levelTitle ?? "None";
 
 		public static FloorData CurrentFloorData => floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
 
@@ -268,6 +235,8 @@ namespace BBTimes.Manager
 		readonly internal static List<GameObject> prefabs = [];
 
 		public static GameObject EmptyGameObject;
+
+		static List<GameObject> cacheToDisableAfterSetup = [];
 
 		
 
@@ -292,6 +261,9 @@ namespace BBTimes.Manager
 
 		readonly List<WeightedRandomEvent> _events = [];
 		public List<WeightedRandomEvent> Events => _events;
+
+		readonly List<SchoolTextureHolder> _texs = [];
+		public List<SchoolTextureHolder> SchoolTextures => _texs;
 
 
 		// Object Builders

@@ -1,8 +1,8 @@
 ﻿using BBTimes.CustomComponents;
-using BBTimes.Extensions.ObjectCreationExtensions;
 using MTM101BaldAPI.AssetTools;
 using System.IO;
 using UnityEngine;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -10,8 +10,8 @@ namespace BBTimes.Manager
 	{
 		static void CreateCubeMaps()
 		{
-			var F2Map = ObjectCreationExtension.CubemapFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cubemap_twilight.png")));
-			var F3Map = ObjectCreationExtension.CubemapFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cubemap_night.png")));
+			var F2Map = TextureExtensions.CubemapFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cubemap_twilight.png")));
+			var F3Map = TextureExtensions.CubemapFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cubemap_night.png")));
 
 
 

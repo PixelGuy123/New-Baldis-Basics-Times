@@ -28,6 +28,26 @@ namespace BBTimes.ModPatches.EnvironmentPatches
         public static void ResetData() => data = new([], [], false);
 
         public static FindPathData data = new([], [], false);
+
+
+		[HarmonyPatch("InitializeLighting")]
+		[HarmonyPostfix]
+		private static void FixLighting(EnvironmentController __instance)
+		{
+			int maxX = Singleton<CoreGameManager>.Instance.lightMapTexture.width;
+			int maxZ = Singleton<CoreGameManager>.Instance.lightMapTexture.height;
+			for (int x = 0; x < maxX; x++)
+			{
+				for (int z = 0; z < maxZ; z++)
+				{
+					if (__instance.ContainsCoordinates(x, z) || Singleton<CoreGameManager>.Instance.lightMapTexture.GetPixel(x, z).a <= 0.1f)
+						continue;
+
+					Singleton<CoreGameManager>.Instance.UpdateLighting(__instance.standardDarkLevel, new(x, z)); // Should fix the red lighting appearing in earlier floors after beating F3
+
+				}
+			}
+		}
     }
 
     public readonly struct FindPathData(TileShape[] shapesToExclude, RoomType[] limitToRoomTypes, bool persistent = false)
