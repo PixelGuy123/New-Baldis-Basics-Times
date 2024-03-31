@@ -32,7 +32,7 @@ namespace BBTimes.ModPatches
 				new(OpCodes.Ldloc_2),
 				new(OpCodes.Ldc_I4_S, name:"10") // Never use a number to check a value, you don't know if it is an integer, short, whatever the compiler did to optimize it
 				)
-			.SetInstruction(Transpilers.EmitDelegate(() => BBTimesManager.CurrentFloorData == null ? BBTimesManager.MaximumNumballs : BBTimesManager.CurrentFloorData.MathNumberAmount.RandomVal + 1))
+			.SetInstruction(Transpilers.EmitDelegate(() => BBTimesManager.CurrentFloorData == null ? BBTimesManager.MaximumNumballs : UnityEngine.Random.Range(BBTimesManager.CurrentFloorData.MinNumberBallAmount, BBTimesManager.CurrentFloorData.MaxNumberBallAmount + 1)))
 			.InstructionEnumeration();
 
 		[HarmonyPatch("NewProblem")]

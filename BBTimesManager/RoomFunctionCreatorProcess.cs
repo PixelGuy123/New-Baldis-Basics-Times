@@ -56,13 +56,15 @@ namespace BBTimes.Manager
 
 			var cos = AddFunctionToEveryRoom<CornerObjectSpawner>(FacultyPrefix);
 			cos.lightPower = 0;
-			cos.objAmount = new(2, 3);
+			cos.minAmount = 2;
+			cos.maxAmount = 3;
 			cos.randomObjs = transforms;
 			cos.randomChance = 0.6f;
 
 			cos = AddFunctionToEveryRoom<CornerObjectSpawner>(OfficePrefix);
 			cos.lightPower = 0;
-			cos.objAmount = new(2, 3);
+			cos.minAmount = 1;
+			cos.maxAmount = 3;
 			cos.randomObjs = transforms;
 
 

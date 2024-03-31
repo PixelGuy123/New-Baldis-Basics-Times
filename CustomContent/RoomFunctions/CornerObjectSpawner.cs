@@ -1,5 +1,4 @@
 ﻿using BBTimes.Manager;
-using PixelInternalAPI.Classes;
 using UnityEngine;
 
 
@@ -9,21 +8,23 @@ namespace BBTimes.CustomContent.RoomFunctions
 	{
 		public override void Build(LevelBuilder builder, System.Random rng)
 		{
+			base.Build(builder, rng);
 			if (rng.NextDouble() > randomChance)
 				return;
-
-			base.Build(builder, rng);
+			
 			var cells = room.GetTilesOfShape([TileShape.Corner], true);
 			if (randomObjs.Length == 0 || cells.Count == 0) 
 			{
+#if CHEAT
 				if (cells.Count == 0)
-					Debug.LogWarning("BB TIMES: CornerObjectSpawner was unable to find suitable spots for the object");
+					Debug.LogWarning($"BB TIMES: CornerObjectSpawner was unable to find suitable spots for the object in room: {room.name}");
+#endif
+
 				return;
 			}
 
 			var obj = WeightedTransform.ControlledRandomSelection(randomObjs, rng);
-			objAmount.Rng = rng;
-			int max = objAmount.RandomVal;
+			int max = rng.Next(minAmount, maxAmount + 1);
 			for (int i = 0; i < max; i++)
 			{
 				if (cells.Count == 0)
@@ -55,7 +56,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public WeightedTransform[] randomObjs = [];
 
 		[SerializeField]
-		public MinMax objAmount = new(1, 1);
+		public int minAmount = 1, maxAmount = 1;
 
 		[SerializeField]
 		public bool stickToWall = false;

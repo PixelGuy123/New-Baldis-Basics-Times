@@ -57,6 +57,8 @@ namespace BBTimes.ModPatches
 			}
 		}
 
+		// ******* Base Game Manager *******
+
 		[HarmonyPatch(typeof(BaseGameManager), "ElevatorClosed")]
 		[HarmonyPostfix]
 		private static void REDAnimation(Elevator elevator, BaseGameManager __instance, int ___elevatorsClosed, EnvironmentController ___ec)
@@ -201,6 +203,7 @@ namespace BBTimes.ModPatches
 		internal static Texture2D[] gateTextures = new Texture2D[3];
 	}
 
+	// ********** Endless Game Manager ************
 	[HarmonyPatch(typeof(EndlessGameManager))]
 
 	internal class EndlessGameManagerPatches

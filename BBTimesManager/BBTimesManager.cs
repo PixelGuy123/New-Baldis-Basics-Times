@@ -83,7 +83,6 @@ namespace BBTimes.Manager
 			basePlane.name = "PlaneTemplate";
 			renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			renderer.receiveShadows = false;
-			renderer.rayTracingMode = UnityEngine.Experimental.Rendering.RayTracingMode.Off;
 			renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
 			man.Add("PlaneTemplate", basePlane);
 			cacheToDisableAfterSetup.Add(basePlane);
@@ -149,20 +148,16 @@ namespace BBTimes.Manager
 			MainMenuPatch.aud_welcome = AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav"));
 
 			// Hanging ceiling light for cafeteria
-			var hangingLightHolder = new GameObject("HugeHangingCeilingLight");
-			var hangingLight = Instantiate(man.Get<GameObject>("SpriteBillboardTemplate"), hangingLightHolder.transform);
+			var hangingLight = ObjectCreationExtension.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cafeHangingLight.png")), 25f), 40f);
 
-			hangingLight.transform.localPosition = Vector3.up * 40f;
-			hangingLight.transform.localScale = Vector3.one * 1.4f;
-			hangingLight.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cafeHangingLight.png")), 25f);
-
-			hangingLightHolder.SetActive(false);
-			DontDestroyOnLoad(hangingLightHolder);
+			hangingLight.GetComponent<RendererContainer>().renderers[0].transform.localScale = Vector3.one * 1.4f;
+			hangingLight.SetActive(false);
+			DontDestroyOnLoad(hangingLight);
 
 
 
-			prefabs.Add(hangingLightHolder);
-			man.Add("prefab_cafeHangingLight", hangingLightHolder);
+			prefabs.Add(hangingLight);
+			man.Add("prefab_cafeHangingLight", hangingLight);
 
 			// Math Machine new Nums
 			FieldInfo nums = AccessTools.Field(typeof(MathMachine), "numberPres");
@@ -197,10 +192,15 @@ namespace BBTimes.Manager
 				numList = numList.AddRangeToArray([.. numbers]);
 				nums.SetValue(x, numList);
 			});
-
-			floorDatas[1].MathNumberAmount = new(9, 12);
-			floorDatas[2].MathNumberAmount = new(12, MaximumNumballs);
-			floorDatas[3].MathNumberAmount = new(9, 14);
+			//F2
+			floorDatas[1].MinNumberBallAmount = 9;
+			floorDatas[1].MaxNumberBallAmount = 12;
+			//F3
+			floorDatas[2].MinNumberBallAmount = 12;
+			floorDatas[2].MaxNumberBallAmount = MaximumNumballs;
+			//END
+			floorDatas[3].MinNumberBallAmount = 9;
+			floorDatas[3].MaxNumberBallAmount = 14;
 
 			// LITERALLY an empty object. Can be used for stuff like hiding those lightPre for example
 			EmptyGameObject = new("NullObject");
@@ -211,6 +211,15 @@ namespace BBTimes.Manager
 			MainGameManagerPatches.gateTextures[1] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateU.png"));
 			MainGameManagerPatches.gateTextures[2] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateN.png")); // R U N
 
+			// Player Visual
+			var tex = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "player.png")), 225f);
+			var playerVisual = ObjectCreationExtension.CreateSpriteBillboard(tex, -1.6f);
+			DontDestroyOnLoad(playerVisual);
+
+			GameCameraPatch.playerVisual = playerVisual.transform;
+
+			prefabs.Add(playerVisual); // prefab too
+			
 			// Local Methods
 			static void AddRule(string name, string audioName, string vfx) =>
 				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", audioName)), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));
@@ -287,6 +296,7 @@ namespace BBTimes.Manager
 		readonly List<WindowObjectHolder> _windowObjects = [];
 		public List<WindowObjectHolder> WindowObjects => _windowObjects;
 
-		public MinMax MathNumberAmount = new(9, 9); // Default
+		public int MaxNumberBallAmount = 9; // Default
+		public int MinNumberBallAmount = 9; // Default
 	}
 }

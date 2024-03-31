@@ -7,6 +7,7 @@ using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Registers;
 using System.IO;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -22,8 +23,16 @@ namespace BBTimes.Manager
 			// Vent Builder
 			VentBuilder vent = CreatorExtensions.CreateObjectBuilder<VentBuilder, VentBuilderCustomData>("Vent");
 			vent.AddMeta(plug);
+			vent.minAmount = 3;
+			vent.maxAmount = 5;
 			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 65 });
+			vent = vent.DuplicatePrefab();
+			vent.minAmount = 5;
+			vent.maxAmount = 7;
 			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 105 });
+			vent = vent.DuplicatePrefab();
+			vent.minAmount = 4;
+			vent.maxAmount = 5;
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 45 });
 
 			// Wall Bell Builder
@@ -35,6 +44,25 @@ namespace BBTimes.Manager
 				new WeightedPosterObject() {selection = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "wallbell.png"))]), weight = 100}
 				];
 			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(forcedPosterBuilder));
+
+			// Trapdoor Builder
+			TrapDoorBuilder trapdoor = CreatorExtensions.CreateObjectBuilder<TrapDoorBuilder, TrapdoorBuilderCustomData>("Trapdoor");
+			trapdoor.minAmount = 3;
+			trapdoor.maxAmount = 5;
+			trapdoor.AddMeta(plug);
+			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 35 });
+
+			trapdoor = trapdoor.DuplicatePrefab();
+			trapdoor.minAmount = 4;
+			trapdoor.maxAmount = 7;
+
+			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 55 });
+
+			trapdoor = trapdoor.DuplicatePrefab();
+			trapdoor.minAmount = 2;
+			trapdoor.maxAmount = 5;
+
+			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 75 });
 
 		}
 

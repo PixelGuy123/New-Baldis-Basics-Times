@@ -14,8 +14,7 @@ namespace BBTimes.CustomContent.Builders
 			List<Cell> halls = room.GetTilesOfShape([TileShape.Corner, TileShape.Single], false);
 			if (halls.Count == 0) return;
 
-			amounts.Rng = cRng;
-			int ventAmount = amounts.RandomVal;
+			int ventAmount = cRng.Next(minAmount, maxAmount + 1);
 
 			var selectedWebTile = halls[cRng.Next(halls.Count)];
 			var web = ec.FindNearbyTiles(selectedWebTile.position - new IntVector2(builder.levelSize.x / 5, builder.levelSize.z / 5),
@@ -26,7 +25,7 @@ namespace BBTimes.CustomContent.Builders
 
 			foreach (var cell in web)
 			{
-				if (!ec.TrapCheck(cell) && !cell.HasAnyHardCoverage && !cell.open && !cell.doorHere && (cell.shape == TileShape.Corner || cell.shape == TileShape.Single))
+				if (!cell.HasAnyHardCoverage && !cell.open && !cell.doorHere && (cell.shape == TileShape.Corner || cell.shape == TileShape.Single) && !ec.TrapCheck(cell))
 				{
 					var vent = Instantiate(ventPrefab, room.transform);
 					vent.transform.position = cell.FloorWorldPosition;
@@ -34,6 +33,8 @@ namespace BBTimes.CustomContent.Builders
 					var v = vent.GetComponent<Vent>();
 					v.ec = ec;
 					cell.HardCoverEntirely();
+					cell.AddRenderer(v.renderer);
+					cell.AddRenderer(v.particle.GetComponent<ParticleSystemRenderer>());
 					vents.Add(v);
 				}
 				if (vents.Count >= ventAmount)
@@ -173,7 +174,7 @@ namespace BBTimes.CustomContent.Builders
 		[SerializeField]
 		public GameObject ventConnectionPrefab;
 
-
-		MinMax amounts = new(6, 10);
+		[SerializeField]
+		public int minAmount = 6, maxAmount = 10;
 	}
 }
