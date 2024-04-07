@@ -4,6 +4,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using UnityEngine;
+using BBTimes.ModPatches.EnvironmentPatches;
 
 namespace BBTimes.ModPatches.GeneratorPatches
 {
@@ -15,6 +16,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		{
 			i = __instance;
 			BBTimesManager.prefabs.ForEach(x => x.SetActive(true)); // Makes those prefabs enable
+			EnvironmentControllerPatch.ResetData(); // Resets navneighbor stuf
 		}
 
 		[HarmonyPatch("Generate", MethodType.Enumerator)]
@@ -66,6 +68,8 @@ namespace BBTimes.ModPatches.GeneratorPatches
 
 		static void ExecutePostRoomTasks()
 		{
+			if (i == null) return;
+
 			WindowsPointingOutside();
 		}
 
@@ -81,7 +85,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 
 
 				var dirs = Directions.All();
-				dirs.RemoveAll(x => !ec.CellFromPosition(t.position + x.ToIntVector2()).Null || t.WallHardCovered(x));
+				dirs.RemoveAll(x => !ec.CellFromPosition(t.position + x.ToIntVector2()).Null || t.WallSoftCovered(x));
 
 				if (dirs.Count > 0)
 					tiles.Add(t, [.. dirs]);

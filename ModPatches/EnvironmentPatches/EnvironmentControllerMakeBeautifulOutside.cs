@@ -131,7 +131,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
-						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * 5f);
+						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * (BBTimesManager.TileBaseOffset / 2f - 0.01f));
 						t.AddRenderer(p.GetComponent<MeshRenderer>());
 						//p.SetActive(true);
 					}

@@ -26,12 +26,6 @@ namespace BBTimes.ModPatches.NpcPatches
 		}
 
 		internal static Dictionary<string, SoundObject> ruleBreaks = [];
-
-
-		[HarmonyPatch("WhistleChance")]
-		[HarmonyPrefix]
-		private static void GetI(Principal __instance) =>
-			i = __instance;
 		
 
 		[HarmonyPatch("WhistleChance")]
@@ -45,12 +39,9 @@ namespace BBTimes.ModPatches.NpcPatches
 				new CodeMatch(CodeInstruction.LoadField(typeof(Principal), "audWhistle")),
 				new CodeMatch(OpCodes.Callvirt, AccessTools.Method("AudioManager:PlaySingle", [typeof(SoundObject)]))
 				)
-			.InsertAndAdvance(Transpilers.EmitDelegate(() =>
-			{
-				if (i == null) return;
-
-				i.Navigator.Entity.StartCoroutine(Animation(i, (AudioManager)audMan.GetValue(i)));
-			}))
+			.InsertAndAdvance(
+			new(OpCodes.Ldarg_0),
+			Transpilers.EmitDelegate<System.Action<Principal>>(i => i.Navigator.Entity.StartCoroutine(Animation(i, (AudioManager)audMan.GetValue(i)))))
 			.InstructionEnumeration();
 
 		static IEnumerator Animation(Principal p, AudioManager man)
@@ -99,8 +90,6 @@ namespace BBTimes.ModPatches.NpcPatches
 
 			yield break;
 		}
-
-		static Principal i;
 
 		readonly static FieldInfo audTimes = AccessTools.Field(typeof(Principal), "audTimes");
 		readonly static FieldInfo audScolds = AccessTools.Field(typeof(Principal), "audScolds");

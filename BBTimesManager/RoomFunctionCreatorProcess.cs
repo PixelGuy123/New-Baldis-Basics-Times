@@ -60,12 +60,14 @@ namespace BBTimes.Manager
 			cos.maxAmount = 3;
 			cos.randomObjs = transforms;
 			cos.randomChance = 0.6f;
+			cos.nonSafeEntityCell = true;
 
 			cos = AddFunctionToEveryRoom<CornerObjectSpawner>(OfficePrefix);
 			cos.lightPower = 0;
 			cos.minAmount = 1;
 			cos.maxAmount = 3;
 			cos.randomObjs = transforms;
+			cos.nonSafeEntityCell = true;
 
 
 

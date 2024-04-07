@@ -44,6 +44,8 @@ namespace BBTimes.CustomContent.RoomFunctions
 					transform.transform.position += dir.ToVector3() * (BBTimesManager.TileBaseOffset / 2);
 					transform.transform.rotation = dir.ToRotation();
 				}
+				if (nonSafeEntityCell)
+					room.entitySafeCells.Remove(cell.position);
 
 				//transform.GetComponent<RendererContainer>().renderers.Do(cell.AddRenderer);
 
@@ -60,6 +62,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 		[SerializeField]
 		public bool stickToWall = false;
+
+		[SerializeField]
+		public bool nonSafeEntityCell = false;
 
 		[SerializeField]
 		public float randomChance = 1f;

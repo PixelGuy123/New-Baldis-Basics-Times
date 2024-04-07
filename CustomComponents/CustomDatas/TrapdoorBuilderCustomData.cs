@@ -37,7 +37,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			trapdoorholder.text = text;
 
 			var collider = trapdoorholder.gameObject.AddComponent<BoxCollider>();
-			collider.size = Vector3.one * 3f;
+			collider.size = Vector3.one * 4.9f;
 			collider.isTrigger = true;
 
 			var builder = GetComponent<TrapDoorBuilder>();

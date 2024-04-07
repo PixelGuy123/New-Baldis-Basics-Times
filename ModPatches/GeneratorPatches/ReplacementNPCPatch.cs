@@ -26,13 +26,13 @@ namespace BBTimes.ModPatches.GeneratorPatches
 				List<NPC> replacementNpcs = [];
 				var metas = ld.forcedNpcs;
 				for (int i = 0; i < metas.Length; i++)
-					if (metas[i].GetComponent<CustomNPCData>() != null) // Replacement npcs will always be in this array. That's why there's no check for the npc replacing field.
+					if (metas[i].GetComponent<CustomNPCData>()) // Replacement npcs will always be in this array. That's why there's no check for the npc replacing field.
 						replacementNpcs.Add(metas[i]);
 
 				if (replacementNpcs.Count == 0) return;
 
 				foreach (var npc in replacementNpcs)
-					__instance.Ec.npcsToSpawn.RemoveAll(x => x.GetComponent<CustomNPCData>() != null && x.Character == npc.Character); // Just remove any replacementnpc from the list (since they are inside the forcedNpc list)
+					__instance.Ec.npcsToSpawn.RemoveAll(x => x.GetComponent<CustomNPCData>() && x.Character == npc.Character); // Just remove any replacementnpc from the list (since they are inside the forcedNpc list)
 
 
 				// Every replacement npc will have the same weight, in other words, Random.Range :)

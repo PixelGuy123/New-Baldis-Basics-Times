@@ -150,6 +150,8 @@ namespace BBTimes.CustomContent.Objects
 
 			if (fake != null)
 			{
+				fake.GetComponent<SpriteRenderer>().sprite = sprites[0];
+				fake.GetComponent<PropagatedAudioManager>().PlaySingle(aud_shut);
 				StartCoroutine(FakeTrapdoorDespawn(fake));
 			}
 			

@@ -40,7 +40,7 @@ namespace BBTimes.Helpers
 			if (!Directory.Exists(path))
 				return [];
 
-			var files = Directory.GetFiles(path);
+			string[] files = [.. Directory.GetFiles(path).OrderBy(Path.GetFileNameWithoutExtension)];
 			var sprs = new Sprite[files.Length];
 			string[] repeatedOnes = new string[files.Length];
 

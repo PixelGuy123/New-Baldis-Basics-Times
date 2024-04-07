@@ -34,7 +34,7 @@ namespace BBTimes.CustomContent.NPCs
 
     }
 
-    public class OfficeChair_StateBase(OfficeChair office) : NpcState(office) // A default npc state
+    internal class OfficeChair_StateBase(OfficeChair office) : NpcState(office) // A default npc state
     {
         protected OfficeChair chair = office;
 
@@ -43,7 +43,7 @@ namespace BBTimes.CustomContent.NPCs
         protected PropagatedAudioManager man = office.GetComponent<PropagatedAudioManager>();
     }
 
-    public class OfficeChair_FindOffice(OfficeChair office, bool useCurrent, float cooldown = -1f, Entity target = null) : OfficeChair_StateBase(office) // A basic moving npc state
+    internal class OfficeChair_FindOffice(OfficeChair office, bool useCurrent, float cooldown = -1f, Entity target = null) : OfficeChair_StateBase(office) // A basic moving npc state
     {
         readonly bool useCurrent = useCurrent;
 
@@ -137,13 +137,13 @@ namespace BBTimes.CustomContent.NPCs
         const float heightOffset = 3f;
     }
 
-    public class OfficeChair_WaitForCollision(OfficeChair office, float waitCooldown) : OfficeChair_StateBase(office)
+    internal class OfficeChair_WaitForCollision(OfficeChair office, float waitCooldown) : OfficeChair_StateBase(office)
     {
         float cooldown = waitCooldown;
 
         public override void Enter()
         {
-			chair.navigationStateMachine.ChangeState(new NavigationState_DoNothing(chair, 64));
+			ChangeNavigationState(new NavigationState_DoNothing(chair, 64));
             base.Enter();
             if (cooldown > 0f)
                 chair.StartCoroutine(Cooldown());

@@ -30,7 +30,7 @@ namespace BBTimes.Helpers
 			npc.spriteRenderer[0].sprite = sprites[1]; // Sets to default sprite
 			_npc_ignoreBelts.SetValue(npc, ignoreBelts);
 
-			npc.spriteBase.transform.position += Vector3.up * spriteYOffset;
+			npc.spriteBase.transform.Find("Sprite").localPosition = Vector3.up * spriteYOffset; // I HATE ENTITY CLASS JUST MESSING UP WITH SPRITE BASE Y
 
 			npc.looker.distance = lookerDistance;
 
@@ -123,7 +123,7 @@ namespace BBTimes.Helpers
 			if (!Directory.Exists(path))
 				return [];
 
-			var files = Directory.GetFiles(path);
+			string[] files = [.. Directory.GetFiles(path).OrderBy(Path.GetFileNameWithoutExtension)]; // Guarantee the order of the files
 			var sprs = new Sprite[files.Length];
 			string[] repeatedOnes = new string[files.Length];
 
@@ -140,13 +140,21 @@ namespace BBTimes.Helpers
 			sprs[0] = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(text), Vector2.zero, 1f);
 			repeatedOnes[0] = text;
 
-			text = files.First(x => Path.GetFileName(x).StartsWith(mainSpritePrefix));
+			text = files.FirstOrDefault(x => Path.GetFileName(x).StartsWith(mainSpritePrefix));
+			if (text == default)
+			{
+				text = files.First(x => !Path.GetFileName(x).StartsWith(posterNamePrefix)); // First sprite in the folder (that is not a poster)
+#if CHEAT
+				Debug.Log("Default sprite used: " + text);
+#endif
+			}
 #if CHEAT
 			Debug.Log("current file: " + Path.GetFileNameWithoutExtension(text));
 #endif
 			var ar = Path.GetFileNameWithoutExtension(text).Split('_');
 			var tex = AssetLoader.TextureFromFile(text);
-			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, new((float)tex.width / 2 / tex.width, (float)tex.height / 2 / tex.height), float.Parse(ar[2]));
+			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, new((float)tex.width / 2 / tex.width, (float)tex.height / 2 / tex.height), float.Parse(ar[ar.Length - 1]));
+			sprs[1].name = ar[0];
 			repeatedOnes[1] = text;
 
 			// The rest (which also follows up a pattern)

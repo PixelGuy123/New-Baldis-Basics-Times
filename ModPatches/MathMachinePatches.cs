@@ -9,6 +9,12 @@ namespace BBTimes.ModPatches
 	[HarmonyPatch(typeof(MathMachine))]
 	internal class MathMachinePatches
 	{
+		[HarmonyPrefix]
+		[HarmonyPatch("Start")]
+		private static void RightIcon(Notebook ___notebook) =>
+			___notebook.icon.spriteRenderer.sprite = rightSprite;
+		
+
 		[HarmonyPostfix]
 		[HarmonyPatch("Completed")]
 		private static void WOOOW(MathMachine __instance, ref AudioManager ___audMan, bool ___givePoints)
@@ -32,7 +38,7 @@ namespace BBTimes.ModPatches
 				new(OpCodes.Ldloc_2),
 				new(OpCodes.Ldc_I4_S, name:"10") // Never use a number to check a value, you don't know if it is an integer, short, whatever the compiler did to optimize it
 				)
-			.SetInstruction(Transpilers.EmitDelegate(() => BBTimesManager.CurrentFloorData == null ? BBTimesManager.MaximumNumballs : UnityEngine.Random.Range(BBTimesManager.CurrentFloorData.MinNumberBallAmount, BBTimesManager.CurrentFloorData.MaxNumberBallAmount + 1)))
+			.SetInstruction(Transpilers.EmitDelegate(() => BBTimesManager.CurrentFloorData == null ? BBTimesManager.MaximumNumballs + 1 : UnityEngine.Random.Range(BBTimesManager.CurrentFloorData.MinNumberBallAmount, BBTimesManager.CurrentFloorData.MaxNumberBallAmount + 1) + 1))
 			.InstructionEnumeration();
 
 		[HarmonyPatch("NewProblem")]
@@ -50,5 +56,7 @@ namespace BBTimes.ModPatches
 			.RemoveInstructions(2) // Removes the subtraction
 			
 			.InstructionEnumeration();
+
+		internal static UnityEngine.Sprite rightSprite;
 	}
 }

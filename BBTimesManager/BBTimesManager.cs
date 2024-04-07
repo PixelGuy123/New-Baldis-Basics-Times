@@ -1,34 +1,34 @@
-﻿using BBTimes.Extensions.ObjectCreationExtensions;
-using BBTimes.Plugin;
-using BepInEx;
-using MTM101BaldAPI.AssetTools;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using System.IO;
-using MTM101BaldAPI;
-using BBTimes.CustomComponents;
-using HarmonyLib;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches;
 using BBTimes.ModPatches.NpcPatches;
+using BBTimes.Plugin;
+using BepInEx;
+using HarmonyLib;
+using MTM101BaldAPI;
+using MTM101BaldAPI.AssetTools;
 using PixelInternalAPI.Classes;
-using System.Reflection;
-using BBTimes.Misc.SelectionHolders;
-using System;
-using static UnityEngine.Object;
 using PixelInternalAPI.Extensions;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
+using static UnityEngine.Object;
 
 namespace BBTimes.Manager
 {
-    internal static partial class BBTimesManager // basically holds the logic to create everything to the game
-    {
+	internal static partial class BBTimesManager // basically holds the logic to create everything to the game
+	{
 
-        internal static void InitializeContentCreation(BaseUnityPlugin plug)
-        {
+		internal static void InitializeContentCreation(BaseUnityPlugin plug)
+		{
 			try
 			{
-				AddExtraComponentsForSomeObjects();
 				SetAssets();
+				AddExtraComponentsForSomeObjects();
 				CreateSpriteBillboards();
 				CreateCubeMaps();
 				GetMusics();
@@ -39,6 +39,7 @@ namespace BBTimes.Manager
 				CreateWindows();
 				CreateRoomFunctions();
 				CreateSchoolTextures();
+				GetIcons();
 
 				for (int i = 0; i < cacheToDisableAfterSetup.Count; i++)
 				{
@@ -49,12 +50,12 @@ namespace BBTimes.Manager
 				cacheToDisableAfterSetup = null;
 				GC.Collect(); // Get any garbage I guess
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Debug.LogException(e);
 				MTM101BaldiDevAPI.CauseCrash(plug.Info, e); // just in case
 			}
-        }
+		}
 
 		static void AddExtraComponentsForSomeObjects()
 		{
@@ -67,7 +68,8 @@ namespace BBTimes.Manager
 			ObjectCreationExtension.defaultMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "LockerTest" && x.GetInstanceID() > 0); // Actually a good material, has even lightmap
 			ObjectCreationExtension.defaultDustMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "DustTest" && x.GetInstanceID() > 0); // Actually a good material, has even lightmap
 			ObjectCreationExtension.defaultCubemap = Resources.FindObjectsOfTypeAll<Cubemap>().First(x => x.name == "Cubemap_DayStandard" && x.GetInstanceID() > 0);
-			
+			ObjectCreationExtension.mapMaterial = Resources.FindObjectsOfTypeAll<MapIcon>().First(x => x.name == "Icon_Prefab" && x.GetInstanceID() > 0).spriteRenderer.material;
+
 			// Make a transparent texture
 			ObjectCreationExtension.transparentTex = TextureExtensions.CreateSolidTexture(256, 256, Color.clear);
 
@@ -99,7 +101,7 @@ namespace BBTimes.Manager
 			var baseSprite = new GameObject("SpriteBillBoard").AddComponent<SpriteRenderer>();
 			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_Billboard" && x.GetInstanceID() > 0);
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-			baseSprite.receiveShadows = false;			
+			baseSprite.receiveShadows = false;
 
 			baseSprite.gameObject.layer = LayerStorage.billboardLayer;
 			DontDestroyOnLoad(baseSprite.gameObject);
@@ -147,18 +149,6 @@ namespace BBTimes.Manager
 			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "mainMenu.png")), 1f);
 			MainMenuPatch.aud_welcome = AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav"));
 
-			// Hanging ceiling light for cafeteria
-			var hangingLight = ObjectCreationExtension.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cafeHangingLight.png")), 25f), 40f);
-
-			hangingLight.GetComponent<RendererContainer>().renderers[0].transform.localScale = Vector3.one * 1.4f;
-			hangingLight.SetActive(false);
-			DontDestroyOnLoad(hangingLight);
-
-
-
-			prefabs.Add(hangingLight);
-			man.Add("prefab_cafeHangingLight", hangingLight);
-
 			// Math Machine new Nums
 			FieldInfo nums = AccessTools.Field(typeof(MathMachine), "numberPres");
 			FieldInfo sprite = AccessTools.Field(typeof(MathMachineNumber), "sprite");
@@ -184,11 +174,9 @@ namespace BBTimes.Manager
 				numbers.Add(num);
 			}
 
-			
-
 			machines.Do((x) => // Now just put them to every machine
 			{
-				var numList = (MathMachineNumber[])nums.GetValue(machines[0]);
+				var numList = (MathMachineNumber[])nums.GetValue(x);
 				numList = numList.AddRangeToArray([.. numbers]);
 				nums.SetValue(x, numList);
 			});
@@ -219,7 +207,16 @@ namespace BBTimes.Manager
 			GameCameraPatch.playerVisual = playerVisual.transform;
 
 			prefabs.Add(playerVisual); // prefab too
-			
+
+			// Gotta sweep audio
+			var aud = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "GottaSweep", "GS_Sweeping.wav")), "Vfx_GottaSweep", SoundType.Voice, new(0, 0.6226f, 0.0614f));
+			Resources.FindObjectsOfTypeAll<GottaSweep>().Do((x) =>
+			{
+				var c = x.gameObject.AddComponent<GottaSweepComponent>();
+				c.aud_sweep = aud;
+			});
+
+
 			// Local Methods
 			static void AddRule(string name, string audioName, string vfx) =>
 				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", audioName)), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));
@@ -231,7 +228,7 @@ namespace BBTimes.Manager
 
 		internal const int MaximumNumballs = 18;
 
-        public readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")];
+		public readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")];
 
 		public readonly static AssetManager man = new();
 
@@ -247,20 +244,20 @@ namespace BBTimes.Manager
 
 		static List<GameObject> cacheToDisableAfterSetup = [];
 
-		
+
 
 	}
 	// Floor data
-    internal class FloorData(string floor = "none")
-    {
-        public string Floor => _floor;
-        readonly string _floor = floor;
+	internal class FloorData(string floor = "none")
+	{
+		public string Floor => _floor;
+		readonly string _floor = floor;
 
-        readonly List<WeightedNPC> _npcs = [];
-        public List<WeightedNPC> NPCs => _npcs;
+		readonly List<WeightedNPC> _npcs = [];
+		public List<WeightedNPC> NPCs => _npcs;
 
-        readonly List<WeightedItemObject> _items = [];
-        public List<WeightedItemObject> Items => _items;
+		readonly List<WeightedItemObject> _items = [];
+		public List<WeightedItemObject> Items => _items;
 
 		readonly List<WeightedItemObject> _shopitems = [];
 		public List<WeightedItemObject> ShopItems => _shopitems;

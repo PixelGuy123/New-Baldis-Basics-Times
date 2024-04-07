@@ -42,7 +42,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			hh.behaviorStateMachine.ChangeNavigationState(new NavigationState_WanderRandom(hh, 0));
+			ChangeNavigationState(new NavigationState_WanderRandom(hh, 0));
 			hh.Navigator.maxSpeed = speed;
 			hh.Navigator.SetSpeed(speed);
 		}
@@ -66,7 +66,7 @@ namespace BBTimes.CustomContent.NPCs
 			hh.Navigator.Entity.Enable(false);
 			hh.Navigator.speed = 0;
 			hh.Navigator.SetSpeed(0);
-			hh.behaviorStateMachine.ChangeNavigationState(new NavigationState_DoNothing(hh, 0));
+			ChangeNavigationState(new NavigationState_DoNothing(hh, 0));
 			prevHeight = hh.Navigator.Entity.Height;
 			hh.Navigator.Entity.SetHeight(-15);
 		}
@@ -119,7 +119,7 @@ namespace BBTimes.CustomContent.NPCs
 			ableOfRespawning = 5f;
 		}
 
-		float prevHeight = height;
+		readonly float prevHeight = height;
 
 		float ableOfRespawning = 5f;
 	}

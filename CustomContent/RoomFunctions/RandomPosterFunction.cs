@@ -22,7 +22,6 @@ namespace BBTimes.CustomContent.RoomFunctions
 					break;
 				var cell = cells[rng.Next(cells.Count)];
 				room.ec.BuildPoster(poster, cell, cell.RandomUncoveredDirection(rng));
-				Debug.Log("Added poster");
 			}
 		}
 

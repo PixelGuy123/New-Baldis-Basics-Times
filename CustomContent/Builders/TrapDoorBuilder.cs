@@ -57,6 +57,8 @@ namespace BBTimes.CustomContent.Builders
 			pos.HardCover(CellCoverage.Down | CellCoverage.Center | CellCoverage.East | CellCoverage.North | CellCoverage.South | CellCoverage.West);
 			pos.AddRenderer(trapdoor.renderer);
 			pos.AddRenderer(trapdoor.text.GetComponent<MeshRenderer>());
+			var i = ec.map.AddIcon(icon, trapdoor.transform, Color.white);
+			i.gameObject.SetActive(true);
 			return trapdoor;
 		}
 
@@ -71,5 +73,7 @@ namespace BBTimes.CustomContent.Builders
 
 		[SerializeField]
 		public Sprite[] openSprites;
+
+		internal static MapIcon icon;
 	}
 }

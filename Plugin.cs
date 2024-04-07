@@ -93,7 +93,7 @@ namespace BBTimes.Plugin
 
 					// TEMPORARY CHANGE TO REMOVE DR REFLEX AS FORCED NPC
 					var drReflex = ld.forcedNpcs.First(x => x.GetType() == typeof(DrReflex));
-					ld.forcedNpcs = [.. ld.forcedNpcs.Where(x => x.Character != Character.DrReflex)];
+					ld.forcedNpcs = [.. ld.forcedNpcs.Where(x => x.GetType() == typeof(DrReflex))];
 					ld.potentialNPCs.Add(new() { selection = drReflex, weight = 55});
 					return;
 				}
