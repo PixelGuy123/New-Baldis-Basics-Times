@@ -16,7 +16,7 @@ namespace BBTimes.Manager
 
 
 			// Add lightings outside for GameManagers
-			foreach (var man in Resources.FindObjectsOfTypeAll<SceneObject>())
+			foreach (var man in GenericExtensions.FindResourceObjects<SceneObject>())
 			{
 				var comp = man.manager.GetComponent<MainGameManagerExtraComponent>();
 				if (comp == null) continue;

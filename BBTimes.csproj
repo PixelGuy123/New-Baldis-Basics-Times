@@ -27,27 +27,28 @@
   
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>Dependencies\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="MTM101BaldAPI">
-      <HintPath>Dependencies\MTM101BaldAPI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\MTM101BaldAPI.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
-      <HintPath>Dependencies\netstandard.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\netstandard.dll</HintPath>
     </Reference>
     <Reference Include="PixelInternalAPI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\PixelInternalAPI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>Dependencies\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>Dependencies\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   
   <ItemGroup>
     <Folder Include="Extensions\ComponentCreationExtensions\" />
+    <Folder Include="ModPatches\DebugPatches\" />
     <Folder Include="TemporaryFeatures\" />
   </ItemGroup>
   

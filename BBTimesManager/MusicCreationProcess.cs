@@ -8,6 +8,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Audio;
 using System.Linq;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -64,7 +65,7 @@ namespace BBTimes.Manager
 				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_4", time = 12.694f} // Tip: use audacity to know the audio length
 			];
 
-			foreach (var man in Resources.FindObjectsOfTypeAll<MainGameManager>()) // Main game manager
+			foreach (var man in GenericExtensions.FindResourceObjects<MainGameManager>()) // Main game manager
 			{
 				fieldInfo.SetValue(man, man.name == "Lvl3_MainGameManager 1" ? soundCRAZY : sound);
 				var comp = man.GetComponent<MainGameManagerExtraComponent>();
@@ -89,7 +90,7 @@ namespace BBTimes.Manager
 			}
 
 			// Level Final Mode
-			AudioMixerGroup group = Resources.FindObjectsOfTypeAll<AudioMixerGroup>().First(x => x.name == "Effects");
+			AudioMixerGroup group = GenericExtensions.FindResourceObjectByName<AudioMixerGroup>("Effects");
 			var sObj = ScriptableObject.CreateInstance<LoopingSoundObject>();
 			sObj.clips = [AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "Quiet_noise_loop.wav"))];
 			sObj.mixer = group;

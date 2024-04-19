@@ -59,16 +59,16 @@ namespace BBTimes.Manager
 
 		static void AddExtraComponentsForSomeObjects()
 		{
-			Resources.FindObjectsOfTypeAll<MainGameManager>().Do(x => x.gameObject.AddComponent<MainGameManagerExtraComponent>()); // Adds extra component for every MainGameManager
+			GenericExtensions.FindResourceObjects<MainGameManager>().Do(x => x.gameObject.AddComponent<MainGameManagerExtraComponent>()); // Adds extra component for every MainGameManager
 		}
 
 		static void SetAssets()
 		{
 			// Some materials
-			ObjectCreationExtension.defaultMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "LockerTest" && x.GetInstanceID() > 0); // Actually a good material, has even lightmap
-			ObjectCreationExtension.defaultDustMaterial = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "DustTest" && x.GetInstanceID() > 0); // Actually a good material, has even lightmap
-			ObjectCreationExtension.defaultCubemap = Resources.FindObjectsOfTypeAll<Cubemap>().First(x => x.name == "Cubemap_DayStandard" && x.GetInstanceID() > 0);
-			ObjectCreationExtension.mapMaterial = Resources.FindObjectsOfTypeAll<MapIcon>().First(x => x.name == "Icon_Prefab" && x.GetInstanceID() > 0).spriteRenderer.material;
+			ObjectCreationExtension.defaultMaterial = GenericExtensions.FindResourceObjectByName<Material>("LockerTest"); // Actually a good material, has even lightmap
+			ObjectCreationExtension.defaultDustMaterial = GenericExtensions.FindResourceObjectByName<Material>("DustTest"); // Actually a good material, has even lightmap
+			ObjectCreationExtension.defaultCubemap = GenericExtensions.FindResourceObjectByName<Cubemap>("Cubemap_DayStandard");
+			ObjectCreationExtension.mapMaterial = GenericExtensions.FindResourceObjectByName<MapIcon>("Icon_Prefab").spriteRenderer.material;
 
 			// Make a transparent texture
 			ObjectCreationExtension.transparentTex = TextureExtensions.CreateSolidTexture(256, 256, Color.clear);
@@ -79,9 +79,9 @@ namespace BBTimes.Manager
 			// Base plane for easy.. quads
 			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			var renderer = basePlane.GetComponent<MeshRenderer>();
-			renderer.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "TileBase" && x.GetInstanceID() > 0);
+			renderer.material = GenericExtensions.FindResourceObjectByName<Material>("TileBase");
 			DontDestroyOnLoad(basePlane);
-			basePlane.transform.localScale = Vector3.one * TileBaseOffset; // Gives the tile size
+			basePlane.transform.localScale = Vector3.one * LayerStorage.TileBaseOffset; // Gives the tile size
 			basePlane.name = "PlaneTemplate";
 			renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			renderer.receiveShadows = false;
@@ -92,14 +92,14 @@ namespace BBTimes.Manager
 			prefabs.Add(basePlane);
 
 			// Grass texture
-			man.Add("Tex_Grass", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "Grass" && x.GetInstanceID() > 0));
+			man.Add("Tex_Grass", GenericExtensions.FindResourceObjectByName<Texture2D>("Grass"));
 
 			// Fence texture
-			man.Add("Tex_Fence", Resources.FindObjectsOfTypeAll<Texture2D>().First(x => x.name == "fence" && x.GetInstanceID() > 0));
+			man.Add("Tex_Fence", GenericExtensions.FindResourceObjectByName<Texture2D>("fence"));
 
 			// Sprite Billboard object
 			var baseSprite = new GameObject("SpriteBillBoard").AddComponent<SpriteRenderer>();
-			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_Billboard" && x.GetInstanceID() > 0);
+			baseSprite.material = GenericExtensions.FindResourceObjectByName<Material>("SpriteStandard_Billboard");
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			baseSprite.receiveShadows = false;
 
@@ -112,7 +112,7 @@ namespace BBTimes.Manager
 
 			// Sprite Non-Billboard object
 			baseSprite = new GameObject("SpriteNoBillBoard").AddComponent<SpriteRenderer>();
-			baseSprite.material = Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "SpriteStandard_NoBillboard" && x.GetInstanceID() > 0);
+			baseSprite.material = GenericExtensions.FindResourceObjectByName<Material>("SpriteStandard_NoBillboard");
 			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			baseSprite.receiveShadows = false;
 
@@ -123,6 +123,9 @@ namespace BBTimes.Manager
 
 			prefabs.Add(baseSprite.gameObject);
 
+			// Canvas renderer instance
+			man.Add("CanvasPrefab", GenericExtensions.FindResourceObjectByName<Canvas>("GumOverlay"));
+
 			// Setup Window hit audio
 
 			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Voice, Color.white);
@@ -132,12 +135,13 @@ namespace BBTimes.Manager
 			var fogSound = AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "events", "Fog", "Audios", "new_CreepyOldComputer.wav"));
 			var field = AccessTools.Field(typeof(FogEvent), "music");
 
-			Resources.FindObjectsOfTypeAll<FogEvent>().Do(x => ((SoundObject)field.GetValue(x)).soundClip = fogSound); // Replace fog music
+			GenericExtensions.FindResourceObjects<FogEvent>().Do(x => ((SoundObject)field.GetValue(x)).soundClip = fogSound); // Replace fog music
 
 			// Principal's extra dialogues
 			AddRule("breakingproperty", "principal_nopropertybreak.wav", "Vfx_PRI_NoPropertyBreak");
 			AddRule("gumming", "principal_nospittinggums.wav", "Vfx_PRI_NoGumming");
 			AddRule("littering", "principal_noLittering.wav", "Vfx_PRI_NoLittering");
+			AddRule("ugliness", "principal_nouglystun.wav", "Vfx_PRI_NoUglyStun");
 
 
 			// Math Machine WOOOOW noises
@@ -153,7 +157,7 @@ namespace BBTimes.Manager
 			FieldInfo nums = AccessTools.Field(typeof(MathMachine), "numberPres");
 			FieldInfo sprite = AccessTools.Field(typeof(MathMachineNumber), "sprite");
 			FieldInfo value = AccessTools.Field(typeof(MathMachineNumber), "value"); // Setup fields
-			var machines = Resources.FindObjectsOfTypeAll<MathMachine>();
+			var machines = GenericExtensions.FindResourceObjects<MathMachine>();
 
 			var numList = (MathMachineNumber[])nums.GetValue(machines[0]);
 			var numPrefab = numList[0];
@@ -183,12 +187,17 @@ namespace BBTimes.Manager
 			//F2
 			floorDatas[1].MinNumberBallAmount = 9;
 			floorDatas[1].MaxNumberBallAmount = 12;
+			floorDatas[1].LockdownDoorSpeedOffset = 3;
 			//F3
 			floorDatas[2].MinNumberBallAmount = 12;
 			floorDatas[2].MaxNumberBallAmount = MaximumNumballs;
+			floorDatas[2].ConveyorSpeedOffset = 4;
+			floorDatas[2].LockdownDoorSpeedOffset = 4;
 			//END
 			floorDatas[3].MinNumberBallAmount = 9;
 			floorDatas[3].MaxNumberBallAmount = 14;
+			floorDatas[3].ConveyorSpeedOffset = 3;
+			floorDatas[3].LockdownDoorSpeedOffset = 2;
 
 			// LITERALLY an empty object. Can be used for stuff like hiding those lightPre for example
 			EmptyGameObject = new("NullObject");
@@ -210,11 +219,21 @@ namespace BBTimes.Manager
 
 			// Gotta sweep audio
 			var aud = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "GottaSweep", "GS_Sweeping.wav")), "Vfx_GottaSweep", SoundType.Voice, new(0, 0.6226f, 0.0614f));
-			Resources.FindObjectsOfTypeAll<GottaSweep>().Do((x) =>
+			GenericExtensions.FindResourceObjects<GottaSweep>().Do((x) =>
 			{
 				var c = x.gameObject.AddComponent<GottaSweepComponent>();
 				c.aud_sweep = aud;
 			});
+
+			// Zesty Bar audio change
+			FieldInfo zestyBarAud = AccessTools.Field(typeof(ITM_ZestyBar), "audEat");
+			foreach (var zesty in GenericExtensions.FindResourceObjects<ITM_ZestyBar>())
+			{
+				var audio = (SoundObject)zestyBarAud.GetValue(zesty);
+				audio.MarkAsNeverUnload();
+				audio.soundClip = AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "items", "Zesty", "eat.wav"));
+				zestyBarAud.SetValue(zesty, audio); // << idk if I need this, but whatever
+			}
 
 
 			// Local Methods
@@ -236,8 +255,6 @@ namespace BBTimes.Manager
 
 		public static FloorData CurrentFloorData => floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
 
-		internal const float TileBaseOffset = 10f;
-
 		readonly internal static List<GameObject> prefabs = [];
 
 		public static GameObject EmptyGameObject;
@@ -253,47 +270,30 @@ namespace BBTimes.Manager
 		public string Floor => _floor;
 		readonly string _floor = floor;
 
-		readonly List<WeightedNPC> _npcs = [];
-		public List<WeightedNPC> NPCs => _npcs;
-
-		readonly List<WeightedItemObject> _items = [];
-		public List<WeightedItemObject> Items => _items;
-
-		readonly List<WeightedItemObject> _shopitems = [];
-		public List<WeightedItemObject> ShopItems => _shopitems;
-
-		readonly List<WeightedItem> _fieldTripitems = [];
-		public List<WeightedItem> FieldTripItems => _fieldTripitems;
-
-		readonly List<WeightedRandomEvent> _events = [];
-		public List<WeightedRandomEvent> Events => _events;
-
-		readonly List<SchoolTextureHolder> _texs = [];
-		public List<SchoolTextureHolder> SchoolTextures => _texs;
+		public readonly List<WeightedNPC> NPCs = [];
+		public readonly List<WeightedItemObject> Items = [];
+		public readonly List<WeightedItemObject> ShopItems = [];
+		public readonly List<WeightedItem> FieldTripItems = [];
+		public readonly List<WeightedRandomEvent> Events = [];
+		public readonly List<SchoolTextureHolder> SchoolTextures = [];
 
 
 		// Object Builders
-
-		readonly List<ObjectBuilder> _forcedObjBuilders = [];
-		public List<ObjectBuilder> ForcedObjectBuilders => _forcedObjBuilders;
-
-		readonly List<WeightedObjectBuilder> _weightedObjectBlders = [];
-		public List<WeightedObjectBuilder> WeightedObjectBuilders => _weightedObjectBlders;
-
-		readonly List<RandomHallBuilder> _hallBuilders = [];
-		public List<RandomHallBuilder> HallBuilders => _hallBuilders;
+		public readonly List<ObjectBuilder> ForcedObjectBuilders = [];
+		public readonly List<WeightedObjectBuilder> WeightedObjectBuilders = [];
+		public readonly List<RandomHallBuilder> HallBuilders = [];
 
 		//readonly List<GenericHallBuilder> _genericHallBuilders = [];
 		//public List<GenericHallBuilder> GenericHallBuilders => _genericHallBuilders;
 
 		// Misc Fields
-		readonly List<string> _midiFiles = [];
-		public List<string> MidiFiles => _midiFiles;
-
-		readonly List<WindowObjectHolder> _windowObjects = [];
-		public List<WindowObjectHolder> WindowObjects => _windowObjects;
+		public readonly List<string> MidiFiles = [];
+		public readonly List<WindowObjectHolder> WindowObjects = [];
 
 		public int MaxNumberBallAmount = 9; // Default
 		public int MinNumberBallAmount = 9; // Default
+
+		public int ConveyorSpeedOffset = 2;
+		public int LockdownDoorSpeedOffset = 2;
 	}
 }

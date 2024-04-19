@@ -53,7 +53,7 @@ namespace BBTimes.ModPatches
 			for (int i = 0; i < core.setPlayers; i++)
 			{
 				var cam = core.GetCamera(i);
-				cam.StartCoroutine(new BaseModifier().ReverseSlideFOVAnimation(cam.GetComponent<CustomPlayerCameraComponent>().fovModifiers, 35f, 5f)); // Animation (weird way, I know)
+				cam.GetComponent<CustomPlayerCameraComponent>().ReverseSlideFOVAnimation(new BaseModifier(), 35f, 5f); // Animation (weird way, I know)
 			}
 		}
 
@@ -132,7 +132,7 @@ namespace BBTimes.ModPatches
 				for (int i = 0; i < core.setPlayers; i++)
 				{
 					var cam = core.GetCamera(i);
-					cam.StartCoroutine(new BaseModifier().ReverseSlideFOVAnimation(cam.GetComponent<CustomPlayerCameraComponent>().fovModifiers, 55f, 9.5f)); // Animation (weird way, I know)
+					cam.GetComponent<CustomPlayerCameraComponent>().ReverseSlideFOVAnimation(new BaseModifier(), 55f, 9.5f); // Animation (weird way, I know)
 				}
 				core.audMan.PlaySingle(angryBal);
 

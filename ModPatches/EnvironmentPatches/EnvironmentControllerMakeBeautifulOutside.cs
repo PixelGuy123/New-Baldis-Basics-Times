@@ -3,6 +3,7 @@ using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
+using PixelInternalAPI.Classes;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.Object;
@@ -71,7 +72,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					{
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
-						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * (BBTimesManager.TileBaseOffset / 2f - 0.01f)) + (Vector3.up * BBTimesManager.TileBaseOffset * i);
+						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * (LayerStorage.TileBaseOffset / 2f - 0.01f)) + (Vector3.up * LayerStorage.TileBaseOffset * i);
 						// t.AddRenderer(p.GetComponent<MeshRenderer>()); // Should keep this on. Because the render is messed up outside school
 					}
 				}
@@ -131,7 +132,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
-						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * (BBTimesManager.TileBaseOffset / 2f - 0.01f));
+						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * (LayerStorage.TileBaseOffset / 2f - 0.01f));
 						t.AddRenderer(p.GetComponent<MeshRenderer>());
 						//p.SetActive(true);
 					}

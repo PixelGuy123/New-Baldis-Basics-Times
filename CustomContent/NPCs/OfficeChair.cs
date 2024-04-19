@@ -96,20 +96,20 @@ namespace BBTimes.CustomContent.NPCs
         public override void Update()
         {
             if (target == null) return;
-
-            //target.SetHeight(entityBaseHeight + heightOffset);
-            target.Teleport(chair.transform.position);
-            if (!chair || chair.Navigator.Entity.Frozen) // If chair ever becomes null, also stop this
+            
+			if (!chair || chair.Navigator.Entity.Frozen || (chair.transform.position - target.transform.position).magnitude > 5f) // If chair ever becomes null, also stop this
             {
                 target.SetHeight(entityBaseHeight);
                 SetTarget(true);
                 target = null;
             }
+			else
+				target.Teleport(chair.transform.position);
 
 
-        }
+		}
 
-        List<Cell> GetRandomOffice(RoomController room, bool allTiles = false)
+		List<Cell> GetRandomOffice(RoomController room, bool allTiles = false)
         {
             List<RoomController> rooms = new(chair.ec.rooms);
             rooms.RemoveAll(x => x == room || x.category != RoomCategory.Office && x.category != RoomCategory.Faculty);

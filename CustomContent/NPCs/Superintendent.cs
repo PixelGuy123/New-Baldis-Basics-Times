@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.Manager;
+using PixelInternalAPI.Classes;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public void InvertDir()
 		{
-			Cell cell = ec.CellFromPosition(transform.position - (transform.forward * BBTimesManager.TileBaseOffset));
+			Cell cell = ec.CellFromPosition(transform.position - (transform.forward * LayerStorage.TileBaseOffset));
 			if (!cell.Null)
 				navigator.FindPath(cell.FloorWorldPosition); // REALLY ANNOYING workaround for wander round npcs to go backwards
 
@@ -105,6 +106,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			ChangeNavigationState(new NavigationState_WanderRounds(superintendent, 0));
 		}
+			
 
 		public override void Update()
 		{
@@ -115,7 +117,11 @@ namespace BBTimes.CustomContent.NPCs
 			if (cooldown > 0f)
 				cooldown -= superintendent.TimeScale * Time.deltaTime;
 
-			else active = true;
+			else
+			{
+				active = true;
+				noticeCooldown = noticeMaxCooldown;
+			}
 		}
 	}
 }

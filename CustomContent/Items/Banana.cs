@@ -6,10 +6,9 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
-			transform.position = pm.transform.position;
 			gameObject.SetActive(true);
 			this.pm = pm;
-			entity.Initialize(pm.ec, transform.position);
+			entity.Initialize(pm.ec, pm.transform.position);
 			pm.RuleBreak("littering", 5f, 0.8f);
 			owner = pm.gameObject;
 
@@ -24,7 +23,7 @@ namespace BBTimes.CustomContent.CustomItems
 			if (other.CompareTag("NPC") || other.CompareTag("Player"))
 			{
 				var e = other.GetComponent<Entity>();
-				if (e != null)
+				if (e != null && e.Grounded)
 				{
 					audMan.PlaySingle(aud_slip);
 					rendererBase.gameObject.SetActive(false);

@@ -11,6 +11,7 @@ using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
 using MTM101BaldAPI;
+using System.Runtime.Remoting.Messaging;
 
 
 namespace BBTimes.Plugin
@@ -28,6 +29,10 @@ namespace BBTimes.Plugin
 			_modPath = AssetLoader.GetModPath(this);
 
 			LoadingEvents.RegisterOnAssetsLoaded(() => BBTimesManager.InitializeContentCreation(this), false);
+			LoadingEvents.RegisterOnAssetsLoaded(() =>
+			{
+				FindObjectsOfType<CustomBaseData>(true).Do(x => x.SetupPrefabPost());
+			}, true); // Post
 
 			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, ld) =>
 			{
@@ -223,7 +228,7 @@ namespace BBTimes.Plugin
 								ld.facultyWallTexs = ld.facultyWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
 							break;
 						default:
-							// Operation here for custom rooms, soon.
+							// Operation here for custom rooms, soon.... wait, they are premade, the textures are within them... right?
 							break;
 					}
 				}

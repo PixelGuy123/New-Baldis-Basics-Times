@@ -7,6 +7,8 @@ using System.IO;
 using UnityEngine;
 using HarmonyLib;
 using BBTimes.Plugin;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -24,11 +26,12 @@ namespace BBTimes.Manager
 			MainGameManagerPatches.fire = fire.gameObject;
 
 			// Elevator exit signs
-			Resources.FindObjectsOfTypeAll<Elevator>().Do((x) => {
+			GenericExtensions.FindResourceObjects<Elevator>().Do((x) =>
+			{
 				var exit = ObjectCreationExtension.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "Elevator", "ExitSignSprite.png")), 25f), 8.75f);
 				exit.GetComponent<RendererContainer>().renderers[0].material.SetTexture("Texture2D_0ebe02d67a8a4acb8705243366af66aa", AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "Elevator", "ExitSign_LightMap.png"))); // Why does it have to be a so fucking long name
 				exit.transform.SetParent(x.transform);
-				exit.transform.localPosition = x.transform.forward * TileBaseOffset;
+				exit.transform.localPosition = x.transform.forward * LayerStorage.TileBaseOffset;
 			});
 
 			// Hanging ceiling light for cafeteria
@@ -38,10 +41,7 @@ namespace BBTimes.Manager
 			hangingLight.SetActive(false);
 			Object.DontDestroyOnLoad(hangingLight);
 
-
-
-			prefabs.Add(hangingLight);
 			man.Add("prefab_cafeHangingLight", hangingLight);
-		}	
+		}
 	}
 }

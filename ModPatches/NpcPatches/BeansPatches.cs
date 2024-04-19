@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.ModPatches.NpcPatches
 {
@@ -8,6 +9,6 @@ namespace BBTimes.ModPatches.NpcPatches
 		[HarmonyPatch("HitNPC")]
 		[HarmonyPatch("HitPlayer")]
 		private static void Prefix(Beans __instance) =>
-			NPCPatches.SetGuilt(__instance, 4f, "gumming"); // Yeah
+			PrivateCallExtensions.SetGuilt(__instance, 4f, "gumming"); // Yeah
 	}
 }

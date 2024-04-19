@@ -17,6 +17,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 		public virtual void SetupPrefab() { }
 
+		public virtual void SetupPrefabPost() { } // This one is triggered when every mod initialization is completed (to grab stuff like items for example)
+
 		protected virtual void Start() { } // In case of.. uh some setup in the beginning
     }
 }

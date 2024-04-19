@@ -13,9 +13,9 @@ namespace BBTimes.CustomComponents.CustomDatas
 				"Vfx_HapH_MerryChristmas", SoundType.Voice, new(0.796875f, 0f, 0f)
 				)];
 
-		public override void SetupPrefab()
+		public override void SetupPrefabPost()
 		{
-			base.SetupPrefab();
+			base.SetupPrefabPost();
 			// GetComponent<HappyHolidays>().objects = ItemMetaStorage.Instance.GetAllWithFlags(ItemFlags.None | ItemFlags.Persists | ItemFlags.CreatesEntity).ToValues();
 
 			// TEMPORARY WORKAROUND TO REMOVE DUPLICATES (api bug)

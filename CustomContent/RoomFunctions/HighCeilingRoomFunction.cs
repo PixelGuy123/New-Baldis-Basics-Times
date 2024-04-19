@@ -3,6 +3,7 @@ using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
 using UnityEngine;
 using UnityEngine.AI;
+using PixelInternalAPI.Classes;
 
 namespace BBTimes.CustomContent.RoomFunctions
 {
@@ -55,7 +56,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 						room.ec.SwapCell(c.position, c.room, dir.ToBinary());
 						var tile = Instantiate(c.Tile);
 						tile.transform.SetParent(planeHolder.transform);
-						tile.transform.position = c.FloorWorldPosition + (Vector3.up * (BBTimesManager.TileBaseOffset * i));
+						tile.transform.position = c.FloorWorldPosition + (Vector3.up * (LayerStorage.TileBaseOffset * i));
 						tile.MeshRenderer.material.mainTexture = fullTex;
 						c.AddRenderer(tile.MeshRenderer);
 						v.x += xAddend;
@@ -99,7 +100,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			foreach (var c in room.cells)
 			{
 				var tile = Instantiate(c.Tile, planeHolder.transform);
-				tile.transform.position = c.FloorWorldPosition + (Vector3.up * (height * BBTimesManager.TileBaseOffset));
+				tile.transform.position = c.FloorWorldPosition + (Vector3.up * (height * LayerStorage.TileBaseOffset));
 				tile.MeshRenderer.material.mainTexture = fullTex;
 				c.AddRenderer(tile.MeshRenderer);
 			}

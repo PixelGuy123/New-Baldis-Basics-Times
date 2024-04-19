@@ -18,11 +18,11 @@ namespace BBTimes.Manager
 			NPC npc;
 
 			// Office Chair
-			npc = CreatorExtensions.CreateNPC<OfficeChair, OfficeChairCustomData>("OfficeChair", 35f, 60f, [RoomCategory.Office, RoomCategory.Faculty], [], "PST_OFC_Name", "PST_OFC_Desc", true, ignorePlayerOnSpawn: true).AddMeta(plug, "OfficeChair", NPCFlags.Standard).value;
+			npc = CreatorExtensions.CreateNPC<OfficeChair, OfficeChairCustomData>("OfficeChair", 35f, 60f, [RoomCategory.Office, RoomCategory.Faculty], [], "PST_OFC_Name", "PST_OFC_Desc", true, ignorePlayerOnSpawn: true, spriteYOffset:-2f).AddMeta(plug, "OfficeChair", NPCFlags.Standard).value;
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 50 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 60 });
 			// Happy Holidays
-			npc = CreatorExtensions.CreateNPC<HappyHolidays, HappyHolidaysCustomData>("HappyHolidays", 45f, 80f, [RoomCategory.Hall], [], "PST_HapH_Name", "PST_HapH_Desc", lookerDistance: 125).AddMeta(plug, NPCFlags.Standard).value;
+			npc = CreatorExtensions.CreateNPC<HappyHolidays, HappyHolidaysCustomData>("HappyHolidays", 45f, 80f, [RoomCategory.Hall], [], "PST_HapH_Name", "PST_HapH_Desc", lookerDistance: 125, spriteYOffset: -2f).AddMeta(plug, NPCFlags.Standard).value;
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
 
 			// Classic Gotta Sweep
@@ -32,7 +32,7 @@ namespace BBTimes.Manager
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 90 });
 
 			// Crazy Clock
-			npc = CreatorExtensions.CreateNPC<CrazyClock, CrazyClockCustomData>("CrazyClock", 55f, 90f, [RoomCategory.Hall], [], "PST_CC_Name", "PST_CC_Desc", ignorePlayerOnSpawn:true, ignoreBelts:true, hasTrigger: false, lookerDistance: 55f)
+			npc = CreatorExtensions.CreateNPC<CrazyClock, CrazyClockCustomData>("CrazyClock", 55f, 90f, [RoomCategory.Hall], [], "PST_CC_Name", "PST_CC_Desc", ignorePlayerOnSpawn:true, ignoreBelts:true, hasTrigger: false, lookerDistance: 55f, grounded: false)
 				.AddMeta(plug, NPCFlags.StandardNoCollide).value;
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 20 });
 
@@ -41,6 +41,16 @@ namespace BBTimes.Manager
 				.AddMeta(plug, NPCFlags.Standard).value;
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+
+			// Let's Drum
+			npc = CreatorExtensions.CreateNPC<LetsDrum, LetsDrumCustomData>("Letsdrum", 75f, 110f, [RoomCategory.Hall], [], "PST_DRUM_Name", "PST_DRUM_Desc", lookerDistance: 25f, spriteYOffset: -1.4f).AddMeta(plug, NPCFlags.Standard).value;
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 65 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+
+			// Stunly
+			npc = CreatorExtensions.CreateNPC<Stunly, StunlyCustomData>("Stunly", 75f, 100f, [RoomCategory.Hall, RoomCategory.Special], [], "PST_Stunly_Name", "PST_Stunly_Desc", lookerDistance: 60f, spriteYOffset: -1.5f).AddMeta(plug , NPCFlags.Standard).value;
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 		}
 
 		

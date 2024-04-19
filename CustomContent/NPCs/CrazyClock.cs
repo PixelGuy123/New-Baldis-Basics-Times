@@ -5,6 +5,7 @@ using System.Linq;
 using BBTimes.Manager;
 using System.Collections;
 using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Classes;
 
 namespace BBTimes.CustomContent.NPCs
 {
@@ -17,9 +18,9 @@ namespace BBTimes.CustomContent.NPCs
 			foreach (var r in ec.rooms)
 			{
 				if (preAllowedCategories.Contains(r.category))
-					availableCells.AddRange(r.GetTilesOfShape([TileShape.Corner, TileShape.Single, TileShape.End], true).Where(x => x.HasFreeWall));
+					availableCells.AddRange(r.GetTilesOfShape([TileShape.Corner, TileShape.Single, TileShape.End], true).Where(x => x.HasFreeWall && !x.HasAnyHardCoverage));
 			}
-			availableCells.AddRange(ec.mainHall.GetTilesOfShape([TileShape.Corner, TileShape.Single, TileShape.End], false).Where(x => x.HasFreeWall));
+			availableCells.AddRange(ec.mainHall.GetTilesOfShape([TileShape.Corner, TileShape.Single, TileShape.End], false).Where(x => x.HasFreeWall && !x.HasAnyHardCoverage));
 
 			behaviorStateMachine.ChangeState(new CrazyClock_Spawn(this, data));
 		}
@@ -55,14 +56,8 @@ namespace BBTimes.CustomContent.NPCs
 			clock.spriteBase.SetActive(false);
 			Cell cell = clock.Cells[Random.Range(0, clock.Cells.Count)];
 			Direction dir = cell.RandomUncoveredDirection(new());
-			clock.Navigator.Entity.Teleport(cell.CenterWorldPosition + (dir.ToVector3() * (BBTimesManager.TileBaseOffset / 2 - 0.01f)));
+			clock.Navigator.Entity.Teleport(cell.CenterWorldPosition + (dir.ToVector3() * (LayerStorage.TileBaseOffset / 2 - 0.01f)));
 			clock.spriteBase.transform.eulerAngles = dir.ToRotation().eulerAngles;
-		}
-
-		public override void Sighted()
-		{
-			base.Sighted();
-			sighted++;
 		}
 
 		public override void PlayerSighted(PlayerManager player)
@@ -71,11 +66,6 @@ namespace BBTimes.CustomContent.NPCs
 			sighted++;
 		}
 
-		public override void Unsighted()
-		{
-			base.Unsighted();
-			sighted--;
-		}
 		public override void PlayerLost(PlayerManager player)
 		{
 			base.PlayerLost(player);
@@ -90,7 +80,7 @@ namespace BBTimes.CustomContent.NPCs
 				frameCounter--;
 				return;
 			}
-			if (sighted <= 0)
+			if (sighted <= 0 && !clock.looker.IsVisible)
 			{
 				clock.spriteBase.SetActive(true);
 				clock.behaviorStateMachine.ChangeState(new CrazyClock_Active(clock, clockData));
@@ -118,12 +108,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Update();
 
 			frame += speed * speedMultiplier * clock.TimeScale * Time.deltaTime;
-			int idx = Mathf.FloorToInt(frame);
-			if (idx > max)
-			{
-				idx = 0;
-				frame = 0;
-			}
+			int idx = Mathf.FloorToInt(frame) % max;
 				
 			clock.spriteRenderer[0].sprite = clockData.storedSprites[idx + (nervous ? 0 : 4)];
 			if (idx != lastIdx)
@@ -131,6 +116,13 @@ namespace BBTimes.CustomContent.NPCs
 				lastIdx = idx;
 				clock.Tick(tick);
 				tick = !tick;
+			}
+			if (!nervous)
+			{
+				cooldown -= clock.TimeScale * Time.deltaTime;
+				if (cooldown <= 0f)
+					clock.behaviorStateMachine.ChangeState(new CrazyClock_DespawnAndWait(clock, clockData));
+				
 			}
 		}
 
@@ -163,6 +155,7 @@ namespace BBTimes.CustomContent.NPCs
 		bool active = false;
 		bool nervous = false;
 		bool tick = false;
+		float cooldown = 45f;
 	}
 
 	internal class CrazyClock_Frown(CrazyClock clock, CrazyClockCustomData cdata) : CrazyClock_StateBase(clock, cdata)

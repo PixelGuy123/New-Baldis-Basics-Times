@@ -1,4 +1,5 @@
 ﻿using BBTimes.Manager;
+using PixelInternalAPI.Classes;
 using UnityEngine;
 
 
@@ -41,7 +42,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 						dir = Direction.North;
 						Debug.LogWarning("BB TIMES: CornerObjectSpawner spawned a transform with the default direction North");
 					}
-					transform.transform.position += dir.ToVector3() * (BBTimesManager.TileBaseOffset / 2);
+					transform.transform.position += dir.ToVector3() * (LayerStorage.TileBaseOffset / 2);
 					transform.transform.rotation = dir.ToRotation();
 				}
 				if (nonSafeEntityCell)

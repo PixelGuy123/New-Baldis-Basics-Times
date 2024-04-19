@@ -13,11 +13,18 @@ namespace BBTimes.Helpers
 			window.windowPre = Instantiate(window.windowPre);
 			window.windowPre.gameObject.SetActive(false);
 			window.windowPre.name = name;
+
 			var w = window.windowPre.gameObject.AddComponent<CustomWindowComponent>();
 			w.unbreakable = unbreakable;
+
 			DontDestroyOnLoad(window.windowPre);
 
-			Destroy(window.windowPre.audMan.audioDevice); // I know you're existing
+			if (window.windowPre.audMan.audioDevice)
+				Destroy(window.windowPre.audMan.audioDevice); // I know you're existing
+			if (AudioManager.totalIds > 0)
+				AudioManager.totalIds--;
+			window.windowPre.audMan.sourceId = 0;
+
 
 			return window;
 		}
