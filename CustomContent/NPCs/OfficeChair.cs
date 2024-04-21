@@ -31,8 +31,16 @@ namespace BBTimes.CustomContent.NPCs
 
         const float awaitCooldown = 40f;
 
+		internal OfficeChair_FindOffice bringingState;
 
-    }
+		public override void Despawn()
+		{
+			bringingState?.CancelTargetGrab();
+			base.Despawn();
+		}
+
+
+	}
 
     internal class OfficeChair_StateBase(OfficeChair office) : NpcState(office) // A default npc state
     {
@@ -65,6 +73,8 @@ namespace BBTimes.CustomContent.NPCs
             ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, cells[Random.Range(0, cells.Count)].FloorWorldPosition));
             man.QueueAudio(dat.soundObjects[0], true);
             man.SetLoop(true);
+			chair.bringingState = this;
+
             if (target != null)
             {
                 entityBaseHeight = target.Height;
@@ -99,9 +109,7 @@ namespace BBTimes.CustomContent.NPCs
             
 			if (!chair || chair.Navigator.Entity.Frozen || (chair.transform.position - target.transform.position).magnitude > 5f) // If chair ever becomes null, also stop this
             {
-                target.SetHeight(entityBaseHeight);
-                SetTarget(true);
-                target = null;
+				CancelTargetGrab();
             }
 			else
 				target.Teleport(chair.transform.position);
@@ -133,6 +141,13 @@ namespace BBTimes.CustomContent.NPCs
             else
                 target.GetComponent<NPC>()?.DisableCollision(!active);
         }
+
+		public void CancelTargetGrab()
+		{
+			target.SetHeight(entityBaseHeight);
+			SetTarget(true);
+			target = null;
+		}
 
         const float heightOffset = 3f;
     }

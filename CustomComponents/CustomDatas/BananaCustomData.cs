@@ -20,7 +20,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			rendererBase.transform.localPosition = Vector3.zero;
 			rendererBase.SetActive(true);
 
-			var comp = GetComponent<Banana>();
+			var comp = GetComponent<ITM_Banana>();
 			gameObject.layer = LayerStorage.standardEntities;
 			comp.entity = gameObject.CreateEntity(1f, 2f, rendererBase.transform, [comp]);
 

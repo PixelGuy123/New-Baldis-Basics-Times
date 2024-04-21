@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class Present : Item
+	public class ITM_Present : Item
 	{
 		public override bool Use(PlayerManager pm)
 		{

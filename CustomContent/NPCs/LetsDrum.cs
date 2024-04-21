@@ -20,6 +20,15 @@ namespace BBTimes.CustomContent.NPCs
 
 		const float speed = 15f;
 
+		bool annoying = false;
+
+		public override void Despawn()
+		{
+			if (annoying)
+				AudioListener.pause = false;
+			base.Despawn();
+		}
+
 		public override void Initialize()
 		{
 			base.Initialize();
@@ -30,6 +39,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator Annoyance()
 		{
+			annoying = true;
 			AudioListener.pause = true;
 			float cooldown = Random.Range(10f, 15f);
 			bool paused = false;
@@ -51,6 +61,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			superLoudMan.FlushQueue(true);
 			AudioListener.pause = false;
+			annoying = false;
 
 			yield break;
 		}

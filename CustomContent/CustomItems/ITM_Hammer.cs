@@ -4,7 +4,7 @@ using PixelInternalAPI.Classes;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-    public class Hammer : Item
+    public class ITM_Hammer : Item
     {
         public override bool Use(PlayerManager pm)
         {

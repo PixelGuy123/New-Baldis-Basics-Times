@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class Bell : Item, IEntityTrigger
+	public class ITM_Bell : Item, IEntityTrigger
 	{
 		public override bool Use(PlayerManager pm)
 		{

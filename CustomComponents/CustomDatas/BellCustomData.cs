@@ -20,7 +20,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			rendererBase.transform.localPosition = Vector3.zero;
 			rendererBase.gameObject.SetActive(true);
 
-			var comp = GetComponent<Bell>();
+			var comp = GetComponent<ITM_Bell>();
 			gameObject.layer = LayerStorage.standardEntities;
 			comp.entity = gameObject.CreateEntity(1.5f, 2.5f, rendererBase.transform, [comp]);
 

@@ -14,7 +14,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			GetComponent<HeadachePill>().audSwallow = soundObjects[0];
+			GetComponent<ITM_HeadachePill>().audSwallow = soundObjects[0];
 		}
 	}
 }

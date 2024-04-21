@@ -19,9 +19,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var d = GetComponent<LetsDrum>();
 			Destroy(GetComponent<PropagatedAudioManager>()); // Removes the original propagated audio manager
 
-			d.superLoudMan = d.gameObject.CreateAudioManager(d.GetComponent<AudioSource>(), false, [], true);
-			d.GetComponent<AudioSource>().enabled = true;
-			d.superLoudMan.MakeAudioManagerNonPositional();
+			d.superLoudMan = d.gameObject.CreateAudioManager(d.GetComponent<AudioSource>(), false, [], true).MakeAudioManagerNonPositional();
+			d.superLoudMan.audioDevice.enabled = true;
 			d.superLoudMan.ignoreListenerPause = true;
 			d.superLoudMan.audioDevice.ignoreListenerVolume = true;
 

@@ -52,7 +52,9 @@ namespace BBTimes.Manager
 				new() { selection =  ObjectCreationExtension.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lamp.png")), 25f), 2.9f, LayerStorage.ignoreRaycast)
 				.AddBoxCollider(Vector3.zero, new Vector3(2f, 10f, 2f), false).transform, weight = 75 },
 				new() { selection =  ObjectCreationExtension.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lightBulb.png")), 65f), 5.1f, LayerStorage.ignoreRaycast)
-				.AddBoxCollider(Vector3.zero, new Vector3(2f, 10f, 2f), false).transform, weight = 35 }
+				.AddBoxCollider(Vector3.zero, new Vector3(2f, 10f, 2f), false).transform, weight = 35 },
+				new() { selection =  ObjectCreationExtension.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lampShaped.png")), 25f), 3.1f, LayerStorage.ignoreRaycast)
+				.AddBoxCollider(Vector3.zero, new Vector3(2f, 10f, 2f), false).transform, weight = 55 },
 				];
 
 			var cos = AddFunctionToEveryRoom<CornerObjectSpawner>(FacultyPrefix);

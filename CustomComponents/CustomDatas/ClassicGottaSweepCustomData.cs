@@ -20,11 +20,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 			moveModMultiplier.SetValue(sweep, 1f);
 		}
 
-		protected override void Start()
-		{
-			base.Start();
-			GetComponent<AudioManager>().audioDevice.dopplerLevel = 2f; // Sweep always gotta have this lol
-		}
+		private void Start() => GetComponent<AudioManager>().audioDevice.dopplerLevel = 2f; // Sweep always gotta have this lol
+		
 
 		// FieldInfos
 		static readonly FieldInfo maxActive = AccessTools.Field(typeof(GottaSweep), "maxActive");

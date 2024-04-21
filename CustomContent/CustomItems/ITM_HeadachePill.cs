@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class HeadachePill : Item
+	public class ITM_HeadachePill : Item
 	{
 		public override bool Use(PlayerManager pm)
 		{

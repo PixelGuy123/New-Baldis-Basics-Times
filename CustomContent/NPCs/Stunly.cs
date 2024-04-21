@@ -154,6 +154,14 @@ namespace BBTimes.CustomContent.NPCs
 			cancelledEffect = true;
 		}
 
+		public override void Despawn()
+		{
+			stunlyState?.ForceRemoveEffect();
+			if (activeStar != null)
+				Destroy(activeStar);
+			base.Despawn();
+		}
+
 		bool angry;
 
 		bool shaking;
@@ -186,6 +194,8 @@ namespace BBTimes.CustomContent.NPCs
 		readonly BaseModifier lookerMod = new(0);
 
 		Coroutine stunCor;
+
+		internal Stunly_Flee stunlyState;
 
 		public static List<Stunly> affectedByStunly = [];
 
@@ -312,6 +322,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			stunly.Navigator.maxSpeed = speed;
 			stunly.Navigator.SetSpeed(speed);
+			stunly.stunlyState = this;
 			map.Activate();
 			map.QueueUpdate(); // Omg there's these methods
 			ChangeNavigationState(new NavigationState_WanderFlee(stunly, 63, map));
@@ -325,9 +336,7 @@ namespace BBTimes.CustomContent.NPCs
 				stuncooldown -= stunly.TimeScale * Time.deltaTime;
 				if (stuncooldown < 0f || stunly.cancelledEffect)
 				{
-					stunly.SetBlind(subject, false, wasPlayer);
-					removedStun = true;
-					stunly.cancelledEffect = false;
+					ForceRemoveEffect();
 				}
 			}
 
@@ -338,6 +347,13 @@ namespace BBTimes.CustomContent.NPCs
 				stunly.behaviorStateMachine.ChangeState(new Stunly_WanderNormal(stunly));
 			}
 
+		}
+
+		public void ForceRemoveEffect()
+		{
+			stunly.SetBlind(subject, false, wasPlayer);
+			removedStun = true;
+			stunly.cancelledEffect = false;
 		}
 
 

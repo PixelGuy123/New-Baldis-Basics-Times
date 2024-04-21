@@ -11,7 +11,8 @@ using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
 using MTM101BaldAPI;
-using System.Runtime.Remoting.Messaging;
+using BBTimes.CustomContent.CustomItems;
+using PixelInternalAPI.Components;
 
 
 namespace BBTimes.Plugin
@@ -29,9 +30,15 @@ namespace BBTimes.Plugin
 			_modPath = AssetLoader.GetModPath(this);
 
 			LoadingEvents.RegisterOnAssetsLoaded(() => BBTimesManager.InitializeContentCreation(this), false);
+
 			LoadingEvents.RegisterOnAssetsLoaded(() =>
 			{
+
 				FindObjectsOfType<CustomBaseData>(true).Do(x => x.SetupPrefabPost());
+				// Other stuff to setup
+				ITM_GoldenQuarter.quarter = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;
+
+
 			}, true); // Post
 
 			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, ld) =>
@@ -240,6 +247,8 @@ namespace BBTimes.Plugin
 
 		public static string ModPath => _modPath;
 
+		internal const string CharacterRadarGUID = "org.aestheticalz.baldi.characterradar";
+
 	}
 
 	static class ModInfo
@@ -278,6 +287,16 @@ namespace BBTimes.Plugin
 		{
 			__instance.CompleteMapOnReady();
 		}
+	}
+	[HarmonyPatch(typeof(PlayerMovement))]
+	internal class Fast
+	{
+
+		[HarmonyPatch("Start")]
+		[HarmonyPostfix]
+		private static void GottaGoFAST(PlayerMovement __instance) =>
+			__instance.GetComponent<PlayerAttributesComponent>().SpeedMods.Add(new(3, 3));
+
 	}
 #endif
 

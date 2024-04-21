@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class GumItem : Item, IEntityTrigger
+	public class ITM_Gum : Item, IEntityTrigger
 	{
 		public override bool Use(PlayerManager pm)
 		{

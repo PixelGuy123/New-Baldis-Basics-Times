@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using UnityEngine;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.ModPatches
 {
@@ -105,9 +106,9 @@ namespace BBTimes.ModPatches
 			{
 				___ec.StopAllCoroutines(); // Might look a little dangerous, but I have no other way to disable events
 
-				foreach (var v in ___ec.CurrentEventTypes)
+				for (int i = 0; i < ___ec.CurrentEventTypes.Count; i++)
 				{
-					var v2 = ___ec.GetEvent(v);
+					var v2 = ___ec.GetEvent(___ec.CurrentEventTypes[i]);
 					if (v2.Active)
 						v2.End(); // End all events
 				}
@@ -128,13 +129,10 @@ namespace BBTimes.ModPatches
 					Singleton<MusicManager>.Instance.MidiPlayer.MPTK_ChannelEnableSet(i, false);
 				}
 
-				var core = Singleton<CoreGameManager>.Instance;
-				for (int i = 0; i < core.setPlayers; i++)
-				{
-					var cam = core.GetCamera(i);
-					cam.GetComponent<CustomPlayerCameraComponent>().ReverseSlideFOVAnimation(new BaseModifier(), 55f, 9.5f); // Animation (weird way, I know)
-				}
-				core.audMan.PlaySingle(angryBal);
+				for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)
+					Singleton<CoreGameManager>.Instance.GetCamera(i).GetComponent<CustomPlayerCameraComponent>().ReverseSlideFOVAnimation(new BaseModifier(), 55f, 9.5f); // Animation (weird way, I know)
+
+				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(angryBal);
 
 				for (int i = 0; i < ___ec.Npcs.Count; i++)
 				{
@@ -169,7 +167,7 @@ namespace BBTimes.ModPatches
 						var c = Random.Range(0, cs.Count);
 						var obj = Object.Instantiate(fire, cs[c].TileTransform);
 						obj.transform.localScale = Vector3.one * Random.Range(0.6f, 1.5f);
-						obj.transform.position = cs[c].FloorWorldPosition + new Vector3(Random.Range(-3f, 3f), (4 * obj.transform.localScale.y) + 0.28f, Random.Range(-3f, 3f)); // 1º Function YAAAY y = ax + b >> y = 4x + 0.25 should give the expected y to the fire
+						obj.transform.position = cs[c].FloorWorldPosition + new Vector3(Random.Range(-3f, 3f), obj.transform.localScale.y.LinearEquation(4f, 0.28f), Random.Range(-3f, 3f)); // 1º Function YAAAY y = ax + b >> y = 4x + 0.25 should give the expected y to the fire
 						obj.SetActive(true);
 						maxCooldown -= ___ec.EnvironmentTimeScale * 0.5f;
 						if (maxCooldown < 0.1f)

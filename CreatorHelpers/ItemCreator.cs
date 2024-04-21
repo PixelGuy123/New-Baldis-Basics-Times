@@ -1,7 +1,10 @@
 ﻿using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.Plugin;
+using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
+using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Extensions;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -32,6 +35,18 @@ namespace BBTimes.Helpers
 			item.name = name;
 			item.item = itemobj.GetComponent<T>();
 			return item;
+		}
+
+		public static ItemObject DuplicateItem(this ItemObject item, ItemMetaData data, string nameKey)
+		{
+			var it = Instantiate(item);
+			it.nameKey = nameKey;
+
+			var duplicate = item.item.DuplicatePrefab();
+			it.item = duplicate;
+			data.itemObjects = data.itemObjects.AddToArray(it);
+
+			return it;
 		}
 
 		static Sprite[] GetAllItemSpritesFrom(string name)

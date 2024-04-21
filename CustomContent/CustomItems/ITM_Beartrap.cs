@@ -2,7 +2,7 @@
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class Banana : Item, IEntityTrigger
+	public class ITM_Beartrap : Item, IEntityTrigger
 	{
 		public override bool Use(PlayerManager pm)
 		{
@@ -25,15 +25,11 @@ namespace BBTimes.CustomContent.CustomItems
 				var e = other.GetComponent<Entity>();
 				if (e != null && e.Grounded)
 				{
-					audMan.PlaySingle(aud_slip);
-					rendererBase.gameObject.SetActive(false);
-					target = e;
-					moveMod.movementAddend = e.transform.forward * 85f;
-					transform.SetParent(e.transform);
-					transform.localPosition = Vector3.zero;
-
-					e.ExternalActivity.moveMods.Add(moveMod);
 					active = true;
+					target = e;
+					target.ExternalActivity.moveMods.Add(moveMod);
+					audMan.PlaySingle(audTrap);
+					renderer.sprite = closedTrap;
 				}
 			}
 		}
@@ -61,22 +57,25 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 
 		[SerializeField]
-		public Transform rendererBase;
+		internal Entity entity;
 
 		[SerializeField]
-		public Entity entity;
+		internal SoundObject audTrap;
 
 		[SerializeField]
-		public SoundObject aud_slip;
+		internal SpriteRenderer renderer;
 
 		[SerializeField]
-		public PropagatedAudioManager audMan;
+		internal PropagatedAudioManager audMan;
 
-		readonly MovementModifier moveMod = new(Vector3.zero, 0.1f, 1); // Higher priority than belt managers, lower than Bsodas
+		[SerializeField]
+		internal Sprite closedTrap;
+
+		readonly MovementModifier moveMod = new(Vector3.zero, 0f); // Higher priority than belt managers, lower than Bsodas
 
 		bool active = false;
 
-		float cooldown = 5f;
+		float cooldown = 10f;
 
 		Entity target;
 

@@ -142,6 +142,7 @@ namespace BBTimes.Manager
 			AddRule("gumming", "principal_nospittinggums.wav", "Vfx_PRI_NoGumming");
 			AddRule("littering", "principal_noLittering.wav", "Vfx_PRI_NoLittering");
 			AddRule("ugliness", "principal_nouglystun.wav", "Vfx_PRI_NoUglyStun");
+			AddRule("stabbing", "principal_nostabbing.wav", "Vfx_PRI_NoStabbing");
 
 
 			// Math Machine WOOOOW noises
@@ -235,13 +236,17 @@ namespace BBTimes.Manager
 				zestyBarAud.SetValue(zesty, audio); // << idk if I need this, but whatever
 			}
 
+			// Global Assets
+			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "potion_drink.wav")), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
+			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "pc_stab.wav")), "Vfx_PC_stab", SoundType.Voice, Color.yellow));
+
 
 			// Local Methods
 			static void AddRule(string name, string audioName, string vfx) =>
 				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", audioName)), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));
 		} // 
 
-		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc");
+		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc"); static string GlobalAssetsPath => Path.Combine(BasePlugin.ModPath, "GlobalAssets");
 
 		const string AudioFolder = "Audios", TextureFolder = "Textures", SfsFolder = "Sfs";
 

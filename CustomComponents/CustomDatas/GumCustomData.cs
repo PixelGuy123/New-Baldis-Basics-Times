@@ -16,7 +16,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			base.SetupPrefab();
 
-			var comp = GetComponent<GumItem>();
+			var comp = GetComponent<ITM_Gum>();
 			gameObject.layer = LayerStorage.standardEntities;
 
 			comp.audMan = gameObject.CreateAudioManager(55, 75, true);
