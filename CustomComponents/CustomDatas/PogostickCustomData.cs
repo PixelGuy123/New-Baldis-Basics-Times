@@ -22,7 +22,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			falseRenderer.transform.SetParent(transform);
 			falseRenderer.transform.localPosition = Vector3.zero;
 
-			po.entity = gameObject.CreateEntity(2f, rendererBase: falseRenderer.transform);
+			po.entity = gameObject.CreateEntity(2f, rendererBase:falseRenderer.transform);
 			gameObject.layer = LayerStorage.ignoreRaycast;
 			po.rendererBase = falseRenderer.transform;
 		}

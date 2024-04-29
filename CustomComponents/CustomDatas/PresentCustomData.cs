@@ -16,10 +16,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			var present = GetComponent<ITM_Present>();
-			present.aud_unbox = soundObjects[0];
-			present.audMan = gameObject.CreateAudioManager(gameObject.CreateAudioSource(45f, 75f), false, [], true);
-			present.audMan.MakeAudioManagerNonPositional();
+			GetComponent<ITM_Present>().aud_unbox = soundObjects[0];
 		}
 
 		public override void SetupPrefabPost()

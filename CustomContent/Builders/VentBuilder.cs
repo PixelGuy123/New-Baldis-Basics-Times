@@ -4,6 +4,7 @@ using PixelInternalAPI.Extensions;
 using BBTimes.ModPatches.EnvironmentPatches;
 using System.Collections.Generic;
 using UnityEngine;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.CustomContent.Builders
 {
@@ -94,6 +95,8 @@ namespace BBTimes.CustomContent.Builders
 
 			vents[0].BlockMe();
 
+			ec.GetComponent<EnvironmentControllerData>().Vents.AddRange(vents);
+
 
 		}
 
@@ -166,6 +169,8 @@ namespace BBTimes.CustomContent.Builders
 			}
 
 			vents[0].BlockMe();
+
+			ec.GetComponent<EnvironmentControllerData>().Vents.AddRange(vents);
 		}
 
 		[SerializeField]

@@ -8,7 +8,7 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
-			if (usingPogo)
+			if (usingPogo || pm.hidden)
 			{
 				Destroy(gameObject);
 				return false;

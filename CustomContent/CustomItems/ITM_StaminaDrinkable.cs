@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_BSED : Item
+	public class ITM_StaminaDrinkable : Item
 	{
 		public override bool Use(PlayerManager pm)
 		{
@@ -14,7 +14,11 @@ namespace BBTimes.CustomContent.CustomItems
 			this.pm = pm;
 			pm.RuleBreak("Drinking", 1.5f);
 			var comp = pm.GetComponent<PlayerAttributesComponent>();
+			sMod = new(staminaMaxMod, staminaRiseMod, staminaDropMod);
 			comp.StaminaMods.Add(sMod);
+			if (attribute != null)
+				comp.AddAttribute(attribute);
+
 			StartCoroutine(Timer(comp));
 
 			return true;
@@ -22,7 +26,6 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Timer(PlayerAttributesComponent comp)
 		{
-			float cooldown = 15f;
 			while (cooldown > 0f)
 			{
 				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
@@ -30,14 +33,29 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 
 			comp.StaminaMods.Remove(sMod);
+			comp.RemoveAttribute(attribute);
 
 			Destroy(gameObject);
 
 			yield break;
 		}
 
-		internal static SoundObject audDrink;
+		internal void SetMod(float staminamax, float staminarise, float staminadrop) 
+		{
+			staminaMaxMod = staminamax;
+			staminaRiseMod = staminarise;
+			staminaDropMod = staminadrop;
+		}
 
-		readonly StaminaModifier sMod = new(1f, 2f, 0.5f);
+		StaminaModifier sMod;
+
+		[SerializeField]
+		internal SoundObject audDrink;
+
+		[SerializeField]
+		internal float staminaMaxMod = 1f, staminaRiseMod = 1f, staminaDropMod = 1f, cooldown = 15f;
+
+		[SerializeField]
+		internal string attribute;
 	}
 }

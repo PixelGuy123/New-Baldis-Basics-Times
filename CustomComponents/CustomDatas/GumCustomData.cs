@@ -19,7 +19,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var comp = GetComponent<ITM_Gum>();
 			gameObject.layer = LayerStorage.standardEntities;
 
-			comp.audMan = gameObject.CreateAudioManager(55, 75, true);
+			comp.audMan = gameObject.CreatePropagatedAudioManager(55, 75).SetAudioManagerAsPrefab();
 			comp.aud_fly = GenericExtensions.FindResourceObjectByName<SoundObject>("Ben_Gum_Whoosh");
 			comp.aud_splash = GenericExtensions.FindResourceObjectByName<SoundObject>("Ben_Splat");
 			comp.aud_spit = soundObjects[0];
@@ -31,7 +31,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			comp.flyingSprite = comp.rendererBase.Find("Sprite_Flying");
 			comp.groundedSprite = comp.rendererBase.Find("Sprite_Grounded");
 
-			comp.entity = gameObject.CreateEntity(1f, 1f, out var collider, out _, comp.rendererBase, [comp]).SetEntityCollisionLayerMask(2113537); // 2113537 is the layermask of the gum, I can't figure out what are the layers because Unity sucks
+			comp.entity = gameObject.CreateEntity(1f, 1f, out var collider, out _, comp.rendererBase, [comp]).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
 			collider.height = 4;
 			
 		}

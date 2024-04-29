@@ -13,6 +13,7 @@ using PixelInternalAPI.Extensions;
 using MTM101BaldAPI;
 using BBTimes.CustomContent.CustomItems;
 using PixelInternalAPI.Components;
+using BBTimes.CustomContent.Events;
 
 
 namespace BBTimes.Plugin
@@ -37,6 +38,7 @@ namespace BBTimes.Plugin
 				FindObjectsOfType<CustomBaseData>(true).Do(x => x.SetupPrefabPost());
 				// Other stuff to setup
 				ITM_GoldenQuarter.quarter = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;
+				BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
 
 
 			}, true); // Post
@@ -288,16 +290,16 @@ namespace BBTimes.Plugin
 			__instance.CompleteMapOnReady();
 		}
 	}
-	[HarmonyPatch(typeof(PlayerMovement))]
-	internal class Fast
-	{
+	//[HarmonyPatch(typeof(PlayerMovement))]
+	//internal class Fast
+	//{
 
-		[HarmonyPatch("Start")]
-		[HarmonyPostfix]
-		private static void GottaGoFAST(PlayerMovement __instance) =>
-			__instance.GetComponent<PlayerAttributesComponent>().SpeedMods.Add(new(3, 3));
+	//	[HarmonyPatch("Start")]
+	//	[HarmonyPostfix]
+	//	private static void GottaGoFAST(PlayerMovement __instance) =>
+//			__instance.GetComponent<PlayerAttributesComponent>().SpeedMods.Add(new(3, 3));
 
-	}
+	//}
 #endif
 
 }

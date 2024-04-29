@@ -8,7 +8,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			GetComponent<ITM_Pencil>().audMan = gameObject.CreateAudioManager(65f, 85f, true);
+			GetComponent<ITM_Pencil>().audMan = gameObject.CreatePropagatedAudioManager(65f, 85f).SetAudioManagerAsPrefab();
 		}
 	}
 }

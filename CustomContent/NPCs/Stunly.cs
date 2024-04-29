@@ -187,7 +187,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal UnityEngine.UI.Image image;
 
 		[SerializeField]
-		public StarObject stars;
+		internal StarObject stars;
 
 		StarObject activeStar;
 

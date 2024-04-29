@@ -24,7 +24,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			gameObject.layer = LayerStorage.standardEntities;
 			comp.entity = gameObject.CreateEntity(1.5f, 2.5f, rendererBase.transform, [comp]);
 
-			comp.audMan = gameObject.CreateAudioManager(165, 200, true);
+			comp.audMan = gameObject.CreatePropagatedAudioManager(165, 200).SetAudioManagerAsPrefab();
 			comp.audBell = soundObjects[0];
 
 			comp.renderer = (SpriteRenderer)rendererBase.renderers[0];

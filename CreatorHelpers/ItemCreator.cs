@@ -68,7 +68,7 @@ namespace BBTimes.Helpers
 			Debug.Log("current file: " + Path.GetFileNameWithoutExtension(text));
 #endif
 			var tex = AssetLoader.TextureFromFile(text);
-			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, new((float)tex.width / 2 / tex.width, (float)tex.height / 2 / tex.height), 50f);
+			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, 50f);
 			repeatedOnes[0] = text;
 
 			text = files.First(x => Path.GetFileName(x).StartsWith(itemSmallIconPrefix));
@@ -76,7 +76,7 @@ namespace BBTimes.Helpers
 			Debug.Log("current file: " + Path.GetFileNameWithoutExtension(text));
 #endif
 			tex = AssetLoader.TextureFromFile(text);
-			sprs[0] = AssetLoader.SpriteFromTexture2D(tex, new((float)tex.width / 2 /tex.width, (float)tex.height / 2 / tex.height), 1f);
+			sprs[0] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, 1f);
 			repeatedOnes[1] = text;
 
 			// The rest (which also follows up a pattern)
@@ -88,7 +88,7 @@ namespace BBTimes.Helpers
 
 				var ar = Path.GetFileNameWithoutExtension(files[i]).Split('_');
 				tex = AssetLoader.TextureFromFile(files[i]);
-				sprs[z] = AssetLoader.SpriteFromTexture2D(tex, new((float)tex.width / 2 / tex.width, (float)tex.height / 2 / tex.height), float.Parse(ar[1]));
+				sprs[z] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, float.Parse(ar[1]));
 				sprs[z].name = ar[0];
 				repeatedOnes[z] = files[i];
 				z++; // Increment by 1

@@ -18,6 +18,16 @@ namespace BBTimes.Helpers
 		readonly static FieldInfo _npc_ignoreBelts = AccessTools.Field(typeof(NPC), "ignoreBelts");
 		readonly static FieldInfo _npc_poster = AccessTools.Field(typeof(NPC), "poster");
 		readonly static FieldInfo _nav_avoidRooms = AccessTools.Field(typeof(Navigator), "avoidRooms");
+		// looker
+		readonly static FieldInfo _looker_fieldOfView = AccessTools.Field(typeof(Looker), "fieldOfView");
+		readonly static FieldInfo _looker_hasFov = AccessTools.Field(typeof(Looker), "hasFov");
+
+		public static T SetNPCLookerFov<T>(this T obj, float fieldOfView) where T : NPC // Basic builder pattern this (yeah it is lazy, but the api is gonna have it anyways)
+		{
+			_looker_hasFov.SetValue(obj.looker, true);
+			_looker_fieldOfView.SetValue(obj.looker, fieldOfView);
+			return obj;
+		}
 
 		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue, bool avoidRooms = true, bool grounded = true) where T : NPC where C : CustomNPCData
 		{
@@ -155,7 +165,7 @@ namespace BBTimes.Helpers
 #endif
 			var ar = Path.GetFileNameWithoutExtension(text).Split('_');
 			var tex = AssetLoader.TextureFromFile(text);
-			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, new((float)tex.width / 2 / tex.width, (float)tex.height / 2 / tex.height), float.Parse(ar[ar.Length - 1]));
+			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, float.Parse(ar[ar.Length - 1]));
 			sprs[1].name = ar[0];
 			repeatedOnes[1] = text;
 
@@ -168,7 +178,7 @@ namespace BBTimes.Helpers
 
 					ar = Path.GetFileNameWithoutExtension(files[i]).Split('_');
 					tex = AssetLoader.TextureFromFile(files[i]);
-					sprs[z] = AssetLoader.SpriteFromTexture2D(tex, new((float)tex.width / 2 / tex.width, (float)tex.height / 2 / tex.height), float.Parse(ar[1]));
+					sprs[z] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, float.Parse(ar[1]));
 					sprs[z].name = ar[0];
 					repeatedOnes[z] = files[i];
 					z++; // Increment by 1

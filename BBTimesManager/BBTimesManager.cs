@@ -22,7 +22,7 @@ namespace BBTimes.Manager
 {
 	internal static partial class BBTimesManager // basically holds the logic to create everything to the game
 	{
-
+		
 		internal static void InitializeContentCreation(BaseUnityPlugin plug)
 		{
 			try
@@ -60,6 +60,7 @@ namespace BBTimes.Manager
 		static void AddExtraComponentsForSomeObjects()
 		{
 			GenericExtensions.FindResourceObjects<MainGameManager>().Do(x => x.gameObject.AddComponent<MainGameManagerExtraComponent>()); // Adds extra component for every MainGameManager
+			GenericExtensions.FindResourceObjects<EnvironmentController>().Do(x => x.gameObject.AddComponent<EnvironmentControllerData>());
 		}
 
 		static void SetAssets()
@@ -218,14 +219,6 @@ namespace BBTimes.Manager
 
 			prefabs.Add(playerVisual); // prefab too
 
-			// Gotta sweep audio
-			var aud = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "GottaSweep", "GS_Sweeping.wav")), "Vfx_GottaSweep", SoundType.Voice, new(0, 0.6226f, 0.0614f));
-			GenericExtensions.FindResourceObjects<GottaSweep>().Do((x) =>
-			{
-				var c = x.gameObject.AddComponent<GottaSweepComponent>();
-				c.aud_sweep = aud;
-			});
-
 			// Zesty Bar audio change
 			FieldInfo zestyBarAud = AccessTools.Field(typeof(ITM_ZestyBar), "audEat");
 			foreach (var zesty in GenericExtensions.FindResourceObjects<ITM_ZestyBar>())
@@ -252,7 +245,7 @@ namespace BBTimes.Manager
 
 		internal const int MaximumNumballs = 18;
 
-		public readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")];
+		public readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")]; // floor datas
 
 		public readonly static AssetManager man = new();
 

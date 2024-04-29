@@ -31,6 +31,7 @@ namespace BBTimes.Extensions.ObjectCreationExtensions
 			DontDestroyOnLoad(obj);
 			obj.name = "SpriteBillboard_" + sprite.name;
 			obj.AddComponent<RendererContainer>().renderers = [comp];
+			obj.SetActive(false);
 			return obj;
 		}
 

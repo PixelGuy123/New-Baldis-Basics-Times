@@ -31,9 +31,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Timer(NPC tar)
 		{
-			tar.Navigator.Entity.SetFrozen(true);
-			tar.Navigator.Entity.SetTrigger(false);
-			tar.DisableCollision(true);
+			tar.Navigator.Entity.IgnoreEntity(pm.plm.Entity, true);
+			tar.Navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
 
 			float cooldown = 20f;
 			while (cooldown > 0f)
@@ -42,9 +41,8 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			tar.Navigator.Entity.SetFrozen(false);
-			tar.Navigator.Entity.SetTrigger(true);
-			tar.DisableCollision(false);
+			tar.Navigator.Entity.IgnoreEntity(pm.plm.Entity, false);
+			tar.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
 
 			Destroy(gameObject);
 
@@ -55,5 +53,7 @@ namespace BBTimes.CustomContent.CustomItems
 		internal PropagatedAudioManager audMan;
 
 		internal static SoundObject audStab;
+
+		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
 	}
 }

@@ -3,6 +3,11 @@ using UnityEngine;
 using static UnityEngine.Object;
 using System.Reflection;
 using HarmonyLib;
+using BBTimes.CustomComponents.CustomDatas;
+using BBTimes.Plugin;
+using MTM101BaldAPI.AssetTools;
+using System.IO;
+using System.Linq;
 
 namespace BBTimes.Helpers
 {
@@ -15,10 +20,10 @@ namespace BBTimes.Helpers
 		readonly static FieldInfo _ev_potentialRoomAssets = AccessTools.Field(typeof(RandomEvent), "potentialRoomAssets");
 		readonly static FieldInfo _ev_eventDescKey = AccessTools.Field(typeof(RandomEvent), "eventDescKey");
 
-		public static E CreateEvent<E>(string name, string eventDescriptionKey, float minEventTime, float maxEventTime, WeightedRoomAsset[] rooms) where E : RandomEvent
+		public static E CreateEvent<E, C>(string name, string eventDescriptionKey, float minEventTime, float maxEventTime, WeightedRoomAsset[] rooms) where E : RandomEvent where C : CustomEventData
 		{
 			// Object setup
-			var ev = new GameObject(name + "_CustomEvent").AddComponent<E>();
+			var ev = new GameObject(name).AddComponent<E>();
 			ev.gameObject.SetActive(false);
 			DontDestroyOnLoad(ev.gameObject);
 
@@ -29,10 +34,37 @@ namespace BBTimes.Helpers
 			_ev_potentialRoomAssets.SetValue(ev, rooms);
 			_ev_eventDescKey.SetValue(ev, eventDescriptionKey);
 
+			var cus = ev.gameObject.AddComponent<C>();
+			cus.storedSprites = GetAllEventSpritesFrom(name);
+			cus.GetAudioClips();
+			cus.SetupPrefab();
 
 			return ev;
 		}
 
-		
+
+
+		static Sprite[] GetAllEventSpritesFrom(string name)
+		{
+			var path = Path.Combine(BasePlugin.ModPath, "events", name, "Textures");
+			if (!Directory.Exists(path))
+				return [];
+
+			string[] files = [.. Directory.GetFiles(path).OrderBy(Path.GetFileNameWithoutExtension)]; // Guarantee the order of the files
+			var sprs = new Sprite[files.Length];
+
+			for (int i = 0; i < files.Length; i++)
+			{
+				var ar = Path.GetFileNameWithoutExtension(files[i]).Split('_');
+				var tex = AssetLoader.TextureFromFile(files[i]);
+				sprs[i] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, float.Parse(ar[1]));
+				sprs[i].name = ar[0];
+			}
+
+
+			return sprs;
+		}
+
+
 	}
 }

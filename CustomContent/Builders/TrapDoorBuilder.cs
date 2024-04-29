@@ -1,13 +1,20 @@
-﻿using BBTimes.CustomContent.Objects;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomContent.Objects;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
 {
+	// ********* future note: make a Load method for this **************
+	// *****************************************************************
+	// *****************************************************************
+	// *****************************************************************
+
 	public class TrapDoorBuilder : ObjectBuilder
 	{
 		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
 		{
 			base.Build(ec, builder, room, cRng);
+			var ecData = ec.GetComponent<EnvironmentControllerData>();
 			var t = room.GetTilesOfShape([TileShape.Corner, TileShape.End], CellCoverage.Down, false);
 			int max = cRng.Next(minAmount, maxAmount + 1);
 			if (t.Count == 0)
@@ -23,13 +30,13 @@ namespace BBTimes.CustomContent.Builders
 				if (t.Count == 0)
 					break;
 				int idx = cRng.Next(t.Count);
-				var trap = CreateTrapDoor(t[idx], ec);
+				var trap = CreateTrapDoor(t[idx], ec, ecData);
 				t.RemoveAt(idx);
 
 				if (t.Count > 0 && max - i > 1 && cRng.NextDouble() >= 0.55) // Linked trapdoor
 				{
 					idx = cRng.Next(t.Count);
-					var strap = CreateTrapDoor(t[idx], ec);
+					var strap = CreateTrapDoor(t[idx], ec, ecData);
 					trap.SetLinkedTrapDoor(strap);
 					strap.SetLinkedTrapDoor(trap);
 					t.RemoveAt(idx);
@@ -47,7 +54,7 @@ namespace BBTimes.CustomContent.Builders
 
 		}
 
-		private Trapdoor CreateTrapDoor(Cell pos, EnvironmentController ec)
+		private Trapdoor CreateTrapDoor(Cell pos, EnvironmentController ec, EnvironmentControllerData dat)
 		{
 			var trapdoor = Instantiate(trapDoorpre);
 			trapdoor.transform.SetParent(pos.TileTransform);
@@ -59,6 +66,9 @@ namespace BBTimes.CustomContent.Builders
 			pos.AddRenderer(trapdoor.text.GetComponent<MeshRenderer>());
 			var i = ec.map.AddIcon(icon, trapdoor.transform, Color.white);
 			i.gameObject.SetActive(true);
+
+			dat.Trapdoors.Add(trapdoor);
+
 			return trapdoor;
 		}
 

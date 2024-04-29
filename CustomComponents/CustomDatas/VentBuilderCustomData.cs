@@ -58,8 +58,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var v = vent.GetComponent<Vent>();
 			v.renderer = visual.GetComponent<MeshRenderer>();
 			v.ventTexs = texs;
-			v.normalVentAudioMan = vent.CreateAudioManager(2f, 25f, true); // Two propagated audio managers
-			v.gasLeakVentAudioMan = vent.CreateAudioManager(2f, 25f, true);
+			v.normalVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f).SetAudioManagerAsPrefab(); // Two propagated audio managers
+			v.gasLeakVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f).SetAudioManagerAsPrefab();
 			v.ventAudios = audios;
 			v.colliders = [box, box2, box3];
 

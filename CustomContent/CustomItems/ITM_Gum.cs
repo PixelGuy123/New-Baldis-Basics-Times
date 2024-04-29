@@ -77,7 +77,6 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void EntityTriggerExit(Collider other)
 		{
-			
 		}
 
 		private IEnumerator Timer(Entity target)

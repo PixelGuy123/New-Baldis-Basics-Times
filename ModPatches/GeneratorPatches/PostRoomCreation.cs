@@ -11,13 +11,21 @@ namespace BBTimes.ModPatches.GeneratorPatches
 	[HarmonyPatch(typeof(LevelGenerator))]
 	public class PostRoomCreation
 	{
-		[HarmonyPatch("StartGenerate")]
-		private static void Prefix(LevelGenerator __instance)
+		[HarmonyPatch(typeof(GameInitializer), "Initialize")]
+		[HarmonyPostfix]
+		static void ActivateThem(SceneObject ___sceneObject) // This is where it should be
 		{
-			i = __instance;
-			BBTimesManager.prefabs.ForEach(x => x.SetActive(true)); // Makes those prefabs enable
-			EnvironmentControllerPatch.ResetData(); // Resets navneighbor stuf
+			if (___sceneObject != null && ___sceneObject)
+			{
+				BBTimesManager.prefabs.ForEach(x => x.SetActive(true));
+				EnvironmentControllerPatch.ResetData(); // Resets navneighbor stuf
+			}
 		}
+
+		[HarmonyPatch("StartGenerate")]
+		private static void Prefix(LevelGenerator __instance) =>
+			i = __instance;
+		
 
 		[HarmonyPatch("Generate", MethodType.Enumerator)]
 		private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) => // Basically make windows spawn facing outside the school (REMINDER IT MUST BE UNBREAKABLE FOR AN OBVIOUS REASON)

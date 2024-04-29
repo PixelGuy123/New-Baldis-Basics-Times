@@ -51,6 +51,12 @@ namespace BBTimes.Manager
 			npc = CreatorExtensions.CreateNPC<Stunly, StunlyCustomData>("Stunly", 75f, 100f, [RoomCategory.Hall, RoomCategory.Special], [], "PST_Stunly_Name", "PST_Stunly_Desc", lookerDistance: 60f, spriteYOffset: -1.5f).AddMeta(plug , NPCFlags.Standard).value;
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+
+			// Pix
+			npc = CreatorExtensions.CreateNPC<Pix, PixCustomData>("Pix", 155f, 165f, [RoomCategory.Hall], [], "PST_Pix_Name", "PST_Pix_Desc", lookerDistance: 90f, spriteYOffset:-1f).AddMeta(plug, NPCFlags.Standard).value
+				.SetNPCLookerFov(100f);
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 		}
 
 		

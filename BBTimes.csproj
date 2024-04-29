@@ -47,7 +47,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="Extensions\ComponentCreationExtensions\" />
     <Folder Include="ModPatches\DebugPatches\" />
     <Folder Include="TemporaryFeatures\" />
   </ItemGroup>

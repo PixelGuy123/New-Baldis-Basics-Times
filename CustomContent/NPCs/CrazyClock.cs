@@ -189,7 +189,10 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			clock.audMan.PlaySingle(clockData.soundObjects[2]); // crazy noises
 			Cell cell = clock.ec.CellFromPosition(clock.transform.position);
-			clock.ec.Npcs.ForEach(x => { if (x != clock && x.GetMeta().flags.HasFlag(NPCFlags.HasTrigger)) x.GetComponent<Entity>().Teleport(cell.CenterWorldPosition); }); // YES, CHAOS
+			int max = clock.ec.Npcs.Count / 2;
+			for (int i = 0; i < max; i++)
+				if (clock.ec.Npcs[i] != clock && clock.ec.Npcs[i].GetMeta().flags.HasFlag(NPCFlags.Standard))
+					clock.ec.Npcs[i].Navigator.Entity.Teleport(cell.CenterWorldPosition); // YES, CHAOS
 		}
 
 		public override void Update()

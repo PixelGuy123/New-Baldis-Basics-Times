@@ -25,7 +25,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			stunly.noiseMan = GetComponent<PropagatedAudioManager>();
 
-			stunly.laughterMan = gameObject.CreateAudioManager(75f, 100f, true);
+			stunly.laughterMan = gameObject.CreatePropagatedAudioManager(75f, 100f).SetAudioManagerAsPrefab();
 
 			var canvas = Instantiate(BBTimesManager.man.Get<Canvas>("CanvasPrefab"));
 			canvas.transform.SetParent(stunly.transform);

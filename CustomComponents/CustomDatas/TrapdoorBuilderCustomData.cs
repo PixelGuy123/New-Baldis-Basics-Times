@@ -48,7 +48,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			trapdoorholder.aud_shut = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "trapDoor_shut.wav")), "Sfx_Doors_StandardShut", SoundType.Voice, Color.white);
 			trapdoorholder.aud_open = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "trapDoor_open.wav")), "Sfx_Doors_StandardOpen", SoundType.Voice, Color.white);
 
-			trapdoorholder.audMan = trapdoorholder.gameObject.CreateAudioManager(35f, 45f, true);
+			trapdoorholder.audMan = trapdoorholder.gameObject.CreatePropagatedAudioManager(35f, 45f).SetAudioManagerAsPrefab();
 
 			DontDestroyOnLoad(trapdoorholder.gameObject);
 			trapdoorholder.gameObject.SetActive(false);
@@ -56,7 +56,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			// Fake trapdoor
 			var fake = Instantiate(trapdoor);
 			fake.name = "FakeTrapDoor";
-			fake.CreateAudioManager(35f, 45f, true);
+			fake.CreatePropagatedAudioManager(35f, 45f).SetAudioManagerAsPrefab();
 			DontDestroyOnLoad(fake);
 			trapdoorholder.fakeTrapdoorPre = fake.transform;
 			fake.SetActive(false);

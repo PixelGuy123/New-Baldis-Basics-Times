@@ -20,7 +20,7 @@ namespace BBTimes.CustomContent.Objects
 			gasLeakVentAudioMan.maintainLoop = true;
 		}
 
-		public void BlockMe() => StartCoroutine(BlockAnimation());
+		public void BlockMe() => animation = StartCoroutine(BlockAnimation());
 
 		IEnumerator BlockAnimation()
 		{
@@ -107,7 +107,7 @@ namespace BBTimes.CustomContent.Objects
 			if (cooldown <= 0f)
 			{
 				BlockAllDirections(false);
-				StartCoroutine(UnBlockAnimation());
+				animation = StartCoroutine(UnBlockAnimation());
 			}	
 		}
 
@@ -119,34 +119,55 @@ namespace BBTimes.CustomContent.Objects
 			entity.AddForce(new((entity.transform.position - transform.position).normalized, 5f, -5f));
 		}
 
+		public void DisableVent(bool disable)
+		{
+			if (disable)
+			{
+				normalVentAudioMan.FlushQueue(true);
+				gasLeakVentAudioMan.FlushQueue(true);
+				if (Enabled)
+					BlockAllDirections(false);
+				if (animation != null)
+					StopCoroutine(animation);
+				renderer.material.mainTexture = ventTexs[0];
+				var e = particle.emission;
+				e.rateOverTimeMultiplier = 0f;
+			}
+			else
+			{
+				normalVentAudioMan.QueueAudio(ventAudios[0]);
+				normalVentAudioMan.SetLoop(true);
+				normalVentAudioMan.maintainLoop = true;
+			}
+		}
+
 		bool Enabled = false;
 
 		float cooldown;
 
-		public List<Vent> nextVents = [];
+		Coroutine animation;
 
-		public EnvironmentController ec;
+		internal List<Vent> nextVents = [];
 
-		[SerializeField]
-		public BoxCollider[] colliders;
-
-		[SerializeField]
-		public Texture2D[] ventTexs = [];
+		internal EnvironmentController ec;
 
 		[SerializeField]
-		public SoundObject[] ventAudios = [];
+		internal BoxCollider[] colliders;
 
 		[SerializeField]
-		public MeshRenderer renderer;
+		internal Texture2D[] ventTexs = [];
 
 		[SerializeField]
-		public ParticleSystem particle;
+		internal SoundObject[] ventAudios = [];
 
 		[SerializeField]
-		public PropagatedAudioManager normalVentAudioMan;
+		internal MeshRenderer renderer;
 
 		[SerializeField]
-		public PropagatedAudioManager gasLeakVentAudioMan;
+		internal ParticleSystem particle;
+
+		[SerializeField]
+		internal PropagatedAudioManager normalVentAudioMan, gasLeakVentAudioMan;
 
 		const float minCooldown = 25f, maxCooldown = 40f, emissionRate = 75f;
 	}

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -8,26 +7,11 @@ namespace BBTimes.CustomContent.CustomItems
 		public override bool Use(PlayerManager pm)
 		{
 			gameObject.SetActive(true);
-			audMan.QueueAudio(aud_unbox);
-
-			StartCoroutine(WaitForAudio());
-
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(aud_unbox);
 			pm.itm.SetItem(items[Random.Range(0, items.Length)], pm.itm.selectedItem);
 
 			return false;
 		}
-
-		IEnumerator WaitForAudio()
-		{
-			while (audMan.AnyAudioIsPlaying)
-				yield return null;
-			Destroy(gameObject);
-
-			yield break;
-		}
-
-		[SerializeField]
-		internal AudioManager audMan;
 
 		[SerializeField]
 		internal SoundObject aud_unbox;
