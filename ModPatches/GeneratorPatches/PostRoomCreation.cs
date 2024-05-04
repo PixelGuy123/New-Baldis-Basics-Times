@@ -11,16 +11,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 	[HarmonyPatch(typeof(LevelGenerator))]
 	public class PostRoomCreation
 	{
-		[HarmonyPatch(typeof(GameInitializer), "Initialize")]
-		[HarmonyPostfix]
-		static void ActivateThem(SceneObject ___sceneObject) // This is where it should be
-		{
-			if (___sceneObject != null && ___sceneObject)
-			{
-				BBTimesManager.prefabs.ForEach(x => x.SetActive(true));
-				EnvironmentControllerPatch.ResetData(); // Resets navneighbor stuf
-			}
-		}
+		
 
 		[HarmonyPatch("StartGenerate")]
 		private static void Prefix(LevelGenerator __instance) =>

@@ -1,5 +1,4 @@
-﻿using BBTimes.Extensions.ObjectCreationExtensions;
-using PixelInternalAPI.Extensions;
+﻿using PixelInternalAPI.Extensions;
 using UnityEngine;
 using BBTimes.CustomContent.CustomItems;
 using PixelInternalAPI.Classes;
@@ -15,19 +14,19 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			var rendererBase = ObjectCreationExtension.CreateSpriteBillboard(storedSprites[0], -4f, false).GetComponent<RendererContainer>();
-			rendererBase.transform.SetParent(transform);
-			rendererBase.transform.localPosition = Vector3.zero;
-			rendererBase.gameObject.SetActive(true);
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]).AddSpriteHolder(-4f);
+			var rendererBase = renderer.transform.parent;
+			rendererBase.SetParent(transform);
+			rendererBase.localPosition = Vector3.zero;
 
 			var comp = GetComponent<ITM_Bell>();
 			gameObject.layer = LayerStorage.standardEntities;
-			comp.entity = gameObject.CreateEntity(1.5f, 2.5f, rendererBase.transform, [comp]);
+			comp.entity = gameObject.CreateEntity(1.5f, 2.5f, rendererBase, [comp]);
 
 			comp.audMan = gameObject.CreatePropagatedAudioManager(165, 200).SetAudioManagerAsPrefab();
 			comp.audBell = soundObjects[0];
 
-			comp.renderer = (SpriteRenderer)rendererBase.renderers[0];
+			comp.renderer = renderer;
 			comp.deactiveSprite = storedSprites[1];
 		}
 

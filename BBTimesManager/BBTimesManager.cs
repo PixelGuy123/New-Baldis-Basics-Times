@@ -8,13 +8,14 @@ using BepInEx;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
+using PixelInternalAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+//using System.Reflection;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -81,7 +82,6 @@ namespace BBTimes.Manager
 			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			var renderer = basePlane.GetComponent<MeshRenderer>();
 			renderer.material = GenericExtensions.FindResourceObjectByName<Material>("TileBase");
-			DontDestroyOnLoad(basePlane);
 			basePlane.transform.localScale = Vector3.one * LayerStorage.TileBaseOffset; // Gives the tile size
 			basePlane.name = "PlaneTemplate";
 			renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -90,39 +90,13 @@ namespace BBTimes.Manager
 			man.Add("PlaneTemplate", basePlane);
 			cacheToDisableAfterSetup.Add(basePlane);
 
-			prefabs.Add(basePlane);
+			basePlane.gameObject.SetAsPrefab().AddAsGeneratorPrefab();
 
 			// Grass texture
 			man.Add("Tex_Grass", GenericExtensions.FindResourceObjectByName<Texture2D>("Grass"));
 
 			// Fence texture
 			man.Add("Tex_Fence", GenericExtensions.FindResourceObjectByName<Texture2D>("fence"));
-
-			// Sprite Billboard object
-			var baseSprite = new GameObject("SpriteBillBoard").AddComponent<SpriteRenderer>();
-			baseSprite.material = GenericExtensions.FindResourceObjectByName<Material>("SpriteStandard_Billboard");
-			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-			baseSprite.receiveShadows = false;
-
-			baseSprite.gameObject.layer = LayerStorage.billboardLayer;
-			DontDestroyOnLoad(baseSprite.gameObject);
-			man.Add("SpriteBillboardTemplate", baseSprite.gameObject);
-			cacheToDisableAfterSetup.Add(baseSprite.gameObject);
-
-			prefabs.Add(baseSprite.gameObject);
-
-			// Sprite Non-Billboard object
-			baseSprite = new GameObject("SpriteNoBillBoard").AddComponent<SpriteRenderer>();
-			baseSprite.material = GenericExtensions.FindResourceObjectByName<Material>("SpriteStandard_NoBillboard");
-			baseSprite.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-			baseSprite.receiveShadows = false;
-
-			baseSprite.gameObject.layer = LayerStorage.billboardLayer;
-			DontDestroyOnLoad(baseSprite.gameObject);
-			man.Add("SpriteNoBillboardTemplate", baseSprite.gameObject);
-			cacheToDisableAfterSetup.Add(baseSprite.gameObject);
-
-			prefabs.Add(baseSprite.gameObject);
 
 			// Canvas renderer instance
 			man.Add("CanvasPrefab", GenericExtensions.FindResourceObjectByName<Canvas>("GumOverlay"));
@@ -156,12 +130,12 @@ namespace BBTimes.Manager
 			MainMenuPatch.aud_welcome = AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav"));
 
 			// Math Machine new Nums
-			FieldInfo nums = AccessTools.Field(typeof(MathMachine), "numberPres");
-			FieldInfo sprite = AccessTools.Field(typeof(MathMachineNumber), "sprite");
-			FieldInfo value = AccessTools.Field(typeof(MathMachineNumber), "value"); // Setup fields
+			//FieldInfo nums = AccessTools.Field(typeof(MathMachine), "numberPres");
+			//FieldInfo sprite = AccessTools.Field(typeof(MathMachineNumber), "sprite");
+			//FieldInfo value = AccessTools.Field(typeof(MathMachineNumber), "value"); // Setup fields
 			var machines = GenericExtensions.FindResourceObjects<MathMachine>();
 
-			var numList = (MathMachineNumber[])nums.GetValue(machines[0]);
+			var numList = machines[0].numberPres; //(MathMachineNumber[])nums.GetValue(machines[0]);
 			var numPrefab = numList[0];
 			var numTexs = Directory.GetFiles(Path.Combine(BasePlugin.ModPath, "objects", "Math Machine", "newNumBalls")); // Get all the new numballs
 
@@ -172,20 +146,23 @@ namespace BBTimes.Manager
 				var num = Instantiate(numPrefab);
 				num.GetComponent<Entity>().SetActive(false);
 				num.gameObject.layer = LayerStorage.iClickableLayer;
-				((Transform)sprite.GetValue(num)).GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(numTexs[i]), 30f);
-				value.SetValue(num, int.Parse(Path.GetFileNameWithoutExtension(numTexs[i]).Split('_')[1]));
+				num.sprite.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(numTexs[i]), 30f); // ((Transform)sprite.GetValue(num)).GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(numTexs[i]), 30f);
+				num.value = int.Parse(Path.GetFileNameWithoutExtension(numTexs[i]).Split('_')[1]); //value.SetValue(num, int.Parse(Path.GetFileNameWithoutExtension(numTexs[i]).Split('_')[1]));
 				num.gameObject.SetActive(false);
-				num.name = "NumBall_" + value.GetValue(num);
+				num.name = "NumBall_" + num.value; // value.GetValue(num);
 				DontDestroyOnLoad(num);
 				numbers.Add(num);
 			}
 
-			machines.Do((x) => // Now just put them to every machine
-			{
-				var numList = (MathMachineNumber[])nums.GetValue(x);
-				numList = numList.AddRangeToArray([.. numbers]);
-				nums.SetValue(x, numList);
-			});
+			//machines.Do((x) => // Now just put them to every machine
+			//{
+			//	var numList = (MathMachineNumber[])nums.GetValue(x);
+			//	numList = numList.AddRangeToArray([.. numbers]);
+			//	nums.SetValue(x, numList);
+			//});
+
+			machines.Do((x) => x.numberPres = x.numberPres.AddRangeToArray([.. numbers]));
+
 			//F2
 			floorDatas[1].MinNumberBallAmount = 9;
 			floorDatas[1].MaxNumberBallAmount = 12;
@@ -212,21 +189,19 @@ namespace BBTimes.Manager
 
 			// Player Visual
 			var tex = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "player.png")), 225f);
-			var playerVisual = ObjectCreationExtension.CreateSpriteBillboard(tex, -1.6f);
-			DontDestroyOnLoad(playerVisual);
+			var playerVisual = ObjectCreationExtensions.CreateSpriteBillboard(tex).AddSpriteHolder(-1.6f);
 
-			GameCameraPatch.playerVisual = playerVisual.transform;
-
-			prefabs.Add(playerVisual); // prefab too
+			GameCameraPatch.playerVisual = playerVisual.transform.parent;
+			playerVisual.transform.parent.gameObject.SetAsPrefab().AddAsGeneratorPrefab();
 
 			// Zesty Bar audio change
-			FieldInfo zestyBarAud = AccessTools.Field(typeof(ITM_ZestyBar), "audEat");
+			//FieldInfo zestyBarAud = AccessTools.Field(typeof(ITM_ZestyBar), "audEat");
 			foreach (var zesty in GenericExtensions.FindResourceObjects<ITM_ZestyBar>())
 			{
-				var audio = (SoundObject)zestyBarAud.GetValue(zesty);
+				var audio = zesty.audEat; //(SoundObject)zestyBarAud.GetValue(zesty);
 				audio.MarkAsNeverUnload();
 				audio.soundClip = AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "items", "Zesty", "eat.wav"));
-				zestyBarAud.SetValue(zesty, audio); // << idk if I need this, but whatever
+				//zestyBarAud.SetValue(zesty, audio); // << idk if I need this, but whatever
 			}
 
 			// Global Assets
@@ -252,8 +227,6 @@ namespace BBTimes.Manager
 		public static string CurrentFloor => Singleton<CoreGameManager>.Instance?.sceneObject.levelTitle ?? "None";
 
 		public static FloorData CurrentFloorData => floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
-
-		readonly internal static List<GameObject> prefabs = [];
 
 		public static GameObject EmptyGameObject;
 

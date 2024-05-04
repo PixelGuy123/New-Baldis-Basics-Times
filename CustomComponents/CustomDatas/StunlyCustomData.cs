@@ -6,7 +6,6 @@ using PixelInternalAPI.Extensions;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using BBTimes.Extensions.ObjectCreationExtensions;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
@@ -38,8 +37,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 			stunly.stunlyCanvas = canvas;
 			stunly.stunlyCanvas.gameObject.SetActive(false);
 
-			var billboard = ObjectCreationExtension.CreateSpriteBillboard(storedSprites[9], false);
-			DontDestroyOnLoad(billboard);
+			var billboard = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[9]);
+			billboard.transform.SetParent(stunly.transform);
 			billboard.gameObject.SetActive(false);
 			stunly.stars = billboard.gameObject.AddComponent<StarObject>();
 		}

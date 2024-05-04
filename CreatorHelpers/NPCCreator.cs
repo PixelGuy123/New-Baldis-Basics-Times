@@ -5,7 +5,6 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -14,18 +13,18 @@ namespace BBTimes.Helpers
 	public static partial class CreatorExtensions
 	{
 		// Some fields that the api misses
-		readonly static FieldInfo _npc_ignorePlayerOnSpawn = AccessTools.Field(typeof(NPC), "ignorePlayerOnSpawn");
-		readonly static FieldInfo _npc_ignoreBelts = AccessTools.Field(typeof(NPC), "ignoreBelts");
-		readonly static FieldInfo _npc_poster = AccessTools.Field(typeof(NPC), "poster");
-		readonly static FieldInfo _nav_avoidRooms = AccessTools.Field(typeof(Navigator), "avoidRooms");
+		//readonly static FieldInfo _npc_ignorePlayerOnSpawn = AccessTools.Field(typeof(NPC), "ignorePlayerOnSpawn");
+		//readonly static FieldInfo _npc_ignoreBelts = AccessTools.Field(typeof(NPC), "ignoreBelts");
+		//readonly static FieldInfo _npc_poster = AccessTools.Field(typeof(NPC), "poster");
+		//readonly static FieldInfo _nav_avoidRooms = AccessTools.Field(typeof(Navigator), "avoidRooms");
 		// looker
-		readonly static FieldInfo _looker_fieldOfView = AccessTools.Field(typeof(Looker), "fieldOfView");
-		readonly static FieldInfo _looker_hasFov = AccessTools.Field(typeof(Looker), "hasFov");
+		//readonly static FieldInfo _looker_fieldOfView = AccessTools.Field(typeof(Looker), "fieldOfView");
+		//readonly static FieldInfo _looker_hasFov = AccessTools.Field(typeof(Looker), "hasFov");
 
 		public static T SetNPCLookerFov<T>(this T obj, float fieldOfView) where T : NPC // Basic builder pattern this (yeah it is lazy, but the api is gonna have it anyways)
 		{
-			_looker_hasFov.SetValue(obj.looker, true);
-			_looker_fieldOfView.SetValue(obj.looker, fieldOfView);
+			obj.looker.hasFov = true;//_looker_hasFov.SetValue(obj.looker, true);
+			obj.looker.fieldOfView = fieldOfView; //_looker_fieldOfView.SetValue(obj.looker, fieldOfView);
 			return obj;
 		}
 
@@ -36,9 +35,9 @@ namespace BBTimes.Helpers
 
 			// Set some other npc parameters
 			npc.potentialRoomAssets = potentialRoomAssets;
-			_npc_ignorePlayerOnSpawn.SetValue(npc, ignorePlayerOnSpawn);
+			npc.ignorePlayerOnSpawn = ignorePlayerOnSpawn; //_npc_ignorePlayerOnSpawn.SetValue(npc, ignorePlayerOnSpawn);
 			npc.spriteRenderer[0].sprite = sprites[1]; // Sets to default sprite
-			_npc_ignoreBelts.SetValue(npc, ignoreBelts);
+			npc.ignoreBelts = ignoreBelts; //_npc_ignoreBelts.SetValue(npc, ignoreBelts);
 
 			npc.spriteBase.transform.Find("Sprite").localPosition = Vector3.up * spriteYOffset; // I HATE ENTITY CLASS JUST MESSING UP WITH SPRITE BASE Y
 
@@ -46,7 +45,7 @@ namespace BBTimes.Helpers
 
 			npc.Navigator.Entity.SetGrounded(grounded);
 
-			_nav_avoidRooms.SetValue(npc.Navigator, avoidRooms);
+			npc.Navigator.SetRoomAvoidance(avoidRooms);
 
 			var data = npc.gameObject.AddComponent<C>();
 			
@@ -96,14 +95,14 @@ namespace BBTimes.Helpers
 			npc.spriteRenderer[0].sprite = sprites[1];
 			npc.spriteBase.transform.position += Vector3.up * spriteYOffset;
 
-			var poster = (PosterObject)_npc_poster.GetValue(npc);
-			poster = Instantiate(poster); // Obviously instantiate it to not affect the og
+			//(PosterObject)_npc_poster.GetValue(npc);
+			var poster = Instantiate(npc.poster); // Obviously instantiate it to not affect the og
 			poster.baseTexture = sprites[0].texture; // Set posters textures
 
 			foreach (var mat in poster.material)
 				mat.mainTexture = sprites[0].texture;
 
-			_npc_poster.SetValue(npc, poster);
+			npc.poster = poster; //_npc_poster.SetValue(npc, poster);
 
 			var data = npc.gameObject.AddComponent<C>();
 

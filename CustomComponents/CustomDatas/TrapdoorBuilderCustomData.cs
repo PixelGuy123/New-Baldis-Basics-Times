@@ -18,13 +18,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			base.SetupPrefab();
 			var trapdoorholder = new GameObject("TrapDoor").AddComponent<Trapdoor>();
 
-			var trapdoor = Instantiate(BBTimesManager.man.Get<GameObject>("SpriteNoBillboardTemplate"), trapdoorholder.transform);
-
-			trapdoorholder.renderer = trapdoor.GetComponent<SpriteRenderer>();
-			trapdoor.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			trapdoor.transform.localPosition = Vector3.up * 0.02f;
-			trapdoor.name = "TrapdoorVisual";
-			trapdoor.gameObject.layer = 0; // default layer
+			
 
 			var text = new GameObject("TrapdoorText").AddComponent<TextMeshPro>();
 			text.transform.SetParent(trapdoorholder.transform);
@@ -53,13 +47,21 @@ namespace BBTimes.CustomComponents.CustomDatas
 			DontDestroyOnLoad(trapdoorholder.gameObject);
 			trapdoorholder.gameObject.SetActive(false);
 
+			var trapdoor = ObjectCreationExtensions.CreateSpriteBillboard(builder.closedSprites[0], false);
+			trapdoor.gameObject.SetAsPrefab(true);
+			trapdoor.transform.SetParent(trapdoorholder.transform);
+			trapdoorholder.renderer = trapdoor;
+			trapdoor.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			trapdoor.transform.localPosition = Vector3.up * 0.02f;
+			trapdoor.name = "TrapdoorVisual";
+			trapdoor.gameObject.layer = 0; // default layer
+
 			// Fake trapdoor
-			var fake = Instantiate(trapdoor);
+			var fake = trapdoor.DuplicatePrefab();
 			fake.name = "FakeTrapDoor";
-			fake.CreatePropagatedAudioManager(35f, 45f).SetAudioManagerAsPrefab();
-			DontDestroyOnLoad(fake);
+			fake.gameObject.CreatePropagatedAudioManager(35f, 45f).SetAudioManagerAsPrefab();
 			trapdoorholder.fakeTrapdoorPre = fake.transform;
-			fake.SetActive(false);
+			fake.gameObject.SetActive(false);
 		}
 	}
 }

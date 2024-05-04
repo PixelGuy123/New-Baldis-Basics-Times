@@ -8,6 +8,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;Cheat</Configurations>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Cheat|AnyCPU'">
@@ -21,14 +23,20 @@
     <PackageReference Include="UnityEngine.Modules" Version="2020.3.38" IncludeAssets="compile" />
   </ItemGroup>
   
+  <ItemGroup>
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
+
+    <!-- Publicize directly when referencing -->
+    <Reference Include="C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Assembly-CSharp.dll" Publicize="true" />
+    
+	
+</ItemGroup>
+  
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
   </ItemGroup>
   
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="MTM101BaldAPI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\MTM101BaldAPI.dll</HintPath>
     </Reference>
@@ -52,6 +60,6 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\bin\Cheat\net46\BBTimes.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;" />
+    <Exec Command="copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\bin\Cheat\net46\BBTimes.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;&#xD;&#xA;copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\bin\Cheat\net46\BBTimes.pdb&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;" />
   </Target>
 </Project>

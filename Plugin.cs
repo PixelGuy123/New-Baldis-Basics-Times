@@ -290,16 +290,19 @@ namespace BBTimes.Plugin
 			__instance.CompleteMapOnReady();
 		}
 	}
-	//[HarmonyPatch(typeof(PlayerMovement))]
-	//internal class Fast
-	//{
+	[HarmonyPatch(typeof(PlayerMovement))]
+	internal class Fast
+	{
 
-	//	[HarmonyPatch("Start")]
-	//	[HarmonyPostfix]
-	//	private static void GottaGoFAST(PlayerMovement __instance) =>
-//			__instance.GetComponent<PlayerAttributesComponent>().SpeedMods.Add(new(3, 3));
+		[HarmonyPatch("Start")]
+		[HarmonyPostfix]
+		private static void GottaGoFAST(PlayerMovement __instance)
+		{
+			__instance.GetComponent<PlayerAttributesComponent>().SpeedMods.Add(new(3, 3));
+			Singleton<CoreGameManager>.Instance.AddPoints(9999999, __instance.pm.playerNumber, true);
+		}
 
-	//}
+	}
 #endif
 
 }

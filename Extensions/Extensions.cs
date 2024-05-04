@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
+// using System.Reflection;
 using UnityEngine;
 
 namespace BBTimes.Extensions
@@ -9,8 +9,8 @@ namespace BBTimes.Extensions
 	public static class GameExtensions
 	{
 
-		static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
-		static readonly FieldInfo funcContainer_funcs = AccessTools.Field(typeof(RoomFunctionContainer), "functions");
+		//static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
+		//static readonly FieldInfo funcContainer_funcs = AccessTools.Field(typeof(RoomFunctionContainer), "functions");
 
 		public static Window ForceBuildWindow(this EnvironmentController ec, Cell tile, Direction dir, WindowObject wObject)
 		{
@@ -53,7 +53,7 @@ namespace BBTimes.Extensions
 		public static void ForceAddPermanentLighting(this EnvironmentController ec, Cell tile, Color color)
 		{
 			tile.permanentLight = true;
-			LightController[,] lightMap = ( LightController[,])ec_lightMap.GetValue(ec);
+			LightController[,] lightMap = ec.lightMap; //(LightController[,])ec_lightMap.GetValue(ec);
 			tile.hasLight = true;
 			tile.lightOn = true;
 			tile.lightStrength = 1;
@@ -63,7 +63,7 @@ namespace BBTimes.Extensions
 			Singleton<CoreGameManager>.Instance.UpdateLighting(color, tile.position);
 			lightMap[tile.position.x, tile.position.z].UpdateLighting();
 
-			ec_lightMap.SetValue(ec, lightMap);
+			//ec_lightMap.SetValue(ec, lightMap);
 		}
 
 		public static IEnumerator LightChanger(this EnvironmentController ec, List<Cell> lights, bool on, float delay)
@@ -77,7 +77,7 @@ namespace BBTimes.Extensions
 					yield return null;
 				}
 				time = delay;
-				int num = UnityEngine.Random.Range(0, lights.Count);
+				int num = Random.Range(0, lights.Count);
 				lights[num].lightColor = Color.red;
 				ec.SetLight(on, lights[num]);
 				lights.RemoveAt(num);
@@ -99,9 +99,10 @@ namespace BBTimes.Extensions
 
 		public static void RemoveFunction(this RoomFunctionContainer container, RoomFunction function)
 		{
-			var list = (List<RoomFunction>)funcContainer_funcs.GetValue(container);
-			list.Remove(function);
-			funcContainer_funcs.SetValue(container, list);
+			container.functions.Remove(function);
+			//var list = (List<RoomFunction>)funcContainer_funcs.GetValue(container);
+			//list.Remove(function);
+			//funcContainer_funcs.SetValue(container, list);
 		}
 
 		public static BoxCollider AddBoxCollider(this GameObject g, Vector3 center, Vector3 size, bool isTrigger)

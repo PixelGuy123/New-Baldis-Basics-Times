@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection.Emit;
-using System.Reflection;
+// using System.Reflection;
 
 namespace BBTimes.ModPatches.NpcPatches
 {
@@ -41,7 +41,7 @@ namespace BBTimes.ModPatches.NpcPatches
 				)
 			.InsertAndAdvance(
 			new(OpCodes.Ldarg_0),
-			Transpilers.EmitDelegate<System.Action<Principal>>(i => i.Navigator.Entity.StartCoroutine(Animation(i, (AudioManager)audMan.GetValue(i)))))
+			Transpilers.EmitDelegate<System.Action<Principal>>(i => i.Navigator.Entity.StartCoroutine(Animation(i, i.audMan))))
 			.InstructionEnumeration();
 
 		static IEnumerator Animation(Principal p, AudioManager man)
@@ -91,10 +91,10 @@ namespace BBTimes.ModPatches.NpcPatches
 			yield break;
 		}
 
-		readonly static FieldInfo audTimes = AccessTools.Field(typeof(Principal), "audTimes");
-		readonly static FieldInfo audScolds = AccessTools.Field(typeof(Principal), "audScolds");
-		readonly static FieldInfo audDetention = AccessTools.Field(typeof(Principal), "audDetention");
-		readonly static FieldInfo audMan = AccessTools.Field(typeof(Principal), "audMan");
+		//readonly static FieldInfo audTimes = AccessTools.Field(typeof(Principal), "audTimes");
+		//readonly static FieldInfo audScolds = AccessTools.Field(typeof(Principal), "audScolds");
+		//readonly static FieldInfo audDetention = AccessTools.Field(typeof(Principal), "audDetention");
+		//readonly static FieldInfo audMan = AccessTools.Field(typeof(Principal), "audMan");
 
 
 
@@ -109,12 +109,12 @@ namespace BBTimes.ModPatches.NpcPatches
 				___targetedNpc.SentToDetention();
 
 				// Actual detention below
-				var scolds = (SoundObject[])audScolds.GetValue(___principal);
-				var times = (SoundObject[])audTimes.GetValue(___principal);
-				var detention = (SoundObject)audDetention.GetValue(___principal);
+				var scolds = ___principal.audScolds; //(SoundObject[])audScolds.GetValue(___principal);
+				var times = ___principal.audTimes; // (SoundObject[])audTimes.GetValue(___principal);
+				var detention = ___principal.audDetention; //(SoundObject)audDetention.GetValue(___principal);
 
 				___principal.transform.position = ___principal.ec.offices[num].RandomEntitySafeCellNoGarbage().CenterWorldPosition;
-				var man = (AudioManager)audMan.GetValue(___principal);
+				var man = ___principal.audMan; //(AudioManager)audMan.GetValue(___principal);
 				man.QueueAudio(times[0]);
 				man.QueueAudio(detention);
 				man.QueueAudio(scolds[Random.Range(0, scolds.Length)]);

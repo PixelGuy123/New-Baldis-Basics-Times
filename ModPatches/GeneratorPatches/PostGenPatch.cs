@@ -10,7 +10,6 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		[HarmonyPostfix]
 		private static void PostGen(BaseGameManager __instance)
 		{
-			BBTimesManager.prefabs.ForEach(x => x.SetActive(false));
 		}
 	}
 }

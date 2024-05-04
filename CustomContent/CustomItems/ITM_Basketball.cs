@@ -19,7 +19,6 @@ namespace BBTimes.CustomContent.CustomItems
 				if (hasHit) return; // stop BONG spam
 
 				transform.rotation *= Quaternion.FromToRotation(transform.forward, Vector3.Reflect(transform.forward, hit.normal)); // crazy math I guess
-				lifeTime -= 10f;
 				audMan.PlaySingle(audBong);
 			};
 

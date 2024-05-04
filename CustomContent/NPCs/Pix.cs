@@ -37,7 +37,7 @@ namespace BBTimes.CustomContent.NPCs
 			currentState = 0;
 		
 
-		protected override void VirtualUpdate()
+		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
 			switch (currentState)

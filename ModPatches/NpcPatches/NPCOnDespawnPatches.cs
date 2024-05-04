@@ -1,7 +1,7 @@
 ﻿using BBTimes.Extensions;
 using HarmonyLib;
 using System;
-using System.Reflection;
+//using System.Reflection;
 using static UnityEngine.Object;
 
 namespace BBTimes.ModPatches.NpcPatches
@@ -22,8 +22,9 @@ namespace BBTimes.ModPatches.NpcPatches
 			}
 			if (type == typeof(Cumulo))
 			{
-				((AudioManager)c_audMan.GetValue((Cumulo)__instance)).FlushQueue(true); // Ugly, but only way
-				Destroy(((BeltManager)c_windManager.GetValue((Cumulo)__instance)).gameObject);
+				((Cumulo)__instance).audMan.FlushQueue(true); //((AudioManager)c_audMan.GetValue((Cumulo)__instance)).FlushQueue(true); // Ugly, but only way
+				//Destroy(((BeltManager)c_windManager.GetValue((Cumulo)__instance)).gameObject
+				Destroy(((Cumulo)__instance).windManager.gameObject);
 				return;
 			}
 			if (type == typeof(LookAtGuy))
@@ -34,30 +35,32 @@ namespace BBTimes.ModPatches.NpcPatches
 			}
 			if (type == typeof(NoLateTeacher))
 			{
-				((NoLateIcon)n_mapIcon.GetValue((NoLateTeacher)__instance))?.gameObject.SetActive(false);
-				((PlayerManager)n_targetedPlayer.GetValue((NoLateTeacher)__instance))?.Am.moveMods.Remove((MovementModifier)n_moveMod.GetValue((NoLateTeacher)__instance));
+				//((NoLateIcon)n_mapIcon.GetValue((NoLateTeacher)__instance))?.gameObject.SetActive(false);
+				((NoLateTeacher)__instance).mapIcon?.gameObject.SetActive(false);
+				//((PlayerManager)n_targetedPlayer.GetValue((NoLateTeacher)__instance))?.Am.moveMods.Remove((MovementModifier)n_moveMod.GetValue((NoLateTeacher)__instance));
+				((NoLateTeacher)__instance).targetedPlayer?.Am.moveMods.Remove(((NoLateTeacher)__instance).moveMod);
 				return;
 			}
 			if (type == typeof(Playtime))
 			{
-				var rope = (Jumprope)p_jumprope.GetValue((Playtime)__instance);
+				var rope = ((Playtime)__instance).currentJumprope; //(Jumprope)p_jumprope.GetValue((Playtime)__instance);
 				if (rope)
 					rope.Destroy();
 				return;
 			}
 
 		}
-		// Cumulo fields
-		readonly static FieldInfo c_windManager = AccessTools.Field(typeof(Cumulo), "windManager");
-		readonly static FieldInfo c_audMan = AccessTools.Field(typeof(Cumulo), "audMan");
+		//// Cumulo fields
+		//readonly static FieldInfo c_windManager = AccessTools.Field(typeof(Cumulo), "windManager");
+		//readonly static FieldInfo c_audMan = AccessTools.Field(typeof(Cumulo), "audMan");
 
-		// Mrs Pomp fields
-		readonly static FieldInfo n_mapIcon = AccessTools.Field(typeof(NoLateTeacher), "mapIcon");
-		readonly static FieldInfo n_targetedPlayer = AccessTools.Field(typeof(NoLateTeacher), "targetedPlayer");
-		readonly static FieldInfo n_moveMod = AccessTools.Field(typeof(NoLateTeacher), "moveMod");
+		//// Mrs Pomp fields
+		//readonly static FieldInfo n_mapIcon = AccessTools.Field(typeof(NoLateTeacher), "mapIcon");
+		//readonly static FieldInfo n_targetedPlayer = AccessTools.Field(typeof(NoLateTeacher), "targetedPlayer");
+		//readonly static FieldInfo n_moveMod = AccessTools.Field(typeof(NoLateTeacher), "moveMod");
 
-		//Playtime fields
-		readonly static FieldInfo p_jumprope = AccessTools.Field(typeof(Playtime), "currentJumprope");
+		////Playtime fields
+		//readonly static FieldInfo p_jumprope = AccessTools.Field(typeof(Playtime), "currentJumprope");
 	}
 
 	[HarmonyPatch]

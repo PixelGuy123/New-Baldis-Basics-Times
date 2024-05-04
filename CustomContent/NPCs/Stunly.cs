@@ -16,7 +16,7 @@ namespace BBTimes.CustomContent.NPCs
 			behaviorStateMachine.ChangeState(new Stunly_WanderNormal(this));
 		}
 
-		protected override void VirtualUpdate()
+		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
 			if (angry)

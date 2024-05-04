@@ -1,5 +1,5 @@
-﻿using HarmonyLib;
-using System.Reflection;
+﻿// using HarmonyLib;
+// using System.Reflection;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -24,12 +24,13 @@ namespace BBTimes.CustomContent.CustomItems
 
 		void InteractWithFountain(WaterFountain fountain)
 		{
-			((AudioManager)_waterfountain_audman.GetValue(fountain)).PlaySingle((SoundObject)_waterfountain_audSip.GetValue(fountain));
+			//((AudioManager)_waterfountain_audman.GetValue(fountain)).PlaySingle((SoundObject)_waterfountain_audSip.GetValue(fountain));
+			fountain.audMan.PlaySingle(fountain.audSip);
 		} // will be used to be patched by BB+ Animations aswell
 
 		internal static ItemObject waterBottle;
 
-		readonly static FieldInfo _waterfountain_audman = AccessTools.Field(typeof(WaterFountain), "audMan");
-		readonly static FieldInfo _waterfountain_audSip = AccessTools.Field(typeof(WaterFountain), "audSip");
+		//readonly static FieldInfo _waterfountain_audman = AccessTools.Field(typeof(WaterFountain), "audMan");
+		//readonly static FieldInfo _waterfountain_audSip = AccessTools.Field(typeof(WaterFountain), "audSip");
 	}
 }

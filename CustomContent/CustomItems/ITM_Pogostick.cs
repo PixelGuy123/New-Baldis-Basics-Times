@@ -51,6 +51,8 @@ namespace BBTimes.CustomContent.CustomItems
 				if (height > maxHeight)
 					height = maxHeight;
 
+				pm.Teleport(transform.position);
+
 				if (height < 0f)
 				{
 					height = 0f;

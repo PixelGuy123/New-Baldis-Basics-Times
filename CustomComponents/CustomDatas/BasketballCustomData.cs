@@ -1,5 +1,4 @@
 ﻿using BBTimes.CustomContent.CustomItems;
-using BBTimes.Extensions.ObjectCreationExtensions;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using PixelInternalAPI.Classes;
@@ -23,10 +22,10 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			var rendererBase = ObjectCreationExtension.CreateSpriteBillboard(storedSprites[0], false);
+			var rendererBase = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]);
 			rendererBase.transform.SetParent(transform);
 			rendererBase.transform.localPosition = Vector3.zero;
-			rendererBase.SetActive(true);
+			rendererBase.gameObject.SetActive(true);
 
 			var comp = GetComponent<ITM_Basketball>();
 			gameObject.layer = LayerStorage.standardEntities;

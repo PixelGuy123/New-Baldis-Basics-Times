@@ -5,6 +5,7 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using UnityEngine;
 using System.IO;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
@@ -21,7 +22,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			base.SetupPrefab();
 			var clock = GetComponent<CrazyClock>();
 			clock.data = this;
-			clock.spriteRenderer[0].material = new(BBTimesManager.man.Get<GameObject>("SpriteNoBillboardTemplate").GetComponent<SpriteRenderer>().material);
+			clock.spriteRenderer[0].material = new(ObjectCreationExtensions.NonBillBoardPrefab.material);
 			clock.GetComponents<Collider>().Do(x => x.enabled = false);
 			clock.audMan = GetComponent<AudioManager>();
 			GetComponent<Navigator>().enabled = false; // It's a static npc
