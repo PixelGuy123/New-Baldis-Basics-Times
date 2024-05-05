@@ -194,16 +194,6 @@ namespace BBTimes.Manager
 			GameCameraPatch.playerVisual = playerVisual.transform.parent;
 			playerVisual.transform.parent.gameObject.SetAsPrefab().AddAsGeneratorPrefab();
 
-			// Zesty Bar audio change
-			//FieldInfo zestyBarAud = AccessTools.Field(typeof(ITM_ZestyBar), "audEat");
-			foreach (var zesty in GenericExtensions.FindResourceObjects<ITM_ZestyBar>())
-			{
-				var audio = zesty.audEat; //(SoundObject)zestyBarAud.GetValue(zesty);
-				audio.MarkAsNeverUnload();
-				audio.soundClip = AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "items", "Zesty", "eat.wav"));
-				//zestyBarAud.SetValue(zesty, audio); // << idk if I need this, but whatever
-			}
-
 			// Global Assets
 			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "potion_drink.wav")), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
 			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "pc_stab.wav")), "Vfx_PC_stab", SoundType.Voice, Color.yellow));

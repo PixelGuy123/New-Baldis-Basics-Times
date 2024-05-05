@@ -50,12 +50,6 @@ namespace BBTimes.ModPatches
 			}
 			if (BooleanStorage.endGameMusic && !__instance.name.StartsWith("Lvl3")) // Not F3
 				Singleton<MusicManager>.Instance.PlayMidi("Level_1_End", true); // Music
-
-			for (int i = 0; i < core.setPlayers; i++)
-			{
-				var cam = core.GetCamera(i);
-				cam.GetComponent<CustomPlayerCameraComponent>().ReverseSlideFOVAnimation(new BaseModifier(), 35f, 5f); // Animation (weird way, I know)
-			}
 		}
 
 		// ******* Base Game Manager *******

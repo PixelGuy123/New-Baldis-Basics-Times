@@ -14,6 +14,7 @@ using MTM101BaldAPI;
 using BBTimes.CustomContent.CustomItems;
 using PixelInternalAPI.Components;
 using BBTimes.CustomContent.Events;
+using PixelInternalAPI.Classes;
 
 
 namespace BBTimes.Plugin
@@ -276,7 +277,7 @@ namespace BBTimes.Plugin
 			.Set(OpCodes.Ldc_I4_0, null)
 			.InstructionEnumeration();
 	}
-	[HarmonyPatch(typeof(Baldi_Chase), "OnStateTriggerStay")]
+	[HarmonyPatch(typeof(Baldi), "CaughtPlayer")]
 	internal static class QuickBaldiNoDeath
 	{
 		[HarmonyPrefix]
@@ -296,11 +297,24 @@ namespace BBTimes.Plugin
 
 		[HarmonyPatch("Start")]
 		[HarmonyPostfix]
+		private static void PointsYeah(PlayerMovement __instance) =>
+			Singleton<CoreGameManager>.Instance.AddPoints(9999999, __instance.pm.playerNumber, true);
+
+		[HarmonyPatch("Update")]
+		[HarmonyPostfix]
 		private static void GottaGoFAST(PlayerMovement __instance)
 		{
-			__instance.GetComponent<PlayerAttributesComponent>().SpeedMods.Add(new(3, 3));
-			Singleton<CoreGameManager>.Instance.AddPoints(9999999, __instance.pm.playerNumber, true);
+			var comp = __instance.GetComponent<PlayerAttributesComponent>();
+			if (Input.GetKeyDown(KeyCode.K))
+			{
+				if (comp.SpeedMods.Contains(mod)) 
+					comp.SpeedMods.Remove(mod);
+				else
+					comp.SpeedMods.Add(mod);
+			}
 		}
+
+		readonly static SpeedModifier mod = new(3, 3);
 
 	}
 #endif
