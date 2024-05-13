@@ -16,7 +16,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			var d = GetComponent<LetsDrum>();
+			var d = (LetsDrum)Npc;
 			Destroy(GetComponent<PropagatedAudioManager>()); // Removes the original propagated audio manager
 
 			//d.superLoudMan = d.gameObject.CreateAudioManager(d.GetComponent<AudioSource>(), false, [], true).MakeAudioManagerNonPositional();

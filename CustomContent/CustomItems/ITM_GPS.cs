@@ -34,7 +34,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 			while (cooldown >= 0f)
 			{
-				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
 				yield return null;
 			}
 

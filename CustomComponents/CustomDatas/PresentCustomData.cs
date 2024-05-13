@@ -3,7 +3,6 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using System.IO;
 
 namespace BBTimes.CustomComponents.CustomDatas
@@ -22,23 +21,23 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefabPost()
 		{
 			base.SetupPrefabPost();
-			// GetComponent<Present>().items = [.. ItemMetaStorage.Instance.FindAll(x => x.id != myEnum).ConvertAll(x => x.value)];
+			GetComponent<ITM_Present>().items = [.. ItemMetaStorage.Instance.FindAll(x => x.id != myEnum).ConvertAll(x => x.value)];
 
 			// Another workaround for this stupid bug
-			List<ItemObject> list = new(ItemMetaStorage.Instance.FindAll(x => x.id != myEnum).ConvertAll(x => x.value));
+			//List<ItemObject> list = new(ItemMetaStorage.Instance.FindAll(x => x.id != myEnum).ConvertAll(x => x.value));
 
-			HashSet<ItemObject> duplicates = [];
-			for (int i = 0; i < list.Count; i++)
-			{
-				if (duplicates.Contains(list[i]))
-				{
-					list.RemoveAt(i);
-					i--;
-					continue;
-				}
-				duplicates.Add(list[i]);
-			}
-			GetComponent<ITM_Present>().items = [.. list];
+			//HashSet<ItemObject> duplicates = [];
+			//for (int i = 0; i < list.Count; i++)
+			//{
+			//	if (duplicates.Contains(list[i]))
+			//	{
+			//		list.RemoveAt(i);
+			//		i--;
+			//		continue;
+			//	}
+			//	duplicates.Add(list[i]);
+			//}
+			//GetComponent<ITM_Present>().items = [.. list];
 		}
 	}
 }

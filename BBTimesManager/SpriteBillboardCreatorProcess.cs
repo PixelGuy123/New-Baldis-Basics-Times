@@ -8,7 +8,7 @@ using HarmonyLib;
 using BBTimes.Plugin;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using PixelInternalAPI;
+using BBTimes.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -17,10 +17,10 @@ namespace BBTimes.Manager
 		static void CreateSpriteBillboards() // Solo sprite bill boards btw, that isn't added to other categorized stuff like Room Function (that would be in RoomFunctionCreatorProcess)
 		{
 			// Decorations outside
-			EnvironmentControllerMakeBeautifulOutside.decorations = [ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "flower.png")), 15f)).AddSpriteHolder(2.6f).transform.parent.gameObject.SetAsPrefab().AddAsGeneratorPrefab()];
+			EnvironmentControllerMakeBeautifulOutside.decorations = [ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "flower.png")), 15f)).AddSpriteHolder(2.6f).transform.parent.gameObject.SetAsPrefab(true)];
 			// Fire Object
 			SchoolFire.anim = new([AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "SchoolFire.png")), 15f), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "SchoolFire2.png")), 15f)], 2f);
-			var fire = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteAnimator<SchoolFire>(out var fireAnimator).gameObject.SetAsPrefab();
+			var fire = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteAnimator<SchoolFire>(out var fireAnimator).gameObject.SetAsPrefab(true);
 			fire.name = "Fire";
 			fireAnimator.spriteRenderer.material.SetTexture("_LightMap", null); // Don't get affected by reddish from schoolhouse
 			MainGameManagerPatches.fire = fire;
@@ -39,7 +39,7 @@ namespace BBTimes.Manager
 
 			hangingLight.transform.localScale = Vector3.one * 1.4f;
 
-			man.Add("prefab_cafeHangingLight", hangingLight.transform.parent.gameObject.SetAsPrefab().AddAsGeneratorPrefab());
+			man.Add("prefab_cafeHangingLight", hangingLight.transform.parent.gameObject.SetAsPrefab(true));
 		}
 	}
 }

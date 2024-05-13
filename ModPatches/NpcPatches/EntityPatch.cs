@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using PixelInternalAPI.Components;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.ModPatches.NpcPatches
 {

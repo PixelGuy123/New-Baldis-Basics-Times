@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using PixelInternalAPI.Components;
+using BBTimes.CustomComponents;
 using UnityEngine.UI;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.Events
 {
@@ -27,7 +28,7 @@ namespace BBTimes.CustomContent.Events
 
 				var mod = new MovementModifier(Vector3.zero, 1f);
 				player.Am.moveMods.Add(mod);
-				pMoveMods.Add(new(player.GetComponent<PlayerAttributesComponent>(), mod));
+				pMoveMods.Add(new(player.GetAttribute(), mod));
 
 				var ca = Instantiate(canvasPre, transform);
 				ca.transform.localPosition = Vector3.zero;

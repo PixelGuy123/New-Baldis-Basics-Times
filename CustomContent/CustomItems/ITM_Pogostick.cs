@@ -46,7 +46,7 @@ namespace BBTimes.CustomContent.CustomItems
 			while (true)
 			{
 				height = time.QuadraticEquation(-3f, 7f, 0f);
-				time += Time.deltaTime;
+				time += pm.PlayerTimeScale * Time.deltaTime;
 
 				if (height > maxHeight)
 					height = maxHeight;

@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using BBTimes.CustomComponents;
+using HarmonyLib;
+using MTM101BaldAPI;
 using System.Collections;
 using System.Collections.Generic;
 // using System.Reflection;
@@ -22,7 +24,7 @@ namespace BBTimes.Extensions
 					cell.room.wallTex = tile.room.wallTex;
 
 				IntVector2 position = tile.position;
-				Window window = UnityEngine.Object.Instantiate(wObject.windowPre, tile.room.transform);
+				Window window = Object.Instantiate(wObject.windowPre, tile.room.transform);
 				ec.ConnectCells(tile.position, dir);
 				Cell cell2 = ec.CellFromPosition(position);
 				window.Initialize(ec, tile.position, dir, wObject);
@@ -97,13 +99,9 @@ namespace BBTimes.Extensions
 			}
 		}
 
-		public static void RemoveFunction(this RoomFunctionContainer container, RoomFunction function)
-		{
+		public static void RemoveFunction(this RoomFunctionContainer container, RoomFunction function) =>
 			container.functions.Remove(function);
-			//var list = (List<RoomFunction>)funcContainer_funcs.GetValue(container);
-			//list.Remove(function);
-			//funcContainer_funcs.SetValue(container, list);
-		}
+		
 
 		public static BoxCollider AddBoxCollider(this GameObject g, Vector3 center, Vector3 size, bool isTrigger)
 		{
@@ -116,5 +114,14 @@ namespace BBTimes.Extensions
 
 		public static WeightedTexture2D ToWeightedTexture(this WeightedSelection<Texture2D> t) =>
 			new() { selection = t.selection, weight = t.weight };
+
+		public static PlayerAttributesComponent GetAttribute(this PlayerManager pm) =>
+			pm.GetComponent<PlayerAttributesComponent>();
+
+		public static GameObject SetAsPrefab(this GameObject obj, bool active)
+		{
+			obj.ConvertToPrefab(active);
+			return obj;
+		}
 	}
 }

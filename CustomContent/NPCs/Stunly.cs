@@ -1,6 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.CustomDatas;
-using PixelInternalAPI.Classes;
+using MTM101BaldAPI.Components;
 using PixelInternalAPI.Components;
 using System.Collections;
 using System.Collections.Generic;
@@ -191,7 +191,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		StarObject activeStar;
 
-		readonly BaseModifier lookerMod = new(0);
+		readonly ValueModifier lookerMod = new(0);
 
 		Coroutine stunCor;
 

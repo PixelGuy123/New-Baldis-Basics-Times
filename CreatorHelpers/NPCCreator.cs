@@ -1,67 +1,43 @@
 ﻿using BBTimes.CustomComponents.CustomDatas;
-using BBTimes.Plugin;
-using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using System.IO;
 using System.Linq;
+using BBTimes.Plugin;
 using UnityEngine;
 using static UnityEngine.Object;
+using BBTimes.Manager;
 
 namespace BBTimes.Helpers
 {
 	public static partial class CreatorExtensions
 	{
-		// Some fields that the api misses
-		//readonly static FieldInfo _npc_ignorePlayerOnSpawn = AccessTools.Field(typeof(NPC), "ignorePlayerOnSpawn");
-		//readonly static FieldInfo _npc_ignoreBelts = AccessTools.Field(typeof(NPC), "ignoreBelts");
-		//readonly static FieldInfo _npc_poster = AccessTools.Field(typeof(NPC), "poster");
-		//readonly static FieldInfo _nav_avoidRooms = AccessTools.Field(typeof(Navigator), "avoidRooms");
-		// looker
-		//readonly static FieldInfo _looker_fieldOfView = AccessTools.Field(typeof(Looker), "fieldOfView");
-		//readonly static FieldInfo _looker_hasFov = AccessTools.Field(typeof(Looker), "hasFov");
-
-		public static T SetNPCLookerFov<T>(this T obj, float fieldOfView) where T : NPC // Basic builder pattern this (yeah it is lazy, but the api is gonna have it anyways)
-		{
-			obj.looker.hasFov = true;//_looker_hasFov.SetValue(obj.looker, true);
-			obj.looker.fieldOfView = fieldOfView; //_looker_fieldOfView.SetValue(obj.looker, fieldOfView);
-			return obj;
-		}
-
-		public static T CreateNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, RoomCategory[] rooms, WeightedRoomAsset[] potentialRoomAssets, string posterNameKey, string posterDescKey, bool disableLooker = false, float spriteYOffset = 0f, bool ignorePlayerOnSpawn = false, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue, bool avoidRooms = true, bool grounded = true) where T : NPC where C : CustomNPCData
+		public static NPC SetupNPCData<C>(this NPC npc, string name, string posterName, string posterDesc, float spriteYoffset = 0f) where C : CustomNPCData
 		{
 			var sprites = GetAllNpcSpritesFrom(name);
-			var npc = ObjectCreators.CreateNPC<T>(name, EnumExtensions.ExtendEnum<Character>(name), ObjectCreators.CreateCharacterPoster(sprites[0].texture, posterNameKey, posterDescKey), !disableLooker, usesHeatMap, hasTrigger, audioMinDistance, audioMaxDistance, rooms);
-
-			// Set some other npc parameters
-			npc.potentialRoomAssets = potentialRoomAssets;
-			npc.ignorePlayerOnSpawn = ignorePlayerOnSpawn; //_npc_ignorePlayerOnSpawn.SetValue(npc, ignorePlayerOnSpawn);
-			npc.spriteRenderer[0].sprite = sprites[1]; // Sets to default sprite
-			npc.ignoreBelts = ignoreBelts; //_npc_ignoreBelts.SetValue(npc, ignoreBelts);
-
-			npc.spriteBase.transform.Find("Sprite").localPosition = Vector3.up * spriteYOffset; // I HATE ENTITY CLASS JUST MESSING UP WITH SPRITE BASE Y
-
-			npc.looker.distance = lookerDistance;
-
-			npc.Navigator.Entity.SetGrounded(grounded);
-
-			npc.Navigator.SetRoomAvoidance(avoidRooms);
-
+	
 			var data = npc.gameObject.AddComponent<C>();
 			
 			// Setup for CustomNPCData
 			if (sprites.Length >= 2)
 				data.storedSprites = [.. sprites.Skip(1)]; // Excludes necessary sprites
 
+			npc.spriteRenderer[0].sprite = sprites[1];
+			npc.poster.baseTexture = sprites[0].texture;
+			npc.poster.textData[0].textKey = posterName;
+			npc.poster.textData[1].textKey = posterDesc;
+
+			npc.spriteBase.transform.Find("Sprite").localPosition = Vector3.up * spriteYoffset;
+
+			data.Name = name;
 			data.GetAudioClips(); // Of course
 			data.SetupPrefab();
+			data.Npc = npc;
 			
+
 
 			return npc;
 		}
-
-		public static T CreateRuntimeNPC<T, C>(string name, float audioMinDistance, float audioMaxDistance, bool disableLooker = false, float spriteYOffset = 0f, bool usesHeatMap = false, bool hasTrigger = true, bool ignoreBelts = false, float lookerDistance = int.MaxValue, bool avoidRooms = true, bool grounded = true) where T : NPC where C : CustomNPCData =>
-			CreateNPC<T, C>(name, audioMinDistance, audioMaxDistance, [], [], string.Empty, string.Empty, disableLooker, spriteYOffset, true, usesHeatMap, hasTrigger, ignoreBelts, lookerDistance, avoidRooms, grounded);
 
 		public static T InstantiateRuntimeNPC<T>(this T npc, EnvironmentController ec, IntVector2 pos, Vector3 offset) where T : NPC
 		{
@@ -71,7 +47,6 @@ namespace BBTimes.Helpers
 			ec.Npcs.RemoveAt(ec.Npcs.Count - 1); // Removes the runtime npc from the list to not be affected by the environment
 			return (T)cnpc;
 		}
-		public static T InstantiateRuntimeNPC<T>(this T npc, EnvironmentController ec, IntVector2 pos) where T : NPC => InstantiateRuntimeNPC(npc, ec, pos, Vector3.zero);
 
 		public static T CreateCustomNPCFromExistent<T, C>(Character target, string name, float spriteYOffset = 0f) where T : NPC where C : CustomNPCData
 		{
@@ -123,7 +98,10 @@ namespace BBTimes.Helpers
 			var comp = npc.GetComponent<CustomNPCData>();
 			if (comp != null)
 				comp.npcsBeingReplaced = targets;
-			
+
+			if (!BBTimesManager.replacementNpcs.Contains(comp))
+				BBTimesManager.replacementNpcs.Add(comp);
+
 			return npc;
 		}
 

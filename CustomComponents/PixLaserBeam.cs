@@ -11,7 +11,7 @@ namespace BBTimes.CustomComponents
 			
 			entity.Initialize(pix.ec, pix.transform.position);
 			transform.LookAt(targetPlayer.transform);
-			rotation = pix.ec.CellFromPosition(transform.position).open ? transform.rotation : Directions.DirFromVector3(targetPlayer.transform.position - transform.position, 45f).ToRotation(); // If not in an open cell, just shoot a straight line
+			direction = pix.ec.CellFromPosition(transform.position).open ? transform.forward : Directions.DirFromVector3(targetPlayer.transform.position - transform.position, 45f).ToVector3(); // If not in an open cell, just shoot a straight line
 
 			entity.OnEntityMoveInitialCollision += (hit) =>
 			{
@@ -71,11 +71,10 @@ namespace BBTimes.CustomComponents
 		{
 			if (flying)
 			{
-				transform.rotation = rotation; // Workaround to get this stupid rotation working
 				frame += 10 * pix.ec.EnvironmentTimeScale * Time.deltaTime;
 				frame %= flyingSprites.Length;
 				renderer.sprite = flyingSprites[Mathf.FloorToInt(frame)];
-				entity.UpdateInternalMovement(transform.forward * speed * pix.ec.EnvironmentTimeScale);
+				entity.UpdateInternalMovement(direction * speed * pix.ec.EnvironmentTimeScale);
 			}
 			else
 			{
@@ -133,7 +132,7 @@ namespace BBTimes.CustomComponents
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.65f);
 
-		Quaternion rotation;
+		Vector3 direction;
 
 		const float speed = 25f;
 	}

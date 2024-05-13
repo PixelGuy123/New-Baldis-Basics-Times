@@ -1,9 +1,8 @@
 ﻿using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.CustomContent.NPCs;
-using BBTimes.Extensions;
 using BBTimes.Helpers;
 using BepInEx;
-using MTM101BaldAPI.Registers;
+using MTM101BaldAPI.ObjectCreation;
 
 namespace BBTimes.Manager
 {
@@ -18,9 +17,19 @@ namespace BBTimes.Manager
 			NPC npc;
 
 			// Office Chair
-			npc = CreatorExtensions.CreateNPC<OfficeChair, OfficeChairCustomData>("OfficeChair", 35f, 60f, [RoomCategory.Office, RoomCategory.Faculty], [], "PST_OFC_Name", "PST_OFC_Desc", true, ignorePlayerOnSpawn: true, spriteYOffset:-2f).AddMeta(plug, "OfficeChair", NPCFlags.Standard).value;
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 50 });
+			//npc = CreatorExtensions.CreateNPC<OfficeChair, OfficeChairCustomData>("OfficeChair", 35f, 60f, [RoomCategory.Office, RoomCategory.Faculty], [], "PST_OFC_Name", "PST_OFC_Desc", true, ignorePlayerOnSpawn: true, spriteYOffset:-2f).AddMeta(plug, "OfficeChair", NPCFlags.Standard).value;
+			npc = new NPCBuilder<OfficeChair>(plug.Info).SetMinMaxAudioDistance(35f, 60f)
+				.AddSpawnableRoomCategories(RoomCategory.Office, RoomCategory.Faculty)
+				.IgnorePlayerOnSpawn()
+				.SetEnum("OfficeChair")
+				.SetName("OfficeChair")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData<OfficeChairCustomData>("OfficeChair", "PST_OFC_Name", "PST_OFC_Desc", -2f);
+
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 99999 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 60 });
+			/*
 			// Happy Holidays
 			npc = CreatorExtensions.CreateNPC<HappyHolidays, HappyHolidaysCustomData>("HappyHolidays", 45f, 80f, [RoomCategory.Hall], [], "PST_HapH_Name", "PST_HapH_Desc", lookerDistance: 125, spriteYOffset: -2f).AddMeta(plug, NPCFlags.Standard).value;
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
@@ -57,6 +66,7 @@ namespace BBTimes.Manager
 				.SetNPCLookerFov(100f);
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+			*/
 		}
 
 		

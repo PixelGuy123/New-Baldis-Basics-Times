@@ -1,25 +1,26 @@
 ﻿using MTM101BaldAPI;
 using UnityEngine;
-using static UnityEngine.Object;
 using BBTimes.CustomComponents.CustomDatas;
 
 namespace BBTimes.Helpers
 {
     public static partial class CreatorExtensions
 	{
-		public static O CreateObjectBuilder<O, C>(string obstacleName = null) where O : ObjectBuilder where C : CustomBaseData
+		public static O CreateObjectBuilder<O, C>(string name, string obstacleName = null) where O : ObjectBuilder where C : CustomBaseData
 		{
-			var obj = new GameObject(obstacleName).AddComponent<O>();
+			var obj = new GameObject(name).AddComponent<O>();
 
 			if (obstacleName != null)
 				obj.obstacle = EnumExtensions.ExtendEnum<Obstacle>(obstacleName);
 			else
 				obj.obstacle = Obstacle.Null;
 
-			DontDestroyOnLoad(obj.gameObject);
+			obj.gameObject.ConvertToPrefab(true);
 
 			var data = obj.gameObject.AddComponent<C>();
+			data.Name = obstacleName;
 			data.SetupPrefab();
+			
 
 			return obj;
 		}
@@ -32,7 +33,7 @@ namespace BBTimes.Helpers
 				obj.obstacle = EnumExtensions.ExtendEnum<Obstacle>(obstacleName);
 			else
 				obj.obstacle = Obstacle.Null;
-			DontDestroyOnLoad(obj.gameObject);
+			obj.gameObject.ConvertToPrefab(true);
 
 			return obj;
 		}

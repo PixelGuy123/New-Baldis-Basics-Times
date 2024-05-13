@@ -4,8 +4,6 @@ using MTM101BaldAPI.AssetTools;
 using System.IO;
 using BBTimes.CustomContent.Events;
 using PixelInternalAPI.Extensions;
-using UnityEngine.UI;
-using BBTimes.Manager;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
@@ -28,11 +26,11 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			v.audFreeze = soundObjects[0];
 
-			var canvas = Instantiate(BBTimesManager.man.Get<Canvas>("CanvasPrefab"));
+			var canvas = ObjectCreationExtensions.CreateCanvas();
 			canvas.transform.SetParent(transform);
 			canvas.transform.localPosition = Vector3.zero; // I don't know if I really need this but whatever
 			canvas.name = "iceOverlay";
-			canvas.GetComponentInChildren<Image>().sprite = storedSprites[0]; // stunly stare moment
+			ObjectCreationExtensions.CreateImage(canvas, storedSprites[0], true); // stunly stare moment
 
 			v.canvasPre = canvas;
 		}

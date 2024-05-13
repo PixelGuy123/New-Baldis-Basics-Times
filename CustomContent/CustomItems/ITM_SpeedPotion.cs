@@ -1,7 +1,11 @@
-﻿using PixelInternalAPI.Classes;
+﻿using BBTimes.Extensions;
 using PixelInternalAPI.Components;
+using BBTimes.CustomComponents;
 using System.Collections;
 using UnityEngine;
+using MTM101BaldAPI.PlusExtensions;
+using MTM101BaldAPI.Components;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -20,12 +24,12 @@ namespace BBTimes.CustomContent.CustomItems
 			gameObject.SetActive(true);
 			this.pm = pm;
 			pm.RuleBreak("Drinking", 1.5f);
-			StartCoroutine(Timer(pm.GetComponent<PlayerAttributesComponent>(), Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).GetComponent<CustomPlayerCameraComponent>()));
+			StartCoroutine(Timer(pm.GetMovementStatModifier(), pm.GetCustomCam()));
 
 			return true;
 		}
 
-		IEnumerator Timer(PlayerAttributesComponent comp, CustomPlayerCameraComponent comp2)
+		IEnumerator Timer(PlayerMovementStatModifier comp, CustomPlayerCameraComponent comp2)
 		{
 			audMan.PlaySingle(audDrink);
 			var cor = comp2.SlideFOVAnimation(fovMod, -35f, smoothness);
@@ -38,17 +42,19 @@ namespace BBTimes.CustomContent.CustomItems
 
 			audMan.PlaySingle(audPower);
 
-			cor = comp2.SlideFOVAnimation(fovMod, -fovMod.Mod + 45f, smoothness);
+			cor = comp2.SlideFOVAnimation(fovMod, -fovMod.addend + 45f, smoothness);
 
-			comp.SpeedMods.Add(speedMod);
+			comp.AddModifier("walkSpeed", speedMod);
+			comp.AddModifier("runSpeed", speedMod);
 			float cooldown = 12f;
 			while (cooldown > 0f)
 			{
-				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
 				yield return null;
 			}
 
-			comp.SpeedMods.Remove(speedMod);
+			comp.RemoveModifier(speedMod);
+
 			if (cor != null)
 				comp2.StopCoroutine(cor);
 
@@ -71,9 +77,9 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		internal AudioManager audMan;
 
-		readonly SpeedModifier speedMod = new(2f, 2f);
+		readonly ValueModifier speedMod = new(2f);
 
-		readonly BaseModifier fovMod = new();
+		readonly ValueModifier fovMod = new();
 
 		const float smoothness = 3f;
 

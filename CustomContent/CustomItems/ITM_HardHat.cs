@@ -1,4 +1,5 @@
-﻿using PixelInternalAPI.Components;
+﻿using BBTimes.Extensions;
+using BBTimes.CustomComponents;
 using System.Collections;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ namespace BBTimes.CustomContent.CustomItems
 			canvas.gameObject.SetActive(true);
 			canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 
-			StartCoroutine(Timer(pm.GetComponent<PlayerAttributesComponent>()));
+			StartCoroutine(Timer(pm.GetAttribute()));
 
 			return true;
 		}
@@ -31,7 +32,7 @@ namespace BBTimes.CustomContent.CustomItems
 			float cooldown = 15f;
 			while (cooldown > 0f)
 			{
-				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
 				yield return null;
 			}
 			comp.RemoveAttribute("protectedhead");

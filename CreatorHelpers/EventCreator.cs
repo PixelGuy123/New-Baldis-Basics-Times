@@ -1,48 +1,24 @@
-﻿using MTM101BaldAPI;
-using UnityEngine;
-using static UnityEngine.Object;
-//using System.Reflection;
-using HarmonyLib;
+﻿using UnityEngine;
 using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.Plugin;
 using MTM101BaldAPI.AssetTools;
 using System.IO;
 using System.Linq;
+using MTM101BaldAPI.ObjectCreation;
 
 namespace BBTimes.Helpers
 {
     public static partial class CreatorExtensions
 	{
-		// Fields
-		//readonly static FieldInfo _ev_randomEventType = AccessTools.Field(typeof(RandomEvent), "eventType");
-		//readonly static FieldInfo _ev_minEventTime = AccessTools.Field(typeof(RandomEvent), "minEventTime");
-		//readonly static FieldInfo _ev_maxEventTime = AccessTools.Field(typeof(RandomEvent), "maxEventTime");
-		//readonly static FieldInfo _ev_potentialRoomAssets = AccessTools.Field(typeof(RandomEvent), "potentialRoomAssets");
-		//readonly static FieldInfo _ev_eventDescKey = AccessTools.Field(typeof(RandomEvent), "eventDescKey");
 
-		public static E CreateEvent<E, C>(string name, string eventDescriptionKey, float minEventTime, float maxEventTime, WeightedRoomAsset[] rooms) where E : RandomEvent where C : CustomEventData
+		public static RandomEvent SetupEvent<C>(this RandomEvent ev) where C : CustomEventData
 		{
-			// Object setup
-			var ev = new GameObject(name).AddComponent<E>();
-			ev.gameObject.SetActive(false);
-			DontDestroyOnLoad(ev.gameObject);
-
-			// Fields setup
-			//_ev_randomEventType.SetValue(ev, EnumExtensions.ExtendEnum<RandomEventType>(name)); // Enum
-			ev.eventType = EnumExtensions.ExtendEnum<RandomEventType>(name);
-			//_ev_minEventTime.SetValue(ev, minEventTime);
-			ev.minEventTime = minEventTime;
-			//_ev_maxEventTime.SetValue(ev, maxEventTime);
-			ev.maxEventTime = maxEventTime;
-			//_ev_potentialRoomAssets.SetValue(ev, rooms);
-			ev.potentialRoomAssets = rooms;
-			//_ev_eventDescKey.SetValue(ev, eventDescriptionKey);
-			ev.eventDescKey = eventDescriptionKey;
-
 			var cus = ev.gameObject.AddComponent<C>();
-			cus.storedSprites = GetAllEventSpritesFrom(name);
+			cus.storedSprites = GetAllEventSpritesFrom(ev.name);
+			cus.Name = ev.name;
 			cus.GetAudioClips();
 			cus.SetupPrefab();
+			
 
 			return ev;
 		}
@@ -68,6 +44,13 @@ namespace BBTimes.Helpers
 
 
 			return sprs;
+		}
+
+		public static RandomEventBuilder<T> AddRequiredCharacters<T>(this RandomEventBuilder<T> r, params Character[] chars) where T : RandomEvent
+		{
+			for (int i = 0; i < chars.Length; i++)
+				r.AddRequiredCharacter(chars[i]);
+			return r;
 		}
 
 

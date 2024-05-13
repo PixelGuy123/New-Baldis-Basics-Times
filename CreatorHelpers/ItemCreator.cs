@@ -9,32 +9,39 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using static UnityEngine.Object;
+using MTM101BaldAPI.ObjectCreation;
 
 namespace BBTimes.Helpers
 {
     public static partial class CreatorExtensions
 	{
-		public static ItemObject CreateItem<T, C>(string name, string nameKey, string descKey, int price, int genCost) where T : Item where C : CustomItemData
+		public static ItemObject Build<C>(this ItemBuilder itmB, string name) where C : CustomItemData
 		{
 
 			var en = EnumExtensions.ExtendEnum<Items>(name); // Make enum
 
+			itmB.SetEnum(en);
+			var actualItem = itmB.Build();
 
-			var itemobj = new GameObject(name, typeof(T)).AddComponent<C>();
+			var item = actualItem.item;
 
-			DontDestroyOnLoad(itemobj.gameObject);
-			itemobj.gameObject.SetActive(false);
+			var itemobj = item.gameObject.AddComponent<C>();
 			itemobj.myEnum = en; // custom Item object with customItemData
+
+			itemobj.Name = name; // to handle the prefixes put in the item names
+
 			var sprites = GetAllItemSpritesFrom(name); // Get all sprites from its folder (0 is small icon, 1 is big icon)
+
+			actualItem.itemSpriteLarge = sprites[0];
+			actualItem.itemSpriteSmall = sprites[1];
+
 			if (sprites.Length > 2)
 				itemobj.storedSprites = [.. sprites.Skip(2)]; // Make sure to not skip and leave an empty array... if that returns an error I guess
 			itemobj.GetAudioClips();
 			itemobj.SetupPrefab();
+			
 
-			var item = ObjectCreators.CreateItemObject(nameKey, descKey, sprites[0], sprites[1], en, price, genCost);
-			item.name = name;
-			item.item = itemobj.GetComponent<T>();
-			return item;
+			return actualItem;
 		}
 
 		public static ItemObject DuplicateItem(this ItemObject item, ItemMetaData data, string nameKey)

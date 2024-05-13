@@ -1,7 +1,7 @@
-﻿using PixelInternalAPI.Components;
-using PixelInternalAPI.Classes;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
+using MTM101BaldAPI.PlusExtensions;
+using MTM101BaldAPI.Components;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -13,27 +13,28 @@ namespace BBTimes.CustomContent.CustomItems
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audDrink);
 			this.pm = pm;
 			pm.RuleBreak("Drinking", 1.5f);
-			var comp = pm.GetComponent<PlayerAttributesComponent>();
-			sMod = new(staminaMaxMod, staminaRiseMod, staminaDropMod);
-			comp.StaminaMods.Add(sMod);
-			if (attribute != null)
-				comp.AddAttribute(attribute);
+			var comp = pm.GetMovementStatModifier();
+
+			comp.AddModifier("staminaMax", staminaMaxMod);
+			comp.AddModifier("staminaRise", staminaRiseMod);
+			comp.AddModifier("staminaDrop", staminaDropMod);
 
 			StartCoroutine(Timer(comp));
 
 			return true;
 		}
 
-		IEnumerator Timer(PlayerAttributesComponent comp)
+		IEnumerator Timer(PlayerMovementStatModifier comp)
 		{
 			while (cooldown > 0f)
 			{
-				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
 				yield return null;
 			}
 
-			comp.StaminaMods.Remove(sMod);
-			comp.RemoveAttribute(attribute);
+			comp.RemoveModifier(staminaMaxMod);
+			comp.RemoveModifier(staminaRiseMod);
+			comp.RemoveModifier(staminaDropMod);
 
 			Destroy(gameObject);
 
@@ -42,18 +43,19 @@ namespace BBTimes.CustomContent.CustomItems
 
 		internal void SetMod(float staminamax, float staminarise, float staminadrop) 
 		{
-			staminaMaxMod = staminamax;
-			staminaRiseMod = staminarise;
-			staminaDropMod = staminadrop;
+			staminaMaxMod.multiplier = staminamax;
+			staminaRiseMod.multiplier = staminarise;
+			staminaDropMod.multiplier = staminadrop;
 		}
 
-		StaminaModifier sMod;
+		[SerializeField]
+		public float cooldown = 10f;
+
+		[SerializeField]
+		readonly ValueModifier staminaMaxMod = new(1f), staminaRiseMod = new(1f), staminaDropMod = new(1f);
 
 		[SerializeField]
 		internal SoundObject audDrink;
-
-		[SerializeField]
-		internal float staminaMaxMod = 1f, staminaRiseMod = 1f, staminaDropMod = 1f, cooldown = 15f;
 
 		[SerializeField]
 		internal string attribute;

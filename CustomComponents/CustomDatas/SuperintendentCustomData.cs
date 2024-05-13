@@ -14,7 +14,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			var s = GetComponent<Superintendent>();
+			var s = (Superintendent)Npc;
 			s.audMan = s.GetComponent<AudioManager>();
 			s.data = this;
 		}

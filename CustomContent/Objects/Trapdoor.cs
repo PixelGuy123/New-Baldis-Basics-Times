@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using TMPro;
-using PixelInternalAPI.Components;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.CustomContent.Objects
 {

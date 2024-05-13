@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
-using PixelInternalAPI.Components;
+using BBTimes.Extensions;
+using BBTimes.CustomComponents;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace BBTimes.ModPatches.ItemPatches
 	{
 		[HarmonyPatch("Use")]
 		private static void Prefix(PlayerManager pm) =>
-			pm.GetComponent<PlayerAttributesComponent>().AddAttribute("boots");
+			pm.GetAttribute().AddAttribute("boots");
 
 		[HarmonyPatch("Timer", MethodType.Enumerator)]
 		private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> i) =>

@@ -28,6 +28,9 @@
 
     <!-- Publicize directly when referencing -->
     <Reference Include="C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Assembly-CSharp.dll" Publicize="true" />
+    <Reference Include="MTM101BaldAPI">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\MTM101BaldAPI.dll</HintPath>
+    </Reference>
     
 	
 </ItemGroup>
@@ -37,9 +40,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Reference Include="MTM101BaldAPI">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\MTM101BaldAPI.dll</HintPath>
-    </Reference>
     <Reference Include="netstandard">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\netstandard.dll</HintPath>
     </Reference>
@@ -60,6 +60,6 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\bin\Cheat\net46\BBTimes.dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;&#xD;&#xA;copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\bin\Cheat\net46\BBTimes.pdb&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;" />
+    <Exec Command="copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\$(OutputPath)\$(AssemblyName).dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;&#xD;&#xA;copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\$(OutputPath)\$(AssemblyName).pdb&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;" />
   </Target>
 </Project>

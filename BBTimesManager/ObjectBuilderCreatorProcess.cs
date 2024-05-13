@@ -21,7 +21,7 @@ namespace BBTimes.Manager
 			// 3 - END
 
 			// Vent Builder
-			VentBuilder vent = CreatorExtensions.CreateObjectBuilder<VentBuilder, VentBuilderCustomData>("Vent");
+			VentBuilder vent = CreatorExtensions.CreateObjectBuilder<VentBuilder, VentBuilderCustomData>("VentBuilder", "Vent");
 			vent.AddMeta(plug);
 			vent.minAmount = 3;
 			vent.maxAmount = 5;
@@ -46,7 +46,7 @@ namespace BBTimes.Manager
 			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(forcedPosterBuilder));
 
 			// Trapdoor Builder
-			TrapDoorBuilder trapdoor = CreatorExtensions.CreateObjectBuilder<TrapDoorBuilder, TrapdoorBuilderCustomData>("Trapdoor");
+			TrapDoorBuilder trapdoor = CreatorExtensions.CreateObjectBuilder<TrapDoorBuilder, TrapdoorBuilderCustomData>("TrapdoorBuilder", "Trapdoor");
 			trapdoor.minAmount = 3;
 			trapdoor.maxAmount = 5;
 			trapdoor.AddMeta(plug);

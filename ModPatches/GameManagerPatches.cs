@@ -1,6 +1,4 @@
 ﻿using BBTimes.CustomComponents;
-using PixelInternalAPI.Components;
-using PixelInternalAPI.Classes;
 using BBTimes.CustomContent.Misc;
 using BBTimes.Extensions;
 using BBTimes.Manager;
@@ -12,9 +10,11 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using UnityEngine;
 using PixelInternalAPI.Extensions;
+using MTM101BaldAPI.Components;
 
 namespace BBTimes.ModPatches
 {
+
 	[HarmonyPatch(typeof(MainGameManager))]
 	internal class MainGameManagerPatches
 	{
@@ -124,7 +124,7 @@ namespace BBTimes.ModPatches
 				}
 
 				for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)
-					Singleton<CoreGameManager>.Instance.GetCamera(i).GetComponent<CustomPlayerCameraComponent>().ReverseSlideFOVAnimation(new BaseModifier(), 55f, 9.5f); // Animation (weird way, I know)
+					Singleton<CoreGameManager>.Instance.GetCamera(i).GetCustomCam().ReverseSlideFOVAnimation(new ValueModifier(), 55f, 9.5f); // Animation (weird way, I know)
 
 				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(angryBal);
 

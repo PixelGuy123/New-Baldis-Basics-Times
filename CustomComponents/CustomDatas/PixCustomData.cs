@@ -1,5 +1,5 @@
 ﻿using BBTimes.CustomContent.NPCs;
-using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Extensions;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using PixelInternalAPI.Classes;
@@ -34,7 +34,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			var pix = GetComponent<Pix>();
+			var pix = (Pix)Npc;
 			// Setup audio
 			pix.audMan = GetComponent<PropagatedAudioManager>();
 			pix.audReady = [soundObjects[0], soundObjects[1], soundObjects[2]];
@@ -59,7 +59,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			// laser (16, 17)
 			var laserPre = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[23]).AddSpriteHolder(0f, LayerStorage.standardEntities);
 			var laserHolder = laserPre.transform.parent;
-			laserHolder.gameObject.SetAsPrefab();
+			laserHolder.gameObject.SetAsPrefab(true);
 			laserPre.name = "PixLaserBeam";
 
 			var laser = laserHolder.gameObject.AddComponent<PixLaserBeam>();

@@ -1,4 +1,5 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches;
@@ -8,10 +9,10 @@ using BepInEx;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
-using PixelInternalAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,45 +24,49 @@ namespace BBTimes.Manager
 {
 	internal static partial class BBTimesManager // basically holds the logic to create everything to the game
 	{
-		
-		internal static void InitializeContentCreation(BaseUnityPlugin plug)
+		internal static BaseUnityPlugin plug;
+		internal static IEnumerator InitializeContentCreation()
 		{
-			try
-			{
-				SetAssets();
-				AddExtraComponentsForSomeObjects();
-				CreateSpriteBillboards();
-				CreateCubeMaps();
-				GetMusics();
-				CreateNPCs(plug);
-				CreateItems(plug);
-				CreateEvents(plug);
-				CreateObjBuilders(plug);
-				CreateWindows();
-				CreateRoomFunctions();
-				CreateSchoolTextures();
-				GetIcons();
+			yield return 13;
 
-				for (int i = 0; i < cacheToDisableAfterSetup.Count; i++)
-				{
-					cacheToDisableAfterSetup[i].SetActive(false);
-					cacheToDisableAfterSetup.RemoveAt(i);
-					i--;
-				}
-				cacheToDisableAfterSetup = null;
-				GC.Collect(); // Get any garbage I guess
-			}
-			catch (Exception e)
-			{
-				Debug.LogException(e);
-				MTM101BaldiDevAPI.CauseCrash(plug.Info, e); // just in case
-			}
+			yield return "Loading assets...";
+			SetAssets();
+			yield return "Adding extra component for some objects...";
+			AddExtraComponentsForSomeObjects();
+			yield return "Creating sprite billboards...";
+			CreateSpriteBillboards();
+			yield return "Creating cube maps...";
+			CreateCubeMaps();
+			yield return "Creating musics...";
+			GetMusics();
+			yield return "Creating npcs...";
+			CreateNPCs(plug);
+			yield return "Creating items...";
+			CreateItems(plug);
+			yield return "Creating events...";
+			CreateEvents(plug);
+			yield return "Creating object builders...";
+			CreateObjBuilders(plug);
+			yield return "Creating windows...";
+			CreateWindows();
+			yield return "Creating room functions...";
+			CreateRoomFunctions();
+			yield return "Creating school textures...";
+			CreateSchoolTextures();
+			yield return "Creating map icons...";
+			GetIcons();
+
+			yield return "Calling GC Collect...";
+			GC.Collect(); // Get any garbage I guess
+
+			yield break;
 		}
 
 		static void AddExtraComponentsForSomeObjects()
 		{
 			GenericExtensions.FindResourceObjects<MainGameManager>().Do(x => x.gameObject.AddComponent<MainGameManagerExtraComponent>()); // Adds extra component for every MainGameManager
 			GenericExtensions.FindResourceObjects<EnvironmentController>().Do(x => x.gameObject.AddComponent<EnvironmentControllerData>());
+			GenericExtensions.FindResourceObjects<PlayerManager>().Do(x => x.gameObject.AddComponent<PlayerAttributesComponent>());
 		}
 
 		static void SetAssets()
@@ -88,9 +93,8 @@ namespace BBTimes.Manager
 			renderer.receiveShadows = false;
 			renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
 			man.Add("PlaneTemplate", basePlane);
-			cacheToDisableAfterSetup.Add(basePlane);
 
-			basePlane.gameObject.SetAsPrefab().AddAsGeneratorPrefab();
+			basePlane.gameObject.ConvertToPrefab(true);
 
 			// Grass texture
 			man.Add("Tex_Grass", GenericExtensions.FindResourceObjectByName<Texture2D>("Grass"));
@@ -99,18 +103,11 @@ namespace BBTimes.Manager
 			man.Add("Tex_Fence", GenericExtensions.FindResourceObjectByName<Texture2D>("fence"));
 
 			// Canvas renderer instance
-			man.Add("CanvasPrefab", GenericExtensions.FindResourceObjectByName<Canvas>("GumOverlay"));
+			//man.Add("CanvasPrefab", GenericExtensions.FindResourceObjectByName<Canvas>("GumOverlay")); // <----- change this
 
 			// Setup Window hit audio
 
 			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Voice, Color.white);
-
-
-			// Fog music change
-			var fogSound = AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "events", "Fog", "Audios", "new_CreepyOldComputer.wav"));
-			var field = AccessTools.Field(typeof(FogEvent), "music");
-
-			GenericExtensions.FindResourceObjects<FogEvent>().Do(x => ((SoundObject)field.GetValue(x)).soundClip = fogSound); // Replace fog music
 
 			// Principal's extra dialogues
 			AddRule("breakingproperty", "principal_nopropertybreak.wav", "Vfx_PRI_NoPropertyBreak");
@@ -118,12 +115,6 @@ namespace BBTimes.Manager
 			AddRule("littering", "principal_noLittering.wav", "Vfx_PRI_NoLittering");
 			AddRule("ugliness", "principal_nouglystun.wav", "Vfx_PRI_NoUglyStun");
 			AddRule("stabbing", "principal_nostabbing.wav", "Vfx_PRI_NoStabbing");
-
-
-			// Math Machine WOOOOW noises
-			MathMachinePatches.aud_BalWow = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Wow.wav")), "Vfx_Bal_WOW", SoundType.Voice, Color.green);
-			FieldTripManagerPatch.fieldTripYay = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "MUS_FieldTripWin.wav")), string.Empty, SoundType.Music, Color.white);
-			FieldTripManagerPatch.fieldTripYay.subtitle = false; // Of course
 
 			// Main Menu Stuff
 			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "mainMenu.png")), 1f);
@@ -192,7 +183,7 @@ namespace BBTimes.Manager
 			var playerVisual = ObjectCreationExtensions.CreateSpriteBillboard(tex).AddSpriteHolder(-1.6f);
 
 			GameCameraPatch.playerVisual = playerVisual.transform.parent;
-			playerVisual.transform.parent.gameObject.SetAsPrefab().AddAsGeneratorPrefab();
+			playerVisual.transform.parent.gameObject.ConvertToPrefab(true);
 
 			// Global Assets
 			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "potion_drink.wav")), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
@@ -220,7 +211,11 @@ namespace BBTimes.Manager
 
 		public static GameObject EmptyGameObject;
 
-		static List<GameObject> cacheToDisableAfterSetup = [];
+		// All the npcs that are replacement marked will be added to this list
+		internal static List<CustomNPCData> replacementNpcs = [];
+
+		internal static IEnumerable<Character> GetReplacementNPCs(params Character[] npcsReplaced) =>
+			replacementNpcs.Where(x => npcsReplaced.Any(z => x.npcsBeingReplaced.Contains(z))).Select(x => x.Npc.Character);
 
 
 

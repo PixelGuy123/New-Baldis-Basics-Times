@@ -7,7 +7,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 	{
 		public override void SetupPrefab()
 		{
-			var sweep = GetComponent<GottaSweep>();
+			var sweep = (GottaSweep)Npc;
 			if (sweep == null) return;
 
 			//maxActive.SetValue(sweep, 60f);

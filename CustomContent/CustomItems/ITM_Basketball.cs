@@ -12,13 +12,13 @@ namespace BBTimes.CustomContent.CustomItems
 			this.pm = pm;
 			target = pm.gameObject;
 			entity.Initialize(pm.ec, pm.transform.position);
-			transform.forward = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
+			dir = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
 
 			entity.OnEntityMoveInitialCollision += (hit) => // Basically just bounce over
 			{
 				if (hasHit) return; // stop BONG spam
 
-				transform.rotation *= Quaternion.FromToRotation(transform.forward, Vector3.Reflect(transform.forward, hit.normal)); // crazy math I guess
+				dir = Vector3.Reflect(dir, hit.normal); // crazy math I guess
 				audMan.PlaySingle(audBong);
 			};
 
@@ -29,7 +29,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			if (hasHit) return;
 
-			entity.UpdateInternalMovement(transform.forward * speed * pm.ec.EnvironmentTimeScale);
+			entity.UpdateInternalMovement(dir * speed * pm.ec.EnvironmentTimeScale);
 
 			lifeTime -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
 			if (lifeTime < 0f)
@@ -106,6 +106,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal SoundObject audThrow, audHit, audBong;
+
+		Vector3 dir;
 
 		const float speed = 25f;
 

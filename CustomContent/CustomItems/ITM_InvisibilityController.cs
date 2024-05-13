@@ -30,7 +30,7 @@ namespace BBTimes.CustomContent.CustomItems
 			float cooldown = 10f;
 			while (cooldown > 0f)
 			{
-				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
 				yield return null;
 			}
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audDeuse);

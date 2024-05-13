@@ -1,7 +1,5 @@
 ﻿using BepInEx;
 using HarmonyLib;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 using MTM101BaldAPI.Registers;
 using BBTimes.Manager;
 using System.Linq;
@@ -12,9 +10,9 @@ using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
 using MTM101BaldAPI;
 using BBTimes.CustomContent.CustomItems;
-using PixelInternalAPI.Components;
 using BBTimes.CustomContent.Events;
-using PixelInternalAPI.Classes;
+using System.Collections;
+using System.Collections.Generic;
 
 
 namespace BBTimes.Plugin
@@ -24,25 +22,29 @@ namespace BBTimes.Plugin
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
     public class BasePlugin : BaseUnityPlugin
     {
+		IEnumerator SetupPost()
+		{
+			yield return 2;
+			yield return "Calling custom data setup prefab post...";
+			_cstData.ForEach(x => x.SetupPrefabPost());
+			// Other stuff to setup
+			yield return "Setup the rest of the assets...";
+			ITM_GoldenQuarter.quarter = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;
+			BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
+			yield break;
+		}
+
 		private void Awake()
 		{
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAll();
 			
 			_modPath = AssetLoader.GetModPath(this);
+			BBTimesManager.plug = this;
 
-			LoadingEvents.RegisterOnAssetsLoaded(() => BBTimesManager.InitializeContentCreation(this), false);
+			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), false);
 
-			LoadingEvents.RegisterOnAssetsLoaded(() =>
-			{
-
-				FindObjectsOfType<CustomBaseData>(true).Do(x => x.SetupPrefabPost());
-				// Other stuff to setup
-				ITM_GoldenQuarter.quarter = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;
-				BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
-
-
-			}, true); // Post
+			LoadingEvents.RegisterOnAssetsLoaded(Info, SetupPost(), true); // Post
 
 			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, ld) =>
 			{
@@ -105,11 +107,6 @@ namespace BBTimes.Plugin
 					ld.officeStickToHallChance = 0.9f;
 					ld.specialRoomsStickToEdge = false;
 					ld.maxLightDistance += 2;
-
-					// TEMPORARY CHANGE TO REMOVE DR REFLEX AS FORCED NPC
-					var drReflex = ld.forcedNpcs.First(x => x.GetType() == typeof(DrReflex));
-					ld.forcedNpcs = [.. ld.forcedNpcs.Where(x => x.GetType() == typeof(DrReflex))];
-					ld.potentialNPCs.Add(new() { selection = drReflex, weight = 55});
 					return;
 				}
 
@@ -181,6 +178,10 @@ namespace BBTimes.Plugin
 					ld.maxLightDistance += 3;
 					return;
 				}
+
+				Debug.Log("------- ITEM PRICES -------");
+				Debug.Log("Floor " + floorName);
+				ld.shopItems.Do(x => Debug.Log($"{x.selection.itemType} >> {x.selection.price} || weight: {x.weight}"));
 				
 			});
 
@@ -201,7 +202,7 @@ namespace BBTimes.Plugin
 						ld.forcedNpcs = ld.forcedNpcs.AddToArray(npc.selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
 				}
 				
-				ld.items = ld.items.AddRangeToArray([.. floordata.Items]);
+				ld.potentialItems = ld.potentialItems.AddRangeToArray([.. floordata.Items]);
 				ld.randomEvents.AddRange(floordata.Events);
 				ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddRangeToArray([.. floordata.ForcedObjectBuilders]);
 				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
@@ -252,6 +253,8 @@ namespace BBTimes.Plugin
 
 		internal const string CharacterRadarGUID = "org.aestheticalz.baldi.characterradar";
 
+		internal static List<CustomBaseData> _cstData = [];
+
 	}
 
 	static class ModInfo
@@ -265,58 +268,5 @@ namespace BBTimes.Plugin
 	}
 
 	// Some cheats
-#if CHEAT
-
-	[HarmonyPatch(typeof(HappyBaldi), "SpawnWait", MethodType.Enumerator)]
-	internal static class QuickCheatBox
-	{
-		[HarmonyTranspiler]
-		internal static IEnumerable<CodeInstruction> Zero(IEnumerable<CodeInstruction> instructions) =>
-			new CodeMatcher(instructions)
-			.MatchForward(false, new CodeMatch(OpCodes.Ldc_I4_S, name:"9"))
-			.Set(OpCodes.Ldc_I4_0, null)
-			.InstructionEnumeration();
-	}
-	[HarmonyPatch(typeof(Baldi), "CaughtPlayer")]
-	internal static class QuickBaldiNoDeath
-	{
-		[HarmonyPrefix]
-		internal static bool NoDeath() => false;
-	}
-	[HarmonyPatch(typeof(BaseGameManager), "Initialize")]
-	internal static class AlwaysFullMap
-	{
-		private static void Prefix(BaseGameManager __instance)
-		{
-			__instance.CompleteMapOnReady();
-		}
-	}
-	[HarmonyPatch(typeof(PlayerMovement))]
-	internal class Fast
-	{
-
-		[HarmonyPatch("Start")]
-		[HarmonyPostfix]
-		private static void PointsYeah(PlayerMovement __instance) =>
-			Singleton<CoreGameManager>.Instance.AddPoints(9999999, __instance.pm.playerNumber, true);
-
-		[HarmonyPatch("Update")]
-		[HarmonyPostfix]
-		private static void GottaGoFAST(PlayerMovement __instance)
-		{
-			var comp = __instance.GetComponent<PlayerAttributesComponent>();
-			if (Input.GetKeyDown(KeyCode.K))
-			{
-				if (comp.SpeedMods.Contains(mod)) 
-					comp.SpeedMods.Remove(mod);
-				else
-					comp.SpeedMods.Add(mod);
-			}
-		}
-
-		readonly static SpeedModifier mod = new(3, 3);
-
-	}
-#endif
 
 }

@@ -19,16 +19,11 @@ namespace BBTimes.ModPatches
 		[HarmonyPatch("Completed")]
 		private static void WOOOW(MathMachine __instance, ref AudioManager ___audMan, bool ___givePoints)
 		{
-			if (___givePoints && aud_BalWow != null)
-				___audMan.PlaySingle(aud_BalWow);
-
 			var t = __instance.transform.Find("Answer").GetComponent<TextMeshPro>();
 			t.autoSizeTextContainer = false;
 			t.autoSizeTextContainer = true; // 10+ answers don't look ugly
 			// Must be exactly after completing, so it actually adapts
 		}
-
-		internal static SoundObject aud_BalWow;
 
 		[HarmonyPatch("ReInit")]
 		[HarmonyTranspiler]

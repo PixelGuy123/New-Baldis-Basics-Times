@@ -20,7 +20,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			var clock = GetComponent<CrazyClock>();
+			var clock = (CrazyClock)Npc;
 			clock.data = this;
 			clock.spriteRenderer[0].material = new(ObjectCreationExtensions.NonBillBoardPrefab.material);
 			clock.GetComponents<Collider>().Do(x => x.enabled = false);

@@ -19,20 +19,19 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			base.SetupPrefab();
 			soundObjects[0].subtitle = false;
-			var stunly = GetComponent<Stunly>();
+			var stunly = (Stunly)Npc;
 			stunly.dat = this;
 
 			stunly.noiseMan = GetComponent<PropagatedAudioManager>();
 
 			stunly.laughterMan = gameObject.CreatePropagatedAudioManager(75f, 100f).SetAudioManagerAsPrefab();
 
-			var canvas = Instantiate(BBTimesManager.man.Get<Canvas>("CanvasPrefab"));
+			var canvas = ObjectCreationExtensions.CreateCanvas();
 			canvas.transform.SetParent(stunly.transform);
 			canvas.transform.localPosition = Vector3.zero; // I don't know if I really need this but whatever
 			canvas.name = "stunlyOverlay";
 
-			stunly.image = canvas.GetComponentInChildren<Image>();
-			stunly.image.sprite = storedSprites[7]; // stunly stare moment
+			stunly.image = ObjectCreationExtensions.CreateImage(canvas, storedSprites[7]);
 
 			stunly.stunlyCanvas = canvas;
 			stunly.stunlyCanvas.gameObject.SetActive(false);
