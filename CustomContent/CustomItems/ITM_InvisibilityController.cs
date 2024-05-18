@@ -13,7 +13,6 @@ namespace BBTimes.CustomContent.CustomItems
 				return false;
 			}
 			use = true;
-			gameObject.SetActive(true);
 			this.pm = pm;
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
 			pm.SetInvisible(true);

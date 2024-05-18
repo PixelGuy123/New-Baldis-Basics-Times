@@ -17,7 +17,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			base.SetupPrefab();
 			var trapdoorholder = new GameObject("TrapDoor").AddComponent<Trapdoor>();
-
+			trapdoorholder.gameObject.ConvertToPrefab(true);
 			
 
 			var text = new GameObject("TrapdoorText").AddComponent<TextMeshPro>();
@@ -42,26 +42,23 @@ namespace BBTimes.CustomComponents.CustomDatas
 			trapdoorholder.aud_shut = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "trapDoor_shut.wav")), "Sfx_Doors_StandardShut", SoundType.Voice, Color.white);
 			trapdoorholder.aud_open = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "trapDoor_open.wav")), "Sfx_Doors_StandardOpen", SoundType.Voice, Color.white);
 
-			trapdoorholder.audMan = trapdoorholder.gameObject.CreatePropagatedAudioManager(35f, 45f).SetAudioManagerAsPrefab();
-
-			DontDestroyOnLoad(trapdoorholder.gameObject);
-			trapdoorholder.gameObject.SetActive(false);
-
 			var trapdoor = ObjectCreationExtensions.CreateSpriteBillboard(builder.closedSprites[0], false);
-			trapdoor.gameObject.SetAsPrefab(true);
-			trapdoor.transform.SetParent(trapdoorholder.transform);
-			trapdoorholder.renderer = trapdoor;
+			trapdoor.transform.SetParent(trapdoorholder.transform); // prefab stuf
+
+			
 			trapdoor.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			trapdoor.transform.localPosition = Vector3.up * 0.02f;
 			trapdoor.name = "TrapdoorVisual";
 			trapdoor.gameObject.layer = 0; // default layer
 
+			trapdoorholder.renderer = trapdoor;
+			trapdoorholder.audMan = trapdoorholder.gameObject.CreatePropagatedAudioManager(35f, 45f);
+
 			// Fake trapdoor
-			var fake = trapdoor.DuplicatePrefab();
+			var fake = trapdoor.SafeDuplicatePrefab(true);
 			fake.name = "FakeTrapDoor";
-			fake.gameObject.CreatePropagatedAudioManager(35f, 45f).SetAudioManagerAsPrefab();
+			fake.gameObject.CreatePropagatedAudioManager(35f, 45f);
 			trapdoorholder.fakeTrapdoorPre = fake.transform;
-			fake.gameObject.SetActive(false);
 		}
 	}
 }

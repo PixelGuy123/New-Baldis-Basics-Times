@@ -9,15 +9,18 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
-			gameObject.SetActive(true);
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audDrink);
 			this.pm = pm;
 			pm.RuleBreak("Drinking", 1.5f);
 			var comp = pm.GetMovementStatModifier();
 
-			comp.AddModifier("staminaMax", staminaMaxMod);
-			comp.AddModifier("staminaRise", staminaRiseMod);
-			comp.AddModifier("staminaDrop", staminaDropMod);
+			stamMax = new(staminaMaxMod);
+			stamRise = new(staminaRiseMod);
+			stamDrop = new(staminaDropMod);
+
+			comp.AddModifier("staminaMax", stamMax);
+			comp.AddModifier("staminaRise", stamRise);
+			comp.AddModifier("staminaDrop", stamDrop);
 
 			StartCoroutine(Timer(comp));
 
@@ -32,9 +35,9 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			comp.RemoveModifier(staminaMaxMod);
-			comp.RemoveModifier(staminaRiseMod);
-			comp.RemoveModifier(staminaDropMod);
+			comp.RemoveModifier(stamMax);
+			comp.RemoveModifier(stamRise);
+			comp.RemoveModifier(stamDrop);
 
 			Destroy(gameObject);
 
@@ -43,16 +46,18 @@ namespace BBTimes.CustomContent.CustomItems
 
 		internal void SetMod(float staminamax, float staminarise, float staminadrop) 
 		{
-			staminaMaxMod.multiplier = staminamax;
-			staminaRiseMod.multiplier = staminarise;
-			staminaDropMod.multiplier = staminadrop;
+			staminaMaxMod = staminamax;
+			staminaRiseMod = staminarise;
+			staminaDropMod = staminadrop;
 		}
+
+		ValueModifier stamMax, stamRise, stamDrop;
 
 		[SerializeField]
 		public float cooldown = 10f;
 
 		[SerializeField]
-		readonly ValueModifier staminaMaxMod = new(1f), staminaRiseMod = new(1f), staminaDropMod = new(1f);
+		float staminaMaxMod = 1f, staminaRiseMod = 1f, staminaDropMod = 1f;
 
 		[SerializeField]
 		internal SoundObject audDrink;

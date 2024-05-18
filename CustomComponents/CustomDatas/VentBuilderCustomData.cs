@@ -55,20 +55,19 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var visual = ObjectCreationExtension.CreateCube(texs[0]);
 			Destroy(visual.GetComponent<BoxCollider>()); // Removes the collider
 
+			vent.ConvertToPrefab(true);
+
 			var v = vent.GetComponent<Vent>();
 			v.renderer = visual.GetComponent<MeshRenderer>();
 			v.ventTexs = texs;
-			v.normalVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f).SetAudioManagerAsPrefab(); // Two propagated audio managers
-			v.gasLeakVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f).SetAudioManagerAsPrefab();
+			v.normalVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f); // Two propagated audio managers
+			v.gasLeakVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f);
 			v.ventAudios = audios;
 			v.colliders = [box, box2, box3];
 
 			visual.transform.SetParent(vent.transform);
 			visual.transform.localPosition = new Vector3(-4.95f, 9f, -4.95f);
 			visual.transform.localScale = new Vector3(9.9f, 1f, 9.9f);
-
-			vent.SetActive(false);
-			DontDestroyOnLoad(vent);
 
 			var builder = GetComponent<VentBuilder>();
 			builder.ventPrefab = vent;
@@ -113,8 +112,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			Destroy(connection.GetComponent<BoxCollider>());
 			connection.name = "VentPrefab_Connection";
 			connection.transform.localScale = new(connectionSize, 0.6f, connectionSize);
-			connection.SetActive(false);
-			DontDestroyOnLoad(connection);
+			
 
 			builder.ventConnectionPrefab = connection;
 
@@ -130,11 +128,12 @@ namespace BBTimes.CustomComponents.CustomDatas
 				con.transform.rotation = dir.ToRotation();
 				con.transform.localScale = new Vector3(1f, 1f, 2.01f);
 				con.name = "VentPrefab_Connection_" + dir;
+				con.SetActive(false);
 				Destroy(con.GetComponent<BoxCollider>());
 			}
 
 			Destroy(connection2);
-
+			connection.ConvertToPrefab(true);
 		}
 
 		const float connectionSize = 2f;

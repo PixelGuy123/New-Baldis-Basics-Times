@@ -11,5 +11,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public Character[] npcsBeingReplaced = [];
 
 		public NPC Npc { get; internal set; }
+
+		public int replacementWeight = 0;
 	}
 }

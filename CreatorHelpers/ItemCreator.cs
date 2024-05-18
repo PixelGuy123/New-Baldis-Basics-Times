@@ -15,10 +15,12 @@ namespace BBTimes.Helpers
 {
     public static partial class CreatorExtensions
 	{
-		public static ItemObject Build<C>(this ItemBuilder itmB, string name) where C : CustomItemData
+		public static ItemObject Build<C>(this ItemBuilder itmB, string name) where C : CustomItemData =>
+			Build<C>(itmB, name, itemsEnum: Items.None);
+		public static ItemObject Build<C>(this ItemBuilder itmB, string name, Items itemsEnum = Items.None) where C : CustomItemData
 		{
 
-			var en = EnumExtensions.ExtendEnum<Items>(name); // Make enum
+			var en = itemsEnum == Items.None ? EnumExtensions.ExtendEnum<Items>(name) : itemsEnum; // Make enum
 
 			itmB.SetEnum(en);
 			var actualItem = itmB.Build();
@@ -28,12 +30,12 @@ namespace BBTimes.Helpers
 			var itemobj = item.gameObject.AddComponent<C>();
 			itemobj.myEnum = en; // custom Item object with customItemData
 
-			itemobj.Name = name; // to handle the prefixes put in the item names
+			itemobj.Name = name;
 
 			var sprites = GetAllItemSpritesFrom(name); // Get all sprites from its folder (0 is small icon, 1 is big icon)
 
-			actualItem.itemSpriteLarge = sprites[0];
-			actualItem.itemSpriteSmall = sprites[1];
+			actualItem.itemSpriteLarge = sprites[1];
+			actualItem.itemSpriteSmall = sprites[0];
 
 			if (sprites.Length > 2)
 				itemobj.storedSprites = [.. sprites.Skip(2)]; // Make sure to not skip and leave an empty array... if that returns an error I guess
@@ -48,10 +50,12 @@ namespace BBTimes.Helpers
 		{
 			var it = Instantiate(item);
 			it.nameKey = nameKey;
+			it.name = "ItmObj_" + nameKey;
 
 			var duplicate = item.item.DuplicatePrefab();
 			it.item = duplicate;
 			data.itemObjects = data.itemObjects.AddToArray(it);
+			it.AddMeta(data);
 
 			return it;
 		}
@@ -60,7 +64,10 @@ namespace BBTimes.Helpers
 		{
 			var path = Path.Combine(BasePlugin.ModPath, "items", name, "Textures");
 			if (!Directory.Exists(path))
+			{
+				Debug.LogWarning("Failed to grab folder: " + path);
 				return [];
+			}
 
 			string[] files = [.. Directory.GetFiles(path).OrderBy(Path.GetFileNameWithoutExtension)];
 			var sprs = new Sprite[files.Length];

@@ -2,7 +2,7 @@
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Rendering;
 
 namespace BBTimes.CustomContent.NPCs
 {
@@ -71,11 +71,11 @@ namespace BBTimes.CustomContent.NPCs
 		void Shoot(PlayerManager player)
 		{
 			beams++;
-			StartCoroutine(ShootingAnimation());
-			var laser = Instantiate(laserPre);
-			laser.pix = this;
-			laser.targetPlayer = player;
-			laser.gameObject.SetActive(true);
+			var l = Instantiate(laserPre);
+			l.InitBeam(this, player);
+			StartCoroutine(ShootingAnimation(l));
+			
+
 			audMan.PlaySingle(audShoot);
 		}
 
@@ -110,9 +110,13 @@ namespace BBTimes.CustomContent.NPCs
 			yield break;
 		}
 
-		IEnumerator ShootingAnimation()
+		IEnumerator ShootingAnimation(PixLaserBeam beam)
 		{
+			
 			rotator.targetSprite = idleShootingSprites[1];
+			yield return null;
+			beam.transform.position = transform.position; // workaround for the stupid entity thing from the game
+
 			int frame = 0;
 			while (frame++ < idleSpeed)
 				yield return null;

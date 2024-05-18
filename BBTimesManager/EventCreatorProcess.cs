@@ -47,7 +47,7 @@ namespace BBTimes.Manager
 			floorDatas[2].Events.Add(new() { selection = e, weight = 55 });
 
 			// Freezing Event
-			e = new RandomEventBuilder<PrincipalOut>(plug.Info)
+			e = new RandomEventBuilder<FrozenEvent>(plug.Info)
 				.SetEnum("Frozenschool")
 				.SetMinMaxTime(45f, 60f)
 				.SetDescription("Event_FreezeEvent")

@@ -15,7 +15,6 @@ namespace BBTimes.CustomContent.CustomItems
 				return false;
 			}
 			this.pm = pm;
-			gameObject.SetActive(true);
 			used = true;
 
 			canvas.gameObject.SetActive(true);

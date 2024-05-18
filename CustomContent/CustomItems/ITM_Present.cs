@@ -6,9 +6,10 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
-			gameObject.SetActive(true);
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(aud_unbox);
 			pm.itm.SetItem(items[Random.Range(0, items.Length)], pm.itm.selectedItem);
+
+			Destroy(gameObject);
 
 			return false;
 		}

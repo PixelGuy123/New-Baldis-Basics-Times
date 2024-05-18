@@ -1,9 +1,10 @@
-﻿using PixelInternalAPI.Extensions;
-using BBTimes.Extensions.ObjectCreationExtensions;
+﻿using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using PixelInternalAPI.Classes;
 
 namespace BBTimes.CustomContent.RoomFunctions
 {
@@ -41,29 +42,29 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 
 
-				CreateWalls(room.position, Direction.South, 1, 0, room.size.x);
-				CreateWalls(room.position, Direction.West, 0, 1, room.size.z);
-				CreateWalls(room.position + room.size - new IntVector2(1, 1), Direction.North, -1, 0, room.size.x);
-				CreateWalls(room.position + room.size - new IntVector2(1, 1), Direction.East, 0, -1, room.size.z);
+				//CreateWalls(room.position, Direction.South, 1, 0, room.size.x);
+				//CreateWalls(room.position, Direction.West, 0, 1, room.size.z);
+				//CreateWalls(room.position + room.size - new IntVector2(1, 1), Direction.North, -1, 0, room.size.x);
+				//CreateWalls(room.position + room.size - new IntVector2(1, 1), Direction.East, 0, -1, room.size.z);
 
-				void CreateWalls(IntVector2 v, Direction dir, sbyte xAddend, sbyte zAddend, int max)
+				foreach (var cell in ogCellBins)
+						AddWalls(cell.Key, cell.Value);
+
+				void AddWalls(Cell c, int ogbin)
 				{
-					for (int x = 0; x < max; x++)
-					{
-						var c = builder.Ec.CellFromPosition(v);
-						int bin = c.ConstBin; // Save it to reset it
+					if (ogbin == 0) return;
 
-						room.ec.SwapCell(c.position, c.room, dir.ToBinary());
-						var tile = Instantiate(c.Tile);
-						tile.transform.SetParent(planeHolder.transform);
-						tile.transform.position = c.FloorWorldPosition + (Vector3.up * (LayerStorage.TileBaseOffset * i));
-						tile.MeshRenderer.material.mainTexture = fullTex;
-						c.AddRenderer(tile.MeshRenderer);
-						v.x += xAddend;
-						v.z += zAddend;
+					int bin = c.ConstBin; // Save it to reset it
 
-						room.ec.SwapCell(c.position, c.room, bin);
-					}
+					room.ec.SwapCell(c.position, c.room, ogbin);
+					var tile = Instantiate(c.Tile);
+					tile.transform.SetParent(planeHolder.transform);
+					tile.transform.position = c.FloorWorldPosition + (Vector3.up * (LayerStorage.TileBaseOffset * i));
+					tile.MeshRenderer.material.mainTexture = fullTex;
+					c.AddRenderer(tile.MeshRenderer);
+
+					room.ec.SwapCell(c.position, c.room, bin);
+
 				}
 			}
 			if (!string.IsNullOrEmpty(targetTransformNamePrefix) && targetTransformOffset > 0f)
@@ -111,6 +112,8 @@ namespace BBTimes.CustomContent.RoomFunctions
 		{
 			base.Initialize(room);
 			originalCeilTex = room.ceilTex;
+			foreach (var c in room.cells)
+				ogCellBins.Add(c, c.ConstBin);
 		}
 
 		Texture2D originalCeilTex;
@@ -141,5 +144,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 		[SerializeField]
 		public Texture2D[] customWallProximityToCeil = [];
+
+		Dictionary<Cell, int> ogCellBins = [];
 	}
 }

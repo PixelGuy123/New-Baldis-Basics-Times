@@ -16,7 +16,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			base.SetupPrefab();
 			var trap = GetComponent<ITM_Beartrap>();
-			trap.audMan = gameObject.CreatePropagatedAudioManager(75f, 105f).SetAudioManagerAsPrefab();
+			trap.audMan = gameObject.CreatePropagatedAudioManager(75f, 105f);
 			trap.audTrap = soundObjects[0];
 			trap.closedTrap = storedSprites[0];
 

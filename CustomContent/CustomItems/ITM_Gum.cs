@@ -15,7 +15,6 @@ namespace BBTimes.CustomContent.CustomItems
 			owner = pm.gameObject;
 			transform.position = pm.transform.position;
 			transform.rotation = pm.transform.rotation;
-			gameObject.SetActive(true);
 			this.pm = pm;
 			ec = pm.ec;
 			entity.Initialize(pm.ec, transform.position);

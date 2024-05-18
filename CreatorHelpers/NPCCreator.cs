@@ -7,6 +7,7 @@ using BBTimes.Plugin;
 using UnityEngine;
 using static UnityEngine.Object;
 using BBTimes.Manager;
+using BBTimes.Extensions;
 
 namespace BBTimes.Helpers
 {
@@ -30,9 +31,10 @@ namespace BBTimes.Helpers
 			npc.spriteBase.transform.Find("Sprite").localPosition = Vector3.up * spriteYoffset;
 
 			data.Name = name;
+			data.Npc = npc;
 			data.GetAudioClips(); // Of course
 			data.SetupPrefab();
-			data.Npc = npc;
+			
 			
 
 
@@ -50,18 +52,11 @@ namespace BBTimes.Helpers
 
 		public static T CreateCustomNPCFromExistent<T, C>(Character target, string name, float spriteYOffset = 0f) where T : NPC where C : CustomNPCData
 		{
-			var npc = Instantiate((T)target.GetFirstInstance());
+			var npc = (T)target.GetFirstInstance().SafeInstantiate();
 			npc.gameObject.name = name;
-			DontDestroyOnLoad(npc.gameObject);
-			npc.GetComponent<Entity>().SetActive(false); //disable the entity
-			npc.gameObject.SetActive(false); // Some copy paste from the API, because we aren't changing the npc itself
-			npc.gameObject.layer = LayerMask.NameToLayer("NPCs");
+			npc.gameObject.ConvertToPrefab(true);
 
-			// handle audio manager stuff
-			PropagatedAudioManager audMan = npc.GetComponent<PropagatedAudioManager>();
-			Destroy(audMan.audioDevice.gameObject);
-			audMan.sourceId = 0; //reset source id
-			AudioManager.totalIds--; //decrement total ids
+			npc.gameObject.layer = LayerMask.NameToLayer("NPCs");
 			
 
 
@@ -80,6 +75,7 @@ namespace BBTimes.Helpers
 			npc.poster = poster; //_npc_poster.SetValue(npc, poster);
 
 			var data = npc.gameObject.AddComponent<C>();
+			data.Npc = npc;
 
 			// Setup for CustomNPCData
 			if (sprites.Length >= 2)
@@ -93,11 +89,14 @@ namespace BBTimes.Helpers
 			return npc;
 		}
 
-		public static T MarkAsReplacement<T>(this T npc, params Character[] targets) where T : NPC // I think that's what's called "Builder design"
+		public static T MarkAsReplacement<T>(this T npc, int weight, params Character[] targets) where T : NPC // I think that's what's called "Builder design"
 		{
 			var comp = npc.GetComponent<CustomNPCData>();
 			if (comp != null)
+			{
 				comp.npcsBeingReplaced = targets;
+				comp.replacementWeight = weight;
+			}
 
 			if (!BBTimesManager.replacementNpcs.Contains(comp))
 				BBTimesManager.replacementNpcs.Add(comp);

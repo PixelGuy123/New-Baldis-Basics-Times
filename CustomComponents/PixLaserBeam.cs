@@ -6,19 +6,22 @@ namespace BBTimes.CustomComponents
 {
 	public class PixLaserBeam : MonoBehaviour, IEntityTrigger
 	{
-		void Awake()
+		public void InitBeam(Pix pixc, PlayerManager pm)
 		{
-			
-			entity.Initialize(pix.ec, pix.transform.position);
+			pix = pixc;
+			targetPlayer = pm;
+			ec = pm.ec;
+
+			entity.Initialize(ec, pix.transform.position);
 			transform.LookAt(targetPlayer.transform);
-			direction = pix.ec.CellFromPosition(transform.position).open ? transform.forward : Directions.DirFromVector3(targetPlayer.transform.position - transform.position, 45f).ToVector3(); // If not in an open cell, just shoot a straight line
+			direction = ec.CellFromPosition(transform.position).open ? transform.forward : Directions.DirFromVector3(targetPlayer.transform.position - transform.position, 45f).ToVector3(); // If not in an open cell, just shoot a straight line
 
 			entity.OnEntityMoveInitialCollision += (hit) =>
 			{
 				if (flying && hit.transform.gameObject.layer != 2)
 				{
 					flying = false;
-					pix.DecrementBeamCount();
+					pix?.DecrementBeamCount();
 					Destroy(gameObject);
 				}
 			};
@@ -47,7 +50,7 @@ namespace BBTimes.CustomComponents
 					flying = false;
 					if (other.gameObject == targetPlayer.gameObject)
 					{
-						pix.SetAsSuccess();
+						pix?.SetAsSuccess();
 						renderer.gameObject.SetActive(false);
 					}
 						
@@ -56,7 +59,7 @@ namespace BBTimes.CustomComponents
 					audMan.SetLoop(true);
 					audMan.maintainLoop = true;
 
-					pix.DecrementBeamCount();
+					pix?.DecrementBeamCount();
 					actMod = entity.ExternalActivity;
 					actMod.moveMods.Add(moveMod);
 					entity.AddForce(new(other.transform.position - transform.position, 9f, -8.5f));
@@ -71,10 +74,10 @@ namespace BBTimes.CustomComponents
 		{
 			if (flying)
 			{
-				frame += 10 * pix.ec.EnvironmentTimeScale * Time.deltaTime;
+				frame += 10 * ec.EnvironmentTimeScale * Time.deltaTime;
 				frame %= flyingSprites.Length;
 				renderer.sprite = flyingSprites[Mathf.FloorToInt(frame)];
-				entity.UpdateInternalMovement(direction * speed * pix.ec.EnvironmentTimeScale);
+				entity.UpdateInternalMovement(direction * speed * ec.EnvironmentTimeScale);
 			}
 			else
 			{
@@ -83,7 +86,7 @@ namespace BBTimes.CustomComponents
 					entity.UpdateInternalMovement(Vector3.zero);
 					transform.position = actMod.transform.position;
 				}
-				frame += 14 * pix.ec.EnvironmentTimeScale * Time.deltaTime;
+				frame += 14 * ec.EnvironmentTimeScale * Time.deltaTime;
 				frame %= shockSprites.Length;
 				renderer.sprite = shockSprites[Mathf.FloorToInt(frame)];
 			}
@@ -94,7 +97,7 @@ namespace BBTimes.CustomComponents
 			float time = 15f;
 			while (time > 0f)
 			{
-				time -= pix.ec.EnvironmentTimeScale * Time.deltaTime;
+				time -= ec.EnvironmentTimeScale * Time.deltaTime;
 				yield return null;
 			}
 			actMod?.moveMods.Remove(moveMod);
@@ -125,13 +128,13 @@ namespace BBTimes.CustomComponents
 		[SerializeField]
 		internal AudioManager audMan;
 
-		internal Pix pix;
-		internal PlayerManager targetPlayer;
+		Pix pix;
+		PlayerManager targetPlayer;
+		EnvironmentController ec;
 
 		ActivityModifier actMod = null;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.65f);
-
 		Vector3 direction;
 
 		const float speed = 25f;

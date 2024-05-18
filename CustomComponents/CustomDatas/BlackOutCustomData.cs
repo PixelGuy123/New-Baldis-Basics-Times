@@ -23,7 +23,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			base.SetupPrefab();
 			var blackout = GetComponent<BlackOut>();
 			blackout.audMan = gameObject.CreateAudioManager(85, 105)
-				.SetAudioManagerAsPrefab()
+				
 				.MakeAudioManagerNonPositional();
 			blackout.audOff = soundObjects[1];
 			blackout.audOn = soundObjects[0];

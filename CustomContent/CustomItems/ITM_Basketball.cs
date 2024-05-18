@@ -7,7 +7,6 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
-			gameObject.SetActive(true);
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audThrow);
 			this.pm = pm;
 			target = pm.gameObject;

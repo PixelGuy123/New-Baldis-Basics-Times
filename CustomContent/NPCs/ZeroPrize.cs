@@ -1,0 +1,215 @@
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+namespace BBTimes.CustomContent.NPCs
+{
+	public class ZeroPrize : NPC
+	{
+		void Start()
+		{
+			home = ec.CellFromPosition(transform.position);
+		}
+
+		public override void Initialize()
+		{
+			base.Initialize();
+			behaviorStateMachine.ChangeState(new ZeroPrize_Wait(this, Random.Range(45f, 60f), false));
+		}
+
+		internal void StartSweeping()
+		{
+			blinking = false;
+			moveMod.forceTrigger = true;
+			audMan.PlaySingle(audStartSweep);
+
+			navigator.maxSpeed = speed;
+			navigator.SetSpeed(speed);
+			
+		}
+
+		internal void StopSweeping()
+		{
+			moveMod.forceTrigger = false;
+			navigator.SetSpeed(0f);
+			navigator.maxSpeed = 0f;
+			blinking = false;
+
+			ClearActs();
+		}
+
+		public override void VirtualOnTriggerEnter(Collider other) // copypaste from gotta sweep's code
+		{
+			if (IsSleeping) return;
+
+
+			if (other.isTrigger)
+			{
+				Entity component = other.GetComponent<Entity>();
+				if (component != null)
+				{
+					audMan.PlaySingle(audSweep); 
+					ActivityModifier externalActivity = component.ExternalActivity;
+					if (!externalActivity.moveMods.Contains(moveMod))
+					{
+						externalActivity.moveMods.Add(moveMod);
+						actMods.Add(externalActivity);
+					}
+				}
+			}
+		}
+		public override void VirtualOnTriggerExit(Collider other) // copypaste from gotta sweep's code
+		{
+			if (other.isTrigger)
+			{
+				Entity component = other.GetComponent<Entity>();
+				if (component != null)
+				{
+					ActivityModifier externalActivity = component.ExternalActivity;
+					externalActivity.moveMods.Remove(moveMod);
+					actMods.Remove(externalActivity);
+				}
+			}
+		}
+
+
+
+		public override void Despawn()
+		{
+			base.Despawn();
+			ClearActs();
+		}
+
+		void ClearActs()
+		{
+			while (actMods.Count > 0)
+			{
+				actMods[0].moveMods.Remove(moveMod);
+				actMods.RemoveAt(0);
+			}
+		}
+
+		public override void VirtualUpdate()
+		{
+			base.VirtualUpdate();
+			if (!blinking)
+				spriteRenderer[0].sprite = IsSleeping ? deactiveSprite : activeSprite;
+
+			moveMod.movementAddend = navigator.Velocity.normalized * navigator.speed * 0.97f * navigator.Am.Multiplier;
+		}
+		
+		internal void Blink()
+		{
+			blinking = !blinking;
+			spriteRenderer[0].sprite = activeSprite;
+		}
+
+		internal bool IsHome => home == ec.CellFromPosition(transform.position);
+		internal bool IsSleeping => navigationStateMachine.currentState is NavigationState_DoNothing;
+		internal float ActiveCooldown => Random.Range(30f, 50f);
+		internal Cell home;
+
+
+		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
+		readonly List<ActivityModifier> actMods = [];
+
+
+		[SerializeField]
+		internal SoundObject audSweep, audStartSweep;
+
+		[SerializeField]
+		internal Sprite activeSprite, deactiveSprite;
+
+		[SerializeField]
+		internal AudioManager audMan;
+
+		const float speed = 80f;
+
+		bool blinking = false;
+	}
+	internal class ZeroPrize_StateBase(ZeroPrize prize) : NpcState(prize)
+	{
+		protected ZeroPrize prize = prize;
+	}
+
+	internal class ZeroPrize_Wait(ZeroPrize prize, float cooldown, bool isActive) : ZeroPrize_StateBase(prize) // reusable for either make him active or deactive
+	{
+		float waitTime = cooldown;
+
+		readonly bool active = isActive;
+
+		public override void Enter()
+		{
+			base.Enter();
+			if (!active) // he is not active
+			{
+				prize.StopSweeping();
+				ChangeNavigationState(new NavigationState_DoNothing(prize, 0));
+				return;
+			}
+
+			prize.StartSweeping(); // he is active
+			ChangeNavigationState(new NavigationState_WanderRandom(prize, 0));
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			waitTime -= Time.deltaTime * prize.TimeScale;
+			if (waitTime <= 0f)
+			{
+				if (!active)
+					prize.behaviorStateMachine.ChangeState(prize.IsSleeping // if he is in party, there's no reason to *wake up*
+						? new ZeroPrize_Awakening(prize) : new ZeroPrize_Wait(prize, prize.ActiveCooldown, true));
+				else 
+					prize.behaviorStateMachine.ChangeState(new ZeroPrize_WaitForSpawnBack(prize));
+			}
+		}
+	}
+
+	internal class ZeroPrize_Awakening(ZeroPrize prize) : ZeroPrize_StateBase(prize)
+	{
+		public override void Update()
+		{
+			base.Update();
+			blinkTime -= prize.TimeScale * Time.deltaTime;
+			if (blinkTime <= 0f)
+			{
+				prize.Blink();
+
+				if (++blinks >= 6)
+				{
+					maxBlinkTime /= 2f;
+					if (++blinkCycles >= 3)
+						prize.behaviorStateMachine.ChangeState(new ZeroPrize_Wait(prize, prize.ActiveCooldown, true));
+					blinks -= 6;
+				}
+
+				blinkTime += maxBlinkTime;
+			}
+			
+		}
+
+		float blinkTime = 1f, maxBlinkTime = 1f;
+		int blinks = 0, blinkCycles = 0;
+
+	}
+
+	internal class ZeroPrize_WaitForSpawnBack(ZeroPrize prize) : ZeroPrize_StateBase(prize)
+	{
+		public override void Enter()
+		{
+			base.Enter();
+			ChangeNavigationState(new NavigationState_TargetPosition(prize, 63, prize.home.FloorWorldPosition));
+		}
+		public override void DestinationEmpty()
+		{
+			base.DestinationEmpty();
+			if (!prize.IsHome)
+			{
+				prize.behaviorStateMachine.CurrentNavigationState.UpdatePosition(prize.home.FloorWorldPosition);
+				return;
+			}
+			prize.behaviorStateMachine.ChangeState(new ZeroPrize_Wait(prize, prize.ActiveCooldown, false));
+		}
+	}
+}

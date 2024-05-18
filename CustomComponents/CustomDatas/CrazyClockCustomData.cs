@@ -1,5 +1,4 @@
 ﻿using BBTimes.CustomContent.NPCs;
-using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
@@ -25,7 +24,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			clock.spriteRenderer[0].material = new(ObjectCreationExtensions.NonBillBoardPrefab.material);
 			clock.GetComponents<Collider>().Do(x => x.enabled = false);
 			clock.audMan = GetComponent<AudioManager>();
-			GetComponent<Navigator>().enabled = false; // It's a static npc
+			clock.Navigator.enabled = false; // It's a static npc
 			clock.Navigator.Entity.SetActive(false);
 			clock.Navigator.Entity.enabled = false;
 		}

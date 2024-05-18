@@ -6,7 +6,6 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
-			gameObject.SetActive(true);
 			this.pm = pm;
 			entity.Initialize(pm.ec, pm.transform.position);
 			pm.RuleBreak("littering", 5f, 0.8f);

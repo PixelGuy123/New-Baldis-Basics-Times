@@ -13,7 +13,6 @@ namespace BBTimes.CustomContent.CustomItems
 				return false;
 			}
 			usedGps = true;
-			gameObject.SetActive(true);
 
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(aud_beep);
 			this.pm = pm;

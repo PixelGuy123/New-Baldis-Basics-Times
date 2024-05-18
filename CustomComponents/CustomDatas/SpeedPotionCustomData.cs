@@ -18,7 +18,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			speed.audPower = soundObjects[0];
 			speed.audPower.subtitle = false;
 			speed.audMan = gameObject.CreateAudioManager(75f, 75f)
-				.SetAudioManagerAsPrefab()
+				
 				.MakeAudioManagerNonPositional();
 		}
 	}

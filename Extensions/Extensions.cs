@@ -1,6 +1,7 @@
 ﻿using BBTimes.CustomComponents;
 using HarmonyLib;
 using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 // using System.Reflection;
@@ -122,6 +123,27 @@ namespace BBTimes.Extensions
 		{
 			obj.ConvertToPrefab(active);
 			return obj;
+		}
+
+		public static T SafeInstantiate<T>(this T obj) where T : Component
+		{
+			obj.gameObject.SetActive(false);
+			var inst = Object.Instantiate(obj); // Instantiate a deactivated object, so Awake() calls aren't *called*
+			obj.gameObject.SetActive(true);
+
+			return inst;
+		}
+
+		public static T SafeDuplicatePrefab<T>(this T obj, bool setActive) where T : Component
+		{
+			obj.gameObject.SetActive(false);
+
+			var inst = obj.DuplicatePrefab();
+			inst.gameObject.SetActive(setActive);
+
+			obj.gameObject.SetActive(true);
+
+			return inst;
 		}
 	}
 }

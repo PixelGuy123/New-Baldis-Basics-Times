@@ -21,7 +21,6 @@ namespace BBTimes.CustomContent.CustomItems
 
 			usedPotions++;
 
-			gameObject.SetActive(true);
 			this.pm = pm;
 			pm.RuleBreak("Drinking", 1.5f);
 			StartCoroutine(Timer(pm.GetMovementStatModifier(), pm.GetCustomCam()));

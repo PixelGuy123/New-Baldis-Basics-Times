@@ -13,6 +13,7 @@ using BBTimes.CustomContent.CustomItems;
 using BBTimes.CustomContent.Events;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 
 
 namespace BBTimes.Plugin
@@ -50,9 +51,14 @@ namespace BBTimes.Plugin
 			{
 #if CHEAT
 				Debug.Log($"Level Object loaded as: {floorName} with num: {floorNum}. LevelObj name: {ld.name}");
+				Debug.Log("------- ITEM DATA -------");
+				Debug.Log("Floor " + floorName);
+				ld.shopItems.Do(x => Debug.Log($"{x.selection.itemType} >> {x.selection.price} || weight: {x.weight} || cost: {x.selection.value}"));
 #endif
 
 				ld.MarkAsNeverUnload(); // Maybe?
+
+				
 
 				if (floorName == "F1")
 				{
@@ -178,10 +184,6 @@ namespace BBTimes.Plugin
 					ld.maxLightDistance += 3;
 					return;
 				}
-
-				Debug.Log("------- ITEM PRICES -------");
-				Debug.Log("Floor " + floorName);
-				ld.shopItems.Do(x => Debug.Log($"{x.selection.itemType} >> {x.selection.price} || weight: {x.weight}"));
 				
 			});
 

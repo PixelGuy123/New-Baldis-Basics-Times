@@ -15,7 +15,6 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 			this.pm = pm;
 			usingPogo = true;
-			gameObject.SetActive(true);
 
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audBoing);
 			entity.Initialize(pm.ec, pm.transform.position);

@@ -19,7 +19,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var comp = GetComponent<ITM_Gum>();
 			gameObject.layer = LayerStorage.standardEntities;
 
-			comp.audMan = gameObject.CreatePropagatedAudioManager(55, 75).SetAudioManagerAsPrefab();
+			comp.audMan = gameObject.CreatePropagatedAudioManager(55, 75);
 			comp.aud_fly = GenericExtensions.FindResourceObjectByName<SoundObject>("Ben_Gum_Whoosh");
 			comp.aud_splash = GenericExtensions.FindResourceObjectByName<SoundObject>("Ben_Splat");
 			comp.aud_spit = soundObjects[0];
