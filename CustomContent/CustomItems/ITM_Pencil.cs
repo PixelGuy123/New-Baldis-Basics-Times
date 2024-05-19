@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using BBTimes.CustomComponents.CustomDatas;
+using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -19,6 +20,7 @@ namespace BBTimes.CustomContent.CustomItems
 						this.pm = pm;
 						audMan.PlaySingle(audStab);
 						pm.RuleBreak("stabbing", 2f, 0.6f);
+						e.GetComponent<CustomNPCData>()?.Stabbed();
 
 						StartCoroutine(Timer(e));
 						return true;

@@ -1,22 +1,23 @@
 ﻿using BBTimes.CustomContent.CustomItems;
-using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.IO;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class BasketballCustomData : CustomItemData
 	{
-		protected override SoundObject[] GenerateSoundObjects()
+		protected override SoundObject[] GenerateSoundObjects() =>
+		[GetSoundNoSub("throw.wav", SoundType.Effect), 
+		GetSound("punch.wav", "BB_Hit", SoundType.Voice, Color.white),
+		GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white)];
+
+		protected override Sprite[] GenerateSpriteOrder()
 		{
-			SoundObject[] sbs = [ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "throw.wav")), string.Empty, SoundType.Effect, Color.white),
-			ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "punch.wav")), "BB_Hit", SoundType.Voice, Color.white),
-			ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "bounce.wav")), "BB_Bong", SoundType.Voice, Color.white)];
-			sbs[0].subtitle = false;
-			return sbs;
+			Sprite[] sprites = new Sprite[5];
+			for (int i = 0; i < sprites.Length; i++)
+				GetSprite(25f, $"basketball{i}.png");
+			return sprites;
 		}
 
 		public override void SetupPrefab()

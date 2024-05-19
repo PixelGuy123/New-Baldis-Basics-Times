@@ -5,6 +5,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class ClassicGottaSweepCustomData : CustomNPCData
 	{
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[GetSprite(26f, "oldsweep.png")];
 		public override void SetupPrefab()
 		{
 			var sweep = (GottaSweep)Npc;

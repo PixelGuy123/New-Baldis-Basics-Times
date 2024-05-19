@@ -1,16 +1,14 @@
 ﻿using BBTimes.CustomContent.NPCs;
+using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
 	internal class SuperintendentCustomData : CustomNPCData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-
-				[MTM101BaldAPI.ObjectCreators.CreateSoundObject(
-				MTM101BaldAPI.AssetTools.AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "Superintendent.wav")), // Gets just one audio
-				"Vfx_SI_BaldiHere", SoundType.Voice, new(0f, 0f, 0.796875f)
-				)];
-
+			[GetSound("Superintendent.wav","Vfx_SI_BaldiHere", SoundType.Voice, new(0f, 0f, 0.796875f))];
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[GetSprite(46f, "Superintendent.png")];
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();

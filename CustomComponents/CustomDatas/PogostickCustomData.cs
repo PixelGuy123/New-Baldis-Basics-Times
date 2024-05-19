@@ -1,9 +1,6 @@
 ﻿using BBTimes.CustomContent.CustomItems;
-using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
 using PixelInternalAPI.Extensions;
 using PixelInternalAPI.Classes;
-using System.IO;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
@@ -11,7 +8,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class PogostickCustomData : CustomItemData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-			[ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "boing.wav")), "POGST_Boing", SoundType.Effect, Color.white)];
+			[GetSound("boing.wav", "POGST_Boing", SoundType.Effect, Color.white)];
 
 		public override void SetupPrefab()
 		{

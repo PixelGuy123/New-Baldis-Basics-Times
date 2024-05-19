@@ -1,7 +1,4 @@
-﻿using MTM101BaldAPI;
-using UnityEngine;
-using MTM101BaldAPI.AssetTools;
-using System.IO;
+﻿using UnityEngine;
 using BBTimes.CustomContent.Events;
 using PixelInternalAPI.Extensions;
 
@@ -9,12 +6,11 @@ namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class FrozenEventCustomData : CustomEventData
 	{
-		protected override SoundObject[] GenerateSoundObjects()
-		{
-			SoundObject[] sds = [ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "freeze.wav")), string.Empty, SoundType.Effect, Color.white)];
-			sds[0].subtitle = false;
-			return sds;
-		}
+		protected override SoundObject[] GenerateSoundObjects() =>
+			[GetSoundNoSub("freeze.wav", SoundType.Effect)];
+
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[GetSprite(1f, "icehud.png")];
 
 		public override void SetupPrefab()
 		{

@@ -1,7 +1,4 @@
 ﻿using BBTimes.CustomContent.CustomItems;
-using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
-using System.IO;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
@@ -9,7 +6,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class ScrewdriverCustomData : CustomItemData
 	{
 		protected override SoundObject[] GenerateSoundObjects() => 
-			[ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "sd_screw.wav")), "Vfx_SD_screw", SoundType.Effect, Color.white)];
+			[GetSound("sd_screw.wav", "Vfx_SD_screw", SoundType.Effect, Color.white)];
 
 		public override void SetupPrefab()
 		{

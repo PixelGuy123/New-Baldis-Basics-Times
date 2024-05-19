@@ -2,7 +2,6 @@
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using PixelInternalAPI.Extensions;
-using System.IO;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
@@ -10,7 +9,10 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class BearTrapCustomData : CustomItemData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-			[ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "trap_catch.wav")), "Vfx_BT_catch", SoundType.Voice, Color.white)];
+			[GetSound("trap_catch.wav", "Vfx_BT_catch", SoundType.Voice, Color.white)];
+
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[GetSprite(50f, "TrapClose.png"), GetSprite(50f, "TrapOpen.png")];
 
 		public override void SetupPrefab()
 		{

@@ -1,7 +1,4 @@
 ﻿using BBTimes.CustomContent.CustomItems;
-using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
-using System.IO;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
@@ -9,8 +6,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class InvisibilityControllerCustomData : CustomItemData
 	{
 		protected override SoundObject[] GenerateSoundObjects() => 
-			[ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "longHighBeep.wav")), "InvCon_Active", SoundType.Effect, Color.white),
-		ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "longDownBeep.wav")), "InvCon_Deactive", SoundType.Effect, Color.white)];
+			[GetSound("longHighBeep.wav", "InvCon_Active", SoundType.Effect, Color.white),
+		GetSound("longDownBeep.wav", "InvCon_Deactive", SoundType.Effect, Color.white)];
 
 		public override void SetupPrefab()
 		{

@@ -20,11 +20,9 @@ namespace BBTimes.Helpers
 			var data = npc.gameObject.AddComponent<C>();
 			
 			// Setup for CustomNPCData
-			if (sprites.Length >= 2)
-				data.storedSprites = [.. sprites.Skip(1)]; // Excludes necessary sprites
 
-			npc.spriteRenderer[0].sprite = sprites[1];
-			npc.poster.baseTexture = sprites[0].texture;
+			
+			npc.poster.baseTexture = sprites.texture;
 			npc.poster.textData[0].textKey = posterName;
 			npc.poster.textData[1].textKey = posterDesc;
 
@@ -33,9 +31,10 @@ namespace BBTimes.Helpers
 			data.Name = name;
 			data.Npc = npc;
 			data.GetAudioClips(); // Of course
+			data.GetSprites();
 			data.SetupPrefab();
-			
-			
+
+			npc.spriteRenderer[0].sprite = data.storedSprites[0];
 
 
 			return npc;
@@ -62,15 +61,14 @@ namespace BBTimes.Helpers
 
 			var sprites = GetAllNpcSpritesFrom(name);
 			// Set some fields
-			npc.spriteRenderer[0].sprite = sprites[1];
 			npc.spriteBase.transform.position += Vector3.up * spriteYOffset;
 
 			//(PosterObject)_npc_poster.GetValue(npc);
 			var poster = Instantiate(npc.poster); // Obviously instantiate it to not affect the og
-			poster.baseTexture = sprites[0].texture; // Set posters textures
+			poster.baseTexture = sprites.texture; // Set posters textures
 
 			foreach (var mat in poster.material)
-				mat.mainTexture = sprites[0].texture;
+				mat.mainTexture = sprites.texture;
 
 			npc.poster = poster; //_npc_poster.SetValue(npc, poster);
 
@@ -78,12 +76,13 @@ namespace BBTimes.Helpers
 			data.Npc = npc;
 
 			// Setup for CustomNPCData
-			if (sprites.Length >= 2)
-				data.storedSprites = [.. sprites.Skip(1)]; // Excludes necessary sprites
 
+			data.Name = name;
 			data.GetAudioClips(); // Of course
+			data.GetSprites();
 			data.SetupPrefab();
 
+			npc.spriteRenderer[0].sprite = data.storedSprites[0];
 
 
 			return npc;
@@ -105,14 +104,13 @@ namespace BBTimes.Helpers
 		}
 
 
-		static Sprite[] GetAllNpcSpritesFrom(string name)
+		static Sprite GetAllNpcSpritesFrom(string name)
 		{
 			var path = Path.Combine(BasePlugin.ModPath, "npcs", name, "Textures");
 			if (!Directory.Exists(path))
-				return [];
+				return null;
 
-			string[] files = [.. Directory.GetFiles(path).OrderBy(Path.GetFileNameWithoutExtension)]; // Guarantee the order of the files
-			var sprs = new Sprite[files.Length];
+			string[] files = Directory.GetFiles(path);
 			string[] repeatedOnes = new string[files.Length];
 
 			// Pre found ones
@@ -122,48 +120,11 @@ namespace BBTimes.Helpers
 			Debug.Log("Path used for the sprite selection: " + path);
 			Debug.Log("Files found in path: " + files.Length);
 			Debug.Log("current file: " + Path.GetFileNameWithoutExtension(text));
-
-
 #endif
-			sprs[0] = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(text), Vector2.zero, 1f);
-			repeatedOnes[0] = text;
 
-			text = files.FirstOrDefault(x => Path.GetFileName(x).StartsWith(mainSpritePrefix));
-			if (text == default)
-			{
-				text = files.First(x => !Path.GetFileName(x).StartsWith(posterNamePrefix)); // First sprite in the folder (that is not a poster)
-#if CHEAT
-				Debug.Log("Default sprite used: " + text);
-#endif
-			}
-#if CHEAT
-			Debug.Log("current file: " + Path.GetFileNameWithoutExtension(text));
-#endif
-			var ar = Path.GetFileNameWithoutExtension(text).Split('_');
-			var tex = AssetLoader.TextureFromFile(text);
-			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, float.Parse(ar[ar.Length - 1]));
-			sprs[1].name = ar[0];
-			repeatedOnes[1] = text;
-
-			// The rest (which also follows up a pattern)
-			int z = 2;
-
-				for (int i = 0; i < files.Length; i++)
-				{
-					if (repeatedOnes.Contains(files[i])) continue; // Skip repeated ones
-
-					ar = Path.GetFileNameWithoutExtension(files[i]).Split('_');
-					tex = AssetLoader.TextureFromFile(files[i]);
-					sprs[z] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, float.Parse(ar[1]));
-					sprs[z].name = ar[0];
-					repeatedOnes[z] = files[i];
-					z++; // Increment by 1
-				}
-			
-
-			return sprs;
+			return AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(text), Vector2.zero, 1f);
 		}
 
-		const string posterNamePrefix = "pri_", mainSpritePrefix = "mainSpr_";
+		const string posterNamePrefix = "pri_";
 	}
 }

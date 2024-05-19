@@ -1,16 +1,13 @@
 ﻿using BBTimes.CustomContent.CustomItems;
-using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
-using System.IO;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class PresentCustomData : CustomItemData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-			[ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "prs_unbox.wav")), "Vfx_PRS_Unbox", SoundType.Effect, UnityEngine.Color.white)];
+			[GetSound("prs_unbox.wav", "Vfx_PRS_Unbox", SoundType.Effect, UnityEngine.Color.white)];
 
 		public override void SetupPrefab()
 		{
@@ -21,7 +18,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefabPost()
 		{
 			base.SetupPrefabPost();
-			GetComponent<ITM_Present>().items = [.. ItemMetaStorage.Instance.FindAll(x => x.id != myEnum).ConvertAll(x => x.value)];
+			GetComponent<ITM_Present>().items = [.. ItemMetaStorage.Instance.FindAll(x => x.id != myEnum && !x.flags.HasFlag(ItemFlags.InstantUse)).ConvertAll(x => x.value)];
 
 			// Another workaround for this stupid bug
 			//List<ItemObject> list = new(ItemMetaStorage.Instance.FindAll(x => x.id != myEnum).ConvertAll(x => x.value));

@@ -386,7 +386,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_TimesYTP>()
 				.SetGeneratorCost(55)
 				.SetShopPrice(9999)
-				.SetNameAndDescription(string.Empty, string.Empty)
+				.SetNameAndDescription("TimesIcon", string.Empty)
 				.SetAsInstantUse()
 				.Build<CustomItemData>("TimesIcon", Items.Points);
 

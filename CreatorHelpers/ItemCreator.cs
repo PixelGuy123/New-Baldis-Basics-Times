@@ -37,9 +37,9 @@ namespace BBTimes.Helpers
 			actualItem.itemSpriteLarge = sprites[1];
 			actualItem.itemSpriteSmall = sprites[0];
 
-			if (sprites.Length > 2)
-				itemobj.storedSprites = [.. sprites.Skip(2)]; // Make sure to not skip and leave an empty array... if that returns an error I guess
+
 			itemobj.GetAudioClips();
+			itemobj.GetSprites();
 			itemobj.SetupPrefab();
 			
 
@@ -69,7 +69,7 @@ namespace BBTimes.Helpers
 				return [];
 			}
 
-			string[] files = [.. Directory.GetFiles(path).OrderBy(Path.GetFileNameWithoutExtension)];
+			string[] files = Directory.GetFiles(path);
 			var sprs = new Sprite[files.Length];
 			string[] repeatedOnes = new string[files.Length];
 
@@ -92,21 +92,6 @@ namespace BBTimes.Helpers
 			tex = AssetLoader.TextureFromFile(text);
 			sprs[0] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, 1f);
 			repeatedOnes[1] = text;
-
-			// The rest (which also follows up a pattern)
-			int z = 2;
-
-			for (int i = 0; i < files.Length; i++)
-			{
-				if (repeatedOnes.Contains(files[i])) continue; // Skip repeated ones
-
-				var ar = Path.GetFileNameWithoutExtension(files[i]).Split('_');
-				tex = AssetLoader.TextureFromFile(files[i]);
-				sprs[z] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, float.Parse(ar[1]));
-				sprs[z].name = ar[0];
-				repeatedOnes[z] = files[i];
-				z++; // Increment by 1
-			}
 
 			return sprs;
 		}

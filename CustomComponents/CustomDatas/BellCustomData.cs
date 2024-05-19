@@ -4,12 +4,16 @@ using BBTimes.CustomContent.CustomItems;
 using PixelInternalAPI.Classes;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
-using System.IO;
-
 namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class BellCustomData : CustomItemData
 	{
+
+		protected override SoundObject[] GenerateSoundObjects() =>
+			[GetSound("bell_bellnoise.wav", "Vfx_BEL_Ring", SoundType.Voice, Color.white)];
+
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[GetSprite(25f, "bellActive.png"), GetSprite(25f, "bellDeactive.png")];
 
 		public override void SetupPrefab()
 		{
@@ -29,9 +33,6 @@ namespace BBTimes.CustomComponents.CustomDatas
 			comp.renderer = renderer;
 			comp.deactiveSprite = storedSprites[1];
 		}
-
-		protected override SoundObject[] GenerateSoundObjects() =>
-			[ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "bell_bellnoise.wav")), "Vfx_BEL_Ring", SoundType.Voice, Color.white)];
 		
 	}
 }

@@ -1,24 +1,37 @@
 ﻿using BBTimes.CustomContent.NPCs;
-using BBTimes.Manager;
-using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
 using PixelInternalAPI.Extensions;
-using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class StunlyCustomData : CustomNPCData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-			[ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "stunly_noises.wav")), string.Empty, SoundType.Voice, Color.white),
-		ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "stunly_stun.wav")), "Vfx_Stunly_Stun", SoundType.Voice, Color.white),
-		ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "StunlyChaseLaughter.wav")), "Vfx_Stunly_Laughter", SoundType.Voice, Color.white)];
+			[GetSoundNoSub("stunly_noises.wav", SoundType.Voice),
+		GetSound("stunly_stun.wav", "Vfx_Stunly_Stun", SoundType.Voice, Color.white),
+		GetSound("StunlyChaseLaughter.wav", "Vfx_Stunly_Laughter", SoundType.Voice, Color.white)];
+
+		protected override Sprite[] GenerateSpriteOrder()
+		{
+			var sps = new Sprite[10];
+			sps[0] = GetSprite(35f, "Stunly.png");
+			int z = 1;
+			for (int i = 1; i <= 3; i++)
+				sps[z++] = GetSprite(35f, $"StunlyChasing{i}.png");
+			
+			for (int i = 0; i <= 2; i++)
+				sps[z++] = GetSprite(35f, $"StunlyCorrupt{i}.png");
+
+			sps[7] = GetSprite(1f, "stunlyOverlay.png");
+			sps[8] = GetSprite(1f, "stunlyOverlayReversed.png");
+			sps[9] = GetSprite(30f, "StunningStars.png");
+
+
+			return sps;
+		}
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			soundObjects[0].subtitle = false;
 			var stunly = (Stunly)Npc;
 			stunly.dat = this;
 

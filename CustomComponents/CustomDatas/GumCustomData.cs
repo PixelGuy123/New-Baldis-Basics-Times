@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
-using System.IO;
 using BBTimes.CustomContent.CustomItems;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
@@ -11,7 +8,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class GumCustomData : CustomItemData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-			[ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "gum_spit.wav")), "Vfx_GUM_spit", SoundType.Effect, new Color(1, 0.2039f, 0.8863f))];
+			[GetSound("gum_spit.wav", "Vfx_GUM_spit", SoundType.Effect, new Color(1, 0.2039f, 0.8863f))];
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();

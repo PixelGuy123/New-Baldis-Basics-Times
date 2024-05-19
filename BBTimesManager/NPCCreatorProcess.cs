@@ -5,7 +5,6 @@ using BepInEx;
 using MTM101BaldAPI;
 using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
-using UnityEngine;
 
 namespace BBTimes.Manager
 {
@@ -31,7 +30,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData<OfficeChairCustomData>("OfficeChair", "PST_OFC_Name", "PST_OFC_Desc", -2f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 99999 });
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 60 });
 			
 			// Happy Holidays
@@ -64,7 +63,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetMaxSightDistance(55)
 				.IgnoreBelts()
-				//.SetStationary()
+				//.SetStationary() temporarily broken by the api, so HUAfdH8an8An8anfahsundau8fja8
 				.Build()
 				.SetupNPCData<CrazyClockCustomData>("CrazyClock", "PST_CC_Name", "PST_CC_Desc", -2f);
 			//CreatorExtensions.CreateNPC<CrazyClock, CrazyClockCustomData>("CrazyClock", 55f, 90f, [RoomCategory.Hall], [], "PST_CC_Name", "PST_CC_Desc", ignorePlayerOnSpawn:true, ignoreBelts:true, hasTrigger: false, lookerDistance: 55f, grounded: false).AddMeta(plug, NPCFlags.StandardNoCollide).value;
@@ -133,7 +132,6 @@ namespace BBTimes.Manager
 				.SetupNPCData<PixCustomData>("Pix", "PST_Pix_Name", "PST_Pix_Desc", -1f);
 
 			//CreatorExtensions.CreateNPC<Pix, PixCustomData>("Pix", 155f, 165f, [RoomCategory.Hall], [], "PST_Pix_Name", "PST_Pix_Desc", lookerDistance: 90f, spriteYOffset:-1f).AddMeta(plug, NPCFlags.Standard).value.SetNPCLookerFov(100f);
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 9999999 });
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 
@@ -153,6 +151,34 @@ namespace BBTimes.Manager
 
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
 
+			// Pencil Boy
+			npc = new NPCBuilder<PencilBoy>(plug.Info)
+				.SetMinMaxAudioDistance(75f, 100f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("PencilBoy")
+				.SetName("PencilBoy")
+				.AddLooker()
+				.SetMaxSightDistance(45f)
+				.AddTrigger()
+				.Build()
+				.SetupNPCData<PencilBoyCustomData>("PencilBoy", "PST_PB_Name", "PST_PB_Desc", -1.77f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+
+			// Rolling Bot
+			npc = new NPCBuilder<RollingBot>(plug.Info)
+				.SetMinMaxAudioDistance(55f, 135f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Rollingbot")
+				.SetName("RollingBot")
+				.AddTrigger()
+				.DisableAutoRotation()
+				.Build()
+				.SetupNPCData<RollingBotCustomData>("RollingBot", "PST_Rollbot_Name", "PST_Rollbot_Desc", -1.88f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 65 });
 		}
 
 		

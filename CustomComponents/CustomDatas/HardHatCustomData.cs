@@ -16,5 +16,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 			ObjectCreationExtensions.CreateImage(canvas, storedSprites[0]);
 			GetComponent<ITM_HardHat>().canvas = canvas;
 		}
+
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[GetSprite(1f, "hardHatHud.png")];
 	}
 }

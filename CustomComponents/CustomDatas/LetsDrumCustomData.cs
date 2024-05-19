@@ -1,7 +1,4 @@
-﻿using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
-using System.IO;
-using BBTimes.CustomContent.NPCs;
+﻿using BBTimes.CustomContent.NPCs;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -10,9 +7,13 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class LetsDrumCustomData : CustomNPCData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-			[ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "drum_lovetodrum.wav")), "Vfx_DRUM_Annoyence", SoundType.Effect, new(0.59765625f, 0f, 0.99609375f)),
-		ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "drum_music.wav")), "Vfx_DRUM_Music", SoundType.Voice, new(0.59765625f, 0f, 0.99609375f)),
-		ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "drum_wannadrum.wav")), "Vfx_DRUM_LetsDrum", SoundType.Effect, new(0.59765625f, 0f, 0.99609375f))];
+			[GetSound("drum_lovetodrum.wav", "Vfx_DRUM_Annoyence", SoundType.Effect, new(0.59765625f, 0f, 0.99609375f)),
+		GetSound("drum_music.wav", "Vfx_DRUM_Music", SoundType.Voice, new(0.59765625f, 0f, 0.99609375f)),
+		GetSound("drum_wannadrum.wav", "Vfx_DRUM_LetsDrum", SoundType.Effect, new(0.59765625f, 0f, 0.99609375f))];
+
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[GetSprite(55f, "LetsDrum.png")];
+
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();

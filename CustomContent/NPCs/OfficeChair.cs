@@ -27,7 +27,7 @@ namespace BBTimes.CustomContent.NPCs
 
         public void SetEnabled(bool active) => spriteRenderer[0].sprite = GetComponent<OfficeChairCustomData>().storedSprites[active ? 0 : 1];
 
-        const float normSpeed = 30f;
+        const float normSpeed = 50f;
 
         const float awaitCooldown = 40f;
 
@@ -46,7 +46,7 @@ namespace BBTimes.CustomContent.NPCs
     {
         protected OfficeChair chair = office;
 
-        protected OfficeChairCustomData dat = office.GetComponent<OfficeChairCustomData>();
+        protected OfficeChairCustomData dat = office.GetComponent<OfficeChairCustomData>(); // I regret doing this, but whatever, it is in already
 
         protected PropagatedAudioManager man = office.GetComponent<PropagatedAudioManager>();
     }
@@ -60,9 +60,12 @@ namespace BBTimes.CustomContent.NPCs
         float entityBaseHeight = 0f;
 
         readonly float waitCooldown = cooldown;
-        public override void Enter() // Basically go to a random spot
+
+		Cell targetCell;
+        public override void Initialize() // Basically go to a random spot
         {
-            var room = chair.ec.CellFromPosition(chair.transform.position).room;
+			base.Initialize();
+			var room = chair.ec.CellFromPosition(chair.transform.position).room;
             List<Cell> cells = useCurrent ? room.GetTilesOfShape([TileShape.Single], true) : GetRandomOffice(room);
             if (cells.Count == 0)
                 cells = useCurrent ? room.AllEntitySafeCellsNoGarbage() : GetRandomOffice(room, true);
@@ -70,7 +73,9 @@ namespace BBTimes.CustomContent.NPCs
             Debug.Log($"(Office Chair): {cells.Count} < Amount of tiles in the array");
             Debug.Log($"(Office Chair): {cells.Count} < Amount of tiles in the array");
 #endif
-            ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, cells[Random.Range(0, cells.Count)].FloorWorldPosition));
+			targetCell = cells[Random.Range(0, cells.Count)];
+
+			ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, targetCell.FloorWorldPosition));
             man.QueueAudio(dat.soundObjects[0], true);
             man.SetLoop(true);
 			chair.bringingState = this;
@@ -83,13 +88,19 @@ namespace BBTimes.CustomContent.NPCs
                 target.SetHeight(entityBaseHeight + heightOffset);
             }
 
-            base.Enter();
+           
         }
 
         public override void DestinationEmpty() // Destination empty (means it got to its location), now just wait idle
         {
             base.DestinationEmpty();
             if (!initialized) return;
+
+			if (chair.ec.CellFromPosition(chair.transform.position) != targetCell)
+			{
+				ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, targetCell.FloorWorldPosition));
+				return;
+			}
 
             man.FlushQueue(true);
             if (target != null)
@@ -158,8 +169,9 @@ namespace BBTimes.CustomContent.NPCs
 
         public override void Enter()
         {
-			ChangeNavigationState(new NavigationState_DoNothing(chair, 64));
+			ChangeNavigationState(new NavigationState_DoNothing(chair, 0));
             base.Enter();
+			chair.Navigator.Am.moveMods.Add(moveMod);
             if (cooldown > 0f)
                 chair.StartCoroutine(Cooldown());
         }
@@ -179,7 +191,13 @@ namespace BBTimes.CustomContent.NPCs
 
         }
 
-        IEnumerator Cooldown()
+		public override void Exit()
+		{
+			base.Exit();
+			chair.Navigator.Am.moveMods.Remove(moveMod);
+		}
+
+		IEnumerator Cooldown()
         {
             while (cooldown > 0f)
             {
@@ -191,6 +209,6 @@ namespace BBTimes.CustomContent.NPCs
             yield break;
         }
 
-
+		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
     }
 }

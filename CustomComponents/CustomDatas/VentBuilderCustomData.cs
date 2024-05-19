@@ -44,7 +44,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 				AssetLoader.TextureFromFile(System.IO.Path.Combine(TexturePath, "vent_3.png"))
 				];
 			SoundObject[] audios = [
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "vent_normal.wav")), "", SoundType.Voice, Color.white),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "vent_normal.wav")), string.Empty, SoundType.Voice, Color.white),
 				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "vent_gasleak_start.wav")), "Vfx_VentGasLeak", SoundType.Voice, Color.white),
 				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "vent_gasleak_loop.wav")), "Vfx_VentGasLeak", SoundType.Voice, Color.white),
 				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "vent_gasleak_end.wav")), "Vfx_VentGasLeak", SoundType.Voice, Color.white)
