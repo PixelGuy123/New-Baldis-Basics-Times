@@ -172,7 +172,7 @@ namespace BBTimes.ModPatches
 						cs.RemoveAt(c);
 
 						var f = obj.GetComponent<SchoolFire>();
-						f.ec = ___ec;
+						f.Initialize(___ec);
 						Vector3 scale = f.transform.localScale;
 						f.transform.localScale = Vector3.zero;
 						f.StartCoroutine(f.Spawn(scale));

@@ -211,8 +211,8 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			pix.Navigator.maxSpeed = 26f;
 			pix.Navigator.SetSpeed(26f);
-			var cell = pix.ec.CellFromPosition(pix.transform.position);
-			ChangeNavigationState(new NavigationState_TargetPosition(pix, 63, cell.open ? cell.FloorWorldPosition : pix.Navigator.NextPoint));
+			pix.Navigator.FindPath(pix.transform.position, player.transform.position);
+			ChangeNavigationState(new NavigationState_TargetPosition(pix, 63, pix.Navigator.NextPoint));
 			
 		}
 		public override void DestinationEmpty()

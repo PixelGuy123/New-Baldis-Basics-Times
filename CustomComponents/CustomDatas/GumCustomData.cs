@@ -2,6 +2,7 @@
 using BBTimes.CustomContent.CustomItems;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
+using MTM101BaldAPI.ObjectCreation;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
@@ -28,7 +29,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			comp.flyingSprite = comp.rendererBase.Find("Sprite_Flying");
 			comp.groundedSprite = comp.rendererBase.Find("Sprite_Grounded");
 
-			comp.entity = gameObject.CreateEntity(1f, 1f, out var collider, out _, comp.rendererBase, [comp]).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
+			comp.entity = gameObject.CreateEntity(1f, 1f, out var collider, out _, comp.rendererBase).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
 			collider.height = 4;
 			
 		}

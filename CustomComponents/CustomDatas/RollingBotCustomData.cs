@@ -38,8 +38,12 @@ namespace BBTimes.CustomComponents.CustomDatas
 			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
 
 			var ele = eleRender.transform.parent.gameObject.AddComponent<Eletricity>();
-			ele.animation = anim;
-			ele.renderer = eleRender;
+			var ani = ele.gameObject.AddComponent<AnimationComponent>();
+			ani.animation = anim;
+			ani.renderer = eleRender;
+			ani.speed = 15f;
+
+			ele.ani = ani;
 
 			ele.gameObject.CreatePropagatedAudioManager(5f, 35f).AddStartingAudiosToAudioManager(true, soundObjects[2]);
 

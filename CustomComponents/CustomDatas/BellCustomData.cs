@@ -25,7 +25,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			var comp = GetComponent<ITM_Bell>();
 			gameObject.layer = LayerStorage.standardEntities;
-			comp.entity = gameObject.CreateEntity(1.5f, 2.5f, rendererBase, [comp]);
+			comp.entity = gameObject.CreateEntity(1.5f, 2.5f, rendererBase);
 
 			comp.audMan = gameObject.CreatePropagatedAudioManager(165, 200);
 			comp.audBell = soundObjects[0];

@@ -9,6 +9,7 @@ using BBTimes.Plugin;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using BBTimes.Extensions;
+using MTM101BaldAPI;
 
 namespace BBTimes.Manager
 {
@@ -19,11 +20,17 @@ namespace BBTimes.Manager
 			// Decorations outside
 			EnvironmentControllerMakeBeautifulOutside.decorations = [ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "flower.png")), 15f)).AddSpriteHolder(2.6f).transform.parent.gameObject.SetAsPrefab(true)];
 			// Fire Object
-			SchoolFire.anim = new([AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "SchoolFire.png")), 15f), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "SchoolFire2.png")), 15f)], 2f);
-			var fire = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteAnimator<SchoolFire>(out var fireAnimator).gameObject.SetAsPrefab(true);
+			var fire = ObjectCreationExtensions.CreateSpriteBillboard(null);
+			fire.gameObject.ConvertToPrefab(true);
+			// 
 			fire.name = "Fire";
-			fireAnimator.spriteRenderer.material.SetTexture("_LightMap", null); // Don't get affected by reddish from schoolhouse
-			MainGameManagerPatches.fire = fire;
+			fire.material.SetTexture("_LightMap", null); // Don't get affected by reddish from schoolhouse
+			var fireAnim = fire.gameObject.AddComponent<SchoolFire>();
+			fireAnim.animation = [AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "SchoolFire.png")), 15f), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "SchoolFire2.png")), 15f)];
+			fireAnim.speed = 2f;
+			fireAnim.renderer = fire;
+
+			MainGameManagerPatches.fire = fire.gameObject;
 
 			// Elevator exit signs
 			GenericExtensions.FindResourceObjects<Elevator>().Do((x) =>

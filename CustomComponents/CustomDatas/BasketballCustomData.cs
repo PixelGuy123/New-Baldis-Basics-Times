@@ -30,7 +30,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			var comp = GetComponent<ITM_Basketball>();
 			gameObject.layer = LayerStorage.standardEntities;
-			comp.entity = gameObject.CreateEntity(2f, 2f, rendererBase.transform, [comp]);
+			comp.entity = gameObject.CreateEntity(2f, 2f, rendererBase.transform);
 
 			comp.audMan = gameObject.CreatePropagatedAudioManager(75, 105);
 			comp.audThrow = soundObjects[0];

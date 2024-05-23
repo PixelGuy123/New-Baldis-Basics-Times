@@ -1,4 +1,5 @@
-﻿using BBTimes.CustomContent.NPCs;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomContent.NPCs;
 using BBTimes.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
@@ -61,13 +62,6 @@ namespace BBTimes.CustomComponents
 
 		void Update()
 		{
-			if (ec)
-			{
-				frame += 15f * ec.EnvironmentTimeScale * Time.deltaTime;
-				frame %= animation.Length;
-				renderer.sprite = animation[Mathf.FloorToInt(frame)];
-			}
-
 			for (int i = 0; i < pms.Count; i++)
 			{
 				if (pms[i].Value.HasAttribute("boots"))
@@ -80,7 +74,7 @@ namespace BBTimes.CustomComponents
 
 		public void Initialize(EnvironmentController ec, Cell cell, RollingBot owner)
 		{
-			this.ec = ec;
+			ani.Initialize(ec);
 			transform.position = cell.FloorWorldPosition;
 			this.owner = owner;
 		}
@@ -91,13 +85,8 @@ namespace BBTimes.CustomComponents
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.7f);
 
 		[SerializeField]
-		internal Sprite[] animation;
+		internal AnimationComponent ani;
 
-		[SerializeField]
-		internal SpriteRenderer renderer;
-
-		EnvironmentController ec;
 		RollingBot owner;
-		float frame = 0f;
 	}
 }

@@ -179,6 +179,37 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 65 });
+
+			// Watcher
+			npc = new NPCBuilder<Watcher>(plug.Info)
+				.SetMinMaxAudioDistance(75f, 185f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Watcher")
+				.SetName("Watcher")
+				.AddTrigger()
+				.AddLooker()
+				.EnableAcceleration()
+				.Build()
+				.SetupNPCData<WatcherCustomData>("Watcher", "PST_Wch_Name", "PST_Wch_Desc", 0f);
+
+			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
+
+			// MGS
+			npc = new NPCBuilder<MagicalStudent>(plug.Info)
+				.SetMinMaxAudioDistance(125f, 235f)
+				.AddSpawnableRoomCategories(RoomCategory.Office)
+				.SetEnum("Magicalstudent")
+				.SetName("MagicalStudent")
+				.AddTrigger()
+				.AddLooker()
+				.AddHeatmap()
+				.Build()
+				.SetupNPCData<MagicalStudentCustomData>("MagicalStudent", "PST_MGS_Name", "PST_MGS_Desc", 0f)
+				.MarkAsReplacement(99999, Character.Principal);
+
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
 		}
 
 		

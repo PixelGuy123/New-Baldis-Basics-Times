@@ -28,7 +28,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			rendererBase.localPosition = Vector3.zero;
 
 			trap.renderer = renderer;
-			trap.entity = gameObject.CreateEntity(1f, 1f, rendererBase, [trap]);
+			trap.entity = gameObject.CreateEntity(1f, 1f, rendererBase);
 		}
 	}
 }

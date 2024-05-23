@@ -1,20 +1,11 @@
-﻿using MTM101BaldAPI.Components;
+﻿using BBTimes.CustomComponents;
 using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Misc
 {
-	public class SchoolFire : CustomSpriteAnimator
+	public class SchoolFire : AnimationComponent
 	{
-		private void Start()
-		{
-			SetAnimations();
-			SetDefaultAnimation("default", 1f);
-		}
-
-		private void SetAnimations() =>
-			animations.Add("default", anim);
-
 		internal IEnumerator Spawn(Vector3 ogScale)
 		{
 			float scale = 0;
@@ -31,9 +22,5 @@ namespace BBTimes.CustomContent.Misc
 
 			yield break;
 		}
-
-		internal EnvironmentController ec;
-
-		internal static CustomAnimation<Sprite> anim; // Workaround is just a list of Sprite[]
 	}
 }

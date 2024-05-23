@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.CustomDatas;
+using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches;
@@ -76,6 +77,7 @@ namespace BBTimes.Manager
 			ObjectCreationExtension.defaultDustMaterial = GenericExtensions.FindResourceObjectByName<Material>("DustTest"); // Actually a good material, has even lightmap
 			ObjectCreationExtension.defaultCubemap = GenericExtensions.FindResourceObjectByName<Cubemap>("Cubemap_DayStandard");
 			ObjectCreationExtension.mapMaterial = GenericExtensions.FindResourceObjectByName<MapIcon>("Icon_Prefab").spriteRenderer.material;
+			GameExtensions.detentionUiPre = GenericExtensions.FindResourceObject<DetentionUi>();
 
 			// Make a transparent texture
 			ObjectCreationExtension.transparentTex = TextureExtensions.CreateSolidTexture(256, 256, Color.clear);

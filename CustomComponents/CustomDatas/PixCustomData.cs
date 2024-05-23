@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomContent.NPCs;
 using BBTimes.Extensions;
+using MTM101BaldAPI.ObjectCreation;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -93,10 +94,10 @@ namespace BBTimes.CustomComponents.CustomDatas
 			laser.shockSprites = [storedSprites[24], storedSprites[25], storedSprites[26], storedSprites[27]];
 			laser.renderer = laserPre;
 
-			laser.entity = laserHolder.gameObject.CreateEntity(2f, 2f, laserHolder.transform, [laser]).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
+			laser.entity = laserHolder.gameObject.CreateEntity(2f, 2f, laserHolder.transform).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
 			laser.audMan = laserHolder.gameObject.CreatePropagatedAudioManager(15, 45);
 			laser.audShock = soundObjects[8];
 			pix.laserPre = laser;
-        }
+		}
 	}
 }
