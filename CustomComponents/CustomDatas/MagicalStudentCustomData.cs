@@ -1,7 +1,9 @@
 ﻿using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomContent.NPCs;
+using BBTimes.CustomContent.Objects;
 using MTM101BaldAPI;
 using MTM101BaldAPI.ObjectCreation;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -20,22 +22,15 @@ namespace BBTimes.CustomComponents.CustomDatas
 			base.SetupPrefab();
 
 			// magic prefab
-			var moe = new EntityBuilder()
-				.SetName("Magic")
-				.AddTrigger(4f)
-				.SetBaseRadius(4f)
-				.AddRenderbaseFunction((e) =>
-				{
-					var r = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[3]);
-					r.transform.SetParent(e.transform);
-					r.transform.localPosition = Vector3.zero;
-					return r.transform;
-				})
-				.Build();
-			moe.gameObject.ConvertToPrefab(true);
+			var mos = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[3]).AddSpriteHolder(0f, LayerStorage.standardEntities);
+			var moHolder = mos.transform.parent;
+			mos.name = "MagicRenderer";
+			moHolder.name = "Magic";
 
-			var mo = moe.gameObject.AddComponent<MagicObject>();
-			mo.entity = moe;
+			moHolder.gameObject.ConvertToPrefab(true);
+
+			var mo = moHolder.gameObject.AddComponent<MagicObject>();
+			mo.entity = moHolder.gameObject.CreateEntity(4f, 4f, mos.transform).SetEntityCollisionLayerMask(0);
 			
 			// MGS Setup
 			var mgs = (MagicalStudent)Npc;

@@ -16,7 +16,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			Sprite[] sprites = new Sprite[5];
 			for (int i = 0; i < sprites.Length; i++)
-				GetSprite(25f, $"basketball{i}.png");
+				sprites[i] = GetSprite(25f, $"basketball{i}.png");
 			return sprites;
 		}
 

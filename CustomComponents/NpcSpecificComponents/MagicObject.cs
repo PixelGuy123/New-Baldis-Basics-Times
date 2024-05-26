@@ -19,6 +19,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			hidden = true;
 			entity.SetActive(false);
 			entity.UpdateInternalMovement(Vector3.zero);
+			entity.SetFrozen(true);
 		}
 
 		public void Throw(Vector3 direction)
@@ -27,6 +28,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			leftStudent = false;
 			hidden = false;
 			entity.SetActive(true);
+			entity.SetFrozen(false);
+			entity.ExternalActivity.moveMods.Clear(); // In case they still exist
 			entity.SetHeight(5f);
 			entity.Teleport(student.transform.position);
 		}
@@ -34,7 +37,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		void Update()
 		{
 			if (!hidden)
-				entity.UpdateInternalMovement(direction * 9f * ec.EnvironmentTimeScale);
+				entity.UpdateInternalMovement(direction * 45f * ec.EnvironmentTimeScale);
 			
 		}
 
@@ -69,9 +72,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		public void EntityTriggerExit(Collider other)
 		{
 			if (other.transform == student.transform)
-			{
 				leftStudent = true;
-			}
 		}
 
 		[SerializeField]

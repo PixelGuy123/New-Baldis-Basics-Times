@@ -122,6 +122,7 @@ namespace BBTimes.CustomContent.NPCs
 	internal class RollingBot_Error(RollingBot bot) : RollingBot_StateBase(bot)
 	{
 		Cell currentCell = null;
+		List<Cell> usedCells = [];
 
 		float cooldown = Random.Range(15f, 30f);
 
@@ -137,12 +138,16 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 			var c = bot.ec.CellFromPosition(bot.transform.position);
-			if (c != currentCell)
+			if (c != currentCell && !usedCells.Contains(c))
 			{
 				currentCell = c;
+				usedCells.Add(c);
 				bot.SpawnEletricity(c);
 				if (bot.EletricitiesCreated > eletricityLimit)
+				{
 					bot.DestroyLastEletricity();
+					usedCells.RemoveAt(0);
+				}
 			}
 
 			cooldown -= bot.TimeScale * Time.deltaTime;
@@ -155,6 +160,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Exit();
 			bot.DestroyEletricity();
+			usedCells = null; // clear it I guess
 		}
 	}
 

@@ -18,9 +18,9 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 		protected override Sprite[] GenerateSpriteOrder()
 		{
-			var sp = new Sprite[19];
+			var sp = new Sprite[spriteAmount + 4];
 			int z = 0;
-			for (int i = 0; i < 15; i++)
+			for (int i = 0; i < spriteAmount; i++)
 				sp[z++] = GetSprite(25f, $"botroll{i}.png");
 
 			for (int i = 0; i < 4; i++)
@@ -65,6 +65,6 @@ namespace BBTimes.CustomComponents.CustomDatas
 			bot.eletricityPre = ele;
 		}
 
-		const int spriteAmount = 15;
+		const int spriteAmount = 16;
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using BBTimes.Plugin;
+using System.Linq;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
@@ -10,6 +11,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override string TexturePath => System.IO.Path.Combine(BasePlugin.ModPath, "npcs", Name, "Textures");
 
 		public Character[] npcsBeingReplaced = [];
+
+		public bool ReplacesCharacter(Character c) => npcsBeingReplaced.Contains(c);
 
 		public NPC Npc { get => npc; internal set => npc = value; }
 

@@ -24,14 +24,14 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			navigator.maxSpeed = 0f;
 			navigator.SetSpeed(0f);
-			float cool = 0.7f;
+			float cool = 0.5f;
 			renderer.sprite = throwSprites[1];
 			while (cool > 0f)
 			{
 				cool -= TimeScale * Time.deltaTime;
 				yield return null;
 			}
-			cool = 0.4f;
+			cool = 0.3f;
 			renderer.sprite = throwSprites[2];
 			audMan.PlaySingle(audThrow);
 
@@ -84,9 +84,14 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			ChangeNavigationState(new NavigationState_WanderRounds(mgs, 0));
 		}
-		public override void PlayerSighted(PlayerManager player)
+		public override void DestinationEmpty()
+		{
+			base.DestinationEmpty();
+			ChangeNavigationState(new NavigationState_WanderRounds(mgs, 0));
+		}
+		public override void PlayerInSight(PlayerManager player)
 		{			
-			base.PlayerSighted(player);
+			base.PlayerInSight(player);
 			if (cool > 0f) return;
 
 			if (!player.Tagged)
@@ -111,7 +116,6 @@ namespace BBTimes.CustomContent.NPCs
 
 		public override void DestinationEmpty()
 		{
-			base.DestinationEmpty();
 			if (mgs.looker.PlayerInSight() && !player.Tagged)
 			{
 				base.DestinationEmpty();
@@ -120,6 +124,7 @@ namespace BBTimes.CustomContent.NPCs
 				mgs.behaviorStateMachine.ChangeState(new MagicalStudent_StateBase(mgs)); // Who will change state now is Mgs himself
 				return;
 			}
+			mgs.behaviorStateMachine.ChangeState(new MagicalStudent_Wander(mgs, 0f));
 		}
 	}
 }

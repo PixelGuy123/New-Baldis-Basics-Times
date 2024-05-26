@@ -106,7 +106,12 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			ChangeNavigationState(new NavigationState_WanderRounds(superintendent, 0));
 		}
-			
+
+		public override void DestinationEmpty()
+		{
+			base.DestinationEmpty();
+			ChangeNavigationState(new NavigationState_WanderRounds(superintendent, 0));
+		}
 
 		public override void Update()
 		{

@@ -87,7 +87,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var laserPre = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[23]).AddSpriteHolder(0f, LayerStorage.standardEntities);
 			var laserHolder = laserPre.transform.parent;
 			laserHolder.gameObject.SetAsPrefab(true);
-			laserPre.name = "PixLaserBeam";
+			laserPre.name = "PixLaserBeamRenderer";
+			laserHolder.name = "PixLaserBeam";
 
 			var laser = laserHolder.gameObject.AddComponent<PixLaserBeam>();
 			laser.flyingSprites = [storedSprites[22], storedSprites[23]];

@@ -77,9 +77,7 @@ namespace BBTimes.Manager
 				.SetEnum("Superintendent")
 				.SetName("Superintendent")
 				.AddLooker()
-				.SetMaxSightDistance(90)
 				.AddTrigger()
-				.IgnoreBelts()
 				.AddHeatmap()
 				.Build()
 				.SetupNPCData<SuperintendentCustomData>("Superintendent", "PST_SI_Name", "PST_SI_Desc", -0.5f);
@@ -132,6 +130,7 @@ namespace BBTimes.Manager
 				.SetupNPCData<PixCustomData>("Pix", "PST_Pix_Name", "PST_Pix_Desc", -1f);
 
 			//CreatorExtensions.CreateNPC<Pix, PixCustomData>("Pix", 155f, 165f, [RoomCategory.Hall], [], "PST_Pix_Name", "PST_Pix_Desc", lookerDistance: 90f, spriteYOffset:-1f).AddMeta(plug, NPCFlags.Standard).value.SetNPCLookerFov(100f);
+
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 
@@ -197,19 +196,38 @@ namespace BBTimes.Manager
 
 			// MGS
 			npc = new NPCBuilder<MagicalStudent>(plug.Info)
-				.SetMinMaxAudioDistance(125f, 235f)
+				.SetMinMaxAudioDistance(175f, 275f)
 				.AddSpawnableRoomCategories(RoomCategory.Office)
 				.SetEnum("Magicalstudent")
 				.SetName("MagicalStudent")
 				.AddTrigger()
 				.AddLooker()
 				.AddHeatmap()
+				.IgnorePlayerOnSpawn()
 				.Build()
-				.SetupNPCData<MagicalStudentCustomData>("MagicalStudent", "PST_MGS_Name", "PST_MGS_Desc", 0f)
-				.MarkAsReplacement(99999, Character.Principal);
-
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 1 });
+				.SetupNPCData<MagicalStudentCustomData>("MagicalStudent", "PST_MGS_Name", "PST_MGS_Desc", -1.91f)
+				.MarkAsReplacement(35, Character.Principal);
+			
+			npc.Navigator.SetRoomAvoidance(false);
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+
+			// Superintendent Jr.
+			npc = new NPCBuilder<SuperIntendentJr>(plug.Info)
+				.SetMinMaxAudioDistance(245f, 365f)
+				.AddSpawnableRoomCategories(RoomCategory.Faculty, RoomCategory.Office)
+				.SetEnum("Superintendentjr")
+				.SetName("SuperintendentJr")
+				.AddTrigger()
+				.AddLooker()
+				.SetMaxSightDistance(155)
+				.Build()
+				.SetupNPCData<SuperIntendentJrCustomData>("SuperintendentJr", "PST_MGS_Name", "PST_MGS_Desc", -1.91f);
+
+			npc.Navigator.SetRoomAvoidance(false);
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 999999 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 65 });
 		}
 
 		
