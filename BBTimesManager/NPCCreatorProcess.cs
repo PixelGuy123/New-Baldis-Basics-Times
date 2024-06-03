@@ -5,6 +5,7 @@ using BepInEx;
 using MTM101BaldAPI;
 using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Classes;
 
 namespace BBTimes.Manager
 {
@@ -141,7 +142,7 @@ namespace BBTimes.Manager
 				.AddSpawnableRoomCategories(RoomCategory.Special)
 				.SetEnum("ZeroPrize")
 				.SetName("0thPrize")
-				.AddPotentialRoomAssets(Character.Sweep.GetFirstInstance().potentialRoomAssets) // DUUUUH, THAT'S WHY I DIDN'T FOUND THE ROOM
+				.AddPotentialRoomAssets(NPCMetaStorage.Instance.Get(Character.Sweep).value.potentialRoomAssets) // DUUUUH, THAT'S WHY I DIDN'T FOUND THE ROOM
 				.IgnorePlayerOnSpawn()
 				.AddTrigger()
 				.Build()
@@ -203,10 +204,9 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.AddLooker()
 				.AddHeatmap()
-				.IgnorePlayerOnSpawn()
 				.Build()
 				.SetupNPCData<MagicalStudentCustomData>("MagicalStudent", "PST_MGS_Name", "PST_MGS_Desc", -1.91f)
-				.MarkAsReplacement(35, Character.Principal);
+				.MarkAsReplacement(35, Character.Principal); //35
 			
 			npc.Navigator.SetRoomAvoidance(false);
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
@@ -222,12 +222,44 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetMaxSightDistance(155)
 				.Build()
-				.SetupNPCData<SuperIntendentJrCustomData>("SuperintendentJr", "PST_MGS_Name", "PST_MGS_Desc", -1.91f);
+				.SetupNPCData<SuperIntendentJrCustomData>("SuperintendentJr", "PST_Spj_Name", "PST_Spj_Desc", -1.73f);
 
 			npc.Navigator.SetRoomAvoidance(false);
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 999999 });
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 65 });
+
+			// Leapy
+			npc = new NPCBuilder<Leapy>(plug.Info)
+				.SetMinMaxAudioDistance(100f, 135f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Leapy")
+				.SetName("Leapy")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData<LeapyCustomData>("Leapy", "PST_Leapy_Name", "PST_Leapy_Desc", -1.1f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+
+			/* Finish him up later
+			// Glue boy
+			npc = new NPCBuilder<Glubotrony>(plug.Info)
+				.SetMinMaxAudioDistance(90f, 175f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Glubotrony")
+				.SetName("Glubotrony")
+				.AddLooker()
+				.SetMaxSightDistance(75)
+				.AddTrigger()
+				.DisableAutoRotation()
+				.Build()
+				.SetupNPCData<GlubotronyCustomData>("Glubotrony", "PST_Gboy_Name", "PST_Gboy_Desc", -0.7f);
+
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 99999 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+			*/
 		}
 
 		

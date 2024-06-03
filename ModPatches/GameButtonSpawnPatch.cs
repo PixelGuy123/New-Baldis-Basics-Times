@@ -26,8 +26,7 @@ namespace BBTimes.ModPatches
                 Transpilers.EmitDelegate<System.Action<EnvironmentController, GameButton, Direction>>((x, y, z) =>
                 {
                     string name = z.ToString();
-                    var i = x.map.AddIcon(butIconPre.First(x => x.name.EndsWith(name)), y.transform, UnityEngine.Color.white);
-                    i.gameObject.SetActive(true);
+                   x.map.AddIcon(butIconPre.First(x => x.name.EndsWith(name)), y.transform, UnityEngine.Color.white);
                 })
                 )
             .InstructionEnumeration();

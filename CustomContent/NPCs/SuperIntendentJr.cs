@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class NavigationState_FollowJr(NPC npc, Cell target) : NavigationState(npc, 31)
+	public class NavigationState_FollowJr(NPC npc, Cell target) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
 	{
 		readonly Cell tar = target;
 		readonly MovementModifier moveMod = new(Vector3.zero, 13.33f);
@@ -16,13 +16,18 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public override void DestinationEmpty()
 		{
+			base.DestinationEmpty();
 			if (npc.ec.CellFromPosition(npc.transform.position) != tar)
 				npc.Navigator.FindPath(tar.CenterWorldPosition);
 			else npc.behaviorStateMachine.RestoreNavigationState();
 		}
 
-		public void End() =>
+		public override void Exit()
+		{
+			base.Exit();
 			npc.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
+		}
+		
 	}
 	public class SuperIntendentJr : NPC
 	{
@@ -36,38 +41,48 @@ namespace BBTimes.CustomContent.NPCs
 
 		void CallPrincipals()
 		{
+			
+
 			foreach (var n in ec.Npcs)
 				if (n.Navigator.enabled && (n.Character == Character.Principal || (n.GetComponent<CustomNPCData>()?.ReplacesCharacter(Character.Principal) ?? false)))
 					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowJr(n, ec.CellFromPosition(transform.position)));
 
+			Directions.ReverseList(navigator.currentDirs);
+			behaviorStateMachine.ChangeNavigationState(new NavigationState_WanderRandom(this, 0));
 			StartCoroutine(CallOutDelay());
 		}
 
 		IEnumerator CallOutDelay()
 		{
+			noticeCooldown = 30f;
 			callingOut = true;
+			UpdateStep();
+			wonder = false;
+			audMan.FlushQueue(true);
 			audMan.PlaySingle(audWarn);
 			while (audMan.AnyAudioIsPlaying) yield return null;
 
 			callingOut = false;
-			StartCoroutine(Timer());
+			wonder = true;
+			UpdateStep();
 
-			yield break;
-		}
-
-		IEnumerator Timer()
-		{
-			noticeCooldown = 30f;
 			while (noticeCooldown > 0f)
 			{
 				noticeCooldown -= TimeScale * Time.deltaTime;
 				yield return null;
 			}
+
 			yield break;
 		}
 
 		void UpdateStep() =>
 			renderer.sprite = step ? anim[callingOut ? 2 : 0] : anim[callingOut ? 3 : 1];
+
+		void Wander()
+		{
+			if (wonder && Random.value >= 0.75f)
+				audMan.QueueAudio(audWonder);
+		}
 
 		public override void VirtualUpdate()
 		{
@@ -90,7 +105,7 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					if (npc.Disobeying)
 					{
-						looker.Raycast(npc.transform, Mathf.Min([(transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,looker.distance,npc.ec.MaxRaycast]), out bool flag);
+						looker.Raycast(npc.transform, Mathf.Min((transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,looker.distance,npc.ec.MaxRaycast), out bool flag);
 						if (flag)
 						{
 							npc.SetGuilt(brokenRuleTimer, npc.BrokenRule);
@@ -99,6 +114,13 @@ namespace BBTimes.CustomContent.NPCs
 						}
 					}
 				}
+			}
+
+			wanderCool -= TimeScale * Time.deltaTime;
+			if (wanderCool < 0f)
+			{
+				Wander();
+				wanderCool += 15f;
 			}
 		}
 
@@ -114,6 +136,7 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					player.RuleBreak(player.ruleBreak, brokenRuleTimer, 0.1f);
 					CallPrincipals();
+					timeInSight[player.playerNumber] = 0f;
 				}
 			}
 		}
@@ -126,7 +149,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		float[] timeInSight;
 
-		float noticeCooldown = 0f;
+		float noticeCooldown = 0f, wanderCool = 15f;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan, stepMan;
@@ -140,10 +163,10 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal Sprite[] anim;
 
-		bool callingOut = false, step = false;
+		bool callingOut = false, step = false, wonder = true;
 
 		float stepDelay = stepMax;
 
-		const float stepMax = 2f, brokenRuleTimer = 5f;
+		const float stepMax = 6f, brokenRuleTimer = 5f;
 	}
 }

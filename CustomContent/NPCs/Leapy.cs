@@ -1,0 +1,176 @@
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+namespace BBTimes.CustomContent.NPCs
+{
+	public class Leapy : NPC
+	{
+		public override void Initialize()
+		{
+			base.Initialize();
+			behaviorStateMachine.ChangeState(new Leapy_Idle(this));
+			behaviorStateMachine.ChangeNavigationState(new NavigationState_WanderRandom(this, 0)); // Note: navigation states should be changed after setting a behavior state
+		}
+
+		public override void Despawn()
+		{
+			base.Despawn();
+			for (int i = 0; i < affectedEntities.Count; i++)
+			{
+				if (affectedEntities[i])
+				{
+					affectedEntities[i].Unsquish();
+					affectedEntities[i].ExternalActivity.moveMods.Remove(affectedMoveMod);
+				}
+			}
+		}
+
+		internal void Idle() =>
+			renderer.sprite = sprIdle;
+
+		internal void PrepareSprite() =>
+			renderer.sprite = sprPrepare;
+
+		internal void Jump()
+		{
+			renderer.sprite = sprJump;
+			audMan.PlaySingle(audJump);
+		}
+
+		internal void StopMe(bool stop)
+		{
+			if (stop)
+				Navigator.Entity.ExternalActivity.moveMods.Add(myMoveMod);
+			else
+				Navigator.Entity.ExternalActivity.moveMods.Remove(myMoveMod);
+		}
+
+		internal void Stomp(Entity e)
+		{
+			if (affectedEntities.Contains(e)) return;
+
+			audMan.PlaySingle(audStomp);
+			affectedEntities.Add(e);
+			e.ExternalActivity.moveMods.Add(affectedMoveMod);
+			e.Squish(10f);
+		}
+
+		public override void VirtualUpdate()
+		{
+			base.VirtualUpdate();
+			for (int i = 0; i < affectedEntities.Count; i++)
+			{
+				if (affectedEntities[i] && !affectedEntities[i].Squished)
+				{
+					affectedEntities[i].ExternalActivity.moveMods.Remove(affectedMoveMod);
+					affectedEntities.RemoveAt(i--);
+				}
+			}
+		}
+
+
+		[SerializeField]
+		internal SpriteRenderer renderer;
+		[SerializeField]
+		internal SoundObject audJump, audStomp;
+
+		[SerializeField]
+		internal PropagatedAudioManager audMan;
+
+		[SerializeField]
+		internal Sprite sprIdle, sprPrepare, sprJump;
+
+		readonly MovementModifier myMoveMod = new(Vector3.zero, 0f), affectedMoveMod = new(Vector3.zero, 0.3f);
+
+		readonly List<Entity> affectedEntities = [];
+	}
+
+	internal class Leapy_StateBase(Leapy le) : NpcState(le)
+	{
+		protected Leapy le = le;
+	}
+
+	internal class Leapy_Idle(Leapy le) : Leapy_StateBase(le)
+	{
+		public override void Enter()
+		{
+			base.Enter();
+			le.Idle();
+			le.Navigator.maxSpeed = 0f;
+			le.Navigator.SetSpeed(0f);
+		}
+
+		public override void Initialize()
+		{
+			base.Initialize();
+			le.StopMe(true);
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			idleCool -= le.TimeScale * Time.deltaTime;
+			if (idleCool <= 0f)
+				le.behaviorStateMachine.ChangeState(new Leapy_PrepareJump(le));
+		}
+
+		float idleCool = Random.Range(0.5f, 0.8f);
+		
+	}
+
+	internal class Leapy_PrepareJump(Leapy le) : Leapy_StateBase(le)
+	{
+		float prepCool = 0.3f;
+		public override void Enter()
+		{
+			base.Enter();
+			le.PrepareSprite();
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			prepCool -= le.TimeScale * Time.deltaTime;
+			if (prepCool <= 0f)
+				le.behaviorStateMachine.ChangeState(new Leapy_Jump(le));
+		}
+	}
+
+	internal class Leapy_Jump(Leapy le) : Leapy_StateBase(le)
+	{
+		float jumpCool = 1.1f;
+		public override void Enter()
+		{
+			base.Enter();
+			le.Navigator.maxSpeed = speed;
+			le.Navigator.SetSpeed(speed);
+			le.Jump();
+		}
+		public override void Initialize()
+		{
+			base.Initialize();
+			le.StopMe(false);
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			jumpCool -= le.TimeScale * Time.deltaTime;
+			if (jumpCool <= 0f)
+				le.behaviorStateMachine.ChangeState(new Leapy_Idle(le));
+		}
+
+		public override void OnStateTriggerEnter(Collider other)
+		{
+			base.OnStateTriggerEnter(other);
+			if (other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
+			{
+				var e = other.GetComponent<Entity>();
+				if (e)
+					le.Stomp(e);
+			}
+		}
+
+		const float speed = 17f;
+	}
+}

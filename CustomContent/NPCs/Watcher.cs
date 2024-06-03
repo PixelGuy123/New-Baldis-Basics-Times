@@ -58,9 +58,14 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			List<Cell> cells = [];
 			for (int i = 0; i < ec.levelSize.x; i++)
+			{
 				for (int j = 0; j < ec.levelSize.z; j++)
+				{
 					if (!ec.cells[i, j].Null && ec.cells[i, j].room.type == RoomType.Hall && (ec.cells[i, j].shape == TileShape.Corner || ec.cells[i, j].shape == TileShape.End) && !ec.cells[i, j].HasAnyHardCoverage)
 						cells.Add(ec.cells[i, j]);
+				}
+			}
+
 			navigator.Entity.Teleport(cells[Random.Range(0, cells.Count)].CenterWorldPosition);
 			StartCoroutine(SpawnDelay());
 		}

@@ -1,4 +1,5 @@
 ﻿using BBTimes.CustomContent.NPCs;
+using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
@@ -15,16 +16,25 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 		protected override Sprite[] GenerateSpriteOrder() =>
 			[
-			GetSprite(30f, "spj_scream1.png"),
-			GetSprite(30f, "spj_scream2.png"),
-			GetSprite(30f, "spj_walk1.png"),
-			GetSprite(30f, "spj_walk2.png")
+			GetSprite(pixels, "spj_walk1.png"),
+			GetSprite(pixels, "spj_walk2.png"),
+			GetSprite(pixels, "spj_scream1.png"),
+			GetSprite(pixels, "spj_scream2.png")
 			];
 		public override void SetupPrefab() // edit me
 		{
 			base.SetupPrefab();
 			var spj = (SuperIntendentJr)Npc;
-
+			spj.anim = storedSprites;
+			spj.audWarn = soundObjects[0];
+			spj.audWonder = soundObjects[1];
+			spj.audStep1 = soundObjects[2];
+			spj.audStep2 = soundObjects[3];
+			spj.audMan = GetComponent<PropagatedAudioManager>();
+			spj.stepMan = gameObject.CreatePropagatedAudioManager(spj.audMan.minDistance, spj.audMan.maxDistance);
+			spj.renderer = spj.spriteRenderer[0];
 		}
+
+		const float pixels = 72f;
 	}
 }

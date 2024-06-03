@@ -17,7 +17,7 @@ namespace BBTimes.ModPatches
 
 		[HarmonyPostfix]
 		[HarmonyPatch("Completed")]
-		private static void WOOOW(MathMachine __instance, ref AudioManager ___audMan, bool ___givePoints)
+		private static void WOOOW(MathMachine __instance)
 		{
 			var t = __instance.transform.Find("Answer").GetComponent<TextMeshPro>();
 			t.autoSizeTextContainer = false;

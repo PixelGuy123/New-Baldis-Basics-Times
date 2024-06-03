@@ -8,6 +8,7 @@ using UnityEngine;
 using static UnityEngine.Object;
 using BBTimes.Manager;
 using BBTimes.Extensions;
+using MTM101BaldAPI.Registers;
 
 namespace BBTimes.Helpers
 {
@@ -51,7 +52,7 @@ namespace BBTimes.Helpers
 
 		public static T CreateCustomNPCFromExistent<T, C>(Character target, string name, float spriteYOffset = 0f) where T : NPC where C : CustomNPCData
 		{
-			var npc = (T)target.GetFirstInstance().SafeInstantiate();
+			var npc = (T)NPCMetaStorage.Instance.Get(target).value.SafeInstantiate();
 			npc.gameObject.name = name;
 			npc.gameObject.ConvertToPrefab(true);
 
