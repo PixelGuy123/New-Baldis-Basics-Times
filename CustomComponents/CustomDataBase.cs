@@ -48,7 +48,15 @@ namespace BBTimes.CustomComponents.CustomDatas
 			BasePlugin._cstData.Add(this);
 		}
 
-		public virtual void SetupPrefabPost() { } // This one is triggered when every mod initialization is completed (to grab stuff like items for example)
+		public void PostPrefabSetup()
+		{
+			SetupPrefabPost();
+			storedSprites = null;
+			soundObjects = null; // Should be cleaned up by GC
+		}
+		protected virtual void SetupPrefabPost() 
+		{
+		} // This one is triggered when every mod initialization is completed (to grab stuff like items for example)
 
 		public string Name { get; internal set; } = string.Empty;
 

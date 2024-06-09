@@ -1,4 +1,5 @@
-﻿using BBTimes.Extensions;
+﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBTimes.Extensions;
 using System.Collections;
 using UnityEngine;
 
@@ -17,12 +18,11 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			step = !step;
 			renderer.targetSprite = step ? sprStep1 : sprStep2;
+			stepAudMan.FlushQueue(true);
+			stepAudMan.QueueAudio(audPrepareStep);
+
 			StartCoroutine(Walk());
 		}
-
-		public void Stand() =>
-			renderer.targetSprite = sprIdle;
-
 		IEnumerator Walk()
 		{
 			isWalking = true;
@@ -36,6 +36,7 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.maxSpeed = speed;
 			navigator.SetSpeed(speed);
 			stepCool = 0.5f;
+			
 			while (stepCool > 0f)
 			{
 				stepCool -= TimeScale * Time.deltaTime;
@@ -44,8 +45,31 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.maxSpeed = 0f;
 			navigator.SetSpeed(0f);
 			isWalking = false;
-			Stand();
+			renderer.targetSprite = sprIdle;
+			stepAudMan.FlushQueue(true);
+			stepAudMan.PlaySingle(audStep);
 			yield break;
+		}
+
+		public override void VirtualUpdate()
+		{
+			base.VirtualUpdate();
+			if (cooldown <= 0f)
+			{
+				cooldown += Random.Range(15f, 30f);
+				audMan.QueueRandomAudio(audWander);
+			}
+			cooldown -= TimeScale * Time.deltaTime;
+		}
+
+		public void SpillGlue()
+		{
+			audMan.FlushQueue(true);
+			audMan.QueueRandomAudio(audPutGlue);
+			Instantiate(gluePre).Initialize(this, transform.position, 0.08f);
+			Directions.ReverseList(navigator.currentDirs);
+			behaviorStateMachine.ChangeNavigationState(new NavigationState_WanderRandom(this, 0));
+			SetGuilt(3f, "littering");
 		}
 
 		[SerializeField]
@@ -55,10 +79,23 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite sprIdle, sprStep1, sprStep2;
 
 		[SerializeField]
-		internal PropagatedAudioManager audMan;
+		internal PropagatedAudioManager audMan, stepAudMan;
+
+		[SerializeField]
+		internal SoundObject audPrepareStep, audStep;
+
+		[SerializeField]
+		internal SoundObject[] audWander;
+
+		[SerializeField]
+		internal SoundObject[] audPutGlue;
+
+		[SerializeField]
+		internal Glue gluePre;
 
 		bool step = false, isWalking = false;
-		const float speed = 7f;
+		float cooldown = 15f;
+		const float speed = 12f;
 
 		public bool IsWalking => isWalking;
 	}
@@ -73,17 +110,27 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(new NavigationState_WanderRandom(gb, 0));
 		}
 
-		public override void MadeNavigationDecision()
-		{
-			base.MadeNavigationDecision();
-			isTurning = true;
-			if (!gb.Navigator.Entity.ExternalActivity.moveMods.Contains(moveMod))
-				gb.Navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
-		}
-
 		public override void Update()
 		{
 			base.Update();
+			float angle = Vector3.Angle(gb.transform.forward, gb.Navigator.NextPoint - gb.transform.position); // Basically should stop or not to turn
+			if (angle <= 5f)
+			{
+				if (isTurning)
+				{
+					isTurning = false;
+					gb.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
+				}
+			}
+			else
+			{
+				if (!isTurning)
+				{
+					isTurning = true;
+					if (!gb.Navigator.Entity.ExternalActivity.moveMods.Contains(moveMod))
+						gb.Navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
+				}
+			}
 
 			if (!gb.IsWalking)
 			{
@@ -92,17 +139,26 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					stepCooldown += 1f;
 					gb.Step();
-					gb.transform.RotateSmoothlyToNextPoint(gb.Navigator.NextPoint, 15f);
-					if (isTurning && Vector3.Angle(gb.transform.forward, gb.Navigator.NextPoint - gb.transform.position) <= 22.5f)
-					{
-						isTurning = false;
-						gb.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
-					}
+					gb.transform.RotateSmoothlyToNextPoint(gb.Navigator.NextPoint, 10f);
 				}
+			}
+
+			spillGlueCooldown -= gb.TimeScale * Time.deltaTime;
+		}
+
+		public override void PlayerInSight(PlayerManager player)
+		{
+			base.PlayerInSight(player);
+			if (spillGlueCooldown <= 0f && !player.Tagged)
+			{
+				gb.SpillGlue();
+				spillGlueCooldown = 40f;
 			}
 		}
 
 		float stepCooldown = 1f;
+
+		float spillGlueCooldown = 0f;
 
 		bool isTurning = false;
 

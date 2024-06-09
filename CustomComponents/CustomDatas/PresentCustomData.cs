@@ -15,7 +15,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			GetComponent<ITM_Present>().aud_unbox = soundObjects[0];
 		}
 
-		public override void SetupPrefabPost()
+		protected override void SetupPrefabPost()
 		{
 			base.SetupPrefabPost();
 			GetComponent<ITM_Present>().items = [.. ItemMetaStorage.Instance.FindAll(x => x.id != myEnum && !x.flags.HasFlag(ItemFlags.InstantUse)).ConvertAll(x => x.value)];

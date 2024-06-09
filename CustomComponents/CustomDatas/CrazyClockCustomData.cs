@@ -42,7 +42,10 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			base.SetupPrefab();
 			var clock = (CrazyClock)Npc;
-			clock.data = this;
+			clock.audTick = soundObjects[0];
+			clock.audTack = soundObjects[1];
+			clock.allClockAudios = [.. soundObjects];
+			clock.allClockSprites = [.. storedSprites];
 			clock.spriteRenderer[0].material = new(ObjectCreationExtensions.NonBillBoardPrefab.material);
 			clock.GetComponents<Collider>().Do(x => x.enabled = false);
 			clock.audMan = GetComponent<AudioManager>();

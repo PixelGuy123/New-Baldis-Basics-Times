@@ -57,7 +57,9 @@ namespace BBTimes.Manager
 
 
 			//CreatorExtensions.CreateEvent<FrozenEvent, FrozenEventCustomData>("FrozenEvent", "Event_FreezeEvent", 45f, 60f, []).AddMeta(plug, RandomEventFlags.None).value;
-			floorDatas[3].Events.Add(new() { selection = e, weight = 999999 });
+			floorDatas[1].Events.Add(new() { selection = e, weight = 75 });
+			floorDatas[2].Events.Add(new() { selection = e, weight = 25 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 35 });
 		}
 
 		

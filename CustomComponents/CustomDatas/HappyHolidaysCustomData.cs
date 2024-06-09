@@ -13,11 +13,11 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override Sprite[] GenerateSpriteOrder() =>
 			[GetSprite(65f, "happyholidays.png")];
 
-		public override void SetupPrefabPost()
+		protected override void SetupPrefabPost()
 		{
 			base.SetupPrefabPost();
 			((HappyHolidays)Npc).objects = ItemMetaStorage.Instance.GetAllWithFlags(ItemFlags.None | ItemFlags.Persists | ItemFlags.CreatesEntity).Where(x => !x.flags.HasFlag(ItemFlags.InstantUse)).ToArray().ToValues();
-
+			((HappyHolidays)Npc).audHappyHolidays = soundObjects[0];
 			//// TEMPORARY WORKAROUND TO REMOVE DUPLICATES (api bug)
 			//List<ItemObject> list = new(ItemMetaStorage.Instance.GetAllWithFlags(ItemFlags.None | ItemFlags.Persists | ItemFlags.CreatesEntity).ToValues());
 

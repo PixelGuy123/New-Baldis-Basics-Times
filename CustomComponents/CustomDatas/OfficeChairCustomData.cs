@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using BBTimes.CustomContent.NPCs;
+using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
@@ -9,5 +10,15 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 		protected override Sprite[] GenerateSpriteOrder() =>
 			[GetSprite(24f, "officechair.png"), GetSprite(24f, "officechairDisabled.png")];
+
+		public override void SetupPrefab()
+		{
+			base.SetupPrefab();
+			var c = (OfficeChair)Npc;
+			c.audRoll = soundObjects[0];
+
+			c.sprActive = storedSprites[0];
+			c.sprDeactive = storedSprites[1];
+		}
 	}
 }

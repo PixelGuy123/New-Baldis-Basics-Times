@@ -8,7 +8,7 @@ using PixelInternalAPI.Classes;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class CrazyClock : NPC
+	public class CrazyClock : NPC // He's not very well coded because I removed the CustomClockData reference from it, but I'll leave it like that
 	{
 
 		public override void Initialize()
@@ -21,10 +21,10 @@ namespace BBTimes.CustomContent.NPCs
 			}
 			availableCells.AddRange(ec.mainHall.GetTilesOfShape([TileShape.Corner, TileShape.Single, TileShape.End], false).Where(x => x.HasFreeWall && !x.HasAnyHardCoverage));
 
-			behaviorStateMachine.ChangeState(new CrazyClock_Spawn(this, data));
+			behaviorStateMachine.ChangeState(new CrazyClock_Spawn(this));
 		}
 
-		public void Tick(bool tack) => audMan.PlaySingle(data.soundObjects[tack ? 1 : 0]);
+		public void Tick(bool tack) => audMan.PlaySingle(!tack ? audTick : audTack);
 
 
 		public static readonly List<RoomCategory> preAllowedCategories = [RoomCategory.Special];
@@ -34,20 +34,24 @@ namespace BBTimes.CustomContent.NPCs
 		public List<Cell> Cells => availableCells;
 
 		[SerializeField]
-		internal CrazyClockCustomData data;
+		internal SoundObject audTick, audTack;
 
 		[SerializeField]
 		internal AudioManager audMan;
+
+		[SerializeField]
+		internal Sprite[] allClockSprites;
+
+		[SerializeField]
+		internal SoundObject[] allClockAudios;
 	}
 
-	internal class CrazyClock_StateBase(CrazyClock clock, CrazyClockCustomData cdata) : NpcState(clock)
+	internal class CrazyClock_StateBase(CrazyClock clock) : NpcState(clock)
 	{
 		protected CrazyClock clock = clock;
-
-		protected CrazyClockCustomData clockData = cdata;
 	}
 
-	internal class CrazyClock_Spawn(CrazyClock clock, CrazyClockCustomData cdata) : CrazyClock_StateBase(clock, cdata)
+	internal class CrazyClock_Spawn(CrazyClock clock) : CrazyClock_StateBase(clock)
 	{
 		public override void Enter()
 		{
@@ -82,7 +86,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (sighted <= 0 && !clock.looker.IsVisible)
 			{
 				clock.spriteBase.SetActive(true);
-				clock.behaviorStateMachine.ChangeState(new CrazyClock_Active(clock, clockData));
+				clock.behaviorStateMachine.ChangeState(new CrazyClock_Active(clock));
 			}
 		}
 
@@ -93,7 +97,7 @@ namespace BBTimes.CustomContent.NPCs
 
 	}
 
-	internal class CrazyClock_Active(CrazyClock clock, CrazyClockCustomData cdata) : CrazyClock_StateBase(clock, cdata)
+	internal class CrazyClock_Active(CrazyClock clock) : CrazyClock_StateBase(clock)
 	{
 		public override void Enter()
 		{
@@ -109,7 +113,7 @@ namespace BBTimes.CustomContent.NPCs
 			frame += speed * speedMultiplier * clock.TimeScale * Time.deltaTime;
 			int idx = Mathf.FloorToInt(frame) % max;
 				
-			clock.spriteRenderer[0].sprite = clockData.storedSprites[idx + (nervous ? 0 : 4)];
+			clock.spriteRenderer[0].sprite = clock.allClockSprites[idx + (nervous ? 0 : 4)];
 			if (idx != lastIdx)
 			{
 				lastIdx = idx;
@@ -120,7 +124,7 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				cooldown -= clock.TimeScale * Time.deltaTime;
 				if (cooldown <= 0f)
-					clock.behaviorStateMachine.ChangeState(new CrazyClock_DespawnAndWait(clock, clockData));
+					clock.behaviorStateMachine.ChangeState(new CrazyClock_DespawnAndWait(clock));
 				
 			}
 		}
@@ -130,7 +134,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.PlayerInSight(player);
 			speedMultiplier = Mathf.Max(2f, 15f - (Vector3.Distance(player.transform.position, clock.transform.position) / 3.5f));
 			if (speedMultiplier >= 11f)
-				clock.behaviorStateMachine.ChangeState(new CrazyClock_Frown(clock, clockData));
+				clock.behaviorStateMachine.ChangeState(new CrazyClock_Frown(clock));
 		}
 
 		public override void PlayerSighted(PlayerManager player)
@@ -157,14 +161,14 @@ namespace BBTimes.CustomContent.NPCs
 		float cooldown = 45f;
 	}
 
-	internal class CrazyClock_Frown(CrazyClock clock, CrazyClockCustomData cdata) : CrazyClock_StateBase(clock, cdata)
+	internal class CrazyClock_Frown(CrazyClock clock) : CrazyClock_StateBase(clock)
 	{
 		public override void Enter()
 		{
 			base.Enter();
-			clock.spriteRenderer[0].sprite = clockData.storedSprites[8];
+			clock.spriteRenderer[0].sprite = clock.allClockSprites[8];
 			clock.audMan.FlushQueue(true);
-			clock.audMan.PlaySingle(clockData.soundObjects[3]); // frown
+			clock.audMan.PlaySingle(clock.allClockAudios[3]); // frown
 		}
 
 		public override void Update()
@@ -174,19 +178,19 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				cooldown -= clock.TimeScale * Time.deltaTime;
 				if (cooldown < 0f)
-					clock.behaviorStateMachine.ChangeState(new CrazyClock_CRAZY(clock, clockData));
+					clock.behaviorStateMachine.ChangeState(new CrazyClock_CRAZY(clock));
 			}
 		}
 
 		float cooldown = 5f;
 	}
 
-	internal class CrazyClock_CRAZY(CrazyClock clock, CrazyClockCustomData cdata) : CrazyClock_StateBase(clock, cdata)
+	internal class CrazyClock_CRAZY(CrazyClock clock) : CrazyClock_StateBase(clock)
 	{
 		public override void Enter()
 		{
 			base.Enter();
-			clock.audMan.PlaySingle(clockData.soundObjects[2]); // crazy noises
+			clock.audMan.PlaySingle(clock.allClockAudios[2]); // crazy noises
 			Cell cell = clock.ec.CellFromPosition(clock.transform.position);
 			int max = clock.ec.Npcs.Count / 2;
 			for (int i = 0; i < max; i++)
@@ -198,7 +202,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 			if (!clock.audMan.AnyAudioIsPlaying)
-				clock.behaviorStateMachine.ChangeState(new CrazyClock_DespawnAndWait(clock, clockData));
+				clock.behaviorStateMachine.ChangeState(new CrazyClock_DespawnAndWait(clock));
 			else
 			{
 				frame += speed * clock.TimeScale * Time.deltaTime;
@@ -209,7 +213,7 @@ namespace BBTimes.CustomContent.NPCs
 					frame = 0;
 				}
 
-				clock.spriteRenderer[0].sprite = clockData.storedSprites[idx + 9]; // 11
+				clock.spriteRenderer[0].sprite = clock.allClockSprites[idx + 9]; // 11
 			}
 			
 		}
@@ -218,7 +222,7 @@ namespace BBTimes.CustomContent.NPCs
 		const float speed = 7f;
 	}
 
-	internal class CrazyClock_DespawnAndWait(CrazyClock clock, CrazyClockCustomData cdata) : CrazyClock_StateBase(clock, cdata)
+	internal class CrazyClock_DespawnAndWait(CrazyClock clock) : CrazyClock_StateBase(clock)
 	{
 		public override void Enter()
 		{
@@ -234,7 +238,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Update();
 			cooldown -= clock.TimeScale * Time.deltaTime;
 			if (cooldown < 0f)
-				clock.behaviorStateMachine.ChangeState(new CrazyClock_Spawn(clock, clockData));
+				clock.behaviorStateMachine.ChangeState(new CrazyClock_Spawn(clock));
 		}
 
 		IEnumerator Leave()
@@ -245,8 +249,8 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				frame += speed * clock.TimeScale * Time.deltaTime;
 				idx = Mathf.FloorToInt(frame);
-				if (idx < clockData.storedSprites.Length)
-					clock.spriteRenderer[0].sprite = clockData.storedSprites[idx];
+				if (idx < clock.allClockSprites.Length)
+					clock.spriteRenderer[0].sprite = clock.allClockSprites[idx];
 				else
 					break;
 				yield return null;

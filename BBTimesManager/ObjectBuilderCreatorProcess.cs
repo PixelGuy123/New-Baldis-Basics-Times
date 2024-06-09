@@ -64,6 +64,34 @@ namespace BBTimes.Manager
 
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 75 });
 
+			// Camera Builder
+			CameraBuilder cams = CreatorExtensions.CreateObjectBuilder<CameraBuilder, CameraBuilderCustomData>("CameraBuilder", "SecurityCamera");
+			cams.minAmount = 2;
+			cams.maxAmount = 6;
+			cams.AddMeta(plug);
+			floorDatas[0].ForcedObjectBuilders.Add(cams);
+
+			cams = cams.DuplicatePrefab();
+			cams.minAmount = 2;
+			cams.maxAmount = 3;
+
+			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = cams, weight = 35 });
+
+			cams = cams.DuplicatePrefab();
+			cams.minAmount = 4;
+			cams.maxAmount = 7;
+
+			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = cams, weight = 55 });
+
+			cams = cams.DuplicatePrefab();
+			cams.minAmount = 1;
+			cams.maxAmount = 3;
+
+			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = cams, weight = 25 });
+
+
+
+
 		}
 
 		

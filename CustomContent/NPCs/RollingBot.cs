@@ -39,7 +39,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal void SpawnEletricity(Cell cell)
 		{
 			var eletricity = Instantiate(eletricityPre);
-			eletricity.Initialize(ec, cell, this);
+			eletricity.Initialize(this, cell.FloorWorldPosition, 0.5f);
 			eletricities.Add(eletricity.transform);
 		}
 

@@ -30,8 +30,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			//d.musicMan = d.gameObject.CreateAudioManager(true, [soundObjects[1]], 115, 135, true);
 			d.musicMan = d.gameObject.CreatePropagatedAudioManager(115, 135)
-				.AddStartingAudiosToAudioManager(true, soundObjects[1])
-				;
+				.AddStartingAudiosToAudioManager(true, soundObjects[1]);
 
 			d.voiceMan = d.gameObject.CreatePropagatedAudioManager(45, 100);
 

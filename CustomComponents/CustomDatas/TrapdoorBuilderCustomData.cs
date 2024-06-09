@@ -2,8 +2,6 @@
 using TMPro;
 using BBTimes.CustomContent.Builders;
 using BBTimes.Extensions;
-using MTM101BaldAPI.AssetTools;
-using System.IO;
 using BBTimes.CustomContent.Objects;
 using PixelInternalAPI.Classes;
 using MTM101BaldAPI;
@@ -13,6 +11,16 @@ namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class TrapdoorBuilderCustomData : CustomObjectPrefabData
 	{
+		protected override Sprite[] GenerateSpriteOrder() =>
+		[GetSprite(25f, "trapdoor_rng.png"),
+		GetSprite(25f, "trapdoor.png"),
+		GetSprite(25f, "trapdoor_rng_open.png"),
+		GetSprite(25f, "trapdoor_open.png")
+		];
+
+		protected override SoundObject[] GenerateSoundObjects() =>
+			[GetSound("trapDoor_shut.wav", "Sfx_Doors_StandardShut", SoundType.Voice, Color.white),
+			GetSound("trapDoor_open.wav", "Sfx_Doors_StandardOpen", SoundType.Voice, Color.white)];
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
@@ -36,11 +44,12 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			var builder = GetComponent<TrapDoorBuilder>();
 			builder.trapDoorpre = trapdoorholder;
-			builder.closedSprites = [AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(TexturePath, "trapdoor_rng.png")), 25f), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(TexturePath, "trapdoor.png")), 25f)];
-			builder.openSprites = [AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(TexturePath, "trapdoor_rng_open.png")), 25f), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(TexturePath, "trapdoor_open.png")), 25f)];
+			
+			builder.closedSprites = [storedSprites[0], storedSprites[1]];
+			builder.openSprites = [storedSprites[2], storedSprites[3]];
 
-			trapdoorholder.aud_shut = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "trapDoor_shut.wav")), "Sfx_Doors_StandardShut", SoundType.Voice, Color.white);
-			trapdoorholder.aud_open = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, "trapDoor_open.wav")), "Sfx_Doors_StandardOpen", SoundType.Voice, Color.white);
+			trapdoorholder.aud_shut = soundObjects[0];
+			trapdoorholder.aud_open = soundObjects[1];
 
 			var trapdoor = ObjectCreationExtensions.CreateSpriteBillboard(builder.closedSprites[0], false);
 			trapdoor.transform.SetParent(trapdoorholder.transform); // prefab stuf

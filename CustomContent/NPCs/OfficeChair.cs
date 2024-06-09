@@ -25,7 +25,7 @@ namespace BBTimes.CustomContent.NPCs
             behaviorStateMachine.ChangeState(new OfficeChair_FindOffice(this, false, awaitCooldown, en));
 
 
-        public void SetEnabled(bool active) => spriteRenderer[0].sprite = GetComponent<OfficeChairCustomData>().storedSprites[active ? 0 : 1];
+        public void SetEnabled(bool active) => spriteRenderer[0].sprite = active ? sprActive : sprDeactive;
 
         const float normSpeed = 50f;
 
@@ -39,14 +39,18 @@ namespace BBTimes.CustomContent.NPCs
 			base.Despawn();
 		}
 
+		[SerializeField]
+		internal Sprite sprActive, sprDeactive;
+
+		[SerializeField]
+		internal SoundObject audRoll;
+
 
 	}
 
     internal class OfficeChair_StateBase(OfficeChair office) : NpcState(office) // A default npc state
     {
         protected OfficeChair chair = office;
-
-        protected OfficeChairCustomData dat = office.GetComponent<OfficeChairCustomData>(); // I regret doing this, but whatever, it is in already
 
         protected PropagatedAudioManager man = office.GetComponent<PropagatedAudioManager>();
     }
@@ -76,7 +80,7 @@ namespace BBTimes.CustomContent.NPCs
 			targetCell = cells[Random.Range(0, cells.Count)];
 
 			ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, targetCell.FloorWorldPosition));
-            man.QueueAudio(dat.soundObjects[0], true);
+            man.QueueAudio(chair.audRoll, true);
             man.SetLoop(true);
 			chair.bringingState = this;
 

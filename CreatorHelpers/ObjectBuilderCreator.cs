@@ -19,6 +19,8 @@ namespace BBTimes.Helpers
 
 			var data = obj.gameObject.AddComponent<C>();
 			data.Name = obstacleName;
+			data.GetAudioClips();
+			data.GetSprites();
 			data.SetupPrefab();
 			
 

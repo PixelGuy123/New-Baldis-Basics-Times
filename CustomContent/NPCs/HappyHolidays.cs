@@ -23,11 +23,14 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			pm.itm.AddItem(objects[Random.Range(0, objects.Length)]);
 			behaviorStateMachine.ChangeState(new HappyHolidays_WaitToRespawn(this));
-			audMan.PlaySingle(GetComponent<HappyHolidaysCustomData>().soundObjects[0]);
+			audMan.PlaySingle(audHappyHolidays);
 		}
 
 		[SerializeField]
 		internal ItemObject[] objects = [];
+
+		[SerializeField]
+		internal SoundObject audHappyHolidays;
 
 		private AudioManager audMan;
 	}

@@ -13,7 +13,6 @@ using BBTimes.CustomContent.CustomItems;
 using BBTimes.CustomContent.Events;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 
 
 namespace BBTimes.Plugin
@@ -27,7 +26,7 @@ namespace BBTimes.Plugin
 		{
 			yield return 2;
 			yield return "Calling custom data setup prefab post...";
-			_cstData.ForEach(x => x.SetupPrefabPost());
+			_cstData.ForEach(x => x.PostPrefabSetup());
 			// Other stuff to setup
 			yield return "Setup the rest of the assets...";
 			ITM_GoldenQuarter.quarter = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;

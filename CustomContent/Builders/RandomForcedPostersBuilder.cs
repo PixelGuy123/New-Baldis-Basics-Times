@@ -13,11 +13,6 @@ namespace BBTimes.CustomContent.Builders
 			foreach (var c in room.GetTilesOfShape(allowedShapes, false))
 				if (c.HasFreeWall && cRng.NextDouble() <= chance)
 					ec.BuildPoster(WeightedPosterObject.ControlledRandomSelection(posters, cRng), c, c.RandomUncoveredDirection(cRng));
-			
-
-		
-
-
 		}
 
 

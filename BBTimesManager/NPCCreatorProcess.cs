@@ -242,24 +242,22 @@ namespace BBTimes.Manager
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
 
-			/* Finish him up later
 			// Glue boy
 			npc = new NPCBuilder<Glubotrony>(plug.Info)
-				.SetMinMaxAudioDistance(90f, 175f)
+				.SetMinMaxAudioDistance(75f, 110f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Glubotrony")
 				.SetName("Glubotrony")
 				.AddLooker()
-				.SetMaxSightDistance(75)
+				.SetMaxSightDistance(45)
+				.SetFOV(110f)
 				.AddTrigger()
 				.DisableAutoRotation()
 				.Build()
 				.SetupNPCData<GlubotronyCustomData>("Glubotrony", "PST_Gboy_Name", "PST_Gboy_Desc", -0.7f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 99999 });
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
-			*/
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 28 });
 		}
 
 		
