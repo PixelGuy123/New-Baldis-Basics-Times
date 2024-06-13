@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BBTimes.Extensions;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -82,14 +83,7 @@ namespace BBTimes.CustomContent.Objects
 		{
 			Enabled = block;
 			gasLeakVentAudioMan.SetLoop(true);
-			ec.FreezeNavigationUpdates(true);
-			foreach (var dir in Directions.All()) 
-			{
-				var cell = ec.CellFromPosition(IntVector2.GetGridPosition(transform.position) + dir.ToIntVector2());
-				if (!cell.Null)
-					cell.Block(dir.GetOpposite(), block);
-			}
-			ec.FreezeNavigationUpdates(false);
+			ec.BlockAllDirs(transform.position, block);
 			colliders.Do(x => x.enabled = block);
 			if (block)
 				cooldown = UnityEngine.Random.Range(minCooldown, maxCooldown);

@@ -52,6 +52,12 @@ namespace BBTimes.CustomContent.Events
 				ve.DisableVent(!on); // disables/enables vents
 			if (on) data.Vents[Random.Range(0, data.Vents.Count)].BlockMe();
 
+			foreach (var squ in data.Squishers)
+				squ.TurnMe(on);
+
+			foreach (var cam in data.Cameras)
+				cam.TurnMe(on);
+
 			foreach (var soda in FindObjectsOfType<SodaMachine>())
 			{
 				soda.GetComponent<MeshRenderer>().materials[1].SetTexture("_LightGuide", on ? sodaMachineLight : null); // Switches the texture from the material to make it not glow

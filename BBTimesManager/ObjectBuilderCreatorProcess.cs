@@ -66,31 +66,44 @@ namespace BBTimes.Manager
 
 			// Camera Builder
 			CameraBuilder cams = CreatorExtensions.CreateObjectBuilder<CameraBuilder, CameraBuilderCustomData>("CameraBuilder", "SecurityCamera");
-			cams.minAmount = 2;
-			cams.maxAmount = 6;
 			cams.AddMeta(plug);
-			floorDatas[0].ForcedObjectBuilders.Add(cams);
-
-			cams = cams.DuplicatePrefab();
-			cams.minAmount = 2;
+			cams.minAmount = 1;
 			cams.maxAmount = 3;
 
 			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = cams, weight = 35 });
 
 			cams = cams.DuplicatePrefab();
-			cams.minAmount = 4;
-			cams.maxAmount = 7;
+			cams.minAmount = 3;
+			cams.maxAmount = 5;
 
 			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = cams, weight = 55 });
 
 			cams = cams.DuplicatePrefab();
 			cams.minAmount = 1;
-			cams.maxAmount = 3;
+			cams.maxAmount = 4;
 
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = cams, weight = 25 });
 
+			// Squisher builder
+			SquisherBuilder squish = CreatorExtensions.CreateObjectBuilder<SquisherBuilder, SquisherBuilderCustomData>("SquisherBuilder", "Squisher");
+			squish.AddMeta(plug);
 
+			squish.minAmount = 1;
+			squish.maxAmount = 2;
 
+			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = squish, weight = 25 });
+
+			squish = squish.DuplicatePrefab();
+			squish.minAmount = 2;
+			squish.maxAmount = 6;
+
+			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = squish, weight = 45 });
+
+			squish = squish.DuplicatePrefab();
+			squish.minAmount = 1;
+			squish.maxAmount = 3;
+
+			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = squish, weight = 35 });
 
 		}
 

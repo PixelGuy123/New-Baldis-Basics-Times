@@ -1,16 +1,21 @@
-﻿using UnityEngine;
-using BBTimes.CustomContent.Builders;
-using BBTimes.Extensions.ObjectCreationExtensions;
-using MTM101BaldAPI.AssetTools;
+﻿using BBTimes.CustomContent.Builders;
 using BBTimes.CustomContent.Objects;
+using BBTimes.Extensions.ObjectCreationExtensions;
+using MTM101BaldAPI;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
-using MTM101BaldAPI;
+using UnityEngine;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
-    public class VentBuilderCustomData : CustomObjectPrefabData
+	public class VentBuilderCustomData : CustomObjectPrefabData
 	{
+		protected override SoundObject[] GenerateSoundObjects() =>
+			[GetSoundNoSub("vent_normal.wav", SoundType.Voice),
+			GetSound("vent_gasleak_start.wav", "Vfx_VentGasLeak", SoundType.Voice, Color.white),
+			GetSound("vent_gasleak_loop.wav", "Vfx_VentGasLeak", SoundType.Voice, Color.white),
+			GetSound("vent_gasleak_end.wav", "Vfx_VentGasLeak", SoundType.Voice, Color.white)];
+
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
@@ -34,23 +39,15 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var box2 = blockObj.AddComponent<BoxCollider>();
 			box2.size = new Vector3(10f, 10f, 10f);
 			box2.enabled = false;
-			
+
 			blockObj.layer = LayerMask.NameToLayer("Block Raycast");
 
 			Texture2D[] texs = [
-				AssetLoader.TextureFromFile(System.IO.Path.Combine(TexturePath, "vent.png")),
-				AssetLoader.TextureFromFile(System.IO.Path.Combine(TexturePath, "vent_1.png")),
-				AssetLoader.TextureFromFile(System.IO.Path.Combine(TexturePath, "vent_2.png")),
-				AssetLoader.TextureFromFile(System.IO.Path.Combine(TexturePath, "vent_3.png"))
+				GetTexture("vent.png"),
+				GetTexture("vent_1.png"),
+				GetTexture("vent_2.png"),
+				GetTexture("vent_3.png")
 				];
-			SoundObject[] audios = [
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "vent_normal.wav")), string.Empty, SoundType.Voice, Color.white),
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "vent_gasleak_start.wav")), "Vfx_VentGasLeak", SoundType.Voice, Color.white),
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "vent_gasleak_loop.wav")), "Vfx_VentGasLeak", SoundType.Voice, Color.white),
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(System.IO.Path.Combine(SoundPath, "vent_gasleak_end.wav")), "Vfx_VentGasLeak", SoundType.Voice, Color.white)
-				];
-
-			audios[0].subtitle = false;
 
 			var visual = ObjectCreationExtension.CreateCube(texs[0]);
 			Destroy(visual.GetComponent<BoxCollider>()); // Removes the collider
@@ -62,7 +59,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			v.ventTexs = texs;
 			v.normalVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f); // Two propagated audio managers
 			v.gasLeakVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f);
-			v.ventAudios = audios;
+			v.ventAudios = [.. soundObjects];
 			v.colliders = [box, box2, box3];
 
 			visual.transform.SetParent(vent.transform);
@@ -86,7 +83,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			m.startLifetimeMultiplier = 2.1f;
 			m.startSize = 3f;
 
-			
+
 			var e = particle.emission;
 			e.enabled = true;
 			e.rateOverTime = 0f;
@@ -108,11 +105,11 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			// Making of vent connections
 
-			var connection = ObjectCreationExtension.CreateCube(AssetLoader.TextureFromFile(System.IO.Path.Combine(TexturePath, "ventConnection.png")), false);
+			var connection = ObjectCreationExtension.CreateCube(GetTexture("ventConnection.png"), false);
 			Destroy(connection.GetComponent<BoxCollider>());
 			connection.name = "VentPrefab_Connection";
 			connection.transform.localScale = new(connectionSize, 0.6f, connectionSize);
-			
+
 
 			builder.ventConnectionPrefab = connection;
 

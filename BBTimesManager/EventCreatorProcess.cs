@@ -1,10 +1,8 @@
 ﻿using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.CustomContent.Events;
-using BBTimes.Extensions;
 using BBTimes.Helpers;
 using BepInEx;
 using MTM101BaldAPI.ObjectCreation;
-using MTM101BaldAPI.Registers;
 
 namespace BBTimes.Manager
 {
@@ -28,7 +26,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupEvent<CustomEventData>();
 
-				//CreatorExtensions.CreateEvent<PrincipalOut, CustomEventData>("Principalout", "Event_PriOut", 40f, 80f, []).AddMeta(plug, RandomEventFlags.CharacterSpecific).value;
+			
 			floorDatas[0].Events.Add(new() { selection = e, weight = 65 });
 			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 75 });
@@ -43,8 +41,7 @@ namespace BBTimes.Manager
 				.SetupEvent<BlackOutCustomData>();
 
 
-			//CreatorExtensions.CreateEvent<BlackOut, BlackOutCustomData>("Blackout", "Event_BlackOut", 55f, 90f, []).AddMeta(plug, RandomEventFlags.None).value;
-			floorDatas[2].Events.Add(new() { selection = e, weight = 55 });
+			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
 
 			// Freezing Event
 			e = new RandomEventBuilder<FrozenEvent>(plug.Info)
@@ -56,7 +53,7 @@ namespace BBTimes.Manager
 				.SetupEvent<FrozenEventCustomData>();
 
 
-			//CreatorExtensions.CreateEvent<FrozenEvent, FrozenEventCustomData>("FrozenEvent", "Event_FreezeEvent", 45f, 60f, []).AddMeta(plug, RandomEventFlags.None).value;
+			
 			floorDatas[1].Events.Add(new() { selection = e, weight = 75 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 25 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 35 });

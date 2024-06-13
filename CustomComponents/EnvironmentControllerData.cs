@@ -9,5 +9,7 @@ namespace BBTimes.CustomComponents
 		public List<BeltManager> ConveyorBelts = [];
 		public List<Vent> Vents = [];
 		public List<Trapdoor> Trapdoors = [];
+		public List<SecurityCamera> Cameras = [];
+		public List<Squisher> Squishers = [];
 	}
 }

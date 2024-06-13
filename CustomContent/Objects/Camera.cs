@@ -6,6 +6,22 @@ namespace BBTimes.CustomContent.Objects
 {
 	public class SecurityCamera : EnvironmentObject
 	{
+		public void TurnMe(bool on)
+		{
+			if (!on)
+			{
+				audMan.FlushQueue(true);
+				spotCooldown = defaultSpotCool;
+				alarmTime = 0f;
+				wasAlarming = false;
+				SetIndicatorsToColor(Color.clear);
+			}
+			else
+				SetIndicatorsToColor(Color.blue);
+
+			collider.enabled = on;
+			isCameraOn = on;
+		}
 		public void Setup(List<Direction> dirs, int maximumDistance)
 		{
 			nextDirections = dirs;
@@ -16,6 +32,41 @@ namespace BBTimes.CustomContent.Objects
 
 		void Update()
 		{
+			if (!isCameraOn)
+				return;
+			
+			if (alarmTime > 0f)
+			{
+				alarmTime -= ec.EnvironmentTimeScale * Time.deltaTime;
+				return;
+			}
+			else if (sawPlayer)
+			{
+				spotCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+				SetIndicatorsToColor(spotCooldown < 2f ? Color.red : Color.yellow);
+				if (spotCooldown < 0f)
+				{
+					alarmTime = 15f;
+					audMan.FlushQueue(true);
+					audMan.QueueAudio(audAlarm);
+					audMan.SetLoop(true);
+					ec.MakeNoise(transform.position, 112);
+					sawPlayer = false;
+					spotCooldown = defaultSpotCool;
+					wasAlarming = true;
+					Singleton<BaseGameManager>.Instance.AngerBaldi(2f);
+				}
+				return;
+			}
+
+			if (wasAlarming)
+			{
+				audMan.FlushQueue(true);
+				SetIndicatorsToColor(Color.blue);
+				wasAlarming = false;
+			}
+			
+
 			cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 			if (cooldown < 0f)
 			{
@@ -23,10 +74,13 @@ namespace BBTimes.CustomContent.Objects
 				dirIndex = ++dirIndex % nextDirections.Count;
 				UpdateVision();
 			}
+
+			
 		}
 
 		void UpdateVision()
 		{
+			audMan.PlaySingle(audTurn);
 			while (indicators.Count > 0)
 			{
 				Destroy(indicators[0].gameObject);
@@ -44,7 +98,7 @@ namespace BBTimes.CustomContent.Objects
 				var indicator = Instantiate(visionIndicatorPre, transform, true);
 				indicator.transform.position = cell.FloorWorldPosition + Vector3.up * 0.1f;
 				indicator.transform.rotation = Quaternion.Euler(90f, nextDirections[dirIndex].ToDegrees(), 0f);
-				indicator.color = Color.blue;
+				indicator.color = currentColor;
 				indicators.Add(indicator);
 
 				size++;
@@ -59,22 +113,59 @@ namespace BBTimes.CustomContent.Objects
 
 		void OnTriggerEnter(Collider other)
 		{
-			if (other.CompareTag("Player"))
+			if (alarmTime > 0f)
+				return;
+
+			if (other.isTrigger && other.CompareTag("Player"))
 			{
-				indicators.Do(x => x.color = Color.red);
+				var pm = other.GetComponent<PlayerManager>();
+				if (pm && !pm.Tagged)
+				{
+					SetIndicatorsToColor(Color.yellow);
+					sawPlayer = true;
+				}
+			}
+			
+		}
+
+		void OnTriggerStay(Collider other)
+		{
+			if (wasAlarming || !sawPlayer)
+				return;
+
+			if (other.isTrigger && other.CompareTag("Player"))
+			{
+				var pm = other.GetComponent<PlayerManager>();
+				if (pm && pm.Tagged)
+				{
+					sawPlayer = false;
+					SetIndicatorsToColor(Color.blue);
+				}
 			}
 		}
 
 		void OnTriggerExit(Collider other)
 		{
-			if (other.CompareTag("Player"))
+			if (wasAlarming) return;
+
+			if (other.isTrigger && other.CompareTag("Player"))
 			{
-				
+				spotCooldown = defaultSpotCool;
+				sawPlayer = false;
+				SetIndicatorsToColor(Color.blue);
 			}
+			
 		}
 
-		void SetIndicatorsToColor(Color color) =>
-			indicators.Do(x => x.color = Color.blue);
+		void SetIndicatorsToColor(Color color)
+		{
+			if (color != currentColor)
+			{
+				currentColor = color;
+				indicators.Do(x => x.color = color);
+				audMan.PlaySingle(audDetect);
+			}
+		}
 
 		List<Direction> nextDirections;
 
@@ -82,15 +173,25 @@ namespace BBTimes.CustomContent.Objects
 
 		IntVector2 basePos;
 
-		float cooldown = Random.Range(minTurnCool, maxTurnCool);
+		float cooldown = Random.Range(minTurnCool, maxTurnCool), spotCooldown = defaultSpotCool, alarmTime = 0f;
 
-		const float maxTurnCool = 30f, minTurnCool = 15f;
+		bool sawPlayer = false, wasAlarming = false, isCameraOn = true;
+
+		Color currentColor = Color.blue;
+
+		const float maxTurnCool = 30f, minTurnCool = 15f, defaultSpotCool = 4f;
 
 		[SerializeField]
 		internal SpriteRenderer visionIndicatorPre;
 
 		[SerializeField]
 		internal BoxCollider collider;
+
+		[SerializeField]
+		internal PropagatedAudioManager audMan;
+
+		[SerializeField]
+		internal SoundObject audTurn, audDetect, audAlarm;
 
 		readonly List<SpriteRenderer> indicators = [];
 	}

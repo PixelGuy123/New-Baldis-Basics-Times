@@ -1,5 +1,4 @@
 ﻿using BBTimes.CustomComponents;
-using HarmonyLib;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using System.Collections;
@@ -171,6 +170,20 @@ namespace BBTimes.Extensions
 				baldi?.ClearSoundLocations();
 				pm.ec.MakeNoise(pm.transform.position, detentionNoise);
 			}
+		}
+		public static void BlockAllDirs(this EnvironmentController ec, Vector3 pos, bool block) =>
+			ec.BlockAllDirs(IntVector2.GetGridPosition(pos), block);
+
+		public static void BlockAllDirs(this EnvironmentController ec, IntVector2 pos, bool block)
+		{
+			ec.FreezeNavigationUpdates(true);
+			foreach (var dir in Directions.All())
+			{
+				var cell = ec.CellFromPosition(pos + dir.ToIntVector2());
+				if (!cell.Null)
+					cell.Block(dir.GetOpposite(), block);
+			}
+			ec.FreezeNavigationUpdates(false);
 		}
 
 		internal static DetentionUi detentionUiPre;

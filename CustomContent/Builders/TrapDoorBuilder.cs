@@ -1,13 +1,10 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
 {
-	// ********* future note: make a Load method for this **************
-	// *****************************************************************
-	// *****************************************************************
-	// *****************************************************************
 
 	public class TrapDoorBuilder : ObjectBuilder
 	{
@@ -52,6 +49,40 @@ namespace BBTimes.CustomContent.Builders
 				trap.sprites = [closedSprites[0], openSprites[0]];
 			}
 
+		}
+
+		public override void Load(EnvironmentController ec, List<IntVector2> pos, List<Direction> dir)
+		{
+			base.Load(ec, pos, dir);
+			var ecData = ec.GetComponent<EnvironmentControllerData>();
+
+			for (int i = 0; i < pos.Count; i++)
+			{
+				var cell = ec.CellFromPosition(pos[i]);
+
+				var trap = CreateTrapDoor(cell, ec, ecData);
+				if (dir[i] != Direction.Null) // Means it is a linked trapdoor
+				{
+					if (++i >= pos.Count)
+						throw new System.ArgumentException("A linked trapdoor was flagged with no link available on the next item of the pos collection");
+
+					cell = ec.CellFromPosition(pos[i]); // Updates cell for the next position
+
+					var strap = CreateTrapDoor(cell, ec, ecData); // Linked trapdoor setup
+					trap.SetLinkedTrapDoor(strap);
+					strap.SetLinkedTrapDoor(trap);
+
+					trap.renderer.sprite = openSprites[1];
+					strap.renderer.sprite = openSprites[1];
+					trap.sprites = [closedSprites[1], openSprites[1]];
+					strap.sprites = [closedSprites[1], openSprites[1]];
+
+					continue;
+				} 
+
+				trap.renderer.sprite = openSprites[0]; // Random trapdoor
+				trap.sprites = [closedSprites[0], openSprites[0]];
+			}
 		}
 
 		private Trapdoor CreateTrapDoor(Cell pos, EnvironmentController ec, EnvironmentControllerData dat)

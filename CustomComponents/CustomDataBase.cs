@@ -27,11 +27,14 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected virtual Sprite[] GenerateSpriteOrder() =>
 			[];
 
+		protected Texture2D GetTexture(string texName) =>
+			AssetLoader.TextureFromFile(Path.Combine(TexturePath, texName));
+
 		protected Sprite GetSprite(float pixelsPerUnit, string texName) =>
-			AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(TexturePath, texName)), pixelsPerUnit);
+			AssetLoader.SpriteFromTexture2D(GetTexture(texName), pixelsPerUnit);
 
 		protected Sprite GetSprite(float pixelsPerUnit, Vector2 center, string texName) =>
-			AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(TexturePath, texName)), center, pixelsPerUnit);
+			AssetLoader.SpriteFromTexture2D(GetTexture(texName), center, pixelsPerUnit);
 
 		protected SoundObject GetSound(string audioName, string subtitle, SoundType soundType, Color color) =>
 			ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, audioName)), subtitle, soundType, color);
