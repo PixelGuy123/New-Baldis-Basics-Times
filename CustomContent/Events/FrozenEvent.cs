@@ -15,7 +15,7 @@ namespace BBTimes.CustomContent.Events
 			audMan.PlaySingle(audFreeze);
 			for (int i = 0; i < ec.Npcs.Count; i++)
 			{
-				if (ec.Npcs[i] != null && ec.Npcs[i]) // null check is different from checking if the object exists
+				if (ec.Npcs[i] != null && ec.Npcs[i] && ec.Npcs[i].Navigator.isActiveAndEnabled) // null check is different from checking if the object exists
 				{
 					var mod = new MovementModifier(Vector3.zero, 1f);
 					moveMods.Add(new(ec.Npcs[i], mod));
@@ -38,6 +38,7 @@ namespace BBTimes.CustomContent.Events
 			}
 			foreach (var cell in ec.AllCells())
 			{
+				cellColors.Add(cell, cell.lightColor);
 				cell.lightColor = Color.cyan;
 				ec.SetLight(cell.lightOn, cell);
 			}
@@ -95,11 +96,12 @@ namespace BBTimes.CustomContent.Events
 
 			moveMods.Clear(); // Just set it to nothingness
 			pMoveMods.Clear();
-			foreach (var cell in ec.AllCells())
+			foreach (var cell in cellColors)
 			{
-				cell.lightColor = Singleton<BaseGameManager>.Instance.levelObject.standardLightColor;
-				ec.SetLight(cell.lightOn, cell);
+				cell.Key.lightColor = cell.Value;
+				ec.SetLight(cell.Key.lightOn, cell.Key);
 			}
+			cellColors.Clear();
 
 			canvasToDespawn.ForEach(x => Destroy(x.transform.parent.gameObject));
 			canvasToDespawn.Clear();
@@ -140,6 +142,8 @@ namespace BBTimes.CustomContent.Events
 		readonly List<KeyValuePair<PlayerAttributesComponent, MovementModifier>> pMoveMods = [];
 
 		readonly List<Image> canvasToDespawn = [];
+
+		readonly Dictionary<Cell, Color> cellColors = [];
 
 		const float maxVel = 0.6f, slowDownMultiplier = 0.15f, speedDivider = 15f;
 

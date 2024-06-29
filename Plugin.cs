@@ -19,6 +19,7 @@ namespace BBTimes.Plugin
 {
     [BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)] // let's not forget this
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.pixelinternalapi", BepInDependency.DependencyFlags.HardDependency)]
+	[BepInDependency("mtm101.rulerp.baldiplus.levelloader", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
     public class BasePlugin : BaseUnityPlugin
     {
@@ -33,6 +34,8 @@ namespace BBTimes.Plugin
 			BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
 			yield break;
 		}
+
+		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
 		private void Awake()
 		{
@@ -85,7 +88,7 @@ namespace BBTimes.Plugin
 				if (floorName == "F2")
 				{
 					ld.deadEndBuffer = 4;
-					ld.minSpecialRooms = 1; // Chance to have no special room
+					ld.minSpecialRooms = 1;
 					ld.maxSpecialRooms = 2;
 					ld.additionalNPCs += 4;
 					ld.additionTurnChance += 5;
@@ -117,34 +120,30 @@ namespace BBTimes.Plugin
 
 				if (floorName == "F3")
 				{
-					ld.deadEndBuffer = 2;
-					ld.minSpecialRooms = 2; // Chance to have no special room
-					ld.maxSpecialRooms = 3;
+					ld.minSpecialRooms += 1;
+					ld.maxSpecialRooms += 2;
 					ld.additionalNPCs += 4;
 					ld.additionTurnChance += 15;
 					ld.bridgeTurnChance += 6;
-					ld.outerEdgeBuffer += 3;
-					ld.extraDoorChance += 0.3f;
+					ld.extraDoorChance = 0.5f;
 					ld.windowChance += 0.35f;
 					ld.maxClassRooms = 12;
 					ld.maxFacultyRooms += 4;
-					ld.maxHallsToRemove += 2;
+					ld.maxHallsToRemove++;
 					ld.maxPlots += 2;
 					ld.minPlots += 1;
-					ld.maxReplacementHalls += 3;
+					ld.maxReplacementHalls += 2;
 					ld.maxSize += new IntVector2(9, 6);
+					ld.minSize += new IntVector2(5, 6);
 					ld.maxSpecialBuilders += 2;
 					ld.minFacultyRooms += 1;
 					ld.minHallsToRemove += 1;
-					ld.minSize += new IntVector2(5, 6);
 					ld.minSpecialBuilders += 1;
 					ld.classStickToHallChance = 0.75f;
 					ld.facultyStickToHallChance = 0.85f;
-					ld.maxOffices = 2;
+					ld.outerEdgeBuffer += 5;
+					ld.maxOffices += 2;
 					ld.officeStickToHallChance = 0.9f;
-					ld.specialRoomsStickToEdge = false;
-					ld.maxLightDistance += 5;
-					ld.standardLightStrength -= 2;
 					ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. Resources.FindObjectsOfTypeAll<RoomAsset>() // Playground in F3
 						.Where(x => x.name.StartsWith("Playground"))
 						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
@@ -210,6 +209,12 @@ namespace BBTimes.Plugin
 				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
 				ld.shopItems = ld.shopItems.AddRangeToArray([.. floordata.ShopItems]);
 				ld.fieldTripItems.AddRange(floordata.FieldTripItems);
+				ld.additionalRoomTypes.AddRange(floordata.RoomAssets.Values);
+				ld.additionalTextureGroups.AddRange(floordata.RoomAssets.Keys);
+				ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. floordata.SpecialRooms]);
+				ld.potentialClassRooms = ld.potentialClassRooms.AddRangeToArray([.. floordata.Classrooms]);
+				ld.potentialFacultyRooms = ld.potentialFacultyRooms.AddRangeToArray([.. floordata.Faculties]);
+				ld.potentialOffices = ld.potentialOffices.AddRangeToArray([.. floordata.Offices]);
 
 				foreach (var holder in floordata.SchoolTextures) // Add the school textures
 				{
@@ -218,29 +223,50 @@ namespace BBTimes.Plugin
 						case RoomCategory.Hall:
 							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
 								ld.hallCeilingTexs = ld.hallCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
-							if (holder.TextureType == Misc.SchoolTexture.Floor)
+							else if (holder.TextureType == Misc.SchoolTexture.Floor)
 								ld.hallFloorTexs = ld.hallFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
-							if (holder.TextureType == Misc.SchoolTexture.Wall)
+							else if (holder.TextureType == Misc.SchoolTexture.Wall)
 								ld.hallWallTexs = ld.hallWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
 							break;
 						case RoomCategory.Class:
 							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
 								ld.classCeilingTexs = ld.classCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
-							if (holder.TextureType == Misc.SchoolTexture.Floor)
+							else if (holder.TextureType == Misc.SchoolTexture.Floor)
 								ld.classFloorTexs = ld.classFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
-							if (holder.TextureType == Misc.SchoolTexture.Wall)
+							else if (holder.TextureType == Misc.SchoolTexture.Wall)
 								ld.classWallTexs = ld.classWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
 							break;
 						case RoomCategory.Faculty:
 							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
 								ld.facultyCeilingTexs = ld.facultyCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
-							if (holder.TextureType == Misc.SchoolTexture.Floor)
+							else if (holder.TextureType == Misc.SchoolTexture.Floor)
 								ld.facultyFloorTexs = ld.facultyFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
-							if (holder.TextureType == Misc.SchoolTexture.Wall)
+							else if (holder.TextureType == Misc.SchoolTexture.Wall)
 								ld.facultyWallTexs = ld.facultyWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
 							break;
 						default:
-							// Operation here for custom rooms, soon.... wait, they are premade, the textures are within them... right?
+							string name = EnumExtensions.GetExtendedName<RoomCategory>((int)holder.SelectionLimiters[0]);
+							var group = ld.additionalTextureGroups.FirstOrDefault(x => x.name == name);
+							if (group == null)
+							{
+								Debug.LogWarning("BBTimes: Failed to load texture for room category: " + name);
+								break;
+							}
+							switch (holder.TextureType)
+							{
+								case Misc.SchoolTexture.Ceiling:
+									group.potentialCeilTextures = group.potentialCeilTextures.AddToArray(holder.Selection.ToWeightedTexture());
+									break;
+								case Misc.SchoolTexture.Floor:
+									group.potentialFloorTextures = group.potentialFloorTextures.AddToArray(holder.Selection.ToWeightedTexture());
+									break;
+								case Misc.SchoolTexture.Wall:
+									group.potentialWallTextures = group.potentialWallTextures.AddToArray(holder.Selection.ToWeightedTexture());
+									break;
+								default:
+									break;
+							}
+								
 							break;
 					}
 				}

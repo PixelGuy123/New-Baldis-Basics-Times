@@ -11,7 +11,9 @@ namespace BBTimes.CustomComponents.CustomDatas
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();
-			GetComponent<ITM_Screwdriver>().audScrew = soundObjects[0];
+			var comp = GetComponent<ITM_Screwdriver>();
+			comp.audScrew = soundObjects[0];
+			comp.item = myEnum;
 		}
 	}
 }

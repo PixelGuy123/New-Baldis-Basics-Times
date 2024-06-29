@@ -8,10 +8,19 @@ namespace BBTimes.CustomContent.CustomItems
 		public override bool Use(PlayerManager pm)
 		{
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audThrow);
-			this.pm = pm;
 			target = pm.gameObject;
-			entity.Initialize(pm.ec, pm.transform.position);
-			dir = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
+			Setup(pm.ec, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, pm.transform.position, null);
+
+			return true;
+		}
+
+		public void Setup(EnvironmentController ec, Vector3 direction, Vector3 pos, RoomController room, float speedDecrease = 0.2f)
+		{
+			entity.Initialize(ec, pos);
+			this.ec = ec;
+			dir = direction;
+			targetRoom = room;
+			moveMod.movementMultiplier = speedDecrease;
 
 			entity.OnEntityMoveInitialCollision += (hit) => // Basically just bounce over
 			{
@@ -20,23 +29,25 @@ namespace BBTimes.CustomContent.CustomItems
 				dir = Vector3.Reflect(dir, hit.normal); // crazy math I guess
 				audMan.PlaySingle(audBong);
 			};
-
-			return true;
 		}
 
 		void Update()
 		{
 			if (hasHit) return;
 
-			entity.UpdateInternalMovement(dir * speed * pm.ec.EnvironmentTimeScale);
+			entity.UpdateInternalMovement(dir * speed * ec.EnvironmentTimeScale);
 
-			lifeTime -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
-			if (lifeTime < 0f)
-				Destroy(gameObject);
+			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
+			if (lifeTime < 0f || !ec.CellFromPosition(transform.position).TileMatches(targetRoom))
+			{
+				hasHit = true;
+				renderer.enabled = false;
+				StartCoroutine(PopWait());
+			}
 
 
 			// animation loop
-			frame += 8f * pm.ec.EnvironmentTimeScale * Time.deltaTime;
+			frame += 8f * ec.EnvironmentTimeScale * Time.deltaTime;
 			frame %= spriteAnim.Length;
 			renderer.sprite = spriteAnim[Mathf.FloorToInt(frame)];
 		}
@@ -50,7 +61,7 @@ namespace BBTimes.CustomContent.CustomItems
 				Entity e = other.GetComponent<Entity>();
 				if (e)
 				{
-					if (isnpc) pm.RuleBreak("Bullying", 1f);
+					if (isnpc && pm) pm.RuleBreak("Bullying", 1f);
 					audMan.PlaySingle(audHit);
 					renderer.enabled = false;
 					hasHit = true;
@@ -71,13 +82,24 @@ namespace BBTimes.CustomContent.CustomItems
 				target = null;
 		}
 
+		IEnumerator PopWait()
+		{
+			audMan.FlushQueue(true);
+			audMan.QueueAudio(audPop);
+			while (audMan.QueuedAudioIsPlaying)
+				yield return null;
+
+			Destroy(gameObject);
+			yield break;
+		}
+
 		IEnumerator Timer(Entity e)
 		{
 			e.ExternalActivity.moveMods.Add(moveMod);
 			float cooldown = 15f;
 			while (cooldown > 0)
 			{
-				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 				yield return null;
 			}
 
@@ -87,9 +109,11 @@ namespace BBTimes.CustomContent.CustomItems
 			yield break;
 		}
 
-		GameObject target;
+		GameObject target = null;
+		RoomController targetRoom = null;
 		float frame = 0f, lifeTime = 160f;
 		bool hasHit = false;
+		EnvironmentController ec;
 
 		[SerializeField]
 		internal Entity entity;
@@ -104,7 +128,7 @@ namespace BBTimes.CustomContent.CustomItems
 		internal AudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject audThrow, audHit, audBong;
+		internal SoundObject audThrow, audHit, audBong, audPop;
 
 		Vector3 dir;
 

@@ -9,7 +9,6 @@ namespace BBTimes.CustomContent.Objects
 	{
 		private void Start()
 		{
-			text.autoSizeTextContainer = true; // Yeah
 			Shut(false);
 			fakeTrapdoorPre.GetComponent<SpriteRenderer>().sprite = renderer.sprite;
 		}

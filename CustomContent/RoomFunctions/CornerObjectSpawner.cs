@@ -55,24 +55,24 @@ namespace BBTimes.CustomContent.RoomFunctions
 		}
 
 		[SerializeField]
-		public WeightedTransform[] randomObjs = [];
+		internal WeightedTransform[] randomObjs = [];
 
 		[SerializeField]
-		public int minAmount = 1, maxAmount = 1;
+		internal int minAmount = 1, maxAmount = 1;
 
 		[SerializeField]
-		public bool stickToWall = false;
+		internal bool stickToWall = false;
 
 		[SerializeField]
-		public bool nonSafeEntityCell = false;
+		internal bool nonSafeEntityCell = false;
 
 		[SerializeField]
-		public float randomChance = 1f;
+		internal float randomChance = 1f;
 
 		/// <summary>
 		/// Light power of object (if 0, uses the standard strength)
 		/// </summary>
 		[SerializeField]
-		public int lightPower = -1;
+		internal int lightPower = -1;
 	}
 }

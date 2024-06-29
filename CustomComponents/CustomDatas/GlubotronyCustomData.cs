@@ -60,6 +60,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			// Glue setup
 			var glueRender = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[storedSprites.Length - 1], false).AddSpriteHolder(-4.9f, 0);
+			glueRender.gameObject.layer = 0;
 			glueRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			glueRender.transform.parent.gameObject.ConvertToPrefab(true);
 

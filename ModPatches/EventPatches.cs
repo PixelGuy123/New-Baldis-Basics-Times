@@ -1,10 +1,16 @@
 ﻿using HarmonyLib;
+using System.Collections;
 
 namespace BBTimes.ModPatches
 {
-	[HarmonyPatch(typeof(RandomEvent), "Initialize")]
+	[HarmonyPatch(typeof(RandomEvent))]
 	internal class EventPatches
 	{
-		private static void Prefix(RandomEvent __instance) => __instance.gameObject.SetActive(true); // Just sets it active
+		[HarmonyPatch("End")]
+		static void Postfix(RandomEvent __instance, ref IEnumerator ___eventTime) // Basically, if the event is forced to end earlier, the timer is stopped
+		{
+			if (___eventTime != null)
+				__instance.StopCoroutine(___eventTime);
+		}
 	}
 }

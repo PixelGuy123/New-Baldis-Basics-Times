@@ -12,8 +12,24 @@ namespace BBTimes.CustomContent.Builders
 		{
 			base.Build(ec, builder, room, cRng);
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
-			var t = room.GetTilesOfShape([TileShape.Corner, TileShape.End], CellCoverage.Down, false);
-			int max = cRng.Next(minAmount, maxAmount + 1);
+			List<List<Cell>> list = ec.FindHallways();
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (list[i].Count < 6)
+				{
+					list.RemoveAt(i);
+					i--;
+				}
+			}
+
+			var t = new List<Cell>();
+			for (int i = 0; i < list.Count; i++)
+				for (int z = 0; z < list[i].Count; z++)
+					if (list[i][z].shape == TileShape.Corner || list[i][z].shape == TileShape.End)
+						t.Add(list[i][z]);
+				
+			
+			
 			if (t.Count == 0)
 			{
 #if CHEAT
@@ -21,6 +37,7 @@ namespace BBTimes.CustomContent.Builders
 #endif
 				return;
 			}
+			int max = cRng.Next(minAmount, maxAmount + 1);
 
 			for (int i = 0; i < max; i++)
 			{

@@ -1,4 +1,5 @@
-﻿using BBTimes.Misc;
+﻿using BBTimes.Extensions;
+using BBTimes.Misc;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.Plugin;
 using MTM101BaldAPI;
@@ -21,13 +22,23 @@ namespace BBTimes.Manager
 			foreach (var rootDir in Directory.GetDirectories(Path.Combine(BasePlugin.ModPath, "rooms")))
 			{
 				RoomCategory cat;
+				bool modded = false;
 				string dirName = Path.GetFileName(rootDir); // Yes, file name. Get Directory name isn't as it looks
+#if CHEAT
+				Debug.Log($"Loading texture from dir: {dirName}");
+#endif
 				try
 				{
 					if (Enum.TryParse(dirName, out RoomCategory c))
+					{
 						cat = c;
+						modded = c == RoomCategory.Special;					
+					}
 					else
+					{
 						cat = EnumExtensions.GetFromExtendedName<RoomCategory>(dirName);
+						modded = true;
+					}
 
 				}
 				catch
@@ -39,30 +50,68 @@ namespace BBTimes.Manager
 				foreach (var file in Directory.GetFiles(rootDir))
 				{
 					string[] data = Path.GetFileNameWithoutExtension(file).Split('_');
-					if (data.Length < 4) // Not a data file
+					if (data.Length < (modded ? 2 : 3)) // Not a data file
 						continue;
 
-					Texture2D tex = AssetLoader.TextureFromFile(file);
+#if CHEAT
+					Debug.Log("Loading texture file: " + data[0]);
+#endif
+
+
 					SchoolTexture texType = data[1].GetSchoolTextureFromName(); // 1 expected to be the type
 					if (texType == SchoolTexture.Null)
 					{
 						Debug.LogWarning("BB TIMES: Invalid data in SchoolTexture: " + data[1]);
 						continue;
 					}
+					Texture2D tex = AssetLoader.TextureFromFile(file);
+					
+					if (modded)
+						AddTextureToEditor(data[0], tex);
 
-					if (int.TryParse(data[2], out int weight))
+					Debug.Log($"Texture size is {tex.width}x{tex.height}");
+					int weight = 50;
+					if (data.Length < 3 || int.TryParse(data[2], out weight))
 					{
 						var holder = new SchoolTextureHolder(tex, weight, cat, texType);
 
-						for (int i = 3; i < data.Length; i++)
+						if (!modded)
 						{
-							switch (data[i].ToLower())
+							for (int i = 3; i < data.Length; i++)
 							{
-								case "f1": floorDatas[0].SchoolTextures.Add(holder); break;
-								case "f2": floorDatas[1].SchoolTextures.Add(holder); break;
-								case "f3": floorDatas[2].SchoolTextures.Add(holder); break;
-								case "end": floorDatas[3].SchoolTextures.Add(holder); break;
+								switch (data[i].ToLower())
+								{
+									case "f1": floorDatas[0].SchoolTextures.Add(holder); break;
+									case "f2": floorDatas[1].SchoolTextures.Add(holder); break;
+									case "f3": floorDatas[2].SchoolTextures.Add(holder); break;
+									case "end": floorDatas[3].SchoolTextures.Add(holder); break;
+									default: break;
+								}
 							}
+						}
+						else
+						{
+							floorDatas.ForEach(x => x.SchoolTextures.Add(holder));
+							_moddedAssets.ForEach((x) =>
+							{
+								if (x.category == cat)
+								{
+									switch (holder.TextureType)
+									{
+										case SchoolTexture.Ceiling:
+											x.ceilTex = holder.Selection.selection;
+											break;
+										case SchoolTexture.Floor:
+											x.florTex = holder.Selection.selection;
+											break;
+										case SchoolTexture.Wall:
+											x.wallTex = holder.Selection.selection;
+											break;
+										default:
+											break;
+									}
+								}
+							});
 						}
 					}
 					else

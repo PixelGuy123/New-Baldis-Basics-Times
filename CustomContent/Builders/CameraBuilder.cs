@@ -32,7 +32,7 @@ namespace BBTimes.CustomContent.Builders
 				var cam = Instantiate(camPre, spots[s].ObjectBase).GetComponentInChildren<SecurityCamera>();
 				cam.Ec = ec;
 				cam.GetComponentsInChildren<SpriteRenderer>().Do(spots[s].AddRenderer);
-				cam.Setup(spots[s].AllOpenNavDirections, cRng.Next(2, 4));
+				cam.Setup(spots[s].AllOpenNavDirections, cRng.Next(6, 9));
 				ecData.Cameras.Add(cam);
 
 				spots[s].HardCover(CellCoverage.Up);

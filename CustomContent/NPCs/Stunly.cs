@@ -1,5 +1,4 @@
 ﻿using BBTimes.CustomComponents;
-using BBTimes.CustomComponents.CustomDatas;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Components;
 using System.Collections;
@@ -25,7 +24,7 @@ namespace BBTimes.CustomContent.NPCs
 				if (frame >= 4f)
 					frame = 1f + (frame % 4f);
 
-				spriteRenderer[0].sprite = dat.storedSprites[Mathf.FloorToInt(frame)];
+				spriteRenderer[0].sprite = allSprites[Mathf.FloorToInt(frame)];
 				return;
 			}
 
@@ -35,7 +34,7 @@ namespace BBTimes.CustomContent.NPCs
 				if (frame >= 7)
 					frame = 4f + (frame % 7f);
 
-				spriteRenderer[0].sprite = dat.storedSprites[Mathf.FloorToInt(frame)];
+				spriteRenderer[0].sprite = allSprites[Mathf.FloorToInt(frame)];
 			}
 
 		}
@@ -48,16 +47,16 @@ namespace BBTimes.CustomContent.NPCs
 				frame = 1f;
 				laughterMan.maintainLoop = true;
 				laughterMan.SetLoop(true);
-				laughterMan.QueueAudio(dat.soundObjects[2]);
+				laughterMan.QueueAudio(allSounds[2]);
 
 				noiseMan.maintainLoop = true;
 				noiseMan.SetLoop(true);
-				noiseMan.QueueAudio(dat.soundObjects[0]);
+				noiseMan.QueueAudio(allSounds[0]);
 				return;
 			}
 			laughterMan.FlushQueue(true);
 			noiseMan.FlushQueue(true);
-			spriteRenderer[0].sprite = dat.storedSprites[0];
+			spriteRenderer[0].sprite = allSprites[0];
 		}
 
 		public void GetGuilty() =>
@@ -99,7 +98,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator FadeInAndOutBlindness()
 		{
-			image.sprite = dat.storedSprites[7];
+			image.sprite = allSprites[7];
 			var color = image.color;
 			color.a = 0f;
 			while (true)
@@ -124,7 +123,7 @@ namespace BBTimes.CustomContent.NPCs
 				yield return null;
 			}
 
-			image.sprite = dat.storedSprites[8];
+			image.sprite = allSprites[8];
 			color.a = 1f;
 			while (true)
 			{
@@ -171,8 +170,12 @@ namespace BBTimes.CustomContent.NPCs
 		float frame = 1f;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.25f, 0);
+
 		[SerializeField]
-		internal StunlyCustomData dat;
+		internal Sprite[] allSprites;
+
+		[SerializeField]
+		internal SoundObject[] allSounds;
 
 		[SerializeField]
 		internal AudioManager noiseMan;
@@ -299,7 +302,7 @@ namespace BBTimes.CustomContent.NPCs
 					stunly.SetBlind(e, true, isPlayer);
 
 					stunly.SetAngry(false);
-					stunly.laughterMan.PlaySingle(stunly.dat.soundObjects[1]);
+					stunly.laughterMan.PlaySingle(stunly.allSounds[1]);
 					stunly.behaviorStateMachine.ChangeState(new Stunly_Flee(stunly, e, isPlayer));
 					stunly.GetGuilty();
 				}

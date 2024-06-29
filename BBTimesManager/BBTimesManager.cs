@@ -28,7 +28,7 @@ namespace BBTimes.Manager
 		internal static BaseUnityPlugin plug;
 		internal static IEnumerator InitializeContentCreation()
 		{
-			yield return 13;
+			yield return 14;
 
 			yield return "Loading assets...";
 			SetAssets();
@@ -50,6 +50,8 @@ namespace BBTimes.Manager
 			CreateObjBuilders(plug);
 			yield return "Creating windows...";
 			CreateWindows();
+			yield return "Creating custom rooms...";
+			CreateCustomRooms(plug);
 			yield return "Creating room functions...";
 			CreateRoomFunctions();
 			yield return "Creating school textures...";
@@ -59,6 +61,8 @@ namespace BBTimes.Manager
 
 			yield return "Calling GC Collect...";
 			GC.Collect(); // Get any garbage I guess
+
+			BasePlugin.PostSetup(man);
 
 			yield break;
 		}
@@ -79,6 +83,9 @@ namespace BBTimes.Manager
 			ObjectCreationExtension.mapMaterial = GenericExtensions.FindResourceObjectByName<MapIcon>("Icon_Prefab").spriteRenderer.material;
 			GameExtensions.detentionUiPre = GenericExtensions.FindResourceObject<DetentionUi>();
 			man.Add("buttonPre", GenericExtensions.FindResourceObject<RotoHallBuilder>().buttonPre);
+			man.AddFromResources<StandardDoorMats>();
+			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
+
 
 			// Make a transparent texture
 			ObjectCreationExtension.transparentTex = TextureExtensions.CreateSolidTexture(256, 256, Color.clear);
@@ -174,7 +181,7 @@ namespace BBTimes.Manager
 
 			// LITERALLY an empty object. Can be used for stuff like hiding those lightPre for example
 			EmptyGameObject = new("NullObject");
-			DontDestroyOnLoad(EmptyGameObject);
+			EmptyGameObject.ConvertToPrefab(false);
 
 			// Gates for RUN
 			MainGameManagerPatches.gateTextures[0] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateR.png"));
@@ -191,6 +198,8 @@ namespace BBTimes.Manager
 			// Global Assets
 			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "potion_drink.wav")), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
 			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "pc_stab.wav")), "Vfx_PC_stab", SoundType.Voice, Color.yellow));
+			for (int i = 0; i < 5; i++)
+				man.Add($"basketBall{i}", AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(GlobalAssetsPath, $"basketball{i}.png")), 25f));
 
 
 			// Local Methods
@@ -214,6 +223,8 @@ namespace BBTimes.Manager
 
 		public static GameObject EmptyGameObject;
 
+		internal static List<Texture2D> specialRoomTextures = [];
+
 		// All the npcs that are replacement marked will be added to this list
 		internal static List<CustomNPCData> replacementNpcs = [];
 
@@ -236,6 +247,13 @@ namespace BBTimes.Manager
 		public readonly List<WeightedRandomEvent> Events = [];
 		public readonly List<SchoolTextureHolder> SchoolTextures = [];
 
+		// Rooms
+		public readonly Dictionary<RoomTextureGroup, RoomTypeGroup> RoomAssets = [];
+		public readonly List<WeightedRoomAsset> SpecialRooms = [];
+		public readonly List<WeightedRoomAsset> Classrooms = [];
+		public readonly List<WeightedRoomAsset> Faculties = [];
+		public readonly List<WeightedRoomAsset> Offices = [];
+
 
 		// Object Builders
 		public readonly List<ObjectBuilder> ForcedObjectBuilders = [];
@@ -246,7 +264,6 @@ namespace BBTimes.Manager
 		//public List<GenericHallBuilder> GenericHallBuilders => _genericHallBuilders;
 
 		// Misc Fields
-		public readonly List<string> MidiFiles = [];
 		public readonly List<WindowObjectHolder> WindowObjects = [];
 
 		public int MaxNumberBallAmount = 9; // Default

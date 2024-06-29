@@ -41,8 +41,6 @@ namespace BBTimes.CustomContent.NPCs
 
 		void CallPrincipals()
 		{
-			
-
 			foreach (var n in ec.Npcs)
 				if (n.Navigator.enabled && (n.Character == Character.Principal || (n.GetComponent<CustomNPCData>()?.ReplacesCharacter(Character.Principal) ?? false)))
 					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowJr(n, ec.CellFromPosition(transform.position)));

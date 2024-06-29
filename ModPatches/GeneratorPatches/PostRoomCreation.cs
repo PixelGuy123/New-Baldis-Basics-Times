@@ -1,10 +1,8 @@
 ﻿using BBTimes.Extensions;
-using BBTimes.Manager;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using UnityEngine;
-using BBTimes.ModPatches.EnvironmentPatches;
 
 namespace BBTimes.ModPatches.GeneratorPatches
 {
@@ -62,7 +60,10 @@ namespace BBTimes.ModPatches.GeneratorPatches
 
 			int amount = i.controlledRNG.Next(2, 10);
 			for (int a = 0; a < amount; a++)
+			{
 				i.controlledRNG.Next();
+				i.FrameShouldEnd();
+			}
 		}
 
 		static void ExecutePostRoomTasks()
@@ -88,6 +89,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 
 				if (dirs.Count > 0)
 					tiles.Add(t, [.. dirs]);
+				i.FrameShouldEnd(); // fail safe to not crash for no f reason
 			}
 
 			if (tiles.Count == 0)
@@ -105,6 +107,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 						w.aTile.AddRenderer(w.transform.Find("Door_SideB").GetComponent<MeshRenderer>());
 					}
 				}
+				i.FrameShouldEnd();
 			}
 
 		}

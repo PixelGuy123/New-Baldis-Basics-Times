@@ -1,5 +1,6 @@
 ﻿using BBTimes.Extensions;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
@@ -45,7 +46,11 @@ namespace BBTimes.CustomContent.Objects
 			{
 				var e = other.GetComponent<Entity>();
 				if (e && !e.Squished)
+				{
 					e.Squish(12f);
+					e.SetFrozen(true);
+					squishedEntities.Add(e);
+				}
 				
 			}
 		}
@@ -80,7 +85,8 @@ namespace BBTimes.CustomContent.Objects
 
 			while (cool > 0f) // preparing to squish
 			{
-				transform.position = new(ogPos.x + Random.Range(-0.2f, 0.2f), ogPos.y, ogPos.z + Random.Range(-0.2f, 0.2f));
+				if (Time.timeScale > 0f)
+					transform.position = new(ogPos.x + Random.Range(-0.2f, 0.2f), ogPos.y, ogPos.z + Random.Range(-0.2f, 0.2f));
 				cool -= ec.EnvironmentTimeScale * Time.deltaTime;
 				yield return null;
 			}
@@ -120,6 +126,11 @@ namespace BBTimes.CustomContent.Objects
 
 			blockCollider.enabled = false;
 			ec.BlockAllDirs(squishPos, false);
+			while (squishedEntities.Count != 0)
+			{
+				squishedEntities[0].SetFrozen(false);
+				squishedEntities.RemoveAt(0);
+			}
 
 			audMan.QueueAudio(audPrepare);
 			audMan.SetLoop(true);
@@ -155,6 +166,8 @@ namespace BBTimes.CustomContent.Objects
 		float cooldown = Random.Range(5f, 10f);
 		float speed;
 		bool waitingForSquish = true, canSquish = false;
+
+		readonly List<Entity> squishedEntities = [];
 
 		Vector3 ogPos;
 	}

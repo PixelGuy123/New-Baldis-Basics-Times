@@ -1,6 +1,5 @@
 ﻿using BBTimes.Extensions;
 using HarmonyLib;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +16,6 @@ namespace BBTimes.CustomContent.Objects
 				normalVentAudioMan.SetLoop(true);
 			}
 			normalVentAudioMan.maintainLoop = true;
-
 			gasLeakVentAudioMan.maintainLoop = true;
 		}
 
@@ -29,7 +27,7 @@ namespace BBTimes.CustomContent.Objects
 
 			normalVentAudioMan.FlushQueue(true);
 			normalVentAudioMan.SetLoop(false);
-	
+
 			float sprite = 0f;
 			float speed = 0f;
 			while (sprite < ventTexs.Length - 1)
@@ -74,23 +72,30 @@ namespace BBTimes.CustomContent.Objects
 			}
 
 			renderer.material.mainTexture = ventTexs[0];
+			var nVent = nextVents[Random.Range(0, nextVents.Count)];
+			float ventBlockCooldown = Vector3.Distance(transform.position, nVent.transform.position) / 6f;
 
-			SwitchVent();
+			while (ventBlockCooldown > 0f)
+			{
+				ventBlockCooldown -= Time.deltaTime * ec.EnvironmentTimeScale * 2f;
+				yield return null;
+			}
+
+			nVent.BlockMe();
+
 			yield break;
 		}
 
 		private void BlockAllDirections(bool block)
 		{
+			if (block)
+				cooldown = Random.Range(minCooldown, maxCooldown);
 			Enabled = block;
 			gasLeakVentAudioMan.SetLoop(true);
 			ec.BlockAllDirs(transform.position, block);
 			colliders.Do(x => x.enabled = block);
-			if (block)
-				cooldown = UnityEngine.Random.Range(minCooldown, maxCooldown);
-			
-		}
 
-		private void SwitchVent() => nextVents[UnityEngine.Random.Range(0, nextVents.Count)].BlockMe();
+		}
 
 		private void Update()
 		{
@@ -100,17 +105,32 @@ namespace BBTimes.CustomContent.Objects
 
 			if (cooldown <= 0f)
 			{
+				while (touchedEntity.Count != 0)
+				{
+					touchedEntity[0].ExternalActivity.moveMods.Remove(moveMod);
+					touchedEntity.RemoveAt(0);
+				}
 				BlockAllDirections(false);
 				animation = StartCoroutine(UnBlockAnimation());
-			}	
+			}
 		}
 
-		private void OnTriggerStay(Collider other)
+		private void OnTriggerEnter(Collider other)
 		{
 			var entity = other.GetComponent<Entity>();
 			if (entity == null) return;
 
-			entity.AddForce(new((entity.transform.position - transform.position).normalized, 5f, -5f));
+			entity.AddForce(new((entity.transform.position - transform.position).normalized, 19f, -19f));
+			touchedEntity.Add(entity);
+			entity.ExternalActivity.moveMods.Add(moveMod);
+		}
+
+		private void OnTriggerExit(Collider other)
+		{
+			var entity = other.GetComponent<Entity>();
+			if (entity == null || !touchedEntity.Contains(entity)) return;
+			touchedEntity.Remove(entity);
+			entity.ExternalActivity.moveMods.Remove(moveMod);
 		}
 
 		public void DisableVent(bool disable)
@@ -141,6 +161,9 @@ namespace BBTimes.CustomContent.Objects
 
 		Coroutine animation;
 
+		readonly List<Entity> touchedEntity = [];
+		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
+
 		internal List<Vent> nextVents = [];
 
 		internal EnvironmentController ec;
@@ -163,6 +186,6 @@ namespace BBTimes.CustomContent.Objects
 		[SerializeField]
 		internal PropagatedAudioManager normalVentAudioMan, gasLeakVentAudioMan;
 
-		const float minCooldown = 25f, maxCooldown = 40f, emissionRate = 75f;
+		const float minCooldown = 10f, maxCooldown = 25f, emissionRate = 75f;
 	}
 }

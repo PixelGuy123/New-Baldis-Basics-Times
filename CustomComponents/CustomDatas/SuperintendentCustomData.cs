@@ -14,7 +14,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			base.SetupPrefab();
 			var s = (Superintendent)Npc;
 			s.audMan = s.GetComponent<AudioManager>();
-			s.data = this;
+			s.audOverHere = soundObjects[0];
 		}
 	}
 }

@@ -61,11 +61,6 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				int max = lastFloor ? 3 : 8;
 				int start = isFirstFloor ? 0 : -8;
 
-#if CHEAT
-				max = 0;
-				start = 0; // Don't make me blind
-#endif
-
 				foreach (var dir in dirs)
 				{
 					for (int i = start; i <= max; i++)

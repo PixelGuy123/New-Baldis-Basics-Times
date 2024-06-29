@@ -7,25 +7,34 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public override void Build(LevelBuilder builder, System.Random rng)
 		{
 			base.Build(builder, rng);
+
 			foreach (var poster in posters)
 			{
-				var cells = room.GetTilesOfShape([TileShape.Single, TileShape.Corner], true);
+				var cells = room.AllTilesNoGarbage(false, true);
 				for (int i = 0; i < cells.Count; i++)
-				{
-					if (!cells[i].HasFreeWall)
-					{
-						cells.RemoveAt(i);
-						i--;
-					}
-				}
+					if (cells[i].shape != TileShape.Single && cells[i].shape != TileShape.Corner)
+						cells.RemoveAt(i--);
+
+
 				if (cells.Count == 0)
 					break;
-				var cell = cells[rng.Next(cells.Count)];
-				room.ec.BuildPoster(poster, cell, cell.RandomUncoveredDirection(rng));
+
+				while (cells.Count > 0)
+				{
+					int idx = rng.Next(cells.Count);
+					var dirs = cells[idx].AllWallDirections;
+					if (dirs.Count != 0)
+					{
+						room.ec.BuildPoster(poster, cells[idx], dirs[rng.Next(dirs.Count)]);
+						break;
+					}
+					cells.RemoveAt(idx);
+				}
 			}
+
 		}
 
 		[SerializeField]
-		public PosterObject[] posters = [];
+		internal PosterObject[] posters = [];
 	}
 }

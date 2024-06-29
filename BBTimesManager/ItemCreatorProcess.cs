@@ -7,6 +7,7 @@ using MTM101BaldAPI.Registers;
 using PixelInternalAPI;
 using BBTimes.Plugin;
 using MTM101BaldAPI.ObjectCreation;
+using BBTimes.CustomContent.Objects;
 
 namespace BBTimes.Manager
 {
@@ -21,7 +22,7 @@ namespace BBTimes.Manager
 			// 3 - END
 			ItemObject item;
 
-
+		
 			// Hammer
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Hammer>()
@@ -362,6 +363,7 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 54 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 20 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
+			EventMachine.AddItemToTrigger(item.itemType);
 
 			// Hardhat
 			item = new ItemBuilder(plug.Info)

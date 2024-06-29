@@ -159,8 +159,11 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void CancelTargetGrab()
 		{
-			target.SetHeight(entityBaseHeight);
-			SetTarget(true);
+			if (target)
+			{
+				target.SetHeight(entityBaseHeight);
+				SetTarget(true);
+			}
 			target = null;
 		}
 

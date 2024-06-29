@@ -6,7 +6,7 @@ namespace BBTimes.Extensions.ObjectCreationExtensions
 	{
 		public static GameObject CreateCube(Texture2D tex, bool useUVMap = true)
 		{
-			var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+			var cube = CreatePrimitiveObject(PrimitiveType.Cube, tex);
 
 			/*
 			 * Mesh script made thanks for Ilkinulas (http://ilkinulas.github.io/development/unity/2016/05/06/uv-mapping.html)
@@ -22,25 +22,19 @@ namespace BBTimes.Extensions.ObjectCreationExtensions
 				mesh.RecalculateNormals();
 			}
 
-			var renderer = cube.GetComponent<MeshRenderer>(); // Put right material
-			renderer.material = defaultMaterial;	
-			renderer.material.mainTexture = tex;
-
 			return cube;
 		}
 
-		public static bool TryCreateCube(Texture2D tex, out GameObject cube)
+		public static GameObject CreatePrimitiveObject(PrimitiveType type, Texture2D tex) =>
+			GameObject.CreatePrimitive(type).SetObjectMat(tex);
+		
+
+		static GameObject SetObjectMat(this GameObject obj, Texture2D tex)
 		{
-			try
-			{
-				cube = CreateCube(tex);
-				return true;
-			}
-			catch
-			{
-				cube = null;
-			}
-			return false;
+			var r = obj.GetComponent<MeshRenderer>();
+			r.material = defaultMaterial;
+			r.material.mainTexture = tex;
+			return obj;
 		}
 
 		static readonly Vector3[] vertices = [

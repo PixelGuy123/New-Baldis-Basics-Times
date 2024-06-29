@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 // using System.Reflection;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace BBTimes.Extensions
 {
@@ -111,6 +112,16 @@ namespace BBTimes.Extensions
 			c.isTrigger = isTrigger;
 			return c;
 		}
+		public static NavMeshObstacle AddNavObstacle(this GameObject g, Vector3 size) =>
+			g.AddNavObstacle(Vector3.zero, size);
+		public static NavMeshObstacle AddNavObstacle(this GameObject g, Vector3 center, Vector3 size)
+		{
+			var nav = g.AddComponent<NavMeshObstacle>();
+			nav.center = center;
+			nav.size = size;
+			nav.carving = true;
+			return nav;
+		}
 
 		public static WeightedTexture2D ToWeightedTexture(this WeightedSelection<Texture2D> t) =>
 			new() { selection = t.selection, weight = t.weight };
@@ -177,10 +188,12 @@ namespace BBTimes.Extensions
 		public static void BlockAllDirs(this EnvironmentController ec, IntVector2 pos, bool block)
 		{
 			ec.FreezeNavigationUpdates(true);
-			foreach (var dir in Directions.All())
+			var origin = ec.CellFromPosition(pos);
+			for (int i = 0; i < 4; i++)
 			{
+				var dir = (Direction)i;
 				var cell = ec.CellFromPosition(pos + dir.ToIntVector2());
-				if (!cell.Null)
+				if (origin.ConstNavigable(dir))
 					cell.Block(dir.GetOpposite(), block);
 			}
 			ec.FreezeNavigationUpdates(false);

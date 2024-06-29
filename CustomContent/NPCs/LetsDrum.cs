@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using BBTimes.CustomComponents.CustomDatas;
 using System.Collections;
 
 namespace BBTimes.CustomContent.NPCs
@@ -7,16 +6,16 @@ namespace BBTimes.CustomContent.NPCs
 	public class LetsDrum : NPC
 	{
 		[SerializeField]
-		internal LetsDrumCustomData dat;
+		internal SoundObject[] soundObjects;
 
 		[SerializeField]
-		public AudioManager musicMan;
+		internal AudioManager musicMan;
 
 		[SerializeField]
-		public AudioManager voiceMan;
+		internal AudioManager voiceMan;
 
 		[SerializeField]
-		public AudioManager superLoudMan;
+		internal AudioManager superLoudMan;
 
 		const float speed = 15f;
 
@@ -70,13 +69,13 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			superLoudMan.maintainLoop = true;
 			superLoudMan.SetLoop(true);
-			superLoudMan.QueueAudio(dat.soundObjects[0]);
+			superLoudMan.QueueAudio(soundObjects[0]);
 			
 			StartCoroutine(Annoyance());
 		}
 
 		public void WannaDrum() =>
-			voiceMan.PlaySingle(dat.soundObjects[2]);
+			voiceMan.PlaySingle(soundObjects[2]);
 	}
 
 	internal class LetsDrum_Wandering(LetsDrum d) : NpcState(d)

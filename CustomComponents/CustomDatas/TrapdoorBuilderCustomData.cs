@@ -4,8 +4,8 @@ using BBTimes.CustomContent.Builders;
 using BBTimes.Extensions;
 using BBTimes.CustomContent.Objects;
 using PixelInternalAPI.Classes;
-using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
+using MTM101BaldAPI;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
@@ -29,13 +29,13 @@ namespace BBTimes.CustomComponents.CustomDatas
 			
 
 			var text = new GameObject("TrapdoorText").AddComponent<TextMeshPro>();
+			text.gameObject.layer = LayerStorage.billboardLayer;
 			text.transform.SetParent(trapdoorholder.transform);
 			text.transform.localPosition = Vector3.up * 0.02f;
 			text.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			text.autoSizeTextContainer = true;
-			text.text = "10";
 			text.alignment = TextAlignmentOptions.Center;
-			text.gameObject.layer = LayerStorage.billboardLayer;
+			text.rectTransform.offsetMin = new(-4f, -3.99f);
+			text.rectTransform.offsetMax = new(4f, 4.01f);
 			trapdoorholder.text = text;
 
 			var collider = trapdoorholder.gameObject.AddComponent<BoxCollider>();

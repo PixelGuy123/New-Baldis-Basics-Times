@@ -1,4 +1,5 @@
 ﻿using BBTimes.CustomContent.CustomItems;
+using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			Sprite[] sprites = new Sprite[5];
 			for (int i = 0; i < sprites.Length; i++)
-				sprites[i] = GetSprite(25f, $"basketball{i}.png");
+				sprites[i] = BBTimesManager.man.Get<Sprite>($"basketBall{i}");
 			return sprites;
 		}
 
@@ -36,9 +37,10 @@ namespace BBTimes.CustomComponents.CustomDatas
 			comp.audThrow = soundObjects[0];
 			comp.audHit = soundObjects[1];
 			comp.audBong = soundObjects[2];
-			comp.spriteAnim = storedSprites;
+			comp.audPop = GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop");
+			comp.spriteAnim = [.. storedSprites];
 
-			comp.renderer = rendererBase.GetComponent<SpriteRenderer>();
+			comp.renderer = rendererBase;
 		}
 	}
 }

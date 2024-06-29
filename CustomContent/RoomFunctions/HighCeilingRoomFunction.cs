@@ -12,8 +12,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 	{
 		public override void Build(LevelBuilder builder, System.Random rng)
 		{
-			if (height < 1)
-				throw new System.InvalidOperationException("Height set is less than 2");
+			base.Build(builder, rng);
+			if (ceilingHeight < 1)
+				return;
 
 			if (rng.NextDouble() > chanceToHappen)
 				return;
@@ -26,7 +27,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			else
 				room.lightPre = BBTimesManager.EmptyGameObject.transform; // Literally an empty gameObject
 
-			base.Build(builder, rng);
+			
 			var planeHolder = new GameObject("PlaneCover");
 			planeHolder.transform.SetParent(room.transform);
 			planeHolder.transform.localPosition = Vector3.zero;
@@ -35,9 +36,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			int offset = 0;
 
-			for (int i = 1; i <= height; i++)
+			for (int i = 1; i <= ceilingHeight; i++)
 			{
-				if (i > height - customWallProximityToCeil.Length)
+				if (i > ceilingHeight - customWallProximityToCeil.Length)
 					fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, customWallProximityToCeil[offset++], ObjectCreationExtension.transparentTex);
 
 
@@ -75,7 +76,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 				{
 					if (!obj.name.StartsWith(targetTransformNamePrefix))
 						continue;
-					for (int i = 1; i <= height; i++)
+					for (int i = 1; i <= ceilingHeight; i++)
 					{
 						var clone = Instantiate(obj, objects);
 						clone.name = obj.name;
@@ -101,7 +102,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			foreach (var c in room.cells)
 			{
 				var tile = Instantiate(c.Tile, planeHolder.transform);
-				tile.transform.position = c.FloorWorldPosition + (Vector3.up * (height * LayerStorage.TileBaseOffset));
+				tile.transform.position = c.FloorWorldPosition + (Vector3.up * (ceilingHeight * LayerStorage.TileBaseOffset));
 				tile.MeshRenderer.material.mainTexture = fullTex;
 				c.AddRenderer(tile.MeshRenderer);
 			}
@@ -125,16 +126,13 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public float targetTransformOffset = 1f;
 
 		[SerializeField]
-		public int height = 1;
+		public int ceilingHeight = 1;
 
 		[SerializeField]
 		public bool hasCeiling = true;
 
 		[SerializeField]
-		public Transform bigObjects = null; // Note: MAKE BIG OBJECTS
-
-		[SerializeField]
-		public Transform customLight;
+		public Transform customLight = null;
 
 		[SerializeField]
 		public float chanceToHappen = 1f;
@@ -145,6 +143,6 @@ namespace BBTimes.CustomContent.RoomFunctions
 		[SerializeField]
 		public Texture2D[] customWallProximityToCeil = [];
 
-		Dictionary<Cell, int> ogCellBins = [];
+		readonly Dictionary<Cell, int> ogCellBins = [];
 	}
 }

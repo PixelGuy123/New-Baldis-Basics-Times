@@ -27,8 +27,10 @@ namespace BBTimes.CustomContent.Objects
 			nextDirections = dirs;
 			maxDistance = maximumDistance;
 			basePos = ec.CellFromPosition(transform.position).position;
-			UpdateVision();
 		}
+
+		void Start() =>
+			UpdateVision();
 
 		void Update()
 		{

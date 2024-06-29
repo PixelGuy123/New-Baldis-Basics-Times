@@ -33,7 +33,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			base.SetupPrefab();
 			var stunly = (Stunly)Npc;
-			stunly.dat = this;
+			stunly.allSprites = [.. storedSprites];
+			stunly.allSounds = [.. soundObjects];
 
 			stunly.noiseMan = GetComponent<PropagatedAudioManager>();
 

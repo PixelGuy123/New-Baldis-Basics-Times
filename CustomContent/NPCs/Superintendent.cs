@@ -1,6 +1,4 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
-using BBTimes.Manager;
-using PixelInternalAPI.Classes;
+﻿using PixelInternalAPI.Classes;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,7 +15,7 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public void CalloutBaldi(PlayerManager p)
 		{
-			audMan.PlaySingle(data.soundObjects[0]);
+			audMan.PlaySingle(audOverHere);
 			ec.MakeNoise(p.transform.position, noiseVal);
 		}
 		public void InvertDir()
@@ -32,7 +30,7 @@ namespace BBTimes.CustomContent.NPCs
 
 
 		[SerializeField]
-		internal SuperintendentCustomData data;
+		internal SoundObject audOverHere;
 
 		[SerializeField]
 		internal AudioManager audMan;
@@ -40,7 +38,9 @@ namespace BBTimes.CustomContent.NPCs
 		const int noiseVal = 107;
 		const float speed = 30f;
 
-		public static readonly List<RoomCategory> allowedRooms = [RoomCategory.Class, RoomCategory.Office, RoomCategory.Special, RoomCategory.FieldTrip, RoomCategory.Mystery];
+		public static void AddAllowedRoom(RoomCategory room) => allowedRooms.Add(room);
+
+		internal static readonly HashSet<RoomCategory> allowedRooms = [RoomCategory.Class, RoomCategory.Office, RoomCategory.Special, RoomCategory.FieldTrip, RoomCategory.Mystery];
 	}
 
 	internal class Superintendent_WanderAround(Superintendent s) : NpcState(s)

@@ -38,7 +38,7 @@ namespace BBTimes.CustomContent.Builders
 				ecData.Squishers.Add(squ);
 				if (cRng.NextDouble() > 0.7f)
 					GameButton.BuildInArea(ec, spots[idx].position, spots[idx].position, cRng.Next(4, 7), squ.gameObject, buttonPre, cRng);
-
+				spots[idx].HardCover(CellCoverage.Up);
 				spots.RemoveAt(idx);
 			}
 		}

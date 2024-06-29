@@ -8,7 +8,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public override void Build(LevelBuilder builder, System.Random rng)
 		{
 			if (window == null)
-				throw new System.ArgumentNullException("Missing window from RandomWindowFunction");
+				return;
 
 			base.Build(builder, rng);
 			List<Cell> tilesOfShape = room.GetTilesOfShape([TileShape.Single, TileShape.Corner], true);

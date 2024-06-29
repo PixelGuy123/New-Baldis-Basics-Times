@@ -11,13 +11,12 @@ using HarmonyLib;
 using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using PixelInternalAPI;
 
 namespace BBTimes.Manager
 {
 	internal static partial class BBTimesManager
 	{
-		static void CreateRoomFunctions()
+		static void CreateRoomFunctions() // This is specifically for base game rooms, custom rooms can add their room functions by other ways
 		{
 			// Random Window Function for cafe
 			AddFunctionToEveryRoom<RandomWindowFunction>(CafeteriaPrefix).window = CreatorExtensions.CreateWindow("classicWindow", // Little tricks to make this function
@@ -33,14 +32,14 @@ namespace BBTimes.Manager
 
 			// High ceiling function
 			var highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(CafeteriaPrefix);
-			highCeil.height = 5;
+			highCeil.ceilingHeight = 5;
 			highCeil.customCeiling = ObjectCreationExtension.blackTex;
 			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "rooms", "Cafeteria", "wallFadeInBlack.png"))];
 			highCeil.chanceToHappen = 0.8f;
 			highCeil.customLight = man.Get<GameObject>("prefab_cafeHangingLight").transform;
 
 			highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(LibraryPrefix);
-			highCeil.height = 1;
+			highCeil.ceilingHeight = 1;
 			highCeil.targetTransformNamePrefix = "Bookshelf";
 			highCeil.targetTransformOffset = 9f;
 			// highCeil.customWallProximityToCeil = [Resources.FindObjectsOfTypeAll<RoomAsset>().First(x => x.name.StartsWith("Library")).wallTex];

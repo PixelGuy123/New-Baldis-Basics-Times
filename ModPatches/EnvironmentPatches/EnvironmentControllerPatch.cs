@@ -49,6 +49,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				}
 			}
 		}
+
+		
     }
 
     public readonly struct FindPathData(TileShape[] shapesToExclude, RoomType[] limitToRoomTypes, bool persistent = false)

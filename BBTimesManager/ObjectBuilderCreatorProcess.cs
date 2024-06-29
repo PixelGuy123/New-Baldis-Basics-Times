@@ -27,8 +27,8 @@ namespace BBTimes.Manager
 			vent.maxAmount = 5;
 			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 65 });
 			vent = vent.DuplicatePrefab();
-			vent.minAmount = 5;
-			vent.maxAmount = 7;
+			vent.minAmount = 4;
+			vent.maxAmount = 6;
 			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 105 });
 			vent = vent.DuplicatePrefab();
 			vent.minAmount = 4;
@@ -53,8 +53,8 @@ namespace BBTimes.Manager
 			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 35 });
 
 			trapdoor = trapdoor.DuplicatePrefab();
-			trapdoor.minAmount = 4;
-			trapdoor.maxAmount = 7;
+			trapdoor.minAmount = 3;
+			trapdoor.maxAmount = 5;
 
 			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 55 });
 

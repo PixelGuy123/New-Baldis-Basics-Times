@@ -17,6 +17,13 @@ namespace BBTimes.CustomContent.CustomItems
 					math.Completed(pm.playerNumber, true, math);
 					return true;
 				}
+				var machine = hit.transform.GetComponent<IItemAcceptor>();
+				if (machine != null && machine.ItemFits(item))
+				{
+					machine.InsertItem(pm, pm.ec);
+					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audScrew);
+					return true;
+				}
 			}
 
 			return false;
@@ -24,5 +31,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal SoundObject audScrew;
+
+		[SerializeField]
+		internal Items item;
 	}
 }

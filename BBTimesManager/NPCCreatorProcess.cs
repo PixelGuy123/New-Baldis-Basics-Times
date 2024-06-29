@@ -258,6 +258,24 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 28 });
+
+			// Dribble
+			npc = new NPCBuilder<Dribble>(plug.Info)
+				.SetMinMaxAudioDistance(85f, 135f)
+				.SetEnum("Dribble")
+				.SetName("Dribble")
+				.AddLooker()
+				.SetMaxSightDistance(65)
+				.AddTrigger()
+				.Build()
+				.SetupNPCData<DribbleCustomData>("Dribble", "PST_Dribble_Name", "PST_Dribble_Desc", -0.7f)
+				.MarkAsReplacement(25, Character.DrReflex);
+
+			npc.spawnableRooms.Clear();
+			npc.Navigator.SetRoomAvoidance(false);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
 		}
 
 		
