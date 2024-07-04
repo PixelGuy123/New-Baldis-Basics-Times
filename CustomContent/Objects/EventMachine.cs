@@ -10,7 +10,7 @@ namespace BBTimes.CustomContent.Objects
 
 		public void InsertItem(PlayerManager pm, EnvironmentController ec)
 		{
-			while (ec.CurrentEventTypes.Count > 0)
+			while (ec.CurrentEventTypes.Count != 0)
 				ec.GetEvent(ec.CurrentEventTypes[0]).End();
 			_isDead = true;
 			spriteToChange.sprite = sprDead;

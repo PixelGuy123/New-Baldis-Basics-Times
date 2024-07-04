@@ -83,7 +83,7 @@ namespace BBTimes.CustomContent.Objects
 		void UpdateVision()
 		{
 			audMan.PlaySingle(audTurn);
-			while (indicators.Count > 0)
+			while (indicators.Count != 0)
 			{
 				Destroy(indicators[0].gameObject);
 				indicators.RemoveAt(0);

@@ -38,7 +38,7 @@ namespace BBTimes.CustomContent.CustomItems
 			entity.UpdateInternalMovement(dir * speed * ec.EnvironmentTimeScale);
 
 			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
-			if (lifeTime < 0f || !ec.CellFromPosition(transform.position).TileMatches(targetRoom))
+			if (lifeTime < 0f || (targetRoom && !ec.CellFromPosition(transform.position).TileMatches(targetRoom)))
 			{
 				hasHit = true;
 				renderer.enabled = false;

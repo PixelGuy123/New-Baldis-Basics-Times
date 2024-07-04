@@ -82,6 +82,7 @@ namespace BBTimes.CustomContent.Objects
 			}
 
 			nVent.BlockMe();
+			
 
 			yield break;
 		}

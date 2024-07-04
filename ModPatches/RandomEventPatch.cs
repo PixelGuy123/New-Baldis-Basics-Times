@@ -13,11 +13,13 @@ namespace BBTimes.ModPatches
 			if (__instance.GetType() == typeof(FloodEvent))
 			{
 				foreach (var r in ___ec.rooms)
+				{
 					foreach (var door in r.doors)
 					{
 						door.Open(true, false);
 						door.OpenTimed(Random.Range(3f, 5f), false);
 					}
+				}
 			}
 		}
 	}

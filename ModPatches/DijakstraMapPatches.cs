@@ -13,11 +13,10 @@ namespace BBTimes.ModPatches
 		private static void CheckForNullTargets(ref List<Transform> ___targets)
 		{
 			for (int i = 0; i < ___targets.Count; i++)
+			{
 				if (___targets[i] == null)
-				{
-					___targets.RemoveAt(i);
-					i--;
-				}
+					___targets.RemoveAt(i--);
+			}
 		}
 	}
 }

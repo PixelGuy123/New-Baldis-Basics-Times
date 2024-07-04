@@ -78,13 +78,14 @@ namespace BBTimes.Manager
 		{
 			// Some materials
 			ObjectCreationExtension.defaultMaterial = GenericExtensions.FindResourceObjectByName<Material>("LockerTest"); // Actually a good material, has even lightmap
-			ObjectCreationExtension.defaultDustMaterial = GenericExtensions.FindResourceObjectByName<Material>("DustTest"); // Actually a good material, has even lightmap
+			ObjectCreationExtension.defaultDustMaterial = GenericExtensions.FindResourceObjectByName<Material>("DustTest");
 			ObjectCreationExtension.defaultCubemap = GenericExtensions.FindResourceObjectByName<Cubemap>("Cubemap_DayStandard");
 			ObjectCreationExtension.mapMaterial = GenericExtensions.FindResourceObjectByName<MapIcon>("Icon_Prefab").spriteRenderer.material;
 			GameExtensions.detentionUiPre = GenericExtensions.FindResourceObject<DetentionUi>();
 			man.Add("buttonPre", GenericExtensions.FindResourceObject<RotoHallBuilder>().buttonPre);
 			man.AddFromResources<StandardDoorMats>();
 			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
+			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
 
 
 			// Make a transparent texture
@@ -253,6 +254,7 @@ namespace BBTimes.Manager
 		public readonly List<WeightedRoomAsset> Classrooms = [];
 		public readonly List<WeightedRoomAsset> Faculties = [];
 		public readonly List<WeightedRoomAsset> Offices = [];
+		public readonly Dictionary<WeightedRoomAsset, bool> Halls = [];
 
 
 		// Object Builders

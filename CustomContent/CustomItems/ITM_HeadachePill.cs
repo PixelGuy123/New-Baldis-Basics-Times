@@ -8,10 +8,10 @@ namespace BBTimes.CustomContent.CustomItems
 		public override bool Use(PlayerManager pm)
 		{
 			Destroy(gameObject);
-			if (Stunly.affectedByStunly.Count > 0)
+			if (Stunly.affectedByStunly.Count != 0)
 			{
 				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audSwallow);
-				while (Stunly.affectedByStunly.Count > 0)
+				while (Stunly.affectedByStunly.Count != 0)
 					Stunly.affectedByStunly[0].CancelStunEffect();				
 				return true;
 			}

@@ -10,25 +10,38 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
         [HarmonyPatch("GetNavNeighbors")]
         [HarmonyPostfix]
-        private static void FixTiles(ref List<Cell> list)
+        private static void FixTiles(ref List<Cell> list) // A very *kinda invasive* specific patch to allow nav neighbors to search avoiding unwanted spots
         {
-			if (data.shapes == null) // it can't be null, right?
+			if (shapes == null) // it can't be null, right?
 				return;
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (data.LimitToRoomTypes.Length > 0 && !data.LimitToRoomTypes.Contains(list[i].room.type) || data.shapes.Length > 0 && data.shapes.Contains(list[i].shape))
+                if ((limits.Length != 0 && !limits.Contains(list[i].room.type)) || (shapes.Length != 0 && shapes.Contains(list[i].shape)))
                 {
                     list.RemoveAt(i);
                     i--;
                 }
             }
-            if (!data.Persistent)
-                data = new([], [], false);
+			if (!persistentData)
+				ResetData();
         }
-		public static void ResetData() => data = new(null, null, false);
+		public static void SetNewData(TileShape[] shapes, RoomType[] limitToRoomTypes, bool persistent)
+		{
+			EnvironmentControllerPatch.shapes = shapes;
+			limits = limitToRoomTypes;
+			persistentData = persistent;
+		}
+		public static void ResetData()
+		{
+			shapes = null;
+			limits = null;
+			persistentData = false;
+		}
 
-        public static FindPathData data = new([], [], false);
+		static TileShape[] shapes = null;
+		static RoomType[] limits = null;
+		static bool persistentData = false;
 
 
 		[HarmonyPatch("InitializeLighting")]
@@ -51,14 +64,5 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		}
 
 		
-    }
-
-    public readonly struct FindPathData(TileShape[] shapesToExclude, RoomType[] limitToRoomTypes, bool persistent = false)
-    {
-        public readonly RoomType[] LimitToRoomTypes = limitToRoomTypes;
-
-        public readonly TileShape[] shapes = shapesToExclude;
-
-        public readonly bool Persistent = persistent;
     }
 }

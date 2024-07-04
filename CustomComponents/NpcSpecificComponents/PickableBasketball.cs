@@ -137,7 +137,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		EnvironmentController ec;
 		PlayerManager expectedPlayer;
 		RoomController expectedRoom;
-		List<Entity> affectedEntities = [];
+		readonly List<Entity> affectedEntities = [];
 		float speed = 25f;
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.7f);
 

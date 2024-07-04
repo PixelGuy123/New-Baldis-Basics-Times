@@ -26,7 +26,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Despawn()
 		{
 			base.Despawn();
-			while (eletricities.Count > 0)
+			while (eletricities.Count != 0)
 				DestroyLastEletricity();
 			
 		}

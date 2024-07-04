@@ -11,7 +11,6 @@ namespace BBTimes.Extensions
 {
 	public static class GameExtensions
 	{
-
 		//static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
 		//static readonly FieldInfo funcContainer_funcs = AccessTools.Field(typeof(RoomFunctionContainer), "functions");
 
@@ -72,7 +71,7 @@ namespace BBTimes.Extensions
 		public static IEnumerator LightChanger(this EnvironmentController ec, List<Cell> lights, bool on, float delay)
 		{
 			float time = delay;
-			while (lights.Count > 0)
+			while (lights.Count != 0)
 			{
 				while (time > 0f)
 				{

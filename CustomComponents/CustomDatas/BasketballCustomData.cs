@@ -11,7 +11,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override SoundObject[] GenerateSoundObjects() =>
 		[GetSoundNoSub("throw.wav", SoundType.Effect), 
 		GetSound("punch.wav", "BB_Hit", SoundType.Voice, Color.white),
-		GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white)];
+		GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white),
+		BBTimesManager.man.Get<SoundObject>("audPop")];
 
 		protected override Sprite[] GenerateSpriteOrder()
 		{
@@ -37,7 +38,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			comp.audThrow = soundObjects[0];
 			comp.audHit = soundObjects[1];
 			comp.audBong = soundObjects[2];
-			comp.audPop = GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop");
+			comp.audPop = soundObjects[3];
 			comp.spriteAnim = [.. storedSprites];
 
 			comp.renderer = rendererBase;

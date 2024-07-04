@@ -12,21 +12,11 @@ namespace BBTimes.CustomContent.Builders
 		{
 			base.Build(ec, builder, room, cRng);
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
-			List<List<Cell>> list = ec.FindHallways();
-			for (int i = 0; i < list.Count; i++)
-			{
-				if (list[i].Count < 6)
-				{
-					list.RemoveAt(i);
-					i--;
-				}
-			}
 
-			var t = new List<Cell>();
-			for (int i = 0; i < list.Count; i++)
-				for (int z = 0; z < list[i].Count; z++)
-					if (list[i][z].shape == TileShape.Corner || list[i][z].shape == TileShape.End)
-						t.Add(list[i][z]);
+			var t = room.AllTilesNoGarbage(false, false);
+			for (int i = 0; i < t.Count; i++)
+				if ((t[i].shape != TileShape.Corner && t[i].shape != TileShape.End) || t[i].open)
+					t.RemoveAt(i--);
 				
 			
 			

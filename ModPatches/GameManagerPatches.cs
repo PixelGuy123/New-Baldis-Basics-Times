@@ -252,13 +252,13 @@ namespace BBTimes.ModPatches
 				float cooldown = fireCooldown;
 				float maxCooldown = fireCooldown;
 				var cs = ___ec.AllTilesNoGarbage(false, true);
-				while (cs.Count > 0)
+				while (cs.Count != 0)
 				{
 					cooldown -= Time.deltaTime * ___ec.EnvironmentTimeScale;
 					if (cooldown <= 0f)
 					{
 						var c = Random.Range(0, cs.Count);
-						maxCooldown -= ___ec.EnvironmentTimeScale * 0.5f;
+						maxCooldown -= ___ec.EnvironmentTimeScale * 1.2f;
 						if (maxCooldown < 0.1f)
 							maxCooldown = 0.1f; // just a limit
 

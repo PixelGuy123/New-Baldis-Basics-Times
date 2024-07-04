@@ -60,7 +60,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		void OnDestroy()
 		{
-			while (mods.Count > 0)
+			while (mods.Count != 0)
 			{
 				mods[0].moveMods.Remove(moveMod);
 				mods.RemoveAt(0);

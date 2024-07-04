@@ -52,7 +52,7 @@ namespace BBTimes.CustomContent.Builders
 				for (int i = 0; i < vents.Count; i++)
 				{
 					if (vents[i] == vent) continue; // Not make a path to itself of course
-					EnvironmentControllerPatch.data = new([TileShape.Closed], [RoomType.Hall], true); // Limit to only hallways
+					EnvironmentControllerPatch.SetNewData([TileShape.Closed], [RoomType.Hall], true); // Limit to only hallways
 					ec.FindPath(center, ec.CellFromPosition(vents[i].transform.position), PathType.Const, out var path, out bool success);
 					EnvironmentControllerPatch.ResetData();
 					if (!success) continue;
@@ -127,7 +127,7 @@ namespace BBTimes.CustomContent.Builders
 				for (int i = 0; i < vents.Count; i++)
 				{
 					if (vents[i] == vent) continue; // Not make a path to itself of course
-					EnvironmentControllerPatch.data = new([TileShape.Closed], [RoomType.Hall], true); // Limit to only hallways
+					EnvironmentControllerPatch.SetNewData([TileShape.Closed], [RoomType.Hall], true); // Limit to only hallways
 					ec.FindPath(center, ec.CellFromPosition(vents[i].transform.position), PathType.Const, out var path, out bool success);
 					EnvironmentControllerPatch.ResetData();
 					if (!success) continue;

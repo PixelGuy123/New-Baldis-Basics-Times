@@ -21,12 +21,19 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 			Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
 
-			var grassTex = BBTimesManager.man.Get<Texture2D>("Tex_Grass");
-			var fenceTex = BBTimesManager.man.Get<Texture2D>("Tex_Fence");
+			
 			var plane = Instantiate(BBTimesManager.man.Get<GameObject>("PlaneTemplate"));
 			var renderer = plane.GetComponent<MeshRenderer>();
 			renderer.material.mainTexture = __instance.mainHall.wallTex;
 			DestroyImmediate(plane.GetComponent<MeshCollider>()); // No collision needed
+
+			if (mats.Length == 0) // If Not initialized
+			{
+				mats = [ // to not create a new material each generation
+					new(renderer.material) { mainTexture =  BBTimesManager.man.Get<Texture2D>("Tex_Grass") },
+					new(renderer.material) { mainTexture = BBTimesManager.man.Get<Texture2D>("Tex_Fence") }
+				];
+			}
 
 			var planeCover = new GameObject("PlaneCover");
 			planeCover.transform.SetParent(__instance.transform);
@@ -67,7 +74,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					{
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
-						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * (LayerStorage.TileBaseOffset / 2f - 0.01f)) + (Vector3.up * LayerStorage.TileBaseOffset * i);
+						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.01f)) + (Vector3.up * LayerStorage.TileBaseOffset * i);
 						// t.AddRenderer(p.GetComponent<MeshRenderer>()); // Should keep this on. Because the render is messed up outside school
 					}
 				}
@@ -79,10 +86,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				goto end;
 
 			plane.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-			renderer.material = new(renderer.material)
-			{
-				mainTexture = grassTex
-			}; // Make new instance to not mess up walls
+			// Make new instance to not mess up walls
+			renderer.material = mats[0];
 			plane.name = "GrassPlane";
 			System.Random rng = new(PostRoomCreation.i.controlledRNG.Next());
 
@@ -99,7 +104,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					for (int i = 0; i < amount; i++)
 					{
 						var d = Instantiate(decorations[rng.Next(decorations.Length)], planeCover.transform);
-						d.transform.localPosition = t.FloorWorldPosition + new Vector3((float)rng.NextDouble() * 2f - 1, 0f, (float)rng.NextDouble() * 2f - 1);
+						d.transform.localPosition = t.FloorWorldPosition + new Vector3(((float)rng.NextDouble() * 2f) - 1, 0f, ((float)rng.NextDouble() * 2f) - 1);
 						d.GetComponent<RendererContainer>().renderers.Do(t.AddRenderer); // I didn't know this was valid syntax, thanks compiler!
 					}
 				}
@@ -110,10 +115,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			try
 			{
 
-				renderer.material = new(renderer.material)
-				{
-					mainTexture = fenceTex
-				};
+				renderer.material = mats[1];
 				plane.name = "FencePlane";
 				plane.transform.localRotation = Quaternion.identity;
 
@@ -127,7 +129,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
-						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * (LayerStorage.TileBaseOffset / 2f - 0.01f));
+						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.01f));
 						t.AddRenderer(p.GetComponent<MeshRenderer>());
 						//p.SetActive(true);
 					}
@@ -139,11 +141,13 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			}
 
 
-			end:
+		end:
 			Destroy(plane);
 
 
 		}
+
+		static Material[] mats = [];
 
 		public static GameObject[] decorations = [];
 	}

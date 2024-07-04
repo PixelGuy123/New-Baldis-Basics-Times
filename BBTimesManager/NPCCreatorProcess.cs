@@ -66,7 +66,7 @@ namespace BBTimes.Manager
 				.IgnoreBelts()
 				//.SetStationary() temporarily broken by the api, so HUAfdH8an8An8anfahsundau8fja8
 				.Build()
-				.SetupNPCData<CrazyClockCustomData>("CrazyClock", "PST_CC_Name", "PST_CC_Desc", -2f);
+				.SetupNPCData<CrazyClockCustomData>("CrazyClock", "PST_CC_Name", "PST_CC_Desc", 0f);
 			//CreatorExtensions.CreateNPC<CrazyClock, CrazyClockCustomData>("CrazyClock", 55f, 90f, [RoomCategory.Hall], [], "PST_CC_Name", "PST_CC_Desc", ignorePlayerOnSpawn:true, ignoreBelts:true, hasTrigger: false, lookerDistance: 55f, grounded: false).AddMeta(plug, NPCFlags.StandardNoCollide).value;
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 20 });
 
@@ -273,6 +273,20 @@ namespace BBTimes.Manager
 
 			npc.spawnableRooms.Clear();
 			npc.Navigator.SetRoomAvoidance(false);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+
+			// Bubbly
+			npc = new NPCBuilder<Bubbly>(plug.Info)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetMinMaxAudioDistance(90f, 110f)
+				.SetEnum("Bubbly")
+				.SetName("Bubbly")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData<BubblyCustomData>("Bubbly", "PST_Bubbly_Name", "PST_Bubbly_Desc", -1.03f)
+				.MarkAsReplacement(55, Character.Cumulo);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });

@@ -57,6 +57,21 @@ namespace BBTimes.Manager
 			floorDatas[1].Events.Add(new() { selection = e, weight = 75 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 25 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 35 });
+
+
+			// Curtains Closed
+			e = new RandomEventBuilder<CurtainsClosedEvent>(plug.Info)
+				.SetEnum("Curtainsclosed")
+				.SetMinMaxTime(30f, 40f)
+				.SetDescription("Event_CurtClosed")
+				.SetName("CurtainsClosed")
+				.Build()
+				.SetupEvent<CurtainsClosedEventCustomData>();
+
+
+			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
+			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 77 });
 		}
 
 		

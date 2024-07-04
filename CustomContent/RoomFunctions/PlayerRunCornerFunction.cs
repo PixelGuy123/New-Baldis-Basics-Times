@@ -93,6 +93,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 				}
 				i++;
 				i %= cornersToGo.Count;
+				yield return null;
 			}
 		}
 

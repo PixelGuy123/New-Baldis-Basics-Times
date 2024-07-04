@@ -215,6 +215,14 @@ namespace BBTimes.Plugin
 				ld.potentialClassRooms = ld.potentialClassRooms.AddRangeToArray([.. floordata.Classrooms]);
 				ld.potentialFacultyRooms = ld.potentialFacultyRooms.AddRangeToArray([.. floordata.Faculties]);
 				ld.potentialOffices = ld.potentialOffices.AddRangeToArray([.. floordata.Offices]);
+				foreach (var fl in floordata.Halls)
+				{
+					if (fl.Value)
+						ld.potentialPostPlotSpecialHalls = ld.potentialPostPlotSpecialHalls.AddToArray(fl.Key);
+					else
+						ld.potentialPrePlotSpecialHalls = ld.potentialPrePlotSpecialHalls.AddToArray(fl.Key);
+
+				}
 
 				foreach (var holder in floordata.SchoolTextures) // Add the school textures
 				{

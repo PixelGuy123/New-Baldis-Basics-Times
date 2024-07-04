@@ -14,9 +14,8 @@ namespace BBTimes.ModPatches.NpcPatches
             IEnumerator WaitToLeave()
             {
 				__instance.Navigator.Entity.SetFrozen(true);
-                Vector3 ogPos = __instance.transform.position;
                 float cooldown = 15f;
-                while (cooldown > 0f && __instance.transform.position == ogPos)
+                while (cooldown > 0f)
                 {
                     cooldown -= __instance.ec.EnvironmentTimeScale * Time.deltaTime;
                     yield return null;
