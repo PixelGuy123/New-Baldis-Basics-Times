@@ -70,7 +70,7 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		internal Sprite closedTrap;
 
-		readonly MovementModifier moveMod = new(Vector3.zero, 0f); // Higher priority than belt managers, lower than Bsodas
+		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
 
 		bool active = false;
 

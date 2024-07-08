@@ -11,6 +11,9 @@ namespace BBTimes.CustomContent.Events
 			base.AfterUpdateSetup();
 			foreach (var window in FindObjectsOfType<Window>())
 			{
+				if (window.aTile.Null || window.bTile.Null) // Avoid these!!
+					continue;
+
 				var curt = Instantiate(curtPre);
 				curt.transform.SetParent(window.aTile.ObjectBase);
 				curt.transform.position = window.transform.position + window.direction.ToVector3() * 5f;

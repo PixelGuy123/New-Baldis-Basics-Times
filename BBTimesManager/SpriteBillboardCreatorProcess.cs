@@ -10,6 +10,7 @@ using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using BBTimes.Extensions;
 using MTM101BaldAPI;
+using BBTimes.Extensions.ObjectCreationExtensions;
 
 namespace BBTimes.Manager
 {
@@ -36,7 +37,7 @@ namespace BBTimes.Manager
 			GenericExtensions.FindResourceObjects<Elevator>().Do((x) =>
 			{
 				var exit = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "Elevator", "ExitSignSprite.png")), 25f)).AddSpriteHolder(8.75f);
-				exit.material.SetTexture("Texture2D_0ebe02d67a8a4acb8705243366af66aa", AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "Elevator", "ExitSign_LightMap.png"))); // Why does it have to be a so fucking long name
+				exit.material.SetTexture("Texture2D_0ebe02d67a8a4acb8705243366af66aa", AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "Elevator", "ExitSign_LightMap.png"))); // Why does it have to be a fucking hash name
 				exit.transform.parent.SetParent(x.transform);
 				exit.transform.parent.localPosition = x.transform.forward * LayerStorage.TileBaseOffset;
 			});
@@ -47,6 +48,10 @@ namespace BBTimes.Manager
 			hangingLight.transform.localScale = Vector3.one * 1.4f;
 
 			man.Add("prefab_cafeHangingLight", hangingLight.transform.parent.gameObject.SetAsPrefab(true));
+
+			// Hanging light for library
+			man.Add("prefab_libraryHangingLight", ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(GenericExtensions.FindResourceObjectByName<Texture2D>("StandardHangingLight"), 25f))
+				.AddSpriteHolder(18.1f).transform.parent.gameObject.SetAsPrefab(true));
 		}
 	}
 }

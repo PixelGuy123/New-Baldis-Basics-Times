@@ -17,9 +17,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 
 				if (cells.Count == 0)
-					break;
+					return;
 
-				while (cells.Count > 0)
+				while (cells.Count != 0)
 				{
 					int idx = rng.Next(cells.Count);
 					var dirs = cells[idx].AllWallDirections;

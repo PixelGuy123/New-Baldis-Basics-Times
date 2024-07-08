@@ -32,7 +32,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			planeHolder.transform.SetParent(room.transform);
 			planeHolder.transform.localPosition = Vector3.zero;
 
-			var fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, room.wallTex, ObjectCreationExtension.transparentTex);
+			var fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, usesSingleCustomWall ? customWallProximityToCeil[0] : room.wallTex, ObjectCreationExtension.transparentTex);
 
 			int offset = 0;
 
@@ -129,7 +129,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public int ceilingHeight = 1;
 
 		[SerializeField]
-		public bool hasCeiling = true;
+		public bool hasCeiling = true, usesSingleCustomWall = false;
 
 		[SerializeField]
 		public Transform customLight = null;

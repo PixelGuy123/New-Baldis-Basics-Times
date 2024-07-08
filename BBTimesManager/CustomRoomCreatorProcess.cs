@@ -1,4 +1,7 @@
-﻿using BBTimes.CustomContent.CustomItems;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBTimes.CustomContent.CustomItems;
+using BBTimes.CustomContent.Misc;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.RoomFunctions;
@@ -12,6 +15,7 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
+using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using PlusLevelLoader;
 using System.Collections.Generic;
@@ -30,7 +34,9 @@ namespace BBTimes.Manager
 			var carpet = GenericExtensions.FindResourceObjectByName<Texture2D>("Carpet");
 			var ceiling = GenericExtensions.FindResourceObjectByName<Texture2D>("CeilingNoLight");
 			var saloonWall = GenericExtensions.FindResourceObjectByName<Texture2D>("SaloonWall");
+			var normWall = GenericExtensions.FindResourceObjectByName<Texture2D>("Wall");
 			var blackTexture = TextureExtensions.CreateSolidTexture(1, 1, Color.black); // It'll be stretched anyways lol
+			var grass = man.Get<Texture2D>("Tex_Grass");
 
 			//***************************************************
 			//***************************************************
@@ -76,7 +82,7 @@ namespace BBTimes.Manager
 			fun.targetPrefabName = "sink";
 			fun.posterPre = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "mirror.png"))]);
 
-			room.Do(x =>
+			room.ForEach(x =>
 			{
 				x.selection.SetPotentialPosters(0f);
 			});
@@ -149,7 +155,7 @@ namespace BBTimes.Manager
 
 			room = GetAllAssets(GetRoomAsset("AbandonedRoom"), lightPre, 50, 0, 250, 45, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("AbandonedRoom", "MapBG_AbandonedRoom.png")));
 			room[0].selection.AddRoomFunctionToContainer<ShowItemsInTheEnd>();
-			room.Do(x =>
+			room.ForEach(x =>
 			{
 				x.selection.SetPotentialPosters(0f);
 			});
@@ -327,7 +333,7 @@ namespace BBTimes.Manager
 
 			sets.container = room[0].selection.roomFunctionContainer;
 
-			room.Do(x =>
+			room.ForEach(x =>
 			{
 				x.selection.wallTex = saloonWall;
 				x.selection.ceilTex = ceiling;
@@ -335,8 +341,147 @@ namespace BBTimes.Manager
 
 			AddAssetsToNpc<Dribble>(room);
 
+			// ************************************************************
+			// ************************************************************
+			// ******************* Storage Room (Sweep) *******************
+			// ************************************************************
+			// ************************************************************
+
+			var sweepCloset = GenericExtensions.FindResourceObject<GottaSweep>().potentialRoomAssets[0].selection;
+
+			ClearNpcAssets<GottaSweep>();
+
+			// Shelf creation
+			var darkWood = Object.Instantiate(man.Get<Texture2D>("woodTexture"));
+			darkWood.name = "Times_darkWood";
+			var shelf = new GameObject("ClosetShelf");
+			shelf.gameObject.AddBoxCollider(Vector3.zero, new(4f, 10f, 15f), false);
+			shelf.gameObject.AddNavObstacle(new(4.2f, 10f, 16.3f));
+			shelf.layer = LayerStorage.ignoreRaycast;
+
+			var shelfBody = ObjectCreationExtension.CreateCube(darkWood.ApplyLightLevel(-25f), false);
+			shelfBody.transform.SetParent(shelf.transform);
+			shelfBody.transform.localPosition = Vector3.up * 4f;
+			shelfBody.transform.localScale = new(4f, 0.7f, 15f);
+			Object.Destroy(shelfBody.GetComponent<Collider>());
+			
+
+			ShelfLegCreator(new(-1.5f, 2.3f, 6.5f));
+			ShelfLegCreator(new(1.5f, 2.3f, -6.5f));
+			ShelfLegCreator(new(-1.5f, 2.3f, -6.5f));
+			ShelfLegCreator(new(1.5f, 2.3f, 6.5f));
+
+			void ShelfLegCreator(Vector3 pos)
+			{
+				var shelfLeg = ObjectCreationExtension.CreatePrimitiveObject(PrimitiveType.Cylinder, blackTexture);
+				shelfLeg.transform.SetParent(shelf.transform);
+				shelfLeg.transform.localPosition = pos;
+				shelfLeg.transform.localScale = new(0.8f, 2.3f, 0.8f);
+				Object.Destroy(shelfLeg.GetComponent<Collider>());
+			}
+
+			shelf.gameObject.AddObjectToEditor();
+
+			room = GetAllAssets(GetRoomAsset("Closet"), sweepCloset.lightPre, sweepCloset.spawnWeight, sweepCloset.minItemValue, sweepCloset.maxItemValue, 100, cont:sweepCloset.roomFunctionContainer);
+			room[0].selection.AddRoomFunctionToContainer<HighCeilingRoomFunction>().ceilingHeight = 1;
+
+			room.ForEach(x => {
+				x.selection.posters = sweepCloset.posters;
+				x.selection.posterChance = sweepCloset.posterChance;
+				x.selection.SetPotentialWindows(sweepCloset.windowChance, sweepCloset.windowObject);
+				x.selection.ceilTex = sweepCloset.ceilTex;
+				x.selection.wallTex = sweepCloset.wallTex;
+				x.selection.florTex = sweepCloset.florTex;
+			});
+
+			AddAssetsToNpc<GottaSweep>(room);
+
+			ClearNpcAssets<ZeroPrize>();
+			AddAssetsToNpc<ZeroPrize>(room);
+
+			// ***********************************************
+			// ***********************************************
+			// ******************* Kitchen *******************
+			// ***********************************************
+			// ***********************************************
+
+			// Kitchen "table"
+			shelf = new GameObject("KitchenCabinet");
+			shelf.gameObject.AddBoxCollider(Vector3.zero, new(10f, 10f, 10f), false);
+			//shelf.gameObject.AddNavObstacle(new(10f, 10f, 10f)); Not required as the player can't go through anyways. This is for guarantee that wandering npcs just don't go through walls after going past these structures
+			shelf.layer = LayerStorage.ignoreRaycast;
+
+			shelfBody = ObjectCreationExtension.CreateCube(Object.Instantiate(man.Get<Texture2D>("plasticTexture")).ApplyLightLevel(-45f), false);
+			shelfBody.transform.SetParent(shelf.transform);
+			shelfBody.transform.localPosition = Vector3.up * 2.5f;
+			shelfBody.transform.localScale = new(9.9f, 1f, 9.9f);
+			Object.Destroy(shelfBody.GetComponent<Collider>());
+
+			
+
+			shelfBody = ObjectCreationExtension.CreateCube(man.Get<Texture2D>("plasticTexture"), false);
+			shelfBody.transform.SetParent(shelf.transform);
+			shelfBody.transform.localPosition = Vector3.up * 0.7f;
+			shelfBody.transform.localScale = new(7.5f, 4f, 7.5f);
+			Object.Destroy(shelfBody.GetComponent<Collider>());
+
+			shelf.gameObject.AddObjectToEditor();
+
+			// Joe
+
+			var joe = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "JoeChef.png")), 29f)).AddSpriteHolder(0f, LayerStorage.iClickableLayer).transform.parent;
+			joe.name = "JoeChef";
+			joe.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * 10f, true);
+			joe.gameObject.AddObjectToEditor();
+
+			var joeChef = joe.gameObject.AddComponent<JoeChef>();
+			joeChef.audMan = joe.gameObject.CreatePropagatedAudioManager(175f, 356f);
+			joeChef.kitchenAudMan = joe.gameObject.CreatePropagatedAudioManager(76f, 155f);
+			joeChef.audWelcome = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Kitchen", "Joe_Welcome.wav")), "Vfx_Joe_Welcome", SoundType.Voice, Color.white);
+			joeChef.audScream = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Kitchen", "Joe_Scream.wav")), "Vfx_Joe_Scream", SoundType.Voice, Color.white);
+			joeChef.audKitchen = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Kitchen", "KitchenThing.wav")), string.Empty, SoundType.Voice, Color.white);
+			joeChef.audKitchen.subtitle = false;
+
+			var joeHolderRenderer = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(new Vector3(-3.3f, 2f, 0f), 0);
+			var joeHolder = joeHolderRenderer.transform.parent;
+			joeHolder.transform.SetParent(joe.transform);
+			joeHolder.transform.localPosition = Vector3.zero;
+			joeHolder.gameObject.AddComponent<BillboardRotator>();
+			joeChef.itemRenderer = joeHolderRenderer;
+
+			JoeChef.AddFood(ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value, 15);
+			JoeChef.AddFood(ItemMetaStorage.Instance.FindByEnum(Items.ZestyBar).value, 45);
+
+			sets = RegisterRoom("Kitchen", Color.white,
+				ObjectCreators.CreateDoorDataObject("KitchenDoor",
+				AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "kitchenDoorOpened.png")),
+				AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "kitchenDoorClosed.png"))));
 
 
+			room = GetAllAssets(GetRoomAsset("Kitchen"), EmptyGameObject.transform, 45, 0, 75, 35, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "MapBG_Kitchen.png")));
+
+			Object.Destroy(room[0].selection.roomFunctionContainer.gameObject); // It doesn't need one, it's empty
+
+			room.ForEach(x =>
+			{
+				x.selection.wallTex = normWall;
+				x.selection.ceilTex = ceiling;
+			});
+
+			group = new RoomTypeGroup()
+			{
+				spawnMethod = RoomGroupSpawnMethod.Standard,
+				stickToHallChance = 1f,
+				generateDoors = true,
+				minRooms = 0,
+				maxRooms = 1,
+				potentialAssets = [.. room],
+				priority = RoomGroupPriority.BeforeExtraRooms,
+				textureGroupName = "Kitchen"
+			};
+
+			for (int i = 1; i < floorDatas.Count; i++)
+				floorDatas[i].RoomAssets.Add(new() { name = "Kitchen" }, group);
 
 
 			// ================================================ Special Room Creation ====================================================
@@ -432,7 +577,7 @@ namespace BBTimes.Manager
 			var floorTex = AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "dirtyGrayFloor.png"));
 			AddTextureToEditor("dirtyGrayFloor", floorTex);
 
-			room.Do(x =>
+			room.ForEach(x =>
 			{
 				x.selection.basicSwaps.Add(swap);
 				x.selection.keepTextures = true;
@@ -453,7 +598,114 @@ namespace BBTimes.Manager
 			floorDatas[3].SpecialRooms.AddRange(room);
 			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(55));
 
+			// **********************************************
+			// **********************************************
+			// ******************* Forest *******************
+			// **********************************************
+			// **********************************************
+
+			// Tree
+			var tree = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Forest", "forestTree.png")), 8f)).AddSpriteHolder(10.76f, 0).transform.parent;
+			tree.gameObject.AddBoxCollider(Vector3.zero, new(2f, 10f, 2f), false);
+			tree.gameObject.AddNavObstacle(new(2.5f, 10f, 2.5f));
+
+			var treeRaycastBlock = new GameObject("TreeRaycastHitbox");
+			treeRaycastBlock.AddBoxCollider(Vector3.zero, new(2.6f, 10f, 2.6f), false);
+			treeRaycastBlock.layer = LayerStorage.blockRaycast;
+			treeRaycastBlock.transform.SetParent(tree.transform);
+			treeRaycastBlock.transform.localPosition = Vector3.zero;
+
+			tree.name = "Foresttree";
+			tree.gameObject.AddObjectToEditor();
+
+			var treeEasterEgg = tree.DuplicatePrefab();
+			((SpriteRenderer)treeEasterEgg.GetComponent<RendererContainer>().renderers[0]).sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Forest", "forestTreeEasterEgg.png")), 8f);
+
+			// Campfire
+			var campFire = tree.DuplicatePrefab();
+			((SpriteRenderer)campFire.GetComponent<RendererContainer>().renderers[0]).sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Forest", "FireStatic.png")), 27f);
+			Object.Destroy(campFire.Find("TreeRaycastHitbox").gameObject); // Not needed for the campfire
+
+			campFire.transform.GetChild(0).localPosition = Vector3.up * 1.2f;
+			campFire.name = "Campfire";
+
+			var lgtSrc = campFire.gameObject.AddComponent<LightSourceObject>();
+			lgtSrc.colorStrength = 5;
+			lgtSrc.colorToLight = new(1f, 0.65f, 0f);
+
+			campFire.gameObject.AddObjectToEditor();
+			var audSource = campFire.gameObject.CreateAudioSource(40, 85);
+			audSource.spatialBlend = 1f;
+			audSource.rolloffMode = AudioRolloffMode.Custom;
+			audSource.clip = AssetLoader.AudioClipFromFile(GetRoomAsset("Forest", "fire.wav"));
+			audSource.loop = true;
+
+			// BearTrap
+			var trapRender = ObjectCreationExtensions.CreateSpriteBillboard(man.Get<Sprite>("BeartrapOpened")).AddSpriteHolder(1f, 0);
+			var trap = trapRender.transform.parent.gameObject.AddComponent<PersistentBearTrap>();
+			trap.name = "Beartrap";
+
+			trap.gameObject.AddObjectToEditor();
+			trap.gameObject.AddBoxCollider(Vector2.zero, new(1.9f, 10f, 1.9f), true);
+
+			trap.audMan = trap.gameObject.CreatePropagatedAudioManager(75f, 105f);
+			trap.audCatch = man.Get<SoundObject>("BeartrapCatch");
+			trap.sprClosed = man.Get<Sprite>("BeartrapClosed");
+			trap.sprOpen = trapRender.sprite;
+			trap.renderer = trapRender;
+
+			sets = RegisterSpecialRoom("Forest", new(0f, 0.45f, 0f));
+
+			room = GetAllAssets(GetRoomAsset("Forest"), null, 75, 1, 2, 55);
+			//Swap for 99 trees
+			 swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = treeEasterEgg.transform, weight = 100 }], prefabToSwap = tree.transform };
+			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("Forest", "treeWall.png"));
+			AddTextureToEditor("forestWall", floorTex);
+
+			room.ForEach(x =>
+			{
+				x.selection.basicSwaps.Add(swap);
+				x.selection.keepTextures = true;
+				x.selection.florTex = grass;
+				x.selection.wallTex = floorTex;
+				x.selection.ceilTex = ObjectCreationExtension.transparentTex;
+			});
+
+
+			room[0].selection.AddRoomFunctionToContainer<SpecialRoomSwingingDoorsBuilder>().swingDoorPre = man.Get<SwingDoor>("swingDoorPre");
+			room[0].selection.AddRoomFunctionToContainer<RuleFreeZone>();
+			room[0].selection.AddRoomFunctionToContainer<WallSoftCoverRoomFunction>();
+
+			var highCeil =  room[0].selection.AddRoomFunctionToContainer<HighCeilingRoomFunction>(); // The first is from the playground
+			highCeil.ceilingHeight = 2;
+			highCeil.usesSingleCustomWall = true;
+			var tex = TextureExtensions.CreateSolidTexture(1, 1, new(0.12156f, 0.12156f, 0.478431f));
+			highCeil.customWallProximityToCeil = [tex];
+			highCeil.customCeiling = tex;
+
+			var ambience = room[0].selection.AddRoomFunctionToContainer<AmbienceRoomFunction>();
+			ambience.source = room[0].selection.roomFunctionContainer.gameObject.CreateAudioSource(35, 125);
+			ambience.source.volume = 0;
+			ambience.source.clip = AssetLoader.AudioClipFromFile(GetRoomAsset("Forest", "Crickets.wav"));
+			ambience.source.loop = true;
+
+			var vignetteCanvas = ObjectCreationExtensions.CreateCanvas();
+			vignetteCanvas.gameObject.SetActive(false);
+			vignetteCanvas.transform.SetParent(room[0].selection.roomFunctionContainer.transform);
+			var vignette = ObjectCreationExtensions.CreateImage(vignetteCanvas, AssetLoader.TextureFromFile(GetRoomAsset("Forest", "darkOverlay.png")));
+
+			var vignetteFunc = room[0].selection.AddRoomFunctionToContainer<VignetteRoomFunction>();
+			vignetteFunc.vignette = vignetteCanvas;
+			vignetteFunc.fovModifier = -25f;
+
+			sets.container = room[0].selection.roomFunctionContainer;
+
+			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(60));
+
+
 			// ================================================ Base Game Room Variants ====================================================
+
+			
 
 			//Classrooms
 			var classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialClassRooms.Length != 0).potentialClassRooms[0];
@@ -463,12 +715,53 @@ namespace BBTimes.Manager
 				x.selection.posters = classWeightPre.selection.posters;
 				x.selection.posterChance = classWeightPre.selection.posterChance;
 				x.selection.SetPotentialWindows(classWeightPre.selection.windowChance, classWeightPre.selection.windowObject);
+				x.selection.keepTextures = false;
 			});
 
 			floorDatas[0].Classrooms.AddRange(room.Where(x => x.selection.activity.prefab.GetType() == typeof(NoActivity))); // why not "is NoActivity"? Well, probably because the game doesn't have the right NET to work like that in runtime
 			var activityRooms = room.Where(x => x.selection.activity.prefab.GetType() != typeof(NoActivity));
 			for (int i = 1; i < floorDatas.Count; i++)
 				floorDatas[i].Classrooms.AddRange(activityRooms);
+
+			// ****** Focus Room (A classroom variant, but with a new npc) ******
+			RegisterRoom("FocusRoom", new(0f, 1f, 0.5f),
+				ObjectCreators.CreateDoorDataObject("FocusRoomDoor",
+				AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "Focus_Room_Door_Opened.png")),
+				AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "Focus_Room_Door_Closed.png"))));
+
+			var student = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "studentFocused.png")), 25f));
+			student.name = "FocusedStudent";
+			student.gameObject.AddObjectToEditor();
+
+			var focusedStudent = student.gameObject.AddComponent<FocusedStudent>();
+			focusedStudent.audMan = student.gameObject.CreatePropagatedAudioManager(95f, 125f);
+			focusedStudent.audAskSilence = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please.wav")), "Vfx_FocusStd_Disturbed1", SoundType.Voice, Color.white);
+			focusedStudent.audAskSilence2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please2.wav")), "Vfx_FocusStd_Disturbed2", SoundType.Voice, Color.white);
+			focusedStudent.audDisturbed = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_scream.wav")), "Vfx_FocusStd_Scream1", SoundType.Voice, Color.white);
+			focusedStudent.audDisturbed.additionalKeys = [new() { key = "Vfx_FocusStd_Scream2", time = 1.209f }];
+
+			focusedStudent.renderer = student;
+			focusedStudent.sprSpeaking = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "studentSpeaking.png")), 25f);
+			focusedStudent.sprScreaming = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "studentScreaming.png")), 25f);
+			focusedStudent.sprNormal = student.sprite;
+
+			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.lightPre, classWeightPre.selection.spawnWeight, classWeightPre.selection.minItemValue, classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+
+			room.ForEach(x =>
+			{
+				x.selection.wallTex = classWeightPre.selection.wallTex;
+				x.selection.florTex = classWeightPre.selection.florTex;
+				x.selection.ceilTex = classWeightPre.selection.ceilTex;
+				x.selection.posters = classWeightPre.selection.posters;
+				x.selection.posterChance = classWeightPre.selection.posterChance;
+				x.selection.SetPotentialWindows(classWeightPre.selection.windowChance, classWeightPre.selection.windowObject);
+				x.selection.mapMaterial = classWeightPre.selection.mapMaterial;
+				x.selection.keepTextures = false;
+			});
+
+			for (int i = 1; i < floorDatas.Count; i++)
+				floorDatas[i].Classrooms.AddRange(room);
+
 
 			//Faculties
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialFacultyRooms.Length != 0).potentialFacultyRooms[0];
@@ -528,11 +821,26 @@ namespace BBTimes.Manager
 			{
 				NPCMetaStorage.Instance.All().Do(x =>
 				{
+					if (x.value is not N)
+						return;
+
 					foreach (var npc in x.prefabs)
-						if (npc.Value is N)
-							npc.Value.potentialRoomAssets = npc.Value.potentialRoomAssets.AddRangeToArray([.. assets]);
+						npc.Value.potentialRoomAssets = npc.Value.potentialRoomAssets.AddRangeToArray([.. assets]);
 				});
 
+			}
+
+			static void ClearNpcAssets<N>() where N : NPC
+			{
+				NPCMetaStorage.Instance.All().Do(x =>
+				{
+					if (x.value is not N)
+						return;
+
+					foreach (var npc in x.prefabs)
+						npc.Value.potentialRoomAssets = [];
+					
+				});
 			}
 		}
 
@@ -554,6 +862,13 @@ namespace BBTimes.Manager
 		static RoomSettings RegisterRoom(string roomName, Color color, StandardDoorMats mat)
 		{
 			var settings = new RoomSettings(EnumExtensions.ExtendEnum<RoomCategory>(roomName), RoomType.Room, color, mat);
+			PlusLevelLoaderPlugin.Instance.roomSettings.Add(roomName, settings);
+			return settings;
+		}
+
+		static RoomSettings RegisterRoom(string roomName, RoomCategory en, Color color, StandardDoorMats mat)
+		{
+			var settings = new RoomSettings(en, RoomType.Room, color, mat);
 			PlusLevelLoaderPlugin.Instance.roomSettings.Add(roomName, settings);
 			return settings;
 		}

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class NavigationState_FollowJr(NPC npc, Cell target) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
+	public class NavigationState_FollowToSpot(NPC npc, Cell target) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
 	{
 		readonly Cell tar = target;
 		readonly MovementModifier moveMod = new(Vector3.zero, 13.33f);
@@ -43,7 +43,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			foreach (var n in ec.Npcs)
 				if (n.Navigator.enabled && (n.Character == Character.Principal || (n.GetComponent<CustomNPCData>()?.ReplacesCharacter(Character.Principal) ?? false)))
-					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowJr(n, ec.CellFromPosition(transform.position)));
+					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, ec.CellFromPosition(transform.position)));
 
 			Directions.ReverseList(navigator.currentDirs);
 			behaviorStateMachine.ChangeNavigationState(new NavigationState_WanderRandom(this, 0));

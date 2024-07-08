@@ -9,8 +9,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class BasketballCustomData : CustomItemData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-		[GetSoundNoSub("throw.wav", SoundType.Effect), 
-		GetSound("punch.wav", "BB_Hit", SoundType.Voice, Color.white),
+		[GetSoundNoSub("throw.wav", SoundType.Effect),
+		BBTimesManager.man.Get<SoundObject>("audGenericPunch"),
 		GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white),
 		BBTimesManager.man.Get<SoundObject>("audPop")];
 

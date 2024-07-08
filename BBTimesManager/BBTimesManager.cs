@@ -86,13 +86,16 @@ namespace BBTimes.Manager
 			man.AddFromResources<StandardDoorMats>();
 			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
 			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
+			man.Add("outsideSkybox", Resources.FindObjectsOfTypeAll<Skybox>()[0]);
+			man.Add("woodTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("wood 1").MakeReadableTexture()); // Wood from the tables
+			man.Add("plasticTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("PlasticTable").MakeReadableTexture());
 
 
 			// Make a transparent texture
-			ObjectCreationExtension.transparentTex = TextureExtensions.CreateSolidTexture(256, 256, Color.clear);
+			ObjectCreationExtension.transparentTex = TextureExtensions.CreateSolidTexture(1, 1, Color.clear);
 
 			// Make a black texture
-			ObjectCreationExtension.blackTex = TextureExtensions.CreateSolidTexture(256, 256, Color.black);
+			ObjectCreationExtension.blackTex = TextureExtensions.CreateSolidTexture(1, 1, Color.black);
 
 			// Base plane for easy.. quads
 			var basePlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -201,12 +204,14 @@ namespace BBTimes.Manager
 			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "pc_stab.wav")), "Vfx_PC_stab", SoundType.Voice, Color.yellow));
 			for (int i = 0; i < 5; i++)
 				man.Add($"basketBall{i}", AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(GlobalAssetsPath, $"basketball{i}.png")), 25f));
+			man.Add("BeartrapClosed", AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(GlobalAssetsPath, "TrapClose.png")), 50f));
+			man.Add("BeartrapOpened", AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(GlobalAssetsPath, "TrapOpen.png")), 50f));
+			man.Add("BeartrapCatch",ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "trap_catch.wav")), "Vfx_BT_catch", SoundType.Voice, Color.white));
+			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "punch.wav")), "BB_Hit", SoundType.Voice, Color.white));
 
-
-			// Local Methods
 			static void AddRule(string name, string audioName, string vfx) =>
 				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", audioName)), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));
-		} // 
+		}
 
 		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc"); static string GlobalAssetsPath => Path.Combine(BasePlugin.ModPath, "GlobalAssets");
 

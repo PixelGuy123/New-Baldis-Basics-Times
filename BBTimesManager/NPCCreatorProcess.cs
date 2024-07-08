@@ -2,7 +2,6 @@
 using BBTimes.CustomContent.NPCs;
 using BBTimes.Helpers;
 using BepInEx;
-using MTM101BaldAPI;
 using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
@@ -142,7 +141,6 @@ namespace BBTimes.Manager
 				.AddSpawnableRoomCategories(RoomCategory.Special)
 				.SetEnum("ZeroPrize")
 				.SetName("0thPrize")
-				.AddPotentialRoomAssets(NPCMetaStorage.Instance.Get(Character.Sweep).value.potentialRoomAssets) // DUUUUH, THAT'S WHY I DIDN'T FOUND THE ROOM
 				.IgnorePlayerOnSpawn()
 				.AddTrigger()
 				.Build()
@@ -290,6 +288,36 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+
+			// Phawillow
+			npc = new NPCBuilder<Phawillow>(plug.Info)
+				.SetMinMaxAudioDistance(100f, 200f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Phawillow")
+				.SetName("Phawillow")
+				.AddLooker()
+				.AddTrigger()
+				.SetAirborne()
+				.IgnoreBelts()
+				.Build()
+				.SetupNPCData<PhawillowCustomData>("Phawillow", "PST_Phawillow_Name", "PST_Phawillow_Desc", 0f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 25 });
+
+			// Faker
+			npc = new NPCBuilder<Faker>(plug.Info)
+				.SetMinMaxAudioDistance(90f, 140f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Faker")
+				.SetName("Faker")
+				.AddLooker()
+				.AddTrigger()
+				.Build()
+				.SetupNPCData<FakerCustomData>("Faker", "PST_Faker_Name", "PST_Faker_Desc", -1.36f)
+				.MarkAsReplacement(45, Character.LookAt);
+
+			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
 		}
 
 		

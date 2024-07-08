@@ -28,22 +28,26 @@ namespace BBTimes.Helpers
 			var item = actualItem.item;
 
 			var itemobj = item.gameObject.AddComponent<C>();
-			itemobj.myEnum = en; // custom Item object with customItemData
 
-			itemobj.Name = name;
-
-			var sprites = GetAllItemSpritesFrom(name); // Get all sprites from its folder (0 is small icon, 1 is big icon)
-
-			actualItem.itemSpriteLarge = sprites[1];
-			actualItem.itemSpriteSmall = sprites[0];
-
-
-			itemobj.GetAudioClips();
-			itemobj.GetSprites();
-			itemobj.SetupPrefab();
+			SetupItemData(itemobj, name, actualItem);
 			
 
 			return actualItem;
+		}
+
+		public static void SetupItemData<C>(this C data, string name, ItemObject itemObj) where C : CustomItemData
+		{
+			data.myEnum = itemObj.itemType; // custom Item object with customItemData
+			data.Name = name;
+			var sprites = GetAllItemSpritesFrom(name); // Get all sprites from its folder (0 is small icon, 1 is big icon)
+
+			itemObj.itemSpriteLarge = sprites[1];
+			itemObj.itemSpriteSmall = sprites[0];
+
+
+			data.GetAudioClips();
+			data.GetSprites();
+			data.SetupPrefab();
 		}
 
 		public static ItemObject DuplicateItem(this ItemObject item, ItemMetaData data, string nameKey)

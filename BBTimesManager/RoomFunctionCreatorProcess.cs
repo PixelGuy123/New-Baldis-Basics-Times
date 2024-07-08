@@ -42,6 +42,7 @@ namespace BBTimes.Manager
 			highCeil.ceilingHeight = 1;
 			highCeil.targetTransformNamePrefix = "Bookshelf";
 			highCeil.targetTransformOffset = 9f;
+			highCeil.customLight = man.Get<GameObject>("prefab_libraryHangingLight").transform;
 			// highCeil.customWallProximityToCeil = [Resources.FindObjectsOfTypeAll<RoomAsset>().First(x => x.name.StartsWith("Library")).wallTex];
 			var libraryTex = GenericExtensions.FindResourceObjectByName<Texture2D>("Wall"); // Any instance id > 0 is a prefab (I checked that!)
 

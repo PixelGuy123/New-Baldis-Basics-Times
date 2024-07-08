@@ -19,7 +19,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 	}
 
 	[HarmonyPatch]
-	static class AlwaysLog
+	static class AlwaysLog // Will be here until MTM101BaldAPI is fixed
 	{
 		[HarmonyTargetMethods]
 		static IEnumerable<MethodBase> GetMethods() 

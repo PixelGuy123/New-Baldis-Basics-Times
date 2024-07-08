@@ -8,6 +8,9 @@ using PixelInternalAPI;
 using BBTimes.Plugin;
 using MTM101BaldAPI.ObjectCreation;
 using BBTimes.CustomContent.Objects;
+using BBTimes.CustomContent.Misc;
+using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -76,6 +79,7 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
+			JoeChef.AddFood(item, 25);
 			// bell
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Bell>()
@@ -167,6 +171,7 @@ namespace BBTimes.Manager
 			((ITM_StaminaDrinkable)item.item).SetMod(1f, 2f, 0.5f);
 			((ITM_StaminaDrinkable)item.item).audDrink = man.Get<SoundObject>("audRobloxDrink");
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 90 });
+			JoeChef.AddFood(item, 55);
 
 			// Speed Potion
 			item = new ItemBuilder(plug.Info)
@@ -327,6 +332,7 @@ namespace BBTimes.Manager
 			((ITM_StaminaDrinkable)item.item).audDrink = man.Get<SoundObject>("audRobloxDrink");
 			((ITM_StaminaDrinkable)item.item).attribute = "hotchocactive";
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 55 });
+			JoeChef.AddFood(item, 46);
 
 			// Invisibility Controller
 			item = new ItemBuilder(plug.Info)
@@ -386,16 +392,60 @@ namespace BBTimes.Manager
 			// Times icon
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_TimesYTP>()
-				.SetGeneratorCost(55)
+				.SetGeneratorCost(60)
 				.SetShopPrice(9999)
 				.SetNameAndDescription("TimesIcon", string.Empty)
 				.SetAsInstantUse()
 				.Build<CustomItemData>("TimesIcon", Items.Points);
 
+			floorDatas[0].Items.Add(new() { selection = item, weight = 2 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 9 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 9 });
+
+			// Cherry Bsoda
+			var itemBs = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
+			itemBs = itemBs.DuplicateItem(itemBs.GetMeta(), "CherryBsoda_Name");
+			itemBs.price += 100;
+			itemBs.descKey = "CherryBsoda_Desc";
+			itemBs.value += 5;
+			var cherryCustomData = itemBs.item.gameObject.AddComponent<CherryBsodaCustomData>();
+			cherryCustomData.SetupItemData("CherryBsoda", itemBs);
+			cherryCustomData.name = "ITM_CherryBsoda";
+			itemBs.item = cherryCustomData.GetComponent<ITM_CherryBsoda>();
+			item = itemBs;
+
+
+
 			floorDatas[0].Items.Add(new() { selection = item, weight = 5 });
-			floorDatas[1].Items.Add(new() { selection = item, weight = 4 });
-			floorDatas[2].Items.Add(new() { selection = item, weight = 3 });
-			floorDatas[3].Items.Add(new() { selection = item, weight = 2 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 39 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 45 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 55 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 65 });
+
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
+			JoeChef.AddFood(item, 15);
+
+			// Soap Item
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_Soap>()
+				.SetGeneratorCost(42)
+				.SetShopPrice(450)
+				.SetNameAndDescription("Soap_Name", "Soap_Desc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build<SoapCustomData>("Soap");
+
+			floorDatas[1].Items.Add(new() { selection = item, weight = 55 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 65 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 55 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 65 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 35 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
 		}
 	}
 }
