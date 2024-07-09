@@ -11,6 +11,7 @@ using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.Misc;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
+using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace BBTimes.Manager
 {
@@ -405,14 +406,21 @@ namespace BBTimes.Manager
 
 			// Cherry Bsoda
 			var itemBs = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
-			itemBs = itemBs.DuplicateItem(itemBs.GetMeta(), "CherryBsoda_Name");
+
+			itemBs = itemBs.DuplicateItem("CherryBsoda_Name");
+
 			itemBs.price += 100;
 			itemBs.descKey = "CherryBsoda_Desc";
 			itemBs.value += 5;
+
 			var cherryCustomData = itemBs.item.gameObject.AddComponent<CherryBsodaCustomData>();
 			cherryCustomData.SetupItemData("CherryBsoda", itemBs);
 			cherryCustomData.name = "ITM_CherryBsoda";
+
 			itemBs.item = cherryCustomData.GetComponent<ITM_CherryBsoda>();
+			itemBs.itemType = EnumExtensions.ExtendEnum<Items>("CherryBsoda");
+			itemBs.AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists);
+
 			item = itemBs;
 
 

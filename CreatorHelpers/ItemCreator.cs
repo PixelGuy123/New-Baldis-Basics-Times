@@ -50,7 +50,7 @@ namespace BBTimes.Helpers
 			data.SetupPrefab();
 		}
 
-		public static ItemObject DuplicateItem(this ItemObject item, ItemMetaData data, string nameKey)
+		public static ItemObject DuplicateItem(this ItemObject item, string nameKey)
 		{
 			var it = Instantiate(item);
 			it.nameKey = nameKey;
@@ -58,6 +58,12 @@ namespace BBTimes.Helpers
 
 			var duplicate = item.item.DuplicatePrefab();
 			it.item = duplicate;
+			return it;
+		}
+
+		public static ItemObject DuplicateItem(this ItemObject item, ItemMetaData data, string nameKey)
+		{
+			var it = DuplicateItem(item, nameKey);
 			data.itemObjects = data.itemObjects.AddToArray(it);
 			it.AddMeta(data);
 

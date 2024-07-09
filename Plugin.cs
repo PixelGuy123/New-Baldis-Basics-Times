@@ -13,6 +13,7 @@ using BBTimes.CustomContent.CustomItems;
 using BBTimes.CustomContent.Events;
 using System.Collections;
 using System.Collections.Generic;
+using BBTimes.Compatibility;
 
 
 namespace BBTimes.Plugin
@@ -21,6 +22,9 @@ namespace BBTimes.Plugin
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.pixelinternalapi", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.levelloader", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.editorcustomrooms", BepInDependency.DependencyFlags.HardDependency)]
+	[BepInDependency("pixelguy.pixelmodding.baldiplus.grapplinghooktweaks", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("pixelguy.pixelmodding.baldiplus.customvendingmachines", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("pixelguy.pixelmodding.baldiplus.custommusics", BepInDependency.DependencyFlags.SoftDependency)]
 
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
     public class BasePlugin : BaseUnityPlugin
@@ -43,9 +47,13 @@ namespace BBTimes.Plugin
 		{
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAll();
-			
+
+
 			_modPath = AssetLoader.GetModPath(this);
 			BBTimesManager.plug = this;
+			CompatMethods.InitializeCompatibilityChecks();
+
+			
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), false);
 
