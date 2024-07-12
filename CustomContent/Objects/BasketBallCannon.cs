@@ -19,7 +19,7 @@ namespace BBTimes.CustomContent.Objects
                 if (!basketBalls[i])
                     basketBalls.RemoveAt(i--);
 
-            if (turning || basketBalls.Count >= 6)
+            if (turning || basketBalls.Count > 7)
                 return;
 
             cooldownToShoot -= Time.deltaTime * ec.EnvironmentTimeScale;

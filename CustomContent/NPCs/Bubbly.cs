@@ -52,7 +52,6 @@ namespace BBTimes.CustomContent.NPCs
 		internal void TargetRandomSpot()
 		{
 			List<Cell> spotsToGo = new(ec.mainHall.AllTilesNoGarbage(false, false));
-			ec.rooms.ForEach(room => spotsToGo.AddRange(room.AllEntitySafeCellsNoGarbage())); // Get from each room
 
 			for (int i = 0; i < spotsToGo.Count; i++)
 				if ((spotsToGo[i].shape != TileShape.Corner && spotsToGo[i].shape != TileShape.Single) || (spotsToGo[i].room.type == RoomType.Room && !spotsToGo[i].open)) // Filter to the ones that are corners or singles
@@ -82,7 +81,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal PropagatedAudioManager audMan;
 
 		
-		const float speed = 15f;
+		const float speed = 17f;
 	}
 
 	internal class Bubbly_StateBase(Bubbly bub) : NpcState(bub)

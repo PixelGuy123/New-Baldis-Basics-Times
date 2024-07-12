@@ -51,7 +51,6 @@ namespace BBTimes.Plugin
 
 			_modPath = AssetLoader.GetModPath(this);
 			BBTimesManager.plug = this;
-			CompatMethods.InitializeCompatibilityChecks();
 
 			
 

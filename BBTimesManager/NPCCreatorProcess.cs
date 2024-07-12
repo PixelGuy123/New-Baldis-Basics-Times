@@ -63,7 +63,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetMaxSightDistance(55)
 				.IgnoreBelts()
-				//.SetStationary() temporarily broken by the api, so HUAfdH8an8An8anfahsundau8fja8
+				.SetStationary()
 				.Build()
 				.SetupNPCData<CrazyClockCustomData>("CrazyClock", "PST_CC_Name", "PST_CC_Desc", 0f);
 			//CreatorExtensions.CreateNPC<CrazyClock, CrazyClockCustomData>("CrazyClock", 55f, 90f, [RoomCategory.Hall], [], "PST_CC_Name", "PST_CC_Desc", ignorePlayerOnSpawn:true, ignoreBelts:true, hasTrigger: false, lookerDistance: 55f, grounded: false).AddMeta(plug, NPCFlags.StandardNoCollide).value;

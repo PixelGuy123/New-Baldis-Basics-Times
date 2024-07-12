@@ -18,26 +18,26 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		}
 	}
 
-	[HarmonyPatch]
-	static class AlwaysLog // Will be here until MTM101BaldAPI is fixed
-	{
-		[HarmonyTargetMethods]
-		static IEnumerable<MethodBase> GetMethods() 
-		{
-			foreach (var methods in AccessTools.GetDeclaredMethods(typeof(MTM101BaldiDevAPI).Assembly.GetTypes().First(x => x.FullName == "MTM101BaldAPI.Patches.LevelGeneratorPatches")))
-				yield return methods;
-		}
+	//[HarmonyPatch]
+	//static class AlwaysLog // Will be here until MTM101BaldAPI is fixed
+	//{
+	//	[HarmonyTargetMethods]
+	//	static IEnumerable<MethodBase> GetMethods() 
+	//	{
+	//		foreach (var methods in AccessTools.GetDeclaredMethods(typeof(MTM101BaldiDevAPI).Assembly.GetTypes().First(x => x.FullName == "MTM101BaldAPI.Patches.LevelGeneratorPatches")))
+	//			yield return methods;
+	//	}
 
-		[HarmonyFinalizer]
-		static Exception GetException(Exception __exception)
-		{
-			if (__exception != null)
-			{
-				Debug.LogWarning("An exception from the level generator patch has been suppressed!");
-				Debug.LogException(__exception);
-			}
+	//	[HarmonyFinalizer]
+	//	static Exception GetException(Exception __exception)
+	//	{
+	//		if (__exception != null)
+	//		{
+	//			Debug.LogWarning("An exception from the level generator patch has been suppressed!");
+	//			Debug.LogException(__exception);
+	//		}
 
-			return null;
-		}
-	}
+	//		return null;
+	//	}
+	//}
 }

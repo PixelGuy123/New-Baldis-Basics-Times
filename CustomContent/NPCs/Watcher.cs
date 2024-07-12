@@ -138,12 +138,17 @@ namespace BBTimes.CustomContent.NPCs
 	internal class Watcher_WaitBelow(Watcher w) : Watcher_StateBase(w)
 	{
 		float cooldown = Random.Range(20f, 40f);
+
+		public override void Initialize()
+		{
+			base.Initialize();
+			w.SetFrozen(true);
+		}
 		public override void Enter()
 		{
 			base.Enter();
 			ChangeNavigationState(new NavigationState_DoNothing(w, 0));
 			w.Hide(true);
-			w.SetFrozen(true);
 		}
 
 		public override void Update()
