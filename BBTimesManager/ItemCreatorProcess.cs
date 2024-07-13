@@ -43,6 +43,7 @@ namespace BBTimes.Manager
 			floorDatas[3].Items.Add(new() { selection = item, weight = 65 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 85 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 85 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 85 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 75 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 86 });
 			// present
@@ -58,6 +59,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 15 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 35 });
 			ResourceManager.AddMysteryItem(new() { selection = item, weight = 25 });
 
@@ -78,6 +80,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 10 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 65 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
 			JoeChef.AddFood(item, 25);
@@ -98,6 +101,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 5 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
 			// headache pill
@@ -114,6 +118,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 75 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 75 });
 
@@ -134,6 +139,7 @@ namespace BBTimes.Manager
 				floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 				floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
 				floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
+				floorDatas[3].ShopItems.Add(new() { selection = item, weight = 75 });
 				floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
 				ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
 			}
@@ -151,6 +157,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 65 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 70 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
 
 			// BSED
@@ -168,6 +175,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 10 });
 			((ITM_StaminaDrinkable)item.item).SetMod(1f, 2f, 0.5f);
 			((ITM_StaminaDrinkable)item.item).audDrink = man.Get<SoundObject>("audRobloxDrink");
@@ -191,6 +199,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 47 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 56 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 42 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 17 });
 			ITM_SpeedPotion.audDrink = man.Get<SoundObject>("audRobloxDrink");
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 90 });
@@ -211,6 +220,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 47 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 56 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 17 });
 			ITM_Pencil.audStab = man.Get<SoundObject>("audPencilStab");
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 75 });
@@ -230,6 +240,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 45 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 25 });
 			ITM_WaterBottle.audDrink = man.Get<SoundObject>("audRobloxDrink");
 			ITM_EmptyWaterBottle.waterBottle = item;
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 75 });
@@ -250,6 +261,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 75 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 55 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 44 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 105 });
 			ITM_WaterBottle.emptyBottle = item;
 
@@ -269,6 +281,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 30 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 25 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
 			ResourceManager.AddMysteryItem(new() { selection = item, weight = 45 });
 			var secondItem = item.DuplicateItem(meta, "POGST_Name2");
@@ -290,6 +303,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 75 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 55 });
 
@@ -309,6 +323,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 45 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 44 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
 			ResourceManager.AddMysteryItem(new() { selection = item, weight = 25 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
@@ -329,6 +344,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 45 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 55 });
 			((ITM_StaminaDrinkable)item.item).SetMod(1f, 0.3f, 0.6f);
 			((ITM_StaminaDrinkable)item.item).audDrink = man.Get<SoundObject>("audRobloxDrink");
 			((ITM_StaminaDrinkable)item.item).attribute = "hotchocactive";
@@ -350,6 +366,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 40 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
 
@@ -368,6 +385,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 32 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 46 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 54 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 20 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
 			EventMachine.AddItemToTrigger(item.itemType);
@@ -387,6 +405,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 21 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 32 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 22 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 65 });
 
@@ -432,6 +451,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 65 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 65 });
 
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
@@ -452,6 +472,7 @@ namespace BBTimes.Manager
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 65 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 75 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 35 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
 		}
