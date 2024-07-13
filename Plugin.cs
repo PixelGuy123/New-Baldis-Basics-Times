@@ -69,7 +69,7 @@ namespace BBTimes.Plugin
 
 				ld.MarkAsNeverUnload(); // Maybe?
 
-				
+				RoomGroup[] groups = [ld.roomGroup.First(x => x.name == "Class"), ld.roomGroup.First(x => x.name == "Faculty"), ld.roomGroup.First(x => x.name == "Office")];
 
 				if (floorName == "F1")
 				{
@@ -80,7 +80,8 @@ namespace BBTimes.Plugin
 					ld.outerEdgeBuffer += 1;
 					ld.extraDoorChance += 0.2f;
 					ld.windowChance += 0.2f;
-					ld.maxClassRooms = 5;
+					groups[0].maxRooms = 5;
+					groups[0].stickToHallChance = 0.9f;
 					ld.maxFacultyRooms += 2;
 					ld.maxHallsToRemove += 1;
 					ld.maxPlots += 1;
@@ -90,7 +91,6 @@ namespace BBTimes.Plugin
 					ld.minFacultyRooms += 1;
 					ld.minHallsToRemove += 1;
 					ld.minSize += new IntVector2(3, 5);
-					ld.classStickToHallChance = 0.9f;
 					return;
 				}
 
@@ -105,23 +105,23 @@ namespace BBTimes.Plugin
 					ld.outerEdgeBuffer += 3;
 					ld.extraDoorChance += 0.3f;
 					ld.windowChance += 0.35f;
-					ld.maxClassRooms = 8;
-					ld.minClassRooms = 6;
-					ld.maxFacultyRooms += 4;
+					groups[1].minRooms++;
+					groups[1].maxRooms += 4;
+					groups[0].maxRooms = 8;
+					groups[0].minRooms = 6;
+					groups[2].stickToHallChance = 0.9f;
+					groups[1].stickToHallChance = 0.85f;
+					groups[0].stickToHallChance = 0.75f;
 					ld.maxHallsToRemove += 2;
 					ld.maxPlots += 2;
 					ld.minPlots += 1;
 					ld.maxReplacementHalls += 3;
 					ld.maxSize += new IntVector2(9, 6);
 					ld.maxSpecialBuilders += 2;
-					ld.minFacultyRooms += 1;
 					ld.minHallsToRemove += 1;
 					ld.minSize += new IntVector2(5, 6);
 					ld.minSpecialBuilders += 1;
-					ld.classStickToHallChance = 0.75f;
-					ld.facultyStickToHallChance = 0.85f;
 					ld.maxOffices = 2;
-					ld.officeStickToHallChance = 0.9f;
 					ld.specialRoomsStickToEdge = false;
 					ld.maxLightDistance += 2;
 					return;
@@ -136,8 +136,13 @@ namespace BBTimes.Plugin
 					ld.bridgeTurnChance += 6;
 					ld.extraDoorChance = 0.5f;
 					ld.windowChance += 0.35f;
-					ld.maxClassRooms = 12;
-					ld.maxFacultyRooms += 4;
+					groups[1].minRooms++;
+					groups[1].maxRooms += 4;
+					groups[0].maxRooms = 12;
+					groups[2].maxRooms += 2;
+					groups[2].stickToHallChance = 0.9f;
+					groups[1].stickToHallChance = 0.85f;
+					groups[0].stickToHallChance = 0.75f;
 					ld.maxHallsToRemove++;
 					ld.maxPlots += 2;
 					ld.minPlots += 1;
@@ -145,14 +150,9 @@ namespace BBTimes.Plugin
 					ld.maxSize += new IntVector2(9, 6);
 					ld.minSize += new IntVector2(5, 6);
 					ld.maxSpecialBuilders += 2;
-					ld.minFacultyRooms += 1;
 					ld.minHallsToRemove += 1;
 					ld.minSpecialBuilders += 1;
-					ld.classStickToHallChance = 0.75f;
-					ld.facultyStickToHallChance = 0.85f;
 					ld.outerEdgeBuffer += 5;
-					ld.maxOffices += 2;
-					ld.officeStickToHallChance = 0.9f;
 					ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. Resources.FindObjectsOfTypeAll<RoomAsset>() // Playground in F3
 						.Where(x => x.name.StartsWith("Playground"))
 						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
@@ -170,25 +170,25 @@ namespace BBTimes.Plugin
 					ld.outerEdgeBuffer += 3;
 					ld.extraDoorChance += 0.3f;
 					ld.windowChance += 0.35f;
-					ld.maxClassRooms = 9;
-					ld.minClassRooms = 7;
-					ld.maxFacultyRooms += 5;
 					ld.maxHallsToRemove += 2;
 					ld.maxPlots += 3;
 					ld.minPlots += 1;
 					ld.maxReplacementHalls += 3;
 					ld.maxSize += new IntVector2(10, 8);
 					ld.maxSpecialBuilders += 2;
-					ld.minFacultyRooms += 1;
 					ld.minHallsToRemove += 1;
 					ld.minSize += new IntVector2(7, 7);
 					ld.minSpecialBuilders += 1;
-					ld.classStickToHallChance = 0.75f;
-					ld.facultyStickToHallChance = 0.85f;
-					ld.maxOffices = 3;
-					ld.minOffices = 2;
-					ld.officeStickToHallChance = 0.9f;
 					ld.maxLightDistance += 3;
+					groups[2].stickToHallChance = 0.9f;
+					groups[1].stickToHallChance = 0.85f;
+					groups[0].stickToHallChance = 0.75f;
+					groups[2].maxRooms = 3;
+					groups[2].minRooms = 2;
+					groups[1].minRooms++;
+					groups[1].maxRooms += 5;
+					groups[0].minRooms = 7;
+					groups[0].maxRooms = 9;
 					return;
 				}
 				
@@ -217,13 +217,16 @@ namespace BBTimes.Plugin
 				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
 				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
 				ld.shopItems = ld.shopItems.AddRangeToArray([.. floordata.ShopItems]);
-				ld.fieldTripItems.AddRange(floordata.FieldTripItems);
-				ld.additionalRoomTypes.AddRange(floordata.RoomAssets.Values);
-				ld.additionalTextureGroups.AddRange(floordata.RoomAssets.Keys);
+				//ld.fieldTripItems.AddRange(floordata.FieldTripItems);
+				ld.roomGroup = ld.roomGroup.AddRangeToArray([.. floordata.RoomAssets]);
 				ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. floordata.SpecialRooms]);
-				ld.potentialClassRooms = ld.potentialClassRooms.AddRangeToArray([.. floordata.Classrooms]);
-				ld.potentialFacultyRooms = ld.potentialFacultyRooms.AddRangeToArray([.. floordata.Faculties]);
-				ld.potentialOffices = ld.potentialOffices.AddRangeToArray([.. floordata.Offices]);
+
+				RoomGroup[] groups = [ld.roomGroup.First(x => x.name == "Class"), ld.roomGroup.First(x => x.name == "Faculty"), ld.roomGroup.First(x => x.name == "Office")];
+				groups[0].potentialRooms = groups[0].potentialRooms.AddRangeToArray([.. floordata.Classrooms]);
+				groups[1].potentialRooms = groups[1].potentialRooms.AddRangeToArray([.. floordata.Faculties]);
+				groups[2].potentialRooms = groups[2].potentialRooms.AddRangeToArray([.. floordata.Offices]);
+
+
 				foreach (var fl in floordata.Halls)
 				{
 					if (fl.Value)
@@ -247,23 +250,32 @@ namespace BBTimes.Plugin
 							break;
 						case RoomCategory.Class:
 							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
-								ld.classCeilingTexs = ld.classCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
+								groups[0].ceilingTexture = groups[0].ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
 							else if (holder.TextureType == Misc.SchoolTexture.Floor)
-								ld.classFloorTexs = ld.classFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
+								groups[0].floorTexture = groups[0].floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
 							else if (holder.TextureType == Misc.SchoolTexture.Wall)
-								ld.classWallTexs = ld.classWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
+								groups[0].wallTexture = groups[0].wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
 							break;
 						case RoomCategory.Faculty:
 							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
-								ld.facultyCeilingTexs = ld.facultyCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							{
+								groups[1].ceilingTexture = groups[1].ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
+								groups[2].ceilingTexture = groups[2].ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
+							}
 							else if (holder.TextureType == Misc.SchoolTexture.Floor)
-								ld.facultyFloorTexs = ld.facultyFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							{
+								groups[1].floorTexture = groups[1].floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
+								groups[2].floorTexture = groups[2].floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
+							}
 							else if (holder.TextureType == Misc.SchoolTexture.Wall)
-								ld.facultyWallTexs = ld.facultyWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
+							{
+								groups[1].wallTexture = groups[1].wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
+								groups[2].wallTexture = groups[2].wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
+							}
 							break;
 						default:
 							string name = EnumExtensions.GetExtendedName<RoomCategory>((int)holder.SelectionLimiters[0]);
-							var group = ld.additionalTextureGroups.FirstOrDefault(x => x.name == name);
+							var group = ld.roomGroup.FirstOrDefault(x => x.potentialRooms.Any(z => z.selection.category == holder.SelectionLimiters[0]));
 							if (group == null)
 							{
 								Debug.LogWarning("BBTimes: Failed to load texture for room category: " + name);
@@ -272,13 +284,13 @@ namespace BBTimes.Plugin
 							switch (holder.TextureType)
 							{
 								case Misc.SchoolTexture.Ceiling:
-									group.potentialCeilTextures = group.potentialCeilTextures.AddToArray(holder.Selection.ToWeightedTexture());
+									group.ceilingTexture = group.ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
 									break;
 								case Misc.SchoolTexture.Floor:
-									group.potentialFloorTextures = group.potentialFloorTextures.AddToArray(holder.Selection.ToWeightedTexture());
+									group.floorTexture = group.floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
 									break;
 								case Misc.SchoolTexture.Wall:
-									group.potentialWallTextures = group.potentialWallTextures.AddToArray(holder.Selection.ToWeightedTexture());
+									group.wallTexture = group.wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
 									break;
 								default:
 									break;

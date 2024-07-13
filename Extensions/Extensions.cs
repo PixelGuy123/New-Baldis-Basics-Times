@@ -54,23 +54,7 @@ namespace BBTimes.Extensions
 			return list;
 		}
 
-		public static void ForceAddPermanentLighting(this EnvironmentController ec, Cell tile, Color color)
-		{
-			tile.permanentLight = true;
-			LightController[,] lightMap = ec.lightMap; //(LightController[,])ec_lightMap.GetValue(ec);
-			tile.hasLight = true;
-			tile.lightOn = true;
-			tile.lightStrength = 1;
-			tile.lightColor = color;
-
-			lightMap[tile.position.x, tile.position.z].AddSource(tile, tile.lightStrength);
-			Singleton<CoreGameManager>.Instance.UpdateLighting(color, tile.position);
-			lightMap[tile.position.x, tile.position.z].UpdateLighting();
-
-			//ec_lightMap.SetValue(ec, lightMap);
-		}
-
-		public static IEnumerator LightChanger(this EnvironmentController ec, List<Cell> lights, bool on, float delay)
+		public static IEnumerator LightChanger(this EnvironmentController ec, List<Cell> lights, float delay)
 		{
 			float time = delay;
 			while (lights.Count != 0)
@@ -83,7 +67,7 @@ namespace BBTimes.Extensions
 				time = delay;
 				int num = Random.Range(0, lights.Count);
 				lights[num].lightColor = Color.red;
-				ec.SetLight(on, lights[num]);
+				lights[num].SetLight(true);
 				lights.RemoveAt(num);
 			}
 			yield break;

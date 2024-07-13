@@ -9,9 +9,12 @@ namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class CurtainsClosedEventCustomData : CustomEventData
 	{
-		protected override SoundObject[] GenerateSoundObjects() =>
-			[GetSound("curtainClose.wav", "Vfx_Curtain_Slide", SoundType.Voice, Color.white),
-		GetSound("curtainOpen.wav", "Vfx_Curtain_Slide", SoundType.Voice, Color.white)];
+		protected override SoundObject[] GenerateSoundObjects() {
+			var sd = GetSound("baldi_curtains.wav", "Event_CurtClosed0", SoundType.Effect, Color.green);
+			sd.additionalKeys = [new() { time = 0.862f, key = "Event_CurtClosed1" }, new() { time = 2.532f, key = "Event_CurtClosed2" }];
+			return [GetSound("curtainClose.wav", "Vfx_Curtain_Slide", SoundType.Voice, Color.white),
+		GetSound("curtainOpen.wav", "Vfx_Curtain_Slide", SoundType.Voice, Color.white), sd];
+			}
 
 		protected override Sprite[] GenerateSpriteOrder() =>
 			[GetSprite(pixs, "curtainClosed.png"), GetSprite(pixs, "curtainOpen.png")];
@@ -20,6 +23,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			base.SetupPrefab();
 			var ev = GetComponent<CurtainsClosedEvent>();
+			ev.eventIntro = soundObjects[2];
+
 			var curt = new GameObject("Curtain").AddComponent<Curtains>();
 			curt.gameObject.ConvertToPrefab(true);
 			curt.audClose = soundObjects[0];

@@ -151,10 +151,7 @@ namespace BBTimes.CustomContent.NPCs
         {
             target.SetFrozen(!active);
             target.SetTrigger(active);
-            if (target.CompareTag("Player"))
-                target.GetComponent<PlayerManager>()?.Hide(!active);
-            else
-                target.GetComponent<NPC>()?.DisableCollision(!active);
+            target.SetInteractionState(active);
         }
 
 		public void CancelTargetGrab()

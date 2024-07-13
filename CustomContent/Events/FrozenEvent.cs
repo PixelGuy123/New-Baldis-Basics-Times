@@ -40,7 +40,7 @@ namespace BBTimes.CustomContent.Events
 			{
 				cellColors.Add(cell, cell.lightColor);
 				cell.lightColor = Color.cyan;
-				ec.SetLight(cell.lightOn, cell);
+				ec.RegenerateLight(cell);
 			}
 
 			activeFrozenEvents++;
@@ -99,7 +99,7 @@ namespace BBTimes.CustomContent.Events
 			foreach (var cell in cellColors)
 			{
 				cell.Key.lightColor = cell.Value;
-				ec.SetLight(cell.Key.lightOn, cell.Key);
+				ec.RegenerateLight(cell.Key);
 			}
 			cellColors.Clear();
 

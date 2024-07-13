@@ -82,12 +82,9 @@ namespace BBTimes.CustomContent.Objects
 
 		IEnumerator Teleport(Entity subject)
 		{
-			var player = subject.GetComponent<PlayerManager>();
-			var npc = subject.GetComponent<NPC>();
 			subject.SetFrozen(true);
 			subject.SetTrigger(false);
-			npc?.DisableCollision(true);
-			player?.Hide(true);
+			subject.SetInteractionState(false);
 			ForceDisableCollision = true;
 
 			Vector3 newPos;
@@ -138,8 +135,7 @@ namespace BBTimes.CustomContent.Objects
 			subject.SetHeight(height);
 			subject.SetFrozen(false);
 			subject.SetTrigger(true);
-			npc?.DisableCollision(false);
-			player?.Hide(false);
+			subject.SetInteractionState(true);
 
 			if (linkedTrapdoor != null)
 			{

@@ -6,8 +6,16 @@ namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class FrozenEventCustomData : CustomEventData
 	{
-		protected override SoundObject[] GenerateSoundObjects() =>
-			[GetSoundNoSub("freeze.wav", SoundType.Effect)];
+		protected override SoundObject[] GenerateSoundObjects()
+		{
+			var sd = GetSound("baldi_freeze.wav", "Event_FreezeEvent0", SoundType.Effect, Color.green);
+			sd.additionalKeys = [
+				new() {time = 1.472f, key = "Event_FreezeEvent1"},
+				new() {time = 4.087f, key = "Event_FreezeEvent2"},
+				new() {time = 7.565f, key = "Event_FreezeEvent3"}
+				];
+			return [GetSoundNoSub("freeze.wav", SoundType.Effect), sd];
+		}
 
 		protected override Sprite[] GenerateSpriteOrder() =>
 			[GetSprite(1f, "icehud.png")];
@@ -16,6 +24,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			base.SetupPrefab();
 			var v = GetComponent<FrozenEvent>();
+			v.eventIntro = soundObjects[1];
 			v.audMan = gameObject.CreateAudioManager(65, 85).MakeAudioManagerNonPositional();
 
 			v.audFreeze = soundObjects[0];

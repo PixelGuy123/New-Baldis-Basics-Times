@@ -29,11 +29,11 @@ namespace BBTimes.Manager
 	{
 		static void CreateCustomRooms(BaseUnityPlugin plug)
 		{
-			var lightPre = GenericExtensions.FindResourceObjects<RoomAsset>().First(x => x.category == RoomCategory.Class).lightPre;
-			var carpet = GenericExtensions.FindResourceObjectByName<Texture2D>("Carpet");
-			var ceiling = GenericExtensions.FindResourceObjectByName<Texture2D>("CeilingNoLight");
-			var saloonWall = GenericExtensions.FindResourceObjectByName<Texture2D>("SaloonWall");
-			var normWall = GenericExtensions.FindResourceObjectByName<Texture2D>("Wall");
+			var lightPre = new WeightedTransform() { selection = GenericExtensions.FindResourceObjects<RoomAsset>().First(x => x.category == RoomCategory.Class).lightPre };
+			var carpet = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("Carpet") };
+			var ceiling = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("CeilingNoLight") };
+			var saloonWall = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("SaloonWall") };
+			var normWall = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("Wall") };
 			var blackTexture = TextureExtensions.CreateSolidTexture(1, 1, Color.black); // It'll be stretched anyways lol
 			var grass = man.Get<Texture2D>("Tex_Grass");
 
@@ -76,7 +76,7 @@ namespace BBTimes.Manager
 			Superintendent.AddAllowedRoom(sets.category);
 
 
-			var room = GetAllAssets(GetRoomAsset("Bathroom"), bathLightPre, 45, 25, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "MapBG_Bathroom.png")));
+			var room = GetAllAssets(GetRoomAsset("Bathroom"), 45, 25, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "MapBG_Bathroom.png")));
 			var fun = room[0].selection.AddRoomFunctionToContainer<PosterAsideFromObject>();
 			fun.targetPrefabName = "sink";
 			fun.posterPre = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "mirror.png"))]);
@@ -84,59 +84,51 @@ namespace BBTimes.Manager
 			room.ForEach(x => x.selection.posterChance = 0f);
 			sets.container = room[0].selection.roomFunctionContainer;
 
-			var group = new RoomTypeGroup()
+			var group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Standard,
 				stickToHallChance = 1f,
-				generateDoors = true,
 				minRooms = 0,
 				maxRooms = 2,
-				potentialAssets = [.. room.FilterRoomAssetsByFloor(0)],
-				priority = RoomGroupPriority.BeforeExtraRooms,
-				textureGroupName = "Bathroom"
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(0)],
+				name = "Bathroom",
+				light = [new() { selection = bathLightPre }],
 			};
 
-			floorDatas[0].RoomAssets.Add(new() { name = "Bathroom" }, group);
+			floorDatas[0].RoomAssets.Add(group);
 
-			group = new RoomTypeGroup()
+			group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Standard,
 				stickToHallChance = 0.7f,
-				generateDoors = true,
 				minRooms = 1,
 				maxRooms = 2,
-				potentialAssets = [.. room.FilterRoomAssetsByFloor(1)],
-				priority = RoomGroupPriority.BeforeExtraRooms,
-				textureGroupName = "Bathroom"
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(1)],
+				name = "Bathroom",
+				light = [new() { selection = bathLightPre }]
 			};
 
-			floorDatas[1].RoomAssets.Add(new() { name = "Bathroom" }, group);
+			floorDatas[1].RoomAssets.Add(group);
 
-			group = new RoomTypeGroup()
+			group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Standard,
 				stickToHallChance = 0.7f,
-				generateDoors = true,
 				minRooms = 1,
 				maxRooms = 2,
-				potentialAssets = [.. room.FilterRoomAssetsByFloor(3)],
-				priority = RoomGroupPriority.BeforeExtraRooms,
-				textureGroupName = "Bathroom"
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(3)],
+				name = "Bathroom",
+				light = [new() { selection = bathLightPre }]
 			};
 
-			floorDatas[3].RoomAssets.Add(new() { name = "Bathroom" }, group);
-			group = new RoomTypeGroup()
+			floorDatas[3].RoomAssets.Add(group);
+			group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Standard,
 				stickToHallChance = 0.45f,
-				generateDoors = true,
 				minRooms = 3,
 				maxRooms = 5,
-				potentialAssets = [.. room.FilterRoomAssetsByFloor(2)],
-				priority = RoomGroupPriority.BeforeExtraRooms,
-				textureGroupName = "Bathroom"
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(2)],
+				name = "Bathroom",
+				light = [new() { selection = bathLightPre }]
 			};
-			floorDatas[2].RoomAssets.Add(new() { name = "Bathroom" }, group);
+			floorDatas[2].RoomAssets.Add(group);
 
 			// *******************************************************
 			// *******************************************************
@@ -149,29 +141,23 @@ namespace BBTimes.Manager
 				AssetLoader.TextureFromFile(GetRoomAsset("AbandonedRoom", "oldDoorOpen.png")),
 				AssetLoader.TextureFromFile(GetRoomAsset("AbandonedRoom", "oldDoorClosed.png"))));
 
-			room = GetAllAssets(GetRoomAsset("AbandonedRoom"), lightPre, 250, 45, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("AbandonedRoom", "MapBG_AbandonedRoom.png")));
+			room = GetAllAssets(GetRoomAsset("AbandonedRoom"), 250, 45, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("AbandonedRoom", "MapBG_AbandonedRoom.png")));
 			room[0].selection.AddRoomFunctionToContainer<ShowItemsInTheEnd>();
 			room.ForEach(x => x.selection.posterChance = 0f);
 			sets.container = room[0].selection.roomFunctionContainer;
 
-			group = new RoomTypeGroup()
+			group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Standard,
 				stickToHallChance = 0.45f,
-				generateDoors = true,
 				minRooms = 1,
 				maxRooms = 1,
-				potentialAssets = [.. room],
-				priority = RoomGroupPriority.AfterAll,
-				textureGroupName = "AbandonedRoom"
-			};
-			floorDatas[2].RoomAssets.Add(new()
-			{
+				potentialRooms = [.. room],
 				name = "AbandonedRoom",
-				potentialCeilTextures = [new() { selection = ceiling, weight = 50 }],
-				potentialFloorTextures = [new() { selection = carpet, weight = 50 }]
-			},
-				group);
+				light = [lightPre],
+				ceilingTexture = [ceiling],
+				floorTexture = [carpet]
+			};
+			floorDatas[2].RoomAssets.Add(group);
 
 			//***************************************************
 			//***************************************************
@@ -234,66 +220,58 @@ namespace BBTimes.Manager
 				AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", "computerDoorClosed.png"))));
 
 
-			room = GetAllAssets(GetRoomAsset("ComputerRoom"), lightPre, 75, 50, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", "MapBG_Computer.png")));
+			room = GetAllAssets(GetRoomAsset("ComputerRoom"), 75, 50, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", "MapBG_Computer.png")));
 			room[0].selection.AddRoomFunctionToContainer<RandomPosterFunction>().posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", "ComputerPoster.png"))])];
 			room[0].selection.AddRoomFunctionToContainer<EventMachineSpawner>().machinePre = evMac;
 
 			sets.container = room[0].selection.roomFunctionContainer;
 
-			group = new RoomTypeGroup()
+			group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Standard,
 				stickToHallChance = 1f,
-				generateDoors = true,
 				minRooms = 1,
 				maxRooms = 1,
-				potentialAssets = [.. room.FilterRoomAssetsByFloor(0)],
-				priority = RoomGroupPriority.BeforeOffice,
-				textureGroupName = "ComputerRoom"
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(0)],
+				light = [lightPre],
+				name = "ComputerRoom"
 			};
 
-			floorDatas[0].RoomAssets.Add(new() { name = "ComputerRoom" }, group);
+			floorDatas[0].RoomAssets.Add(group);
 
-			group = new RoomTypeGroup()
+			group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Exits,
 				stickToHallChance = 1f,
-				generateDoors = true,
 				minRooms = 1,
 				maxRooms = 2,
-				potentialAssets = [.. room.FilterRoomAssetsByFloor(1)],
-				priority = RoomGroupPriority.BeforeOffice,
-				textureGroupName = "ComputerRoom"
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(1)],
+				name = "ComputerRoom",
+				light = [lightPre],
 			};
 
-			floorDatas[1].RoomAssets.Add(new() { name = "ComputerRoom" }, group);
-			group = new RoomTypeGroup()
+			floorDatas[1].RoomAssets.Add(group);
+			group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Exits,
 				stickToHallChance = 1f,
-				generateDoors = true,
 				minRooms = 1,
 				maxRooms = 2,
-				potentialAssets = [.. room.FilterRoomAssetsByFloor(3)],
-				priority = RoomGroupPriority.BeforeOffice,
-				textureGroupName = "ComputerRoom"
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(3)],
+				name = "ComputerRoom",
+				light = [lightPre]
 			};
 
-			floorDatas[3].RoomAssets.Add(new() { name = "ComputerRoom" }, group);
+			floorDatas[3].RoomAssets.Add(group);
 
-			group = new RoomTypeGroup()
+			group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Exits,
 				stickToHallChance = 1f,
-				generateDoors = true,
 				minRooms = 1,
 				maxRooms = 3,
-				potentialAssets = [.. room.FilterRoomAssetsByFloor(2)],
-				priority = RoomGroupPriority.BeforeOffice,
-				textureGroupName = "ComputerRoom"
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(2)],
+				name = "ComputerRoom",
+				light = [lightPre]
 			};
 
-			floorDatas[2].RoomAssets.Add(new() { name = "ComputerRoom" }, group);
+			floorDatas[2].RoomAssets.Add(group);
 
 			//***************************************************
 			//***************************************************
@@ -320,7 +298,7 @@ namespace BBTimes.Manager
 
 			Superintendent.AddAllowedRoom(sets.category);
 
-			room = GetAllAssets(GetRoomAsset("DribbleRoom"), lightPre, 75, 50);
+			room = GetAllAssets(GetRoomAsset("DribbleRoom"), 75, 50);
 			room[0].selection.AddRoomFunctionToContainer<RuleFreeZone>();
 			room[0].selection.AddRoomFunctionToContainer<PlayerRunCornerFunction>();
 
@@ -328,8 +306,8 @@ namespace BBTimes.Manager
 
 			room.ForEach(x =>
 			{
-				x.selection.wallTex = saloonWall;
-				x.selection.ceilTex = ceiling;
+				x.selection.wallTex = saloonWall.selection;
+				x.selection.ceilTex = ceiling.selection;
 			});
 
 			AddAssetsToNpc<Dribble>(room);
@@ -375,7 +353,7 @@ namespace BBTimes.Manager
 
 			shelf.gameObject.AddObjectToEditor();
 
-			room = GetAllAssets(GetRoomAsset("Closet"), sweepCloset.lightPre, sweepCloset.maxItemValue, 100, sweepCloset.roomFunctionContainer);
+			room = GetAllAssets(GetRoomAsset("Closet"), sweepCloset.maxItemValue, 100, sweepCloset.roomFunctionContainer);
 			room[0].selection.AddRoomFunctionToContainer<HighCeilingRoomFunction>().ceilingHeight = 1;
 
 			room.ForEach(x => {
@@ -386,6 +364,7 @@ namespace BBTimes.Manager
 				x.selection.ceilTex = sweepCloset.ceilTex;
 				x.selection.wallTex = sweepCloset.wallTex;
 				x.selection.florTex = sweepCloset.florTex;
+				x.selection.lightPre = sweepCloset.lightPre;
 			});
 
 			AddAssetsToNpc<GottaSweep>(room);
@@ -452,24 +431,24 @@ namespace BBTimes.Manager
 				AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "kitchenDoorClosed.png"))));
 
 
-			room = GetAllAssets(GetRoomAsset("Kitchen"), EmptyGameObject.transform, 75, 35, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "MapBG_Kitchen.png")));
+			room = GetAllAssets(GetRoomAsset("Kitchen"), 75, 35, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "MapBG_Kitchen.png")));
 
 			Object.Destroy(room[0].selection.roomFunctionContainer.gameObject); // It doesn't need one, it's empty
 
-			group = new RoomTypeGroup()
+			group = new RoomGroup()
 			{
-				spawnMethod = RoomGroupSpawnMethod.Standard,
 				stickToHallChance = 1f,
-				generateDoors = true,
 				minRooms = 0,
 				maxRooms = 1,
-				potentialAssets = [.. room],
-				priority = RoomGroupPriority.BeforeExtraRooms,
-				textureGroupName = "Kitchen"
+				potentialRooms = [.. room],
+				name = "Kitchen",
+				light = [new() { selection = EmptyGameObject.transform }],
+				ceilingTexture = [ceiling],
+				wallTexture = [normWall]
 			};
 
 			for (int i = 1; i < floorDatas.Count; i++)
-				floorDatas[i].RoomAssets.Add(new() { name = "Kitchen", potentialCeilTextures = [new() { selection = ceiling}], potentialWallTextures = [new() { selection = normWall}] }, group);
+				floorDatas[i].RoomAssets.Add(group);
 
 
 			// ================================================ Special Room Creation ====================================================
@@ -560,7 +539,7 @@ namespace BBTimes.Manager
 
 			sets = RegisterSpecialRoom("BasketballArea", new(1f, 0.339f, 0f));
 
-			room = GetAllAssets(GetRoomAsset("BasketballArea"), null, 2, 55);
+			room = GetAllAssets(GetRoomAsset("BasketballArea"), 2, 55);
 			var swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = baldiBall.transform, weight = 100 }], prefabToSwap = basketballPile.transform };
 			var floorTex = AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "dirtyGrayFloor.png"));
 			AddTextureToEditor("dirtyGrayFloor", floorTex);
@@ -570,8 +549,8 @@ namespace BBTimes.Manager
 				x.selection.basicSwaps.Add(swap);
 				x.selection.keepTextures = true;
 				x.selection.florTex = floorTex;
-				x.selection.wallTex = saloonWall;
-				x.selection.ceilTex = ceiling;
+				x.selection.wallTex = saloonWall.selection;
+				x.selection.ceilTex = ceiling.selection;
 			});
 
 
@@ -645,7 +624,7 @@ namespace BBTimes.Manager
 
 			sets = RegisterSpecialRoom("Forest", new(0f, 0.45f, 0f));
 
-			room = GetAllAssets(GetRoomAsset("Forest"), null, 75, 1);
+			room = GetAllAssets(GetRoomAsset("Forest"), 75, 1);
 			//Swap for 99 trees
 			 swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = treeEasterEgg.transform, weight = 100 }], prefabToSwap = tree.transform };
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("Forest", "treeWall.png"));
@@ -698,13 +677,14 @@ namespace BBTimes.Manager
 
 			//Classrooms
 			var classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialClassRooms.Length != 0).potentialClassRooms[0];
-			room = GetAllAssets(GetRoomAsset("Class"), classWeightPre.selection.lightPre, classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+			room = GetAllAssets(GetRoomAsset("Class"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
 				x.selection.posterChance = classWeightPre.selection.posterChance;
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
+				x.selection.lightPre = classWeightPre.selection.lightPre;
 				x.selection.keepTextures = false;
 			});
 
@@ -735,7 +715,7 @@ namespace BBTimes.Manager
 			focusedStudent.sprScreaming = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "studentScreaming.png")), 25f);
 			focusedStudent.sprNormal = student.sprite;
 
-			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.lightPre, classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
 
 			room.ForEach(x =>
 			{
@@ -747,6 +727,7 @@ namespace BBTimes.Manager
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
 				x.selection.mapMaterial = classWeightPre.selection.mapMaterial;
+				x.selection.lightPre = classWeightPre.selection.lightPre;
 				x.selection.keepTextures = false;
 			});
 
@@ -756,13 +737,14 @@ namespace BBTimes.Manager
 
 			//Faculties
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialFacultyRooms.Length != 0).potentialFacultyRooms[0];
-			room = GetAllAssets(GetRoomAsset("Faculty"), classWeightPre.selection.lightPre, classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+			room = GetAllAssets(GetRoomAsset("Faculty"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
 				x.selection.posterChance = classWeightPre.selection.posterChance;
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
+				x.selection.lightPre = classWeightPre.selection.lightPre;
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)
@@ -771,13 +753,14 @@ namespace BBTimes.Manager
 
 			//Offices
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialOffices.Length != 0).potentialOffices[0];
-			room = GetAllAssets(GetRoomAsset("Office"), classWeightPre.selection.lightPre, classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+			room = GetAllAssets(GetRoomAsset("Office"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
 				x.selection.posterChance = classWeightPre.selection.posterChance;
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
+				x.selection.lightPre = classWeightPre.selection.lightPre;
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)
@@ -786,13 +769,14 @@ namespace BBTimes.Manager
 			// Hall
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPrePlotSpecialHalls.Length != 0).potentialPrePlotSpecialHalls[0];
 
-			room = GetAllAssets(GetRoomAsset("PrevHalls"), classWeightPre.selection.lightPre, classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, true);
+			room = GetAllAssets(GetRoomAsset("PrevHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, true);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
 				x.selection.posterChance = classWeightPre.selection.posterChance;
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
+				x.selection.lightPre = classWeightPre.selection.lightPre;
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)
@@ -800,13 +784,14 @@ namespace BBTimes.Manager
 
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPostPlotSpecialHalls.Length != 0).potentialPostPlotSpecialHalls[0];
 
-			room = GetAllAssets(GetRoomAsset("AfterHalls"), classWeightPre.selection.lightPre, classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, true);
+			room = GetAllAssets(GetRoomAsset("AfterHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, true);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
 				x.selection.posterChance = classWeightPre.selection.posterChance;
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
+				x.selection.lightPre = classWeightPre.selection.lightPre;
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)
@@ -875,7 +860,7 @@ namespace BBTimes.Manager
 			return settings;
 		}
 
-		static List<WeightedRoomAsset> GetAllAssets(string path, Transform lightPre, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null)
+		static List<WeightedRoomAsset> GetAllAssets(string path, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null)
 		{
 			List<WeightedRoomAsset> assets = [];
 			RoomFunctionContainer container = cont;
@@ -883,7 +868,7 @@ namespace BBTimes.Manager
 			{
 				try
 				{
-					var asset = RoomFactory.CreateAssetFromPath(file, lightPre, maxValue, isOffLimits, container, isAHallway, secretRoom, mapBg);
+					var asset = RoomFactory.CreateAssetFromPath(file, maxValue, isOffLimits, container, isAHallway, secretRoom, mapBg);
 					assets.Add(new() { selection = asset, weight = assetWeight });
 					_moddedAssets.Add(asset);
 					if (!container)

@@ -77,7 +77,7 @@ namespace BBTimes.Manager
 		static void SetAssets()
 		{
 			// Some materials
-			ObjectCreationExtension.defaultMaterial = GenericExtensions.FindResourceObjectByName<Material>("LockerTest"); // Actually a good material, has even lightmap
+			ObjectCreationExtension.defaultMaterial = GenericExtensions.FindResourceObjectByName<Material>("Locker_Red"); // Actually a good material, has even lightmap
 			ObjectCreationExtension.defaultDustMaterial = GenericExtensions.FindResourceObjectByName<Material>("DustTest");
 			ObjectCreationExtension.defaultCubemap = GenericExtensions.FindResourceObjectByName<Cubemap>("Cubemap_DayStandard");
 			ObjectCreationExtension.mapMaterial = GenericExtensions.FindResourceObjectByName<MapIcon>("Icon_Prefab").spriteRenderer.material;
@@ -254,7 +254,7 @@ namespace BBTimes.Manager
 		public readonly List<SchoolTextureHolder> SchoolTextures = [];
 
 		// Rooms
-		public readonly Dictionary<RoomTextureGroup, RoomTypeGroup> RoomAssets = [];
+		public readonly List<RoomGroup> RoomAssets = [];
 		public readonly List<WeightedRoomAsset> SpecialRooms = [];
 		public readonly List<WeightedRoomAsset> Classrooms = [];
 		public readonly List<WeightedRoomAsset> Faculties = [];

@@ -8,7 +8,7 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
-			if (usingPogo || pm.hidden)
+			if (usingPogo || pm.plm.Entity.Frozen)
 			{
 				Destroy(gameObject);
 				return false;
@@ -38,7 +38,8 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			Force force = new(pm.transform.forward, 28f, -2.5f);
 			entity.AddForce(force);
-			pm.Hide(true);
+			pm.plm.Entity.SetFrozen(true);
+			pm.plm.Entity.SetInteractionState(false);
 
 			float time = 0f;
 
@@ -63,7 +64,8 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			pm.Hide(false);
+			pm.plm.Entity.SetInteractionState(true);
+			pm.plm.Entity.SetFrozen(false);
 			pm.Teleport(transform.position);
 			Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).UpdateTargets(null, targetIdx);
 

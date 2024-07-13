@@ -60,8 +60,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					}
 				}
 
-
-				__instance.ForceAddPermanentLighting(t, color);
+				Singleton<CoreGameManager>.Instance.UpdateLighting(Color.white, t.position);
 
 				if (dirs.Count == 0) continue;
 
@@ -96,7 +95,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				if (!t.Null || t.Hidden || t.offLimits) continue;
 				var p = Instantiate(plane, planeCover.transform);
 				p.transform.localPosition = t.FloorWorldPosition;
-				__instance.ForceAddPermanentLighting(t, color);
+				Singleton<CoreGameManager>.Instance.UpdateLighting(Color.white, t.position);
 
 				if (decorations.Length > 0 && rng.NextDouble() > 0.75d)
 				{

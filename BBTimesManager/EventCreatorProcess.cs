@@ -21,10 +21,9 @@ namespace BBTimes.Manager
 				.SetEnum("Principalout")
 				.SetMinMaxTime(40f, 80f)
 				.AddRequiredCharacters([Character.Principal, ..GetReplacementNPCs(Character.Principal)])
-				.SetDescription("Event_PriOut")
 				.SetName("Principalout")
 				.Build()
-				.SetupEvent<CustomEventData>();
+				.SetupEvent<PrincipalOutCustomData>();
 
 			
 			floorDatas[0].Events.Add(new() { selection = e, weight = 65 });
@@ -35,7 +34,6 @@ namespace BBTimes.Manager
 			e = new RandomEventBuilder<BlackOut>(plug.Info)
 				.SetEnum("Blackout")
 				.SetMinMaxTime(55f, 90f)
-				.SetDescription("Event_BlackOut")
 				.SetName("Blackout")
 				.Build()
 				.SetupEvent<BlackOutCustomData>();
@@ -47,7 +45,6 @@ namespace BBTimes.Manager
 			e = new RandomEventBuilder<FrozenEvent>(plug.Info)
 				.SetEnum("Frozenschool")
 				.SetMinMaxTime(45f, 60f)
-				.SetDescription("Event_FreezeEvent")
 				.SetName("FrozenEvent")
 				.Build()
 				.SetupEvent<FrozenEventCustomData>();
@@ -63,7 +60,6 @@ namespace BBTimes.Manager
 			e = new RandomEventBuilder<CurtainsClosedEvent>(plug.Info)
 				.SetEnum("Curtainsclosed")
 				.SetMinMaxTime(30f, 40f)
-				.SetDescription("Event_CurtClosed")
 				.SetName("CurtainsClosed")
 				.Build()
 				.SetupEvent<CurtainsClosedEventCustomData>();

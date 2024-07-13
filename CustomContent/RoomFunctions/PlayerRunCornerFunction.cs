@@ -61,10 +61,8 @@ namespace BBTimes.CustomContent.RoomFunctions
 		{
 			player.Teleport(cornersToGo[0]);
 			Vector3 pos = cornersToGo[0];
-			int prevLayer = player.gameObject.layer;
 			activeRunners++;
-			player.Hide(true);
-			player.gameObject.layer = prevLayer; // Will make the player literally stuck, but still able of dying
+			player.plm.Entity.SetFrozen(true);
 			int i = 0;
 			while (true)
 			{
@@ -85,7 +83,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					if (player.plm.stamina <= 0f)
 					{
 						activeRunners--;
-						player.Hide(false);
+						player.plm.Entity.SetFrozen(false);
 						yield break;
 					}
 

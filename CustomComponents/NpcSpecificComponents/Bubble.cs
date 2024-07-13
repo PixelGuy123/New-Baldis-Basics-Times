@@ -107,10 +107,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 			target.SetFrozen(!active);
 			target.SetTrigger(active);
-			if (target.CompareTag("Player"))
-				target.GetComponent<PlayerManager>()?.Hide(!active);
-			else if (target.CompareTag("NPC"))
-				target.GetComponent<NPC>()?.DisableCollision(!active);
+			target.SetInteractionState(active);
 			if (active)
 				target.SetHeight(height);
 			

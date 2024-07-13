@@ -45,7 +45,8 @@ namespace BBTimes.ModPatches
 				return true;
 			var cam = new GameObject("CameraView").AddComponent<Camera>();
 			var player = Singleton<CoreGameManager>.Instance.GetPlayer(0); // Specifically for Player 0
-			player.Hide(true);
+			player.plm.Entity.SetInteractionState(false);
+			player.plm.Entity.SetFrozen(true);
 			player.Teleport(__instance.Ec.CellFromPosition(player.transform.position).CenterWorldPosition);
 
 			cam.transform.position = player.transform.position;
@@ -167,20 +168,9 @@ namespace BBTimes.ModPatches
 
 			if (___elevatorsClosed == 1)
 			{
-				List<Cell> list = [];
-				foreach (Cell tileController in ___ec.AllExistentCells())
-				{
-					if (tileController.lightStrength <= 1)
-					{
-						tileController.lightColor = Color.red;
-						___ec.SetLight(true, tileController);
-					}
-					else
-					list.Add(tileController);
-				}
 				Shader.SetGlobalColor("_SkyboxColor", Color.red);
 				Singleton<MusicManager>.Instance.SetSpeed(0.1f);
-				__instance.StartCoroutine(___ec.LightChanger(list, true, 0.2f));
+				__instance.StartCoroutine(___ec.LightChanger(___ec.AllExistentCells(), 0.2f));
 				if (__instance.name.StartsWith("Lvl3"))
 					Singleton<MusicManager>.Instance.QueueFile(chaos0, true);
 				return;
@@ -194,8 +184,8 @@ namespace BBTimes.ModPatches
 				___ec.standardDarkLevel = new Color(1f, 0f, 0f);
 				foreach (var c in ___ec.AllExistentCells())
 				{
-					___ec.SetLight(true, c);
 					c.lightColor = Color.red;
+					c.SetLight(true);
 				}
 
 				return;
