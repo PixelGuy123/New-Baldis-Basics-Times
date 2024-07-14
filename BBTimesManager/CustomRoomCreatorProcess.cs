@@ -608,7 +608,7 @@ namespace BBTimes.Manager
 			audSource.loop = true;
 
 			// BearTrap
-			var trapRender = ObjectCreationExtensions.CreateSpriteBillboard(man.Get<Sprite>("BeartrapOpened")).AddSpriteHolder(1f, 0);
+			var trapRender = ObjectCreationExtensions.CreateSpriteBillboard(man.Get<Sprite[]>("Beartrap")[1]).AddSpriteHolder(1f, 0);
 			var trap = trapRender.transform.parent.gameObject.AddComponent<PersistentBearTrap>();
 			trap.name = "Beartrap";
 
@@ -618,7 +618,7 @@ namespace BBTimes.Manager
 
 			trap.audMan = trap.gameObject.CreatePropagatedAudioManager(75f, 105f);
 			trap.audCatch = man.Get<SoundObject>("BeartrapCatch");
-			trap.sprClosed = man.Get<Sprite>("BeartrapClosed");
+			trap.sprClosed = man.Get<Sprite[]>("Beartrap")[0];
 			trap.sprOpen = trapRender.sprite;
 			trap.renderer = trapRender;
 
@@ -699,7 +699,8 @@ namespace BBTimes.Manager
 				AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "Focus_Room_Door_Opened.png")),
 				AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "Focus_Room_Door_Closed.png"))));
 
-			var student = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "studentFocused.png")), 25f));
+			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
+			var student = ObjectCreationExtensions.CreateSpriteBillboard(studentSprs[0]);
 			student.name = "FocusedStudent";
 			student.gameObject.AddObjectToEditor();
 
@@ -711,8 +712,8 @@ namespace BBTimes.Manager
 			focusedStudent.audDisturbed.additionalKeys = [new() { key = "Vfx_FocusStd_Scream2", time = 1.209f }];
 
 			focusedStudent.renderer = student;
-			focusedStudent.sprSpeaking = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "studentSpeaking.png")), 25f);
-			focusedStudent.sprScreaming = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "studentScreaming.png")), 25f);
+			focusedStudent.sprSpeaking = studentSprs[1];
+			focusedStudent.sprScreaming = studentSprs[2];
 			focusedStudent.sprNormal = student.sprite;
 
 			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);

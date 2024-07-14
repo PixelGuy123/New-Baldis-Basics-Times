@@ -12,15 +12,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class BubblyCustomData : CustomNPCData
 	{
-		protected override Sprite[] GenerateSpriteOrder()
-		{
-			Sprite[] anim = new Sprite[10];
-			for (int i = 0; i < 8; i++)
-				anim[i] = GetSprite(pixs, $"Bubbly{i + 1}.png");
-			anim[8] = GetSprite(pixs, "Bubblyactive.png");
-			anim[9] = GetSprite(16f, "bubble.png");
-			return anim;
-		}
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[.. GetSpriteSheet(3, 3, pixs, "bubblySheet.png"), GetSprite(16f, "bubble.png")];
 		protected override SoundObject[] GenerateSoundObjects() =>
 			[BBTimesManager.man.Get<SoundObject>("audPop"), GetSound("Bubbly_BubbleSpawn.mp3", "Vfx_Bubbly_Fillup", SoundType.Voice, new(0.6f, 0.6f, 0f))];
 		public override void SetupPrefab()

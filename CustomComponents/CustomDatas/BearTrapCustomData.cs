@@ -11,7 +11,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			[BBTimesManager.man.Get<SoundObject>("BeartrapCatch")];
 
 		protected override Sprite[] GenerateSpriteOrder() =>
-			[BBTimesManager.man.Get<Sprite>("BeartrapClosed"), BBTimesManager.man.Get<Sprite>("BeartrapOpened")];
+			BBTimesManager.man.Get<Sprite[]>("Beartrap");
 
 		public override void SetupPrefab()
 		{

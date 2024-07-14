@@ -82,9 +82,12 @@ namespace BBTimes.CustomContent.Objects
 
 		IEnumerator Teleport(Entity subject)
 		{
-			subject.SetFrozen(true);
-			subject.SetTrigger(false);
-			subject.SetInteractionState(false);
+			if (subject)
+			{
+				subject.SetFrozen(true);
+				subject.SetTrigger(false);
+				subject.SetInteractionState(false);
+			}
 			ForceDisableCollision = true;
 
 			Vector3 newPos;
@@ -109,7 +112,8 @@ namespace BBTimes.CustomContent.Objects
 			while (sink > 0.1f)
 			{
 				sink -= ec.EnvironmentTimeScale * Time.deltaTime * sinkSpeed;
-				subject.SetHeight(sink * height);
+				if (subject)
+					subject.SetHeight(sink * height);
 				yield return null;
 			}
 
@@ -128,14 +132,18 @@ namespace BBTimes.CustomContent.Objects
 			while (sink < 1f)
 			{
 				sink += ec.EnvironmentTimeScale * Time.deltaTime * sinkSpeed;
-				subject.SetHeight(sink * height);
+				if (subject)
+					subject.SetHeight(sink * height);
 				yield return null;
 			}
 
-			subject.SetHeight(height);
-			subject.SetFrozen(false);
-			subject.SetTrigger(true);
-			subject.SetInteractionState(true);
+			if (subject)
+			{
+				subject.SetHeight(height);
+				subject.SetFrozen(false);
+				subject.SetTrigger(true);
+				subject.SetInteractionState(true);
+			}
 
 			if (linkedTrapdoor != null)
 			{

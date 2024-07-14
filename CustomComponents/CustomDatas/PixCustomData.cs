@@ -29,34 +29,9 @@ namespace BBTimes.CustomComponents.CustomDatas
 			return sds;
 		}
 
-		protected override Sprite[] GenerateSpriteOrder()
-		{
-			int z = 0;
-			var sp = new Sprite[28];
-			GetBoth("pixfrontwalk");
-			GetBoth("npixleftwalk");
-			GetBoth("pixbackwalk");
-			GetBoth("pixdrightwalk");
-			GetBoth("pixfrontangerwalk");
-			GetBoth("pixleftangerwalk");
-			GetBoth("pixrightangerwalk");
-			GetBoth("rpixfronthappywalk");
-			GetBoth("rpixlefthappywalk");
-			GetBoth("rpixrighthappywalk");
-			GetBoth("xpixshoot");
-			GetBoth("zlaserbeam", 25f);
-
-			for (int i = 1; i <= 4; i++)
-				sp[z++] = GetSprite(15f, $"zshock{i}.png");
-
-			void GetBoth(string name, float p = 12f)
-			{
-				for (int i = 1; i <= 2; i++)
-					sp[z++] = GetSprite(p, name + $"{i}.png");
-			}
-
-			return sp;
-		}
+		protected override Sprite[] GenerateSpriteOrder() =>
+		[..GetSpriteSheet(22, 1, 12f, "pix.png"), ..GetSpriteSheet(2, 1, 25f, "laserBeam.png"), ..GetSpriteSheet(4, 1, 15f, "shock.png")];
+		
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();

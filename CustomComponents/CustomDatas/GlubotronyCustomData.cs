@@ -11,19 +11,10 @@ namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class GlubotronyCustomData : CustomNPCData
 	{
-		protected override Sprite[] GenerateSpriteOrder()
-		{
-			Sprite[] spr = new Sprite[25];
-			int z = 0;
-			for (int i = 1; i <= 8; i++)
-				spr[z++] = GetSprite(pixelsPerUnit, $"idle{i}.png");
-			for (int i = 1; i <= 8; i++)
-				spr[z++] = GetSprite(pixelsPerUnit, $"leftstep{i}.png");
-			for (int i = 1; i <= 8; i++)
-				spr[z++] = GetSprite(pixelsPerUnit, $"rightstep{i}.png");
-			spr[z++] = GetSprite(25f, "glue.png");
-			return spr;
-		}
+		protected override Sprite[] GenerateSpriteOrder() => 
+			[.. GetSpriteSheet(8, 1, pixelsPerUnit, "gluebotronyIdle.png"), .. GetSpriteSheet(4, 4, pixelsPerUnit, "gluebotronyMoving.png"), GetSprite(25f, "glue.png")];
+		
+		
 
 		protected override SoundObject[] GenerateSoundObjects() =>
 		[GetSoundNoSub("PrepareWalk.wav", SoundType.Voice),

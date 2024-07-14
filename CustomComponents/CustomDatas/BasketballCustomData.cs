@@ -14,13 +14,9 @@ namespace BBTimes.CustomComponents.CustomDatas
 		GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white),
 		BBTimesManager.man.Get<SoundObject>("audPop")];
 
-		protected override Sprite[] GenerateSpriteOrder()
-		{
-			Sprite[] sprites = new Sprite[5];
-			for (int i = 0; i < sprites.Length; i++)
-				sprites[i] = BBTimesManager.man.Get<Sprite>($"basketBall{i}");
-			return sprites;
-		}
+		protected override Sprite[] GenerateSpriteOrder() =>
+			BBTimesManager.man.Get<Sprite[]>("basketBall");
+		
 
 		public override void SetupPrefab()
 		{

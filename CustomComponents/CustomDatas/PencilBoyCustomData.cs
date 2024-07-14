@@ -16,7 +16,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			];
 
 		protected override Sprite[] GenerateSpriteOrder() =>
-			[GetSprite(65, "angry.png"), GetSprite(65, "pbangrySpot.png"), GetSprite(65, "pbhappy.png"), GetSprite(65, "pbsuperangry.png")];
+			GetSpriteSheet(2, 2, 65f, "pencilBoy.png");
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();

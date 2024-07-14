@@ -12,11 +12,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class TrapdoorBuilderCustomData : CustomObjectPrefabData
 	{
 		protected override Sprite[] GenerateSpriteOrder() =>
-		[GetSprite(25f, "trapdoor_rng.png"),
-		GetSprite(25f, "trapdoor.png"),
-		GetSprite(25f, "trapdoor_rng_open.png"),
-		GetSprite(25f, "trapdoor_open.png")
-		];
+			GetSpriteSheet(2, 2, 25f, "traps.png");
 
 		protected override SoundObject[] GenerateSoundObjects() =>
 			[GetSound("trapDoor_shut.wav", "Sfx_Doors_StandardShut", SoundType.Voice, Color.white),

@@ -1,6 +1,8 @@
 ﻿using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
+using MTM101BaldAPI.Components;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
@@ -460,6 +462,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		NavigationState_TargetPlayer state;
 		readonly PlayerManager pm = pm;
+		ValueModifier valMod = new(addend: 999);
 		float stepDelay = 0f;
 		int idx = 0;
 
@@ -474,6 +477,7 @@ namespace BBTimes.CustomContent.NPCs
 			state = new NavigationState_TargetPlayer(dr, 63, pm.transform.position);
 			ChangeNavigationState(state);
 			dr.Navigator.passableObstacles.Add(PassableObstacle.Bully);
+			dr.GetNPCContainer().AddLookerMod(valMod);
 		}
 
 		public override void Exit()
@@ -481,13 +485,12 @@ namespace BBTimes.CustomContent.NPCs
 			base.Exit();
 			dr.Navigator.passableObstacles.Remove(PassableObstacle.Bully);
 			ChangeNavigationState(new NavigationState_DoNothing(dr, 0));
+			dr.GetNPCContainer().RemoveLookerMod(valMod);
 		}
 
 		public override void DestinationEmpty()
 		{
 			base.DestinationEmpty();
-			if (dr.behaviorStateMachine.CurrentNavigationState == state && Random.value > 0.6f)
-				dr.AngryNoise(true);
 			
 			ChangeNavigationState(new NavigationState_WanderRandom(dr, 0));
 		}
@@ -531,6 +534,13 @@ namespace BBTimes.CustomContent.NPCs
 				ChangeNavigationState(state);
 				state.UpdatePosition(player.transform.position);
 			}
+		}
+
+		public override void PlayerLost(PlayerManager player)
+		{
+			base.PlayerLost(player);
+			if (pm == player && Random.value > 0.6f)
+				dr.AngryNoise(true);
 		}
 
 		public override void Update()

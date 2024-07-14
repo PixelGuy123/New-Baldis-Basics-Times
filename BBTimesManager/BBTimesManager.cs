@@ -19,7 +19,6 @@ using System.IO;
 using System.Linq;
 //using System.Reflection;
 using UnityEngine;
-using static UnityEngine.Object;
 
 namespace BBTimes.Manager
 {
@@ -142,20 +141,18 @@ namespace BBTimes.Manager
 
 			var numList = machines[0].numberPres; //(MathMachineNumber[])nums.GetValue(machines[0]);
 			var numPrefab = numList[0];
-			var numTexs = Directory.GetFiles(Path.Combine(BasePlugin.ModPath, "objects", "Math Machine", "newNumBalls")); // Get all the new numballs
+			var numTexs = TextureExtensions.LoadSpriteSheet(3, 3, 30f, BasePlugin.ModPath, "objects", "Math Machine", "numBalls.png");
 
 			List<MathMachineNumber> numbers = [];
 
 			for (int i = 0; i < numTexs.Length; i++) // Fabricate them
 			{
-				var num = Instantiate(numPrefab);
-				num.GetComponent<Entity>().SetActive(false);
-				num.gameObject.layer = LayerStorage.iClickableLayer;
-				num.sprite.GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(numTexs[i]), 30f); // ((Transform)sprite.GetValue(num)).GetComponent<SpriteRenderer>().sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(numTexs[i]), 30f);
-				num.value = int.Parse(Path.GetFileNameWithoutExtension(numTexs[i]).Split('_')[1]); //value.SetValue(num, int.Parse(Path.GetFileNameWithoutExtension(numTexs[i]).Split('_')[1]));
-				num.gameObject.SetActive(false);
+				var num = numPrefab.DuplicatePrefab();
+			//	num.GetComponent<Entity>().SetActive(false);
+				//num.gameObject.layer = LayerStorage.iClickableLayer;
+				num.sprite.GetComponent<SpriteRenderer>().sprite = numTexs[i];
+				num.value = i + 10;
 				num.name = "NumBall_" + num.value; // value.GetValue(num);
-				DontDestroyOnLoad(num);
 				numbers.Add(num);
 			}
 
@@ -188,9 +185,7 @@ namespace BBTimes.Manager
 			EmptyGameObject.ConvertToPrefab(false);
 
 			// Gates for RUN
-			MainGameManagerPatches.gateTextures[0] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateR.png"));
-			MainGameManagerPatches.gateTextures[1] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateU.png"));
-			MainGameManagerPatches.gateTextures[2] = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "GateN.png")); // R U N
+			MainGameManagerPatches.gateTextures = TextureExtensions.LoadTextureSheet(3, 1, MiscPath, TextureFolder, "RUN.png");
 
 			// Player Visual
 			var tex = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "player.png")), 225f);
@@ -202,10 +197,8 @@ namespace BBTimes.Manager
 			// Global Assets
 			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "potion_drink.wav")), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
 			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "pc_stab.wav")), "Vfx_PC_stab", SoundType.Voice, Color.yellow));
-			for (int i = 0; i < 5; i++)
-				man.Add($"basketBall{i}", AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(GlobalAssetsPath, $"basketball{i}.png")), 25f));
-			man.Add("BeartrapClosed", AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(GlobalAssetsPath, "TrapClose.png")), 50f));
-			man.Add("BeartrapOpened", AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(GlobalAssetsPath, "TrapOpen.png")), 50f));
+			man.Add("basketBall", TextureExtensions.LoadSpriteSheet(5, 1, 25f, GlobalAssetsPath, "basketball.png"));
+			man.Add("Beartrap", TextureExtensions.LoadSpriteSheet(2, 1, 50f, GlobalAssetsPath, "trap.png"));
 			man.Add("BeartrapCatch",ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "trap_catch.wav")), "Vfx_BT_catch", SoundType.Voice, Color.white));
 			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "punch.wav")), "BB_Hit", SoundType.Voice, Color.white));
 

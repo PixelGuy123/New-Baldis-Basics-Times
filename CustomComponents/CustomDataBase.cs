@@ -3,6 +3,7 @@ using BBTimes.Plugin;
 using MTM101BaldAPI.AssetTools;
 using System.IO;
 using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
@@ -35,6 +36,12 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 		protected Sprite GetSprite(float pixelsPerUnit, Vector2 center, string texName) =>
 			AssetLoader.SpriteFromTexture2D(GetTexture(texName), center, pixelsPerUnit);
+
+		protected Sprite[] GetSpriteSheet(int horizontalTiles, int verticalTiles, float pixelsPerUnit, Vector2 center, string texName) =>
+			TextureExtensions.LoadSpriteSheet(horizontalTiles, verticalTiles, pixelsPerUnit, center, TexturePath, texName);
+
+		protected Sprite[] GetSpriteSheet(int horizontalTiles, int verticalTiles, float pixelsPerUnit, string texName) =>
+			GetSpriteSheet(horizontalTiles, verticalTiles, pixelsPerUnit, new Vector2(0.5f, 0.5f), texName);
 
 		protected SoundObject GetSound(string audioName, string subtitle, SoundType soundType, Color color) =>
 			ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(SoundPath, audioName)), subtitle, soundType, color);

@@ -5,7 +5,9 @@ using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.ModPatches;
 using BBTimes.Plugin;
 using MTM101BaldAPI.AssetTools;
+using PixelInternalAPI.Extensions;
 using System.IO;
+using UnityEngine;
 
 namespace BBTimes.Manager
 {
@@ -18,11 +20,12 @@ namespace BBTimes.Manager
 			// map icon for trapdoors
 			TrapDoorBuilder.icon = ObjectCreationExtension.CreateMapIcon<MapIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, "trapDoorIcon.png")), "TrapdoorMapIcon");
 			// map icon for buttons
+			Sprite[] sprs = TextureExtensions.LoadSpriteSheet(2, 2, ObjectCreationExtension.defaultMapIconPixelsPerUnit, IconPath, "buticons.png");
 			GameButtonSpawnPatch.butIconPre = [
-				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, "but_North.png")), "ButtonMapIcon_North"),
-				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, "but_West.png")), "ButtonMapIcon_West"),
-				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, "but_South.png")), "ButtonMapIcon_South"),
-				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, "but_East.png")), "ButtonMapIcon_East")
+				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(sprs[0], "ButtonMapIcon_North"),
+				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(sprs[1], "ButtonMapIcon_West"),
+				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(sprs[2], "ButtonMapIcon_South"),
+				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(sprs[3], "ButtonMapIcon_East")
 				];
 			// map icon for Event Machine
 			EventMachineSpawner.iconPre = ObjectCreationExtension.CreateMapIcon<MapIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, "fogMachineIcon.png")), "EventMachineIcon");

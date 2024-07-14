@@ -12,7 +12,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			];
 
 		protected override Sprite[] GenerateSpriteOrder() =>
-			[GetSprite(35f, "0thprizeSleep.png"), GetSprite(35f, "0thprize.png")];
+			GetSpriteSheet(2, 1, 35f, "0thprize.png");
 
 		public override void SetupPrefab()
 		{

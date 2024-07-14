@@ -10,7 +10,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		GetSound("leapy_stomp.wav", "Vfx_Leapy_Stomp", SoundType.Voice, new Color(0f, 0.3984f, 0f))];
 
 		protected override Sprite[] GenerateSpriteOrder() =>
-			[GetSprite(25f, "leapy_1.png"), GetSprite(25f, "leapy_2.png"), GetSprite(25f, "leapy_3.png")];
+			GetSpriteSheet(3, 1, 25f, "leapy.png");
 
 		public override void SetupPrefab()
 		{

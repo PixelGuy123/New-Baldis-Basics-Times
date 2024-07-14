@@ -8,13 +8,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class FakerCustomData : CustomNPCData
 	{
-		protected override Sprite[] GenerateSpriteOrder()
-		{
-			Sprite[] sprs = new Sprite[3];
-			for (int i = 0; i < sprs.Length; i++)
-				sprs[i] = GetSprite(31f, $"Faker{i + 1}.png");
-			return sprs;
-		}
+		protected override Sprite[] GenerateSpriteOrder() =>
+			GetSpriteSheet(3, 1, 31f, "faker.png");
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();

@@ -2,8 +2,6 @@
 using UnityEngine;
 using BBTimes.CustomContent.CustomItems;
 using PixelInternalAPI.Classes;
-using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
 namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class BellCustomData : CustomItemData
@@ -13,7 +11,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			[GetSound("bell_bellnoise.wav", "Vfx_BEL_Ring", SoundType.Voice, Color.white)];
 
 		protected override Sprite[] GenerateSpriteOrder() =>
-			[GetSprite(25f, "bellActive.png"), GetSprite(25f, "bellDeactive.png")];
+			GetSpriteSheet(2, 1, 25f, "bellWorld.png");
 
 		public override void SetupPrefab()
 		{

@@ -13,6 +13,7 @@ using BBTimes.CustomContent.CustomItems;
 using BBTimes.CustomContent.Events;
 using System.Collections;
 using System.Collections.Generic;
+using MTM101BaldAPI.SaveSystem;
 
 
 namespace BBTimes.Plugin
@@ -34,15 +35,6 @@ namespace BBTimes.Plugin
 			yield return "Setup the rest of the assets...";
 			ITM_GoldenQuarter.quarter = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;
 			BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
-			yield return "Adding shop items...";
-			GenericExtensions.FindResourceObjects<SceneObject>().Do(x => {
-				var floordata = BBTimesManager.floorDatas.FirstOrDefault(z => z.Floor == x.levelTitle);
-				if (floordata == null)
-					return;
-				
-				x.shopItems = x.shopItems.AddRangeToArray([.. floordata.ShopItems]);
-
-				});
 			yield break;
 		}
 
@@ -53,6 +45,7 @@ namespace BBTimes.Plugin
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAll();
 
+			ModdedSaveGame.AddSaveHandler(Info);
 
 			_modPath = AssetLoader.GetModPath(this);
 			BBTimesManager.plug = this;
@@ -215,6 +208,7 @@ namespace BBTimes.Plugin
 				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
 				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
 				//ld.fieldTripItems.AddRange(floordata.FieldTripItems);
+				ld.shopItems = ld.shopItems.AddRangeToArray([.. floordata.ShopItems]);
 				ld.roomGroup = ld.roomGroup.AddRangeToArray([.. floordata.RoomAssets]);
 				ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. floordata.SpecialRooms]);
 
@@ -317,7 +311,7 @@ namespace BBTimes.Plugin
 
 		public const string PLUGIN_NAME = "Baldi\'s Basics Times";
 
-		public const string PLUGIN_VERSION = "1.1.1";
+		public const string PLUGIN_VERSION = "1.1.3";
 	}
 
 	// Some cheats

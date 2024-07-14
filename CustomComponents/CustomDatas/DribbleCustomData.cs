@@ -38,17 +38,12 @@ namespace BBTimes.CustomComponents.CustomDatas
 			GetSound("DRI_AngryChase2.wav", "Vfx_Dribble_ChaseAngry2", SoundType.Voice, new(1f, 0.15f, 0.15f)),
 			GetSound("DRI_AngryCaught1.wav", "Vfx_Dribble_CaughtAngry1", SoundType.Voice, new(1f, 0.15f, 0.15f)),
 			GetSound("DRI_AngryCaught2.wav", "Vfx_Dribble_CaughtAngry2", SoundType.Voice, new(1f, 0.15f, 0.15f)),
-			GetSound("DRI_AngryPush2.wav", "Vfx_Dribble_Punch1", SoundType.Voice, new(1f, 0.15f, 0.15f)),
+			GetSound("DRI_AngryPush1.wav", "Vfx_Dribble_Punch1", SoundType.Voice, new(1f, 0.15f, 0.15f)),
 			GetSound("DRI_AngryPush2.wav", "Vfx_Dribble_Punch2", SoundType.Voice, new(1f, 0.15f, 0.15f))
 			];
 
 		protected override Sprite[] GenerateSpriteOrder() =>
-			[GetSprite(pixelsPerUnit, "dri_normal1.png"), GetSprite(pixelsPerUnit, "dri_normal2.png"),
-		GetSprite(pixelsPerUnit, "dri_idle1.png"), GetSprite(pixelsPerUnit, "dri_throw1.png"), GetSprite(pixelsPerUnit, "dri_throw2.png"),
-		GetSprite(pixelsPerUnit, "dri_win1.png"), GetSprite(pixelsPerUnit, "dri_win2.png"),
-		GetSprite(pixelsPerUnit, "dri_sad1.png"), GetSprite(pixelsPerUnit, "dri_sad2.png"),
-		GetSprite(pixelsPerUnit, "dri_crazy1.png"), GetSprite(pixelsPerUnit, "dri_crazy2.png"),
-		GetSprite(pixelsPerUnit, "dri_angryChase1.png"), GetSprite(pixelsPerUnit, "dri_angryChase2.png")];
+			GetSpriteSheet(13, 1, pixelsPerUnit, "dribbleSpriteSheet.png");
 
 		public override void SetupPrefab()
 		{
@@ -84,13 +79,9 @@ namespace BBTimes.CustomComponents.CustomDatas
 			dr.crazySprs = [storedSprites[9], storedSprites[10]];
 			dr.chasingSprs = [storedSprites[11], storedSprites[12]];
 
-			Sprite[] sprites = new Sprite[5];
-			for (int i = 0; i < sprites.Length; i++)
-				sprites[i] = BBTimesManager.man.Get<Sprite>($"basketBall{i}");
-
 			var basket = new GameObject("DribbleBasketBall");
 
-			var rendererBase = ObjectCreationExtensions.CreateSpriteBillboard(sprites[0]);
+			var rendererBase = ObjectCreationExtensions.CreateSpriteBillboard(BBTimesManager.man.Get<Sprite[]>("basketBall")[0]);
 			rendererBase.transform.SetParent(basket.transform);
 			rendererBase.transform.localPosition = Vector3.zero;
 			rendererBase.name = "sprite";
@@ -99,7 +90,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var comp = basket.AddComponent<PickableBasketball>();
 			comp.gameObject.layer = LayerStorage.iClickableLayer;
 			comp.entity = basket.CreateEntity(2f, 2f, basket.transform);
-			comp.spriteAnim = sprites;
+			comp.spriteAnim = BBTimesManager.man.Get<Sprite[]>("basketBall");
 			comp.audHit = soundObjects[15];
 
 			comp.renderer = rendererBase;

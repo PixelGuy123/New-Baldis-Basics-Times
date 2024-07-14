@@ -17,7 +17,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			}
 
 		protected override Sprite[] GenerateSpriteOrder() =>
-			[GetSprite(pixs, "curtainClosed.png"), GetSprite(pixs, "curtainOpen.png")];
+			GetSpriteSheet(2, 1, pixs, "curtains.png");
 
 		public override void SetupPrefab()
 		{

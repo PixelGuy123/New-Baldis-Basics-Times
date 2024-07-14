@@ -9,7 +9,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 				[GetSound("ChairRolling.wav","Vfx_OFC_Walk", SoundType.Voice, new(0.74609375f, 0.74609375f, 0.74609375f))];
 
 		protected override Sprite[] GenerateSpriteOrder() =>
-			[GetSprite(24f, "officechair.png"), GetSprite(24f, "officechairDisabled.png")];
+			GetSpriteSheet(2, 1, 24f, "officeChair.png");
 
 		public override void SetupPrefab()
 		{

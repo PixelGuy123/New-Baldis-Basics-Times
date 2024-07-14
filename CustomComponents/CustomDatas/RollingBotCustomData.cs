@@ -16,17 +16,9 @@ namespace BBTimes.CustomComponents.CustomDatas
 			GetSoundNoSub("shock.wav", SoundType.Voice),
 			GetSound("motor.wav", "Sfx_1PR_Motor", SoundType.Voice, new(0.7f, 0.7f, 0.7f))];
 
-		protected override Sprite[] GenerateSpriteOrder()
-		{
-			var sp = new Sprite[spriteAmount + 4];
-			int z = 0;
-			for (int i = 0; i < spriteAmount; i++)
-				sp[z++] = GetSprite(25f, $"botroll{i}.png");
-
-			for (int i = 0; i < 4; i++)
-				sp[z++] = GetSprite(25f, $"eletricity{i}.png");
-			return sp;
-		}
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[.. GetSpriteSheet(4, 4, 25f, "rollBotSheet.png"), ..GetSpriteSheet(2, 2, 25f, "shock.png")];
+		
 
 		public override void SetupPrefab()
 		{

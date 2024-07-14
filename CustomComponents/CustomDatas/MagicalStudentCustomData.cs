@@ -1,8 +1,6 @@
 ﻿using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomContent.NPCs;
-using BBTimes.CustomContent.Objects;
 using MTM101BaldAPI;
-using MTM101BaldAPI.ObjectCreation;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -14,8 +12,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override SoundObject[] GenerateSoundObjects() =>
 			[GetSound("MGS_Throw.wav", "Vfx_MGS_Magic", SoundType.Voice, Color.white)];
 		protected override Sprite[] GenerateSpriteOrder() =>
-			[GetSprite(65f, "MGS_Throw1.png"), GetSprite(65f, "MGS_Throw2.png"), GetSprite(65f, "MGS_Throw3.png"),
-			GetSprite(25f, "MGS_Magic.png")];
+			[.. GetSpriteSheet(3, 1, 65f, "MGS.png"), GetSprite(25f, "MGS_Magic.png")];
 
 		public override void SetupPrefab()
 		{

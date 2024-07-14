@@ -10,7 +10,6 @@ using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using BBTimes.Extensions;
 using MTM101BaldAPI;
-using BBTimes.Extensions.ObjectCreationExtensions;
 
 namespace BBTimes.Manager
 {
@@ -27,7 +26,7 @@ namespace BBTimes.Manager
 			fire.name = "Fire";
 			fire.material.SetTexture("_LightMap", null); // Don't get affected by reddish from schoolhouse
 			var fireAnim = fire.gameObject.AddComponent<SchoolFire>();
-			fireAnim.animation = [AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "SchoolFire.png")), 15f), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "SchoolFire2.png")), 15f)];
+			fireAnim.animation = TextureExtensions.LoadSpriteSheet(2, 1, 15f, MiscPath, TextureFolder, "schoolFire.png");
 			fireAnim.speed = 2f;
 			fireAnim.renderer = fire;
 

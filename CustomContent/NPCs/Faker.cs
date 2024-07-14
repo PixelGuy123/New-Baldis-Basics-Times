@@ -199,7 +199,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			player.transform.RotateSmoothlyToNextPoint(f.transform.position, 1.2f);
+			player.transform.RotateSmoothlyToNextPoint(f.transform.position, 0.45f);
 		}
 		public override void PlayerSighted(PlayerManager player)
 		{

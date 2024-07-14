@@ -11,24 +11,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 		GetSound("stunly_stun.wav", "Vfx_Stunly_Stun", SoundType.Voice, Color.white),
 		GetSound("StunlyChaseLaughter.wav", "Vfx_Stunly_Laughter", SoundType.Voice, Color.white)];
 
-		protected override Sprite[] GenerateSpriteOrder()
-		{
-			var sps = new Sprite[10];
-			sps[0] = GetSprite(35f, "Stunly.png");
-			int z = 1;
-			for (int i = 1; i <= 3; i++)
-				sps[z++] = GetSprite(35f, $"StunlyChasing{i}.png");
-			
-			for (int i = 0; i <= 2; i++)
-				sps[z++] = GetSprite(35f, $"StunlyCorrupt{i}.png");
-
-			sps[7] = GetSprite(1f, "stunlyOverlay.png");
-			sps[8] = GetSprite(1f, "stunlyOverlayReversed.png");
-			sps[9] = GetSprite(30f, "StunningStars.png");
-
-
-			return sps;
-		}
+		protected override Sprite[] GenerateSpriteOrder() =>
+			[.. GetSpriteSheet(7, 1, 35f, "stunly.png"), .. GetSpriteSheet(2, 1, 1f, "stunlyScreen.png"), GetSprite(30f, "StunningStars.png")];
 		public override void SetupPrefab()
 		{
 			base.SetupPrefab();

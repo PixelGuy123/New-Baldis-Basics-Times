@@ -145,7 +145,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.Build()
 				.SetupNPCData<ZeroPrizeCustomData>("0thPrize", "PST_0TH_Name", "PST_0TH_Desc", -1.14f)
-				.MarkAsReplacement(15, Character.Sweep); // 25
+				.MarkAsReplacement(25, Character.Sweep); // 25
 
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
 
