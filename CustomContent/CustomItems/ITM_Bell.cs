@@ -23,12 +23,19 @@ namespace BBTimes.CustomContent.CustomItems
 			if (owner == other.gameObject || !active)
 				return;
 
-			active = false;
-			renderer.sprite = deactiveSprite;
-			ec.MakeNoise(transform.position, noiseVal);
-			audMan.PlaySingle(audBell);
+			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
+			{
+				var e = other.GetComponent<Entity>();
+				if (e && e.Grounded)
+				{
+					active = false;
+					renderer.sprite = deactiveSprite;
+					ec.MakeNoise(transform.position, noiseVal);
+					audMan.PlaySingle(audBell);
 
-			StartCoroutine(WaitForDespawn());
+					StartCoroutine(WaitForDespawn());
+				}
+			}
 		}
 
 		public void EntityTriggerStay(Collider other)

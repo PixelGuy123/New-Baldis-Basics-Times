@@ -715,7 +715,7 @@ namespace BBTimes.Manager
 			focusedStudent.sprScreaming = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "studentScreaming.png")), 25f);
 			focusedStudent.sprNormal = student.sprite;
 
-			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
 			room.ForEach(x =>
 			{
@@ -728,7 +728,6 @@ namespace BBTimes.Manager
 				x.selection.windowObject = classWeightPre.selection.windowObject;
 				x.selection.mapMaterial = classWeightPre.selection.mapMaterial;
 				x.selection.lightPre = classWeightPre.selection.lightPre;
-				x.selection.keepTextures = false;
 			});
 
 			for (int i = 1; i < floorDatas.Count; i++)
@@ -737,7 +736,7 @@ namespace BBTimes.Manager
 
 			//Faculties
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialFacultyRooms.Length != 0).potentialFacultyRooms[0];
-			room = GetAllAssets(GetRoomAsset("Faculty"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+			room = GetAllAssets(GetRoomAsset("Faculty"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
@@ -753,7 +752,7 @@ namespace BBTimes.Manager
 
 			//Offices
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialOffices.Length != 0).potentialOffices[0];
-			room = GetAllAssets(GetRoomAsset("Office"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+			room = GetAllAssets(GetRoomAsset("Office"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
@@ -769,7 +768,7 @@ namespace BBTimes.Manager
 			// Hall
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPrePlotSpecialHalls.Length != 0).potentialPrePlotSpecialHalls[0];
 
-			room = GetAllAssets(GetRoomAsset("PrevHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, true);
+			room = GetAllAssets(GetRoomAsset("PrevHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
@@ -784,7 +783,7 @@ namespace BBTimes.Manager
 
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPostPlotSpecialHalls.Length != 0).potentialPostPlotSpecialHalls[0];
 
-			room = GetAllAssets(GetRoomAsset("AfterHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, true);
+			room = GetAllAssets(GetRoomAsset("AfterHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
@@ -860,7 +859,7 @@ namespace BBTimes.Manager
 			return settings;
 		}
 
-		static List<WeightedRoomAsset> GetAllAssets(string path, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null)
+		static List<WeightedRoomAsset> GetAllAssets(string path, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null, bool keepTextures = true)
 		{
 			List<WeightedRoomAsset> assets = [];
 			RoomFunctionContainer container = cont;
@@ -868,7 +867,7 @@ namespace BBTimes.Manager
 			{
 				try
 				{
-					var asset = RoomFactory.CreateAssetFromPath(file, maxValue, isOffLimits, container, isAHallway, secretRoom, mapBg);
+					var asset = RoomFactory.CreateAssetFromPath(file, maxValue, isOffLimits, container, isAHallway, secretRoom, mapBg, keepTextures);
 					assets.Add(new() { selection = asset, weight = assetWeight });
 					_moddedAssets.Add(asset);
 					if (!container)

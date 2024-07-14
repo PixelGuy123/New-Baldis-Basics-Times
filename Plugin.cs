@@ -86,7 +86,6 @@ namespace BBTimes.Plugin
 					ld.extraDoorChance += 0.2f;
 					ld.windowChance += 0.2f;
 					groups[0].maxRooms = 5;
-					groups[0].stickToHallChance = 0.9f;
 					ld.maxFacultyRooms += 2;
 					ld.maxHallsToRemove += 1;
 					ld.maxPlots += 1;
@@ -114,9 +113,7 @@ namespace BBTimes.Plugin
 					groups[1].maxRooms += 4;
 					groups[0].maxRooms = 8;
 					groups[0].minRooms = 6;
-					groups[2].stickToHallChance = 0.9f;
 					groups[1].stickToHallChance = 0.85f;
-					groups[0].stickToHallChance = 0.75f;
 					ld.maxHallsToRemove += 2;
 					ld.maxPlots += 2;
 					ld.minPlots += 1;
@@ -145,9 +142,7 @@ namespace BBTimes.Plugin
 					groups[1].maxRooms += 4;
 					groups[0].maxRooms = 12;
 					groups[2].maxRooms += 2;
-					groups[2].stickToHallChance = 0.9f;
 					groups[1].stickToHallChance = 0.85f;
-					groups[0].stickToHallChance = 0.75f;
 					ld.maxHallsToRemove++;
 					ld.maxPlots += 2;
 					ld.minPlots += 1;
@@ -185,9 +180,7 @@ namespace BBTimes.Plugin
 					ld.minSize += new IntVector2(7, 7);
 					ld.minSpecialBuilders += 1;
 					ld.maxLightDistance += 3;
-					groups[2].stickToHallChance = 0.9f;
 					groups[1].stickToHallChance = 0.85f;
-					groups[0].stickToHallChance = 0.75f;
 					groups[2].maxRooms = 3;
 					groups[2].minRooms = 2;
 					groups[1].minRooms++;

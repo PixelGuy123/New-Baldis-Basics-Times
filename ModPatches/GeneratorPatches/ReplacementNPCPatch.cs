@@ -56,7 +56,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 				Debug.Log("-----Og npc set to spawn after removal -----");
 				__instance.Ec.npcsToSpawn.ForEach(x => Debug.Log(x.name));
 #endif
-				int max = replacementNpcs.Count / 2;
+				int max = Mathf.CeilToInt(replacementNpcs.Count / 2);
 #if CHEAT
 				Debug.Log("----- replacement start -----");
 #endif

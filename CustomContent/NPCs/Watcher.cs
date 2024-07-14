@@ -44,14 +44,12 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			if (freeze)
 			{
-				if (freezes++ <= 0)
+				if (!navigator.Entity.ExternalActivity.moveMods.Contains(moveMod))
 					navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
 			}
-			else if (--freezes <= 0)
-			{
-				freezes = 0;
+			else
 				navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
-			}
+			
 		}
 
 		public void GoToRandomSpot()
@@ -126,8 +124,6 @@ namespace BBTimes.CustomContent.NPCs
 		internal SoundObject audAmbience, audAngry, audSpot, audTeleport;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
-
-		int freezes = 0;
 	}
 
 	internal class Watcher_StateBase(Watcher w) : NpcState(w)
@@ -139,11 +135,6 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		float cooldown = Random.Range(20f, 40f);
 
-		public override void Initialize()
-		{
-			base.Initialize();
-			w.SetFrozen(true);
-		}
 		public override void Enter()
 		{
 			base.Enter();
@@ -166,6 +157,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Initialize();			
 			w.GoToRandomSpot();
+			w.SetFrozen(true);
 			w.Hide(false);
 			w.screenAudMan.FlushQueue(true);
 			w.screenAudMan.Pause(true);
@@ -196,7 +188,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void InPlayerSight(PlayerManager player)
 		{
 			base.InPlayerSight(player);
-			spotStrength += w.TimeScale * Time.deltaTime * 3f;
+			spotStrength += w.TimeScale * Time.deltaTime * 6.5f;
 			if (Time.timeScale > 0)
 				mod.addend = spotStrength * (-1f + Random.value * 2f) * 2f;
 			if (spotStrength > strengthLimit)
