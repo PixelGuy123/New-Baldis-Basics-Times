@@ -62,7 +62,10 @@ namespace BBTimes.CustomContent.RoomFunctions
 			player.Teleport(cornersToGo[0]);
 			Vector3 pos = cornersToGo[0];
 			activeRunners++;
+			LayerMask layer = player.gameObject.layer;
 			player.plm.Entity.SetFrozen(true);
+			player.plm.Entity.SetInteractionState(false);
+			player.gameObject.layer = layer; // Workaround lol
 			int i = 0;
 			while (true)
 			{
@@ -73,6 +76,13 @@ namespace BBTimes.CustomContent.RoomFunctions
 					pos += mov.magnitude < difference.magnitude ? mov : difference;
 					difference = cornersToGo[i] - pos;
 					
+					if ((player.transform.position - pos).magnitude > player.plm.runSpeed)
+					{
+						activeRunners--;
+						player.plm.Entity.SetFrozen(false);
+						player.plm.Entity.SetInteractionState(true);
+						yield break;
+					}
 
 					player.Teleport(pos); // Sums up staminaRise to force a drop
 					player.plm.stamina = Mathf.Max(player.plm.stamina - (player.plm.staminaDrop + player.plm.staminaRise) * Time.deltaTime * player.PlayerTimeScale, 0f);
@@ -84,6 +94,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					{
 						activeRunners--;
 						player.plm.Entity.SetFrozen(false);
+						player.plm.Entity.SetInteractionState(true);
 						yield break;
 					}
 

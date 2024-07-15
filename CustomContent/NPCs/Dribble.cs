@@ -462,7 +462,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		NavigationState_TargetPlayer state;
 		readonly PlayerManager pm = pm;
-		ValueModifier valMod = new(addend: 999);
+		readonly ValueModifier valMod = new(addend: 99999);
 		float stepDelay = 0f;
 		int idx = 0;
 
@@ -539,7 +539,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerLost(PlayerManager player)
 		{
 			base.PlayerLost(player);
-			if (pm == player && Random.value > 0.6f)
+			if (pm == player && !dr.audMan.QueuedAudioIsPlaying && Random.value > 0.6f)
 				dr.AngryNoise(true);
 		}
 
@@ -569,6 +569,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
+			pm.plm.AddStamina(45f, true);
 			dr.Navigator.Am.moveMods.Add(dr.moveMod);
 			dr.Navigator.Entity.Teleport(dr.ec.RealRoomMid(dr.Home));
 			func = dr.Home.functionObject.GetComponent<PlayerRunCornerFunction>();
@@ -584,6 +585,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			if (!func.IsActive)
 			{
+				dr.audMan.FlushQueue(true);
 				dr.audMan.PlaySingle(dr.audDismissed);
 				dr.renderer.sprite = dr.idleSprs[0];
 				dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(15f, 30f)));

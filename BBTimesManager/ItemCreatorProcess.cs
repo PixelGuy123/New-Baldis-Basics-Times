@@ -10,8 +10,6 @@ using MTM101BaldAPI.ObjectCreation;
 using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.Misc;
 using MTM101BaldAPI;
-using PixelInternalAPI.Extensions;
-using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace BBTimes.Manager
 {
@@ -61,7 +59,6 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 35 });
-			ResourceManager.AddMysteryItem(new() { selection = item, weight = 25 });
 
 			// gum
 			item = new ItemBuilder(plug.Info)

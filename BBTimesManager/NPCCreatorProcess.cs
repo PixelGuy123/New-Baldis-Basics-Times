@@ -86,21 +86,6 @@ namespace BBTimes.Manager
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
 
-			// Let's Drum
-			npc = new NPCBuilder<LetsDrum>(plug.Info)
-				.SetMinMaxAudioDistance(75f, 110f)
-				.AddSpawnableRoomCategories(RoomCategory.Hall)
-				.SetEnum("Letsdrum")
-				.SetName("Letsdrum")
-				.AddTrigger()
-				.AddLooker()
-				.SetMaxSightDistance(25)
-				.Build()
-				.SetupNPCData<LetsDrumCustomData>("Letsdrum", "PST_DRUM_Name", "PST_DRUM_Desc", -1.4f);
-			//CreatorExtensions.CreateNPC<LetsDrum, LetsDrumCustomData>("Letsdrum", 75f, 110f, [RoomCategory.Hall], [], "PST_DRUM_Name", "PST_DRUM_Desc", lookerDistance: 25f, spriteYOffset: -1.4f).AddMeta(plug, NPCFlags.Standard).value;
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 65 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
-
 			// Stunly
 			npc = new NPCBuilder<Stunly>(plug.Info)
 				.SetMinMaxAudioDistance(75f, 100f)
@@ -195,7 +180,7 @@ namespace BBTimes.Manager
 
 			// MGS
 			npc = new NPCBuilder<MagicalStudent>(plug.Info)
-				.SetMinMaxAudioDistance(175f, 275f)
+				.SetMinMaxAudioDistance(400f, 500f)
 				.AddSpawnableRoomCategories(RoomCategory.Office)
 				.SetEnum("Magicalstudent")
 				.SetName("MagicalStudent")
