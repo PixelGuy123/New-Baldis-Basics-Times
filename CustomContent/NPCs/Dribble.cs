@@ -389,7 +389,7 @@ namespace BBTimes.CustomContent.NPCs
 				dr.audMan.FlushQueue(true);
 				dr.audMan.PlaySingle(dr.audDismissed);
 				dr.renderer.sprite = dr.idleSprs[0];
-				dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(15f, 30f)));
+				dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(60f, 90f)));
 			}
 		}
 	}
@@ -419,7 +419,7 @@ namespace BBTimes.CustomContent.NPCs
 					dr.audMan.FlushQueue(true);
 					dr.audMan.PlaySingle(dr.audDismissed);
 					dr.renderer.sprite = dr.idleSprs[0];
-					dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(15f, 30f)));
+					dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(60f, 90f)));
 				}
 			}
 
@@ -588,7 +588,7 @@ namespace BBTimes.CustomContent.NPCs
 				dr.audMan.FlushQueue(true);
 				dr.audMan.PlaySingle(dr.audDismissed);
 				dr.renderer.sprite = dr.idleSprs[0];
-				dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(15f, 30f)));
+				dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(60f, 90f)));
 			}
 		}
 	}
