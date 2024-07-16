@@ -123,14 +123,13 @@ namespace BBTimes.Manager
 
 			npc = new NPCBuilder<ZeroPrize>(plug.Info)
 				.SetMinMaxAudioDistance(135f, 175f)
-				.AddSpawnableRoomCategories(RoomCategory.Special)
 				.SetEnum("ZeroPrize")
 				.SetName("0thPrize")
 				.IgnorePlayerOnSpawn()
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<ZeroPrizeCustomData>("0thPrize", "PST_0TH_Name", "PST_0TH_Desc", -1.14f)
-				.MarkAsReplacement(25, Character.Sweep); // 25
+				.SetupNPCData<ZeroPrizeCustomData>("0thPrize", "PST_0TH_Name", "PST_0TH_Desc", -0.4f)
+				.MarkAsReplacement(75, Character.Sweep); // 25
 
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
 
@@ -248,7 +247,6 @@ namespace BBTimes.Manager
 				.SetEnum("Dribble")
 				.SetName("Dribble")
 				.AddLooker()
-				.SetMaxSightDistance(65)
 				.AddTrigger()
 				.Build()
 				.SetupNPCData<DribbleCustomData>("Dribble", "PST_Dribble_Name", "PST_Dribble_Desc", -0.7f)

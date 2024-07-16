@@ -12,7 +12,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			];
 
 		protected override Sprite[] GenerateSpriteOrder() =>
-			GetSpriteSheet(2, 1, 35f, "0thprize.png");
+			GetSpriteSheet(2, 1, 45f, "0thprize.png");
 
 		public override void SetupPrefab()
 		{
@@ -22,8 +22,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 			prize.audStartSweep = soundObjects[1];
 			prize.audSweep = soundObjects[0];
 
-			prize.activeSprite = storedSprites[1];
-			prize.deactiveSprite = storedSprites[0];
+			prize.activeSprite = storedSprites[0];
+			prize.deactiveSprite = storedSprites[1];
 
 			prize.audMan = GetComponent<PropagatedAudioManager>();
 

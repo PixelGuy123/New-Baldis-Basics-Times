@@ -45,9 +45,10 @@ namespace BBTimes.CustomContent.Objects
 			if (canSquish && other.isTrigger)
 			{
 				var e = other.GetComponent<Entity>();
-				if (e && !e.Squished)
+				if (e)
 				{
-					e.Squish(12f);
+					if (!e.Squished) // Should fix the noclip bug
+						e.Squish(12f);
 					e.SetFrozen(true);
 					squishedEntities.Add(e);
 				}

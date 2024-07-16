@@ -191,10 +191,19 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			clock.audMan.PlaySingle(clock.allClockAudios[2]); // crazy noises
 			Cell cell = clock.ec.CellFromPosition(clock.transform.position);
-			int max = clock.ec.Npcs.Count / 2;
+			var npcs = new List<NPC>(clock.ec.Npcs);
+			npcs.RemoveAll(x => x == clock || !x.GetMeta().flags.HasFlag(NPCFlags.Standard));
+
+			int max = npcs.Count / 2;
+
 			for (int i = 0; i < max; i++)
-				if (clock.ec.Npcs[i] != clock && clock.ec.Npcs[i].GetMeta().flags.HasFlag(NPCFlags.Standard))
-					clock.ec.Npcs[i].Navigator.Entity.Teleport(cell.CenterWorldPosition); // YES, CHAOS
+			{
+				if (npcs.Count == 0) return;
+				int idx = Random.Range(0, npcs.Count);
+				if (npcs[idx])
+					npcs[idx].Navigator.Entity.Teleport(cell.CenterWorldPosition); // YES, CHAOS
+				npcs.RemoveAt(idx);
+			}
 		}
 
 		public override void Update()

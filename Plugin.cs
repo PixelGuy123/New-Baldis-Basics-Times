@@ -311,7 +311,7 @@ namespace BBTimes.Plugin
 
 		public const string PLUGIN_NAME = "Baldi\'s Basics Times";
 
-		public const string PLUGIN_VERSION = "1.1.3.1";
+		public const string PLUGIN_VERSION = "1.1.4";
 	}
 
 	// Some cheats
