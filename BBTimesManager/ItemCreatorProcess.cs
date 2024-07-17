@@ -39,10 +39,9 @@ namespace BBTimes.Manager
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 65 });
-			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 85 });
-			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 85 });
-			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 85 });
-			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 75 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 15 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 15 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 86 });
 			// present
 			item = new ItemBuilder(plug.Info)

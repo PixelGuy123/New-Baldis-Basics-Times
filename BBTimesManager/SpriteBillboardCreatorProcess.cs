@@ -35,10 +35,9 @@ namespace BBTimes.Manager
 			// Elevator exit signs
 			GenericExtensions.FindResourceObjects<Elevator>().Do((x) =>
 			{
-				var exit = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "Elevator", "ExitSignSprite.png")), 25f)).AddSpriteHolder(8.75f);
-				exit.material.SetTexture("Texture2D_0ebe02d67a8a4acb8705243366af66aa", AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "Elevator", "ExitSign_LightMap.png"))); // Why does it have to be a fucking hash name
-				exit.transform.parent.SetParent(x.transform);
-				exit.transform.parent.localPosition = x.transform.forward * LayerStorage.TileBaseOffset;
+				var exit = Object.Instantiate(GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_ExitSign"));
+				exit.transform.SetParent(x.transform);
+				exit.transform.localPosition = x.transform.forward * LayerStorage.TileBaseOffset + Vector3.up * 10f;
 			});
 
 			// Hanging ceiling light for cafeteria

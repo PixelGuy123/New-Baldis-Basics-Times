@@ -70,7 +70,7 @@ namespace BBTimes.Plugin
 				ld.MarkAsNeverUnload(); // Maybe?
 
 				RoomGroup[] groups = [ld.roomGroup.First(x => x.name == "Class"), ld.roomGroup.First(x => x.name == "Faculty"), ld.roomGroup.First(x => x.name == "Office")];
-
+				ld.timeBonusVal *= 2;
 				if (floorName == "F1")
 				{
 					ld.minSpecialRooms = 0; // Chance to have no special room
@@ -91,7 +91,6 @@ namespace BBTimes.Plugin
 					ld.minHallsToRemove += 1;
 					ld.minSize += new IntVector2(3, 5);
 					ld.timeBonusLimit *= 1.8f;
-					ld.timeBonusVal *= 2;
 					return;
 				}
 
@@ -124,7 +123,6 @@ namespace BBTimes.Plugin
 					ld.specialRoomsStickToEdge = false;
 					ld.maxLightDistance += 2;
 					ld.timeBonusLimit *= 1.8f;
-					ld.timeBonusVal *= 2;
 					return;
 				}
 
@@ -156,7 +154,6 @@ namespace BBTimes.Plugin
 						.Where(x => x.name.StartsWith("Playground"))
 						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
 					ld.timeBonusLimit *= 1.8f;
-					ld.timeBonusVal *= 2;
 					return;
 				}
 

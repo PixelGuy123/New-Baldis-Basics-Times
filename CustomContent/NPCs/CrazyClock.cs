@@ -192,7 +192,7 @@ namespace BBTimes.CustomContent.NPCs
 			clock.audMan.PlaySingle(clock.allClockAudios[2]); // crazy noises
 			Cell cell = clock.ec.CellFromPosition(clock.transform.position);
 			var npcs = new List<NPC>(clock.ec.Npcs);
-			npcs.RemoveAll(x => x == clock || !x.GetMeta().flags.HasFlag(NPCFlags.Standard));
+			npcs.RemoveAll(x => x == clock || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.Entity);
 
 			int max = npcs.Count / 2;
 

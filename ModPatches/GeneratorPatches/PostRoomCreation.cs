@@ -77,11 +77,9 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		{
 			var ec = i.Ec;
 			Dictionary<Cell, Direction[]> tiles = [];
-			foreach (var room in ec.rooms)
-			{
-				foreach (var t in room.GetNewTileList())
+			foreach (var t in ec.mainHall.GetNewTileList())
 				{
-					if (t.Hidden || t.offLimits) // No elevator tiles or invalid tiles
+					if (t.Hidden || t.offLimits || !t.HasFreeWall) // No elevator tiles or invalid tiles
 						continue;
 					// A quick fix for the walls
 
@@ -99,7 +97,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 
 				foreach (var tile in tiles)
 				{
-					if (i.controlledRNG.NextDouble() >= 0.9f)
+					if (i.controlledRNG.NextDouble() >= 0.95f)
 					{
 						var dir = tile.Value[i.controlledRNG.Next(tile.Value.Length)];
 						var w = ec.ForceBuildWindow(tile.Key, dir, window);
@@ -110,7 +108,6 @@ namespace BBTimes.ModPatches.GeneratorPatches
 						}
 					}
 					i.FrameShouldEnd();
-				}
 			}
 
 		}

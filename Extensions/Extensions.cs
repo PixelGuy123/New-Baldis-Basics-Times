@@ -80,7 +80,7 @@ namespace BBTimes.Extensions
 
 			while (true)
 			{
-				b.GetAngry(increaser * b.TimeScale);
+				b.GetAngry(increaser * b.TimeScale * Time.deltaTime);
 				yield return null;
 			}
 		}

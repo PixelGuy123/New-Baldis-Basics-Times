@@ -893,17 +893,6 @@ namespace BBTimes.Manager
 				{
 					
 					string[] rawData = newAss[i].selection.name.Split('!');
-					if (floor >= 0)
-					{
-						string[] sdata = rawData[1].Split(',');
-						int[] data = new int[sdata.Length];
-
-						for (int z = 0; z < sdata.Length; z++) // Converts the string numbers into integers
-							data[z] = int.Parse(sdata[z]);
-
-						if (!data.Contains(floor)) // Finally remove the asset if it isn't for the intended floor
-							newAss.RemoveAt(i--);
-					}
 					
 					if (rawData.Length > 2)
 					{
@@ -919,6 +908,23 @@ namespace BBTimes.Manager
 								newAss[i].weight = val;
 						}
 					}
+
+					if (floor >= 0)
+					{
+						string[] sdata = rawData[1].Split(',');
+						int[] data = new int[sdata.Length];
+
+						for (int z = 0; z < sdata.Length; z++) // Converts the string numbers into integers
+							if (int.TryParse(sdata[z], out int val))
+								data[z] = val;
+
+						if (!data.Contains(floor)) // Finally remove the asset if it isn't for the intended floor
+						{
+							newAss.RemoveAt(i--);
+							if (newAss.Count == 0)
+								break;
+						}
+					}
 				}
 			}
 			catch (System.IndexOutOfRangeException ex)
@@ -926,9 +932,9 @@ namespace BBTimes.Manager
 				Debug.LogError("Failed to get data from the room collection due to invalid format in the data!");
 				e = ex;
 			}
-			catch (System.FormatException ex)
+			catch (System.ArgumentOutOfRangeException ex)
 			{
-				Debug.LogError("Failed to get data from the room collection due to invalid format in the numbers!");
+				Debug.LogError("Failed to get data from the room collection due to invalid format in the data!");
 				e = ex;
 			}
 			finally

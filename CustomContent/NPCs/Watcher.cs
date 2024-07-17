@@ -1,4 +1,5 @@
 ﻿using MTM101BaldAPI.Components;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
@@ -72,9 +73,10 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			pm.GetCustomCam().ReverseSlideFOVAnimation(new ValueModifier(), 115f, 4f);
 			List<NPC> npcs = new(ec.Npcs);
-			npcs.RemoveAll(x => x == this);
+			npcs.RemoveAll(x => x == this || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.Entity);
 
-			StartCoroutine(TeleportDelay(pm, npcs[Random.Range(0, npcs.Count)]));
+			if (npcs.Count != 0)
+				StartCoroutine(TeleportDelay(pm, npcs[Random.Range(0, npcs.Count)]));
 		}
 
 		IEnumerator TeleportDelay(PlayerManager pm, NPC npc)

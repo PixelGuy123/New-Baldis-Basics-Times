@@ -20,6 +20,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 				GetSound("Pix_Failed.wav", "Vfx_Pix_MisFail", SoundType.Voice, new(0.6f, 0f, 0f)),
 				GetSound("Pix_Grrr.wav", "Vfx_Pix_Grr", SoundType.Voice, new(0.6f, 0f, 0f)),
 				GetSound("Pix_Shoot.wav", "Vfx_Pix_Shoot", SoundType.Voice, new(0.6f, 0f, 0f)),
+				GetSound("Pix_NextTime.wav", "Vfx_Pix_GetYou", SoundType.Voice, new(0.6f, 0f, 0f)),
 				GetSoundNoSub("shock.wav", SoundType.Voice)
 				];
 			// 0 - 2: spot ; 3 - 4: success ; 5 - 6: fail
@@ -41,8 +42,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 			pix.audMan = GetComponent<PropagatedAudioManager>();
 			pix.audReady = [soundObjects[0], soundObjects[1], soundObjects[2]];
 			pix.audHappy = [soundObjects[3], soundObjects[4]];
-			pix.audAngry = [soundObjects[5], soundObjects[6]];
-			pix.audShoot = soundObjects[7];
+			pix.audAngry = [soundObjects[5], soundObjects[6], soundObjects[7]];
+			pix.audShoot = soundObjects[8];
 
 			// setup animated sprites
 			pix.rotator = pix.CreateAnimatedSpriteRotator(

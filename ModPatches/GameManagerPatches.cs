@@ -230,7 +230,7 @@ namespace BBTimes.ModPatches
 						i--;
 					}
 					else if (___ec.Npcs[i].GetType() == typeof(Baldi))
-						___ec.Npcs[i].StartCoroutine(GameExtensions.InfiniteAnger((Baldi)___ec.Npcs[i], 0.005f));
+						___ec.Npcs[i].StartCoroutine(GameExtensions.InfiniteAnger((Baldi)___ec.Npcs[i], 0.05f));
 				}
 
 				___ec.StartCoroutine(SpawnFires());
