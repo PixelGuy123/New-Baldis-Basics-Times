@@ -24,13 +24,18 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			navigator.maxSpeed = 0f;
 			navigator.SetSpeed(0f);
-			float cool = 0.5f;
+			float cool = 4.5f;
 			renderer.sprite = throwSprites[1];
+			float shakeness = 0f;
+			Vector3 pos = renderer.transform.localPosition;
 			while (cool > 0f)
 			{
 				cool -= TimeScale * Time.deltaTime;
+				shakeness += TimeScale * Time.deltaTime * 0.05f;
+				renderer.transform.localPosition = pos + new Vector3(Random.Range(-shakeness, shakeness), Random.Range(-shakeness, shakeness), Random.Range(-shakeness, shakeness));
 				yield return null;
 			}
+			renderer.transform.localPosition = pos;
 			cool = 0.3f;
 			renderer.sprite = throwSprites[2];
 			audMan.PlaySingle(audThrow);

@@ -14,6 +14,7 @@ using BBTimes.CustomContent.Events;
 using System.Collections;
 using System.Collections.Generic;
 using MTM101BaldAPI.SaveSystem;
+using BBTimes.ModPatches;
 
 
 namespace BBTimes.Plugin
@@ -50,6 +51,7 @@ namespace BBTimes.Plugin
 			_modPath = AssetLoader.GetModPath(this);
 			BBTimesManager.plug = this;
 
+			MainMenuPatch.newMidi = AssetLoader.MidiFromMod("timeNewJingle", this, "misc", "Audios", "newJingle.mid");
 			
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), false);
@@ -88,6 +90,8 @@ namespace BBTimes.Plugin
 					ld.minFacultyRooms += 1;
 					ld.minHallsToRemove += 1;
 					ld.minSize += new IntVector2(3, 5);
+					ld.timeBonusLimit *= 1.8f;
+					ld.timeBonusVal *= 2;
 					return;
 				}
 
@@ -119,6 +123,8 @@ namespace BBTimes.Plugin
 					ld.maxOffices = 2;
 					ld.specialRoomsStickToEdge = false;
 					ld.maxLightDistance += 2;
+					ld.timeBonusLimit *= 1.8f;
+					ld.timeBonusVal *= 2;
 					return;
 				}
 
@@ -133,7 +139,7 @@ namespace BBTimes.Plugin
 					ld.windowChance += 0.35f;
 					groups[1].minRooms++;
 					groups[1].maxRooms += 4;
-					groups[0].maxRooms = 12;
+					groups[0].maxRooms = 10;
 					groups[2].maxRooms += 2;
 					groups[1].stickToHallChance = 0.85f;
 					ld.maxHallsToRemove++;
@@ -149,6 +155,8 @@ namespace BBTimes.Plugin
 					ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. Resources.FindObjectsOfTypeAll<RoomAsset>() // Playground in F3
 						.Where(x => x.name.StartsWith("Playground"))
 						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
+					ld.timeBonusLimit *= 1.8f;
+					ld.timeBonusVal *= 2;
 					return;
 				}
 

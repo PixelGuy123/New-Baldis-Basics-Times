@@ -77,37 +77,40 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		{
 			var ec = i.Ec;
 			Dictionary<Cell, Direction[]> tiles = [];
-			foreach (var t in ec.mainHall.GetNewTileList())
+			foreach (var room in ec.rooms)
 			{
-				if (t.Hidden || t.offLimits) // No elevator tiles or invalid tiles
-					continue;
-				// A quick fix for the walls
-
-
-				var dirs = Directions.All();
-				dirs.RemoveAll(x => !ec.CellFromPosition(t.position + x.ToIntVector2()).Null || t.WallSoftCovered(x));
-
-				if (dirs.Count > 0)
-					tiles.Add(t, [.. dirs]);
-				i.FrameShouldEnd(); // fail safe to not crash for no f reason
-			}
-
-			if (tiles.Count == 0)
-				return;
-
-			foreach (var tile in tiles)
-			{
-				if (i.controlledRNG.NextDouble() >= 0.9f)
+				foreach (var t in room.GetNewTileList())
 				{
-					var dir = tile.Value[i.controlledRNG.Next(tile.Value.Length)];
-					var w = ec.ForceBuildWindow(tile.Key, dir, window);
-					if (w != null)
-					{
-						w.aTile.AddRenderer(w.transform.Find("Door_SideA").GetComponent<MeshRenderer>()); // A small optimization
-						w.aTile.AddRenderer(w.transform.Find("Door_SideB").GetComponent<MeshRenderer>());
-					}
+					if (t.Hidden || t.offLimits) // No elevator tiles or invalid tiles
+						continue;
+					// A quick fix for the walls
+
+
+					var dirs = Directions.All();
+					dirs.RemoveAll(x => !ec.CellFromPosition(t.position + x.ToIntVector2()).Null || t.WallSoftCovered(x));
+
+					if (dirs.Count > 0)
+						tiles.Add(t, [.. dirs]);
+					i.FrameShouldEnd(); // fail safe to not crash for no f reason
 				}
-				i.FrameShouldEnd();
+
+				if (tiles.Count == 0)
+					return;
+
+				foreach (var tile in tiles)
+				{
+					if (i.controlledRNG.NextDouble() >= 0.9f)
+					{
+						var dir = tile.Value[i.controlledRNG.Next(tile.Value.Length)];
+						var w = ec.ForceBuildWindow(tile.Key, dir, window);
+						if (w != null)
+						{
+							w.aTile.AddRenderer(w.transform.Find("Door_SideA").GetComponent<MeshRenderer>()); // A small optimization
+							w.aTile.AddRenderer(w.transform.Find("Door_SideB").GetComponent<MeshRenderer>());
+						}
+					}
+					i.FrameShouldEnd();
+				}
 			}
 
 		}

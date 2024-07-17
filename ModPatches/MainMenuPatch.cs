@@ -14,6 +14,8 @@ namespace BBTimes.ModPatches
 				__instance.transform.Find("Image").GetComponent<Image>().sprite = mainMenu;
 			if (aud_welcome != null)
 				__instance.StartCoroutine(WaitForAudioPlay(___audioSource));
+			if (!string.IsNullOrEmpty(newMidi))
+				__instance.transform.GetComponentInChildren<MusicPlayer>().track = newMidi;
 		}
 
 		static IEnumerator WaitForAudioPlay(AudioSource source)
@@ -30,5 +32,7 @@ namespace BBTimes.ModPatches
 		public static Sprite mainMenu;
 
 		public static AudioClip aud_welcome;
+
+		public static string newMidi = string.Empty;
 	}
 }

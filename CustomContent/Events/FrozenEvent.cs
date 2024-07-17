@@ -67,15 +67,19 @@ namespace BBTimes.CustomContent.Events
 				var x = pMoveMods[i];
 
 				if (x.Key.HasAttribute("hotchocactive"))
+				{
 					x.Value.movementMultiplier += slowDownMultiplier * ec.EnvironmentTimeScale * Time.deltaTime;
+					x.Value.movementMultiplier = Mathf.Clamp(x.Value.movementMultiplier, 0.1f, 0.95f);
+				}
 				else
 				{
 					x.Value.movementMultiplier -= slowDownMultiplier * ec.EnvironmentTimeScale * Time.deltaTime;
 					if (!float.IsNaN(x.Key.Pm.plm.RealVelocity)) // why tf does it give NaN when pausing the game
 						x.Value.movementMultiplier += x.Key.Pm.plm.RealVelocity * ec.EnvironmentTimeScale * Time.deltaTime / speedDivider;
+					x.Value.movementMultiplier = Mathf.Clamp(x.Value.movementMultiplier, 0.1f, maxVel);
 				}
 
-				x.Value.movementMultiplier = Mathf.Clamp(x.Value.movementMultiplier, 0.1f, maxVel);
+				
 				var co = canvasToDespawn[i].color;
 				co.a = maxVel - x.Value.movementMultiplier + (1f - maxVel);
 				canvasToDespawn[i].color = co;

@@ -29,7 +29,7 @@ namespace BBTimes.CustomContent.Misc
 			audMan.PlaySingle(audWelcome);
 			kitchenAudMan.QueueAudio(audKitchen);
 			kitchenAudMan.SetLoop(true);
-			cooldown = Random.Range(30f, 60f);
+			cooldown = Random.Range(20f, 40f);
 		}
 
 		public void ClickableUnsighted(int player) { }

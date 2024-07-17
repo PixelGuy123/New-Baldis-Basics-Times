@@ -41,7 +41,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					if (playersToWatch[i].ruleBreak == "Running" && playersToWatch[i].guiltTime > 0f)
 					{
 						playersPatience[i] += room.ec.EnvironmentTimeScale * Time.deltaTime;
-						if (playersPatience[i] >= 0.01f)
+						if (playersPatience[i] >= 0.67f)
 						{
 							relaxCooldown = 30f;
 							playersToWatch[i].ClearGuilt();

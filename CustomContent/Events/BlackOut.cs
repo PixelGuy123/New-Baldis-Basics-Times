@@ -48,9 +48,12 @@ namespace BBTimes.CustomContent.Events
 				}
 			}
 
-			foreach (var ve in data.Vents)
-				ve.DisableVent(!on); // disables/enables vents
-			if (on) data.Vents[Random.Range(0, data.Vents.Count)].BlockMe();
+			if (data.Vents.Count > 0) // Fixing an oversight
+			{
+				foreach (var ve in data.Vents)
+					ve.DisableVent(!on); // disables/enables vents
+				if (on) data.Vents[Random.Range(0, data.Vents.Count)].BlockMe();
+			}
 
 			foreach (var squ in data.Squishers)
 				squ.TurnMe(on);
@@ -59,9 +62,8 @@ namespace BBTimes.CustomContent.Events
 				cam.TurnMe(on);
 
 			foreach (var soda in FindObjectsOfType<SodaMachine>())
-			{
 				soda.GetComponent<MeshRenderer>().materials[1].SetTexture("_LightGuide", on ? sodaMachineLight : null); // Switches the texture from the material to make it not glow
-			}
+			
 			
 		}
 

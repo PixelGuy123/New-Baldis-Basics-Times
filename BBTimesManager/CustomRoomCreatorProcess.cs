@@ -688,16 +688,18 @@ namespace BBTimes.Manager
 				x.selection.keepTextures = false;
 			});
 
-			floorDatas[0].Classrooms.AddRange(room.Where(x => x.selection.activity.prefab.GetType() == typeof(NoActivity))); // why not "is NoActivity"? Well, probably because the game doesn't have the right NET to work like that in runtime
-			var activityRooms = room.Where(x => x.selection.activity.prefab.GetType() != typeof(NoActivity));
+			floorDatas[0].Classrooms.AddRange(room.Where(x => x.selection.activity.prefab.GetType() == typeof(NoActivity)).ToList().FilterRoomAssetsByFloor()); // why not "is NoActivity"? Well, probably because the game doesn't have the right NET to work like that in runtime
+			var activityRooms = room.Where(x => x.selection.activity.prefab.GetType() != typeof(NoActivity)).ToList().FilterRoomAssetsByFloor();
 			for (int i = 1; i < floorDatas.Count; i++)
 				floorDatas[i].Classrooms.AddRange(activityRooms);
 
 			// ****** Focus Room (A classroom variant, but with a new npc) ******
-			RegisterRoom("FocusRoom", new(0f, 1f, 0.5f),
+			sets = RegisterRoom("FocusRoom", new(0f, 1f, 0.5f),
 				ObjectCreators.CreateDoorDataObject("FocusRoomDoor",
 				AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "Focus_Room_Door_Opened.png")),
 				AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "Focus_Room_Door_Closed.png"))));
+
+			Superintendent.AddAllowedRoom(sets.category);
 
 			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
 			var student = ObjectCreationExtensions.CreateSpriteBillboard(studentSprs[0]);
@@ -716,7 +718,7 @@ namespace BBTimes.Manager
 			focusedStudent.sprScreaming = studentSprs[2];
 			focusedStudent.sprNormal = student.sprite;
 
-			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
 			room.ForEach(x =>
 			{
@@ -846,12 +848,12 @@ namespace BBTimes.Manager
 			return settings;
 		}
 
-		static RoomSettings RegisterRoom(string roomName, RoomCategory en, Color color, StandardDoorMats mat)
-		{
-			var settings = new RoomSettings(en, RoomType.Room, color, mat);
-			PlusLevelLoaderPlugin.Instance.roomSettings.Add(roomName, settings);
-			return settings;
-		}
+		//static RoomSettings RegisterRoom(string roomName, RoomCategory en, Color color, StandardDoorMats mat)
+		//{
+		//	var settings = new RoomSettings(en, RoomType.Room, color, mat);
+		//	PlusLevelLoaderPlugin.Instance.roomSettings.Add(roomName, settings);
+		//	return settings;
+		//}
 
 		static RoomSettings RegisterSpecialRoom(string roomName, Color color)
 		{
@@ -879,6 +881,8 @@ namespace BBTimes.Manager
 
 			return assets;
 		}
+		static List<WeightedRoomAsset> FilterRoomAssetsByFloor(this List<WeightedRoomAsset> assets) =>
+			assets.FilterRoomAssetsByFloor(-1);
 		static List<WeightedRoomAsset> FilterRoomAssetsByFloor(this List<WeightedRoomAsset> assets, int floor)
 		{
 			var newAss = new List<WeightedRoomAsset>(assets);
@@ -887,22 +891,33 @@ namespace BBTimes.Manager
 			{
 				for (int i = 0; i < newAss.Count; i++)
 				{
+					
 					string[] rawData = newAss[i].selection.name.Split('!');
-					string[] sdata = rawData[1].Split(',');
-					int[] data = new int[sdata.Length];
+					if (floor >= 0)
+					{
+						string[] sdata = rawData[1].Split(',');
+						int[] data = new int[sdata.Length];
 
-					for (int z = 0; z < sdata.Length; z++) // Converts the string numbers into integers
-						data[z] = int.Parse(sdata[z]);
+						for (int z = 0; z < sdata.Length; z++) // Converts the string numbers into integers
+							data[z] = int.Parse(sdata[z]);
 
-					if (!data.Contains(floor)) // Finally remove the asset if it isn't for the intended floor
-						newAss.RemoveAt(i--);
+						if (!data.Contains(floor)) // Finally remove the asset if it isn't for the intended floor
+							newAss.RemoveAt(i--);
+					}
 					
 					if (rawData.Length > 2)
 					{
-						int val = int.Parse(rawData[2]);
-						newAss[i].selection.maxItemValue = val;
-						if (val >= 200)
-							newAss[i].weight = 10; // Weight of a standard rare faculty
+						if (int.TryParse(rawData[2], out int val))
+						{
+							newAss[i].selection.maxItemValue = val;
+							if (val >= 200)
+								newAss[i].weight = 10; // Weight of a standard rare faculty
+						}
+						if (rawData.Length > 3)
+						{
+							if (int.TryParse(rawData[3], out val))
+								newAss[i].weight = val;
+						}
 					}
 				}
 			}

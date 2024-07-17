@@ -121,7 +121,7 @@ namespace BBTimes.CustomContent.Objects
 			if (other.isTrigger && other.CompareTag("Player"))
 			{
 				var pm = other.GetComponent<PlayerManager>();
-				if (pm && !pm.Tagged)
+				if (pm && !pm.Tagged &&! pm.Invisible)
 				{
 					SetIndicatorsToColor(Color.yellow);
 					sawPlayer = true;
@@ -138,7 +138,7 @@ namespace BBTimes.CustomContent.Objects
 			if (other.isTrigger && other.CompareTag("Player"))
 			{
 				var pm = other.GetComponent<PlayerManager>();
-				if (pm && pm.Tagged)
+				if (pm && ( pm.Tagged || pm.Invisible))
 				{
 					sawPlayer = false;
 					SetIndicatorsToColor(Color.blue);
