@@ -12,7 +12,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			var cells = room.AllTilesNoGarbage(false, false);
 			for (int i = 0; i < cells.Count; i++)
-				if (cells[i].shape != TileShape.Single && cells[i].shape != TileShape.Corner)
+				if (!cells[i].HasFreeWall || (cells[i].shape != TileShape.Single && cells[i].shape != TileShape.Corner))
 					cells.RemoveAt(i--);
 
 
@@ -22,15 +22,14 @@ namespace BBTimes.CustomContent.RoomFunctions
 			while (cells.Count > 0)
 			{
 				int idx = rng.Next(cells.Count);
-				var dirs = cells[idx].AllWallDirections;
-				if (dirs.Count != 0)
+				var dir = cells[idx].RandomUncoveredDirection(rng);
+				if (dir != Direction.Null)
 				{
 					var machineHolder = new GameObject("EventMachineHolder");
 					machineHolder.transform.SetParent(room.transform);
 					machineHolder.transform.position = cells[idx].CenterWorldPosition;
 
 					var machine = Instantiate(machinePre, machineHolder.transform);
-					Direction dir = dirs[rng.Next(dirs.Count)];
 					machine.Ec = builder.Ec;
 					machine.transform.localPosition = dir.ToVector3() * 4.99f;
 					machine.transform.rotation = dir.ToRotation();
