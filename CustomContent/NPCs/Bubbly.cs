@@ -132,17 +132,28 @@ namespace BBTimes.CustomContent.NPCs
 			pos = bub.transform.position;
 			ChangeNavigationState(new NavigationState_DoNothing(bub, 0));
 			Vector3 direction = Direction.North.ToVector3();
-			var room = bub.ec.CellFromPosition(pos).room;
-			for (int i = 0; i < 8; i++)
+			var cell = bub.ec.CellFromPosition(pos);
+			var room = cell.room;
+			if (cell.open)
+			{
+				for (int i = 0; i < 8; i++)
+				{
+					if (bub.ec.CellFromPosition(pos + (direction * 10f)).TileMatches(room))
+						dirsToSpit.Add(direction);
+					direction = Quaternion.AngleAxis(45, Vector3.up) * direction;
+				}
+				return;
+			}
+			for (int i = 0; i < 4; i++)
 			{
 				if (bub.ec.CellFromPosition(pos + (direction * 10f)).TileMatches(room))
 					dirsToSpit.Add(direction);
-				direction = Quaternion.AngleAxis(45, Vector3.up) * direction;
+				direction = Quaternion.AngleAxis(90, Vector3.up) * direction;
 			}
 		}
 
 		public override void Update()
-		{
+		{ 
 			base.Update();
 			if (awaitingBubble)
 			{

@@ -28,8 +28,10 @@ namespace BBTimes.CustomComponents.CustomDatas
 			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, 0);
 			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
+			eleRender.name = "Sprite";
 
 			var ele = eleRender.transform.parent.gameObject.AddComponent<Eletricity>();
+			ele.name = "RollingEletricity";
 			var ani = ele.gameObject.AddComponent<AnimationComponent>();
 			ani.animation = anim;
 			ani.renderer = eleRender;

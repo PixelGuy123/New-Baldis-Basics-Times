@@ -68,7 +68,7 @@ namespace BBTimes.Manager
 			bathLightPre.name = "hangingLongLight";
 			bathLightPre.gameObject.ConvertToPrefab(true);
 
-			var sets = RegisterRoom("Bathroom", Color.white,
+			var sets = RegisterRoom("Bathroom", new(0.85f, 0.85f, 0.85f, 1f),
 				ObjectCreators.CreateDoorDataObject("BathDoor",
 				AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "bathDoorOpened.png")),
 				AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "bathDoorClosed.png"))));
@@ -426,7 +426,7 @@ namespace BBTimes.Manager
 			JoeChef.AddFood(ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value, 15);
 			JoeChef.AddFood(ItemMetaStorage.Instance.FindByEnum(Items.ZestyBar).value, 45);
 
-			sets = RegisterRoom("Kitchen", Color.white,
+			sets = RegisterRoom("Kitchen", new(0.9f, 0.9f, 0.9f, 1f),
 				ObjectCreators.CreateDoorDataObject("KitchenDoor",
 				AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "kitchenDoorOpened.png")),
 				AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "kitchenDoorClosed.png"))));
@@ -538,7 +538,7 @@ namespace BBTimes.Manager
 			line.transform.parent.name = "BasketBallBigLine";
 			line.transform.parent.gameObject.AddObjectToEditor();
 
-			sets = RegisterSpecialRoom("BasketballArea", new(1f, 0.339f, 0f));
+			sets = RegisterSpecialRoom("BasketballArea", Color.cyan);
 
 			room = GetAllAssets(GetRoomAsset("BasketballArea"), 2, 55);
 			var swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = baldiBall.transform, weight = 100 }], prefabToSwap = basketballPile.transform };
@@ -623,7 +623,7 @@ namespace BBTimes.Manager
 			trap.sprOpen = trapRender.sprite;
 			trap.renderer = trapRender;
 
-			sets = RegisterSpecialRoom("Forest", new(0f, 0.45f, 0f));
+			sets = RegisterSpecialRoom("Forest", Color.cyan);
 
 			room = GetAllAssets(GetRoomAsset("Forest"), 75, 1);
 			//Swap for 99 trees

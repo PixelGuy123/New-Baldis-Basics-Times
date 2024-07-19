@@ -25,7 +25,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupEvent<PrincipalOutCustomData>();
 
-			
+
 			floorDatas[0].Events.Add(new() { selection = e, weight = 65 });
 			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 75 });

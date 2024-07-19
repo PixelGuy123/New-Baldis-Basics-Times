@@ -8,8 +8,9 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			SoundObject sd = GetSound("baldi_walking.wav", "Event_PriOut0", SoundType.Effect, Color.green);
 			sd.additionalKeys = [
-				new() {time = 0.72f, key = "Event_PriOut1"},
-				new() {time = 4.66f, key = "Event_PriOut2"}
+				new() {time = 1.154f, key = "Event_PriOut1"},
+				new() {time = 5.304f, key = "Event_PriOut2"},
+				new() {time = 6.498f, key = "Event_PriOut3"}
 				];
 
 			return [sd];

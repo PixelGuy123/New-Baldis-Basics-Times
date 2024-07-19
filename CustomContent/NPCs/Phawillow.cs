@@ -45,16 +45,31 @@ namespace BBTimes.CustomContent.NPCs
 			Singleton<CoreGameManager>.Instance.GetPlayer(player).itm.AddItem(holdingItem);
 			holdingItem = null;
 			itemRender.sprite = null;
-			behaviorStateMachine.ChangeState(new Phawillow_Wandering(this, null));
+			if (behaviorStateMachine.CurrentState is not Phawillow_Disable)
+				behaviorStateMachine.ChangeState(new Phawillow_Wandering(this, null));
 		}
 		public void ClickableUnsighted(int player) { }
 		public void ClickableSighted(int player) { }
 		public bool ClickableRequiresNormalHeight() => true;
 		public bool ClickableHidden() => holdingItem == null;
 
+		public override void VirtualOnTriggerEnter(Collider other)
+		{
+			base.VirtualOnTriggerEnter(other);
+			if (other.isTrigger && !other.CompareTag("Player") && !other.CompareTag("NPC"))
+			{
+				if (other.GetComponent<Entity>())
+				{
+					behaviorStateMachine.ChangeState(new Phawillow_Disable(this, behaviorStateMachine.CurrentState));
+				}
+			}
+
+			
+		}
+
 
 		Vector3 rendererPos;
-		MaterialPropertyBlock block = new MaterialPropertyBlock();
+		MaterialPropertyBlock block = new();
 
 		[SerializeField]
 		internal Transform itemRenderHolder;
@@ -63,14 +78,17 @@ namespace BBTimes.CustomContent.NPCs
 		internal SpriteRenderer floatingRenderer, itemRender;
 
 		[SerializeField]
-		internal SoundObject audWander;
+		internal Sprite sprNormal, sprActive, sprSplashed;
+
+		[SerializeField]
+		internal SoundObject audWander, audRestart, audLaugh;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
 
 		ItemObject holdingItem;
 
-		const float normSpeed = 10f, fleeSpeed = 25f;
+		const float normSpeed = 10f, fleeSpeed = 18f;
 	}
 
 	internal class Phawillow_StateBase(Phawillow wi) : NpcState(wi)
@@ -91,6 +109,11 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
+	internal class Phawillow_SubStateBase(Phawillow wi) : NpcState(wi)
+	{
+		protected Phawillow wi = wi;
+	}
+
 	internal class Phawillow_Wandering(Phawillow wi, ItemObject prevItem) : Phawillow_StateBase(wi)
 	{
 		float wanderCooldown = 15f;
@@ -103,6 +126,7 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(wander);
 
 			wi.SetSpeed(false);
+			wi.floatingRenderer.sprite = !prevItem || prevItem.itemType == Items.None ? wi.sprNormal : wi.sprActive;
 		}
 
 		public override void Update()
@@ -116,13 +140,13 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			if (prevItem == null || player.Tagged) return;
+			if (!prevItem || player.Tagged) return;
 
 			wi.behaviorStateMachine.ChangeState(new Phawillow_FleeFromPlayer(wi, this, player));
 		}
 	}
 
-	internal class Phawillow_FleeFromPlayer(Phawillow wi, Phawillow_StateBase prevState, PlayerManager pm) : Phawillow_StateBase(wi)
+	internal class Phawillow_FleeFromPlayer(Phawillow wi, NpcState prevState, PlayerManager pm) : Phawillow_StateBase(wi)
 	{
 
 		public override void Enter()
@@ -137,6 +161,46 @@ namespace BBTimes.CustomContent.NPCs
 			base.PlayerLost(player);
 			if (player == pm)
 				wi.behaviorStateMachine.ChangeState(prevState);
+		}
+	}
+
+	internal class Phawillow_Disable(Phawillow wi, NpcState prevState) : Phawillow_SubStateBase(wi)
+	{
+		float deadCooldown = 15f;
+		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
+		Sprite prevSpr;
+		public override void Enter()
+		{
+			base.Enter();
+			prevSpr = wi.floatingRenderer.sprite;
+			wi.floatingRenderer.sprite = wi.sprSplashed;
+			wi.Navigator.Am.moveMods.Add(moveMod);
+			ChangeNavigationState(new NavigationState_DoNothing(wi, 0));
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			if (deadCooldown <= 0f)
+			{
+				if (!wi.audMan.QueuedAudioIsPlaying)
+					wi.behaviorStateMachine.ChangeState(prevState);
+				
+				return;
+			}
+
+			deadCooldown -= wi.TimeScale * Time.deltaTime;
+			if (deadCooldown <= 0f)
+			{
+				wi.audMan.FlushQueue(true);
+				wi.audMan.QueueAudio(wi.audRestart);
+			}
+		}
+		public override void Exit()
+		{
+			base.Exit();
+			wi.Navigator.Am.moveMods.Remove(moveMod);
+			wi.floatingRenderer.sprite = prevSpr;
 		}
 	}
 
@@ -180,6 +244,8 @@ namespace BBTimes.CustomContent.NPCs
 			base.DestinationEmpty();
 			if ((pickup.transform.position - wi.transform.position).magnitude <= 5f)
 			{
+				wi.audMan.FlushQueue(true);
+				wi.audMan.QueueAudio(wi.audLaugh);
 				wi.UpdateRenderer(pickup.item);
 				wi.behaviorStateMachine.ChangeState(new Phawillow_Wandering(wi, pickup.item));
 

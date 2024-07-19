@@ -10,9 +10,11 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			var sd = GetSound("baldi_freeze.wav", "Event_FreezeEvent0", SoundType.Effect, Color.green);
 			sd.additionalKeys = [
-				new() {time = 1.472f, key = "Event_FreezeEvent1"},
-				new() {time = 4.087f, key = "Event_FreezeEvent2"},
-				new() {time = 7.565f, key = "Event_FreezeEvent3"}
+				new() {time = 1.796f, key = "Event_FreezeEvent1"},
+				new() {time = 5.705f, key = "Event_FreezeEvent2"},
+				new() {time = 8.998f, key = "Event_FreezeEvent3"},
+				new() {time = 11.223f, key = "Event_FreezeEvent4"},
+				new() {time = 14.271f, key = "Event_FreezeEvent0"}
 				];
 			return [GetSoundNoSub("freeze.wav", SoundType.Effect), sd];
 		}

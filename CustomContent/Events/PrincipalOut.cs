@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using PixelInternalAPI.Extensions;
+using MTM101BaldAPI.Components;
 
 namespace BBTimes.CustomContent.Events
 {
@@ -16,7 +18,7 @@ namespace BBTimes.CustomContent.Events
 				var data = npc.GetComponent<CustomNPCData>();
 				if (npc.Navigator.enabled && (npc.Character == Character.Principal || (data != null && data.npcsBeingReplaced.Contains(Character.Principal)))) // Reminder to change for 
 				{
-					NavigationState_PrincipalOut navigationState_PartyEvent = new(npc, 16, office.RandomEventSafeCellNoGarbage().FloorWorldPosition);
+					NavigationState_PrincipalOut navigationState_PartyEvent = new(npc, 88, office);
 					navigationStates.Add(navigationState_PartyEvent);
 					npc.navigationStateMachine.ChangeState(navigationState_PartyEvent);
 				}
@@ -35,19 +37,39 @@ namespace BBTimes.CustomContent.Events
 		readonly List<NavigationState_PrincipalOut> navigationStates = [];
 	}
 
-	public class NavigationState_PrincipalOut(NPC npc, int priority, Vector3 randomPos) : NavigationState(npc, priority)
+	public class NavigationState_PrincipalOut(NPC npc, int priority, RoomController office) : NavigationState(npc, priority)
 	{
+		readonly RoomController office = office;
+
+		readonly MovementModifier moveMod = new(Vector3.zero, 5f);
+
+		readonly ValueModifier blindMod = new(0f, 0f);
+
+		bool reachedOffice = false;
 		public override void Enter()
 		{
 			base.Enter();
-			destination = randomPos;
-			npc.Navigator.FindPath(destination);
+			npc.Navigator.FindPath(office.RandomEventSafeCellNoGarbage().FloorWorldPosition);
+			npc.Navigator.Am.moveMods.Add(moveMod);
+			npc.GetNPCContainer().AddLookerMod(blindMod);
+		}
+
+		public override void DestinationEmpty()
+		{
+			base.DestinationEmpty();
+			npc.Navigator.FindPath(office.RandomEventSafeCellNoGarbage().FloorWorldPosition);
+			if (!reachedOffice && npc.ec.CellFromPosition(npc.transform.position).TileMatches(office))
+			{
+				npc.Navigator.Am.moveMods.Remove(moveMod);
+				reachedOffice = true;
+			}
 		}
 
 		public void End()
 		{
 			priority = 0;
 			npc.behaviorStateMachine.RestoreNavigationState();
+			npc.GetNPCContainer().RemoveLookerMod(blindMod);
 		}
 	}
 }

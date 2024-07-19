@@ -93,12 +93,14 @@ namespace BBTimes.Manager
 			}
 		}
 
-		internal static List<R> AddFunctionToEverythingExcept<R>(params RoomCategory[] exceptions) where R : RoomFunction
+		internal static List<R> AddFunctionToEverythingExcept<R>(params RoomCategory[] exceptions) where R : RoomFunction =>
+			AddFunctionToEverythingExcept<R>((x) => true, exceptions);
+		internal static List<R> AddFunctionToEverythingExcept<R>(System.Predicate<RoomAsset> predicate, params RoomCategory[] exceptions) where R : RoomFunction
 		{
 			List<R> l = [];
 			foreach (var room in Resources.FindObjectsOfTypeAll<RoomAsset>())
 			{
-				if (room.roomFunctionContainer && !exceptions.Contains(room.category) && !room.roomFunctionContainer.GetComponent<R>())
+				if (room.roomFunctionContainer && !exceptions.Contains(room.category) && !room.roomFunctionContainer.GetComponent<R>() && predicate(room))
 				{
 					var comp = room.roomFunctionContainer.gameObject.AddComponent<R>();
 					room.roomFunctionContainer.AddFunction(comp);

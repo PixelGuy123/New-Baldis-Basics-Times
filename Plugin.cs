@@ -65,12 +65,9 @@ namespace BBTimes.Plugin
 
 			sw.gameObject.ConvertToPrefab(true);
 
-			var rs = BBTimesManager.AddFunctionToEverythingExcept<LightSwitchSpawner>([.. nonAllowedLightSwitchSpawns, EnumExtensions.GetFromExtendedName<RoomCategory>("AbandonedRoom")]);
+			var rs = BBTimesManager.AddFunctionToEverythingExcept<LightSwitchSpawner>((x) => x.standardLightCells.Count != 0, RoomCategory.Special, RoomCategory.Test, RoomCategory.Buffer, RoomCategory.Hall, RoomCategory.Mystery, RoomCategory.Store, RoomCategory.FieldTrip, RoomCategory.Null);
 			rs.ForEach(x => x.lightPre = sw);
 		}
-		readonly static HashSet<RoomCategory> nonAllowedLightSwitchSpawns = [RoomCategory.Special, RoomCategory.Test, RoomCategory.Buffer, RoomCategory.Hall, RoomCategory.Mystery, RoomCategory.Store, RoomCategory.FieldTrip, RoomCategory.Null];
-		public static void AddLightSwitchCategoryLimit(RoomCategory cat) =>
-			nonAllowedLightSwitchSpawns.Add(cat);
 
 
 
@@ -352,7 +349,7 @@ namespace BBTimes.Plugin
 
 		public const string PLUGIN_NAME = "Baldi\'s Basics Times";
 
-		public const string PLUGIN_VERSION = "1.1.5";
+		public const string PLUGIN_VERSION = "1.1.5.1";
 	}
 
 	// Some cheats
