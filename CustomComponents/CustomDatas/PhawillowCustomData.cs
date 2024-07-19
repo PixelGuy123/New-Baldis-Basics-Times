@@ -20,7 +20,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			wi.audMan = GetComponent<PropagatedAudioManager>();
 			wi.audWander = soundObjects[0];
 			wi.gameObject.layer = LayerStorage.iClickableLayer;
-			wi.floatingRenderer = wi.spriteRenderer[0].transform;
+			wi.floatingRenderer = wi.spriteRenderer[0];
 
 			var itemHolder = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(new Vector3(3f, -0.8f, 0f), 0);
 			itemHolder.transform.parent.SetParent(wi.transform);

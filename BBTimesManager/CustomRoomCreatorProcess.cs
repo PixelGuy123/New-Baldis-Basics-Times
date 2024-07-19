@@ -81,7 +81,7 @@ namespace BBTimes.Manager
 			fun.targetPrefabName = "sink";
 			fun.posterPre = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "mirror.png"))]);
 
-			room.ForEach(x => x.selection.posterChance = 0f);
+			room.ForEach(x => { x.selection.posterChance = 0f; x.selection.lightPre = bathLightPre; });
 			sets.container = room[0].selection.roomFunctionContainer;
 
 			var group = new RoomGroup()
@@ -203,15 +203,16 @@ namespace BBTimes.Manager
 			computer.gameObject.AddObjectToEditor();
 
 			// Event machine
-			var machine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", "fogMachineFront_Off.png")), 26f), false);
+			Sprite[] sprs = TextureExtensions.LoadSpriteSheet(3, 1, 26f, GetRoomAsset("ComputerRoom", "eventMachine.png"));
+			var machine = ObjectCreationExtensions.CreateSpriteBillboard(sprs[1], false);
 			machine.gameObject.layer = 0;
 			machine.name = "EventMachine";
 			machine.gameObject.ConvertToPrefab(true);
 			var evMac = machine.gameObject.AddComponent<EventMachine>();
 			evMac.spriteToChange = machine;
 			evMac.sprNoEvents = machine.sprite;
-			evMac.sprWorking = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", "fogMachineFront_ON.png")), 26f);
-			evMac.sprDead = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", "fogMachineFront_Ded.png")), 26f);
+			evMac.sprWorking = sprs[2];
+			evMac.sprDead = sprs[0];
 			machine.gameObject.AddBoxCollider(Vector3.zero, new(6f, 10f, 1f), true);
 
 			sets = RegisterRoom("ComputerRoom", new(0f, 0f, 0.35f),
@@ -799,6 +800,42 @@ namespace BBTimes.Manager
 			for (int i = 0; i < floorDatas.Count; i++)
 				floorDatas[i].Halls.AddRange(room.FilterRoomAssetsByFloor(i).ConvertAll<KeyValuePair<WeightedRoomAsset, bool>>(x => new(x, true)));
 
+			//Special Rooms
+
+			AddSpecialRoomCollectionWithName("Cafeteria");
+			//AddSpecialRoomCollectionWithName("Playground");
+
+			static void AddSpecialRoomCollectionWithName(string name)
+			{
+				WeightedRoomAsset classWeightPre = null;
+				foreach (var ld in Resources.FindObjectsOfTypeAll<LevelObject>())
+				{
+					var r = ld.potentialSpecialRooms.FirstOrDefault(x => x.selection.roomFunctionContainer.name.StartsWith(name));
+					if (r != null)
+					{
+						classWeightPre = r;
+						break;
+					}
+				}
+				if (classWeightPre == null)
+					throw new System.ArgumentException("Could not find a special room instance with " + name);
+
+				var room = GetAllAssets(GetRoomAsset(name), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: classWeightPre.selection.keepTextures, squaredShape: true);
+
+				room.ForEach(x =>
+				{
+					x.selection.posters = classWeightPre.selection.posters;
+					x.selection.posterChance = classWeightPre.selection.posterChance;
+					x.selection.windowChance = classWeightPre.selection.windowChance;
+					x.selection.windowObject = classWeightPre.selection.windowObject;
+					x.selection.lightPre = classWeightPre.selection.lightPre;
+					x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
+				});
+
+				for (int i = 0; i < floorDatas.Count; i++)
+					floorDatas[i].SpecialRooms.AddRange(room.FilterRoomAssetsByFloor(i));
+			}
+
 			static void AddAssetsToNpc<N>(List<WeightedRoomAsset> assets) where N : NPC
 			{
 				NPCMetaStorage.Instance.All().Do(x =>
@@ -862,7 +899,7 @@ namespace BBTimes.Manager
 			return settings;
 		}
 
-		static List<WeightedRoomAsset> GetAllAssets(string path, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null, bool keepTextures = true)
+		static List<WeightedRoomAsset> GetAllAssets(string path, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null, bool keepTextures = true, bool squaredShape = false)
 		{
 			List<WeightedRoomAsset> assets = [];
 			RoomFunctionContainer container = cont;
@@ -870,7 +907,7 @@ namespace BBTimes.Manager
 			{
 				try
 				{
-					var asset = RoomFactory.CreateAssetFromPath(file, maxValue, isOffLimits, container, isAHallway, secretRoom, mapBg, keepTextures);
+					var asset = RoomFactory.CreateAssetFromPath(file, maxValue, isOffLimits, container, isAHallway, secretRoom, mapBg, keepTextures, squaredShape);
 					assets.Add(new() { selection = asset, weight = assetWeight });
 					_moddedAssets.Add(asset);
 					if (!container)

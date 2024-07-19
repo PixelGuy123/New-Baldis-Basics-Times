@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
 {
-	public class Bubble : MonoBehaviour, IEntityTrigger
+	public class Bubble : MonoBehaviour
 	{
 		[SerializeField]
 		internal SoundObject audPop;
@@ -53,11 +53,10 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		public void Initialize() =>
 			initialized = true;
 
-		public void EntityTriggerEnter(Collider other)
+		public void OnTriggerEnter(Collider other)
 		{
 			if (!initialized || holding || hasPopped || other.gameObject == owner.gameObject) return;
-			bool player = other.CompareTag("Player");
-			if (other.isTrigger && (player || other.CompareTag("NPC")))
+			if (other.isTrigger)
 			{
 				var e = other.GetComponent<Entity>();
 				if (e)
@@ -69,16 +68,14 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 					holding = true;
 					SetTarget(false);
 				}
-				if (player)
+				PlayerManager pm = other.GetComponent<PlayerManager>();
+				if (other.CompareTag("Player") && pm)
 				{
-					var pm = other.GetComponent<PlayerManager>();
 					bubbleCanvas.gameObject.SetActive(true);
 					bubbleCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 				}
 			}
 		}
-		public void EntityTriggerStay(Collider other){}
-		public void EntityTriggerExit(Collider other){}
 
 		void Update()
 		{

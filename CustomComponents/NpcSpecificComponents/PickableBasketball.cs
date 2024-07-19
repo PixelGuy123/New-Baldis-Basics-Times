@@ -107,7 +107,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 					e.AddForce(new((other.transform.position - transform.position).normalized, speed * 1.5f, -speed));
 					dr.DisappointDribble();
 
-					StartCoroutine(Timer(e));
+					e.StartCoroutine(Timer(e));
 				}
 			}
 

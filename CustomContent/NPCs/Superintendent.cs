@@ -128,5 +128,16 @@ namespace BBTimes.CustomContent.NPCs
 				noticeCooldown = noticeMaxCooldown;
 			}
 		}
+
+		public override void DoorHit(StandardDoor door)
+		{
+			if (door.locked)
+			{
+				door.Unlock();
+				door.OpenTimed(5f, false);
+				return;
+			}
+			base.DoorHit(door);
+		}
 	}
 }

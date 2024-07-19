@@ -10,7 +10,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			base.Build(builder, rng);
 
 
-			var cells = room.AllTilesNoGarbage(false, true);
+			var cells = room.AllTilesNoGarbage(false, false);
 			for (int i = 0; i < cells.Count; i++)
 				if (cells[i].shape != TileShape.Single && cells[i].shape != TileShape.Corner)
 					cells.RemoveAt(i--);
@@ -34,6 +34,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					machine.Ec = builder.Ec;
 					machine.transform.localPosition = dir.ToVector3() * 4.99f;
 					machine.transform.rotation = dir.ToRotation();
+					cells[idx].HardCover(dir.ToCoverage());
 
 					var icon = builder.Ec.map.AddIcon(iconPre, machineHolder.transform, Color.white);
 					machine.mapIcon = icon;

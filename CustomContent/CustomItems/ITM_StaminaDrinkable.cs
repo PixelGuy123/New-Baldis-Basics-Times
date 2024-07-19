@@ -2,6 +2,8 @@
 using UnityEngine;
 using MTM101BaldAPI.PlusExtensions;
 using MTM101BaldAPI.Components;
+using BBTimes.Extensions;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -13,6 +15,10 @@ namespace BBTimes.CustomContent.CustomItems
 			this.pm = pm;
 			pm.RuleBreak("Drinking", 1.5f);
 			var comp = pm.GetMovementStatModifier();
+			var mod = pm.GetAttribute();
+
+			if (!string.IsNullOrEmpty(attribute))
+				mod.AddAttribute(attribute);
 
 			stamMax = new(staminaMaxMod);
 			stamRise = new(staminaRiseMod);
@@ -22,12 +28,12 @@ namespace BBTimes.CustomContent.CustomItems
 			comp.AddModifier("staminaRise", stamRise);
 			comp.AddModifier("staminaDrop", stamDrop);
 
-			StartCoroutine(Timer(comp));
+			StartCoroutine(Timer(comp, mod));
 
 			return true;
 		}
 
-		IEnumerator Timer(PlayerMovementStatModifier comp)
+		IEnumerator Timer(PlayerMovementStatModifier comp, PlayerAttributesComponent mod)
 		{
 			while (cooldown > 0f)
 			{
@@ -38,6 +44,7 @@ namespace BBTimes.CustomContent.CustomItems
 			comp.RemoveModifier(stamMax);
 			comp.RemoveModifier(stamRise);
 			comp.RemoveModifier(stamDrop);
+			mod.RemoveAttribute(attribute);
 
 			Destroy(gameObject);
 

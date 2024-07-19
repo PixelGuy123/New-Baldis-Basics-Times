@@ -53,7 +53,18 @@ namespace BBTimes.CustomContent.NPCs
         protected OfficeChair chair = office;
 
         protected PropagatedAudioManager man = office.GetComponent<PropagatedAudioManager>();
-    }
+
+		public override void DoorHit(StandardDoor door)
+		{
+			if (door.locked)
+			{
+				door.Unlock();
+				door.OpenTimed(5f, false);
+				return;
+			}
+			base.DoorHit(door);
+		}
+	}
 
     internal class OfficeChair_FindOffice(OfficeChair office, bool useCurrent, float cooldown = -1f, Entity target = null) : OfficeChair_StateBase(office) // A basic moving npc state
     {
@@ -66,31 +77,29 @@ namespace BBTimes.CustomContent.NPCs
         readonly float waitCooldown = cooldown;
 
 		Cell targetCell;
-        public override void Initialize() // Basically go to a random spot
+        public override void Enter() // Basically go to a random spot
         {
-			base.Initialize();
+			base.Enter();
+
+			if (target)
+			{
+				entityBaseHeight = target.Height;
+				SetTarget(false);
+				target.Teleport(chair.transform.position);
+				target.SetHeight(entityBaseHeight + heightOffset);
+			}
+
 			var room = chair.ec.CellFromPosition(chair.transform.position).room;
             List<Cell> cells = useCurrent ? room.GetTilesOfShape([TileShape.Single], true) : GetRandomOffice(room);
             if (cells.Count == 0)
                 cells = useCurrent ? room.AllEntitySafeCellsNoGarbage() : GetRandomOffice(room, true);
-#if CHEAT
-            Debug.Log($"(Office Chair): {cells.Count} < Amount of tiles in the array");
-            Debug.Log($"(Office Chair): {cells.Count} < Amount of tiles in the array");
-#endif
+
 			targetCell = cells[Random.Range(0, cells.Count)];
 
 			ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, targetCell.FloorWorldPosition));
             man.QueueAudio(chair.audRoll, true);
             man.SetLoop(true);
 			chair.bringingState = this;
-
-            if (target != null)
-            {
-                entityBaseHeight = target.Height;
-                SetTarget(false);
-                target.Teleport(chair.transform.position);
-                target.SetHeight(entityBaseHeight + heightOffset);
-            }
 
            
         }
@@ -107,7 +116,7 @@ namespace BBTimes.CustomContent.NPCs
 			}
 
             man.FlushQueue(true);
-            if (target != null)
+            if (target)
             {
                 target.SetHeight(entityBaseHeight);
                 SetTarget(true);
@@ -120,7 +129,7 @@ namespace BBTimes.CustomContent.NPCs
 
         public override void Update()
         {
-            if (target == null) return;
+            if (!target) return;
             
 			if (!chair || chair.Navigator.Entity.Frozen || (chair.transform.position - target.transform.position).magnitude > 5f) // If chair ever becomes null, also stop this
             {

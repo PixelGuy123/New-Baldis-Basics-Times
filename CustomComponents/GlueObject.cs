@@ -14,7 +14,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			if (other.isTrigger && (other.CompareTag("NPC") || player))
 			{
 				var e = other.GetComponent<Entity>();
-				if (e)
+				if (e && e.Grounded)
 				{
 					ActivityEnter(e.ExternalActivity);
 					if (player)

@@ -26,7 +26,9 @@ namespace BBTimes.CustomContent.Events
 
 		void TurnStructs(bool on) // anything could patch this too :)
 		{
-			ec.SetAllLights(on);
+			foreach (var cell in ec.AllCells())
+				cell.SetPower(on); // Disable power
+			
 			ec.MaxRaycast = on ? float.PositiveInfinity : maxRayCast;
 			if (on) activeBlackOuts--;
 			else activeBlackOuts++;
@@ -60,6 +62,9 @@ namespace BBTimes.CustomContent.Events
 
 			foreach (var cam in data.Cameras)
 				cam.TurnMe(on);
+
+			foreach (var l in data.LightSwitches)
+				l.DisableMe(!on);
 
 			foreach (var soda in FindObjectsOfType<SodaMachine>())
 				soda.GetComponent<MeshRenderer>().materials[1].SetTexture("_LightGuide", on ? sodaMachineLight : null); // Switches the texture from the material to make it not glow

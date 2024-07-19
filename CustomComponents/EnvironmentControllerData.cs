@@ -11,5 +11,6 @@ namespace BBTimes.CustomComponents
 		public List<Trapdoor> Trapdoors = [];
 		public List<SecurityCamera> Cameras = [];
 		public List<Squisher> Squishers = [];
+		public List<LightSwitch> LightSwitches = [];
 	}
 }

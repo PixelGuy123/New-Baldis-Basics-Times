@@ -134,6 +134,17 @@ namespace BBTimes.CustomContent.NPCs
 	internal class DribbleStateBase(Dribble dr) : NpcState(dr)
 	{
 		readonly protected Dribble dr = dr;
+
+		public override void DoorHit(StandardDoor door)
+		{
+			if (door.locked)
+			{
+				door.Unlock();
+				door.OpenTimed(5f, false);
+				return;
+			}
+			base.DoorHit(door);
+		}
 	}
 
 	internal class DribbleWanderStateBase(Dribble dr) : DribbleStateBase(dr)

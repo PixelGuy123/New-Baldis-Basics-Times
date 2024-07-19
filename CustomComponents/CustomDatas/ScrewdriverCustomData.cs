@@ -13,7 +13,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			base.SetupPrefab();
 			var comp = GetComponent<ITM_Screwdriver>();
 			comp.audScrew = soundObjects[0];
-			comp.item = myEnum;
+			comp.item = myItmObj.itemType;
 		}
 	}
 }

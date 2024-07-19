@@ -230,7 +230,7 @@ namespace BBTimes.ModPatches
 						i--;
 					}
 					else if (___ec.Npcs[i].GetType() == typeof(Baldi))
-						___ec.Npcs[i].StartCoroutine(GameExtensions.InfiniteAnger((Baldi)___ec.Npcs[i], 0.05f));
+						___ec.Npcs[i].StartCoroutine(GameExtensions.InfiniteAnger((Baldi)___ec.Npcs[i], 0.6f));
 				}
 
 				___ec.StartCoroutine(SpawnFires());
@@ -249,10 +249,10 @@ namespace BBTimes.ModPatches
 					{
 						var c = Random.Range(0, cs.Count);
 						maxCooldown -= ___ec.EnvironmentTimeScale * 1.2f;
-						if (maxCooldown < 0.1f)
-							maxCooldown = 0.1f; // just a limit
+						if (maxCooldown < 0.03f)
+							maxCooldown = 0.03f; // just a limit
 
-						cooldown = maxCooldown;
+						cooldown += maxCooldown;
 						AddFire(cs[c], ___ec);
 						cs.RemoveAt(c);
 					}
@@ -280,7 +280,7 @@ namespace BBTimes.ModPatches
 			f.StartCoroutine(f.Spawn(scale));
 		}
 
-		const float fireCooldown = 5f;
+		const float fireCooldown = 3f;
 		internal static LoopingSoundObject chaos0; // that very silent noise from Classic
 		internal static LoopingSoundObject chaos1; // Chaos noises
 		internal static LoopingSoundObject chaos2;

@@ -19,11 +19,11 @@ namespace BBTimes.CustomComponents.CustomDatas
 				GetSound("Pix_Successful.wav", "Vfx_Pix_MisSuc", SoundType.Voice, new(0.6f, 0f, 0f)),
 				GetSound("Pix_Failed.wav", "Vfx_Pix_MisFail", SoundType.Voice, new(0.6f, 0f, 0f)),
 				GetSound("Pix_Grrr.wav", "Vfx_Pix_Grr", SoundType.Voice, new(0.6f, 0f, 0f)),
-				GetSound("Pix_Shoot.wav", "Vfx_Pix_Shoot", SoundType.Voice, new(0.6f, 0f, 0f)),
 				GetSound("Pix_NextTime.wav", "Vfx_Pix_GetYou", SoundType.Voice, new(0.6f, 0f, 0f)),
+				GetSound("Pix_Shoot.wav", "Vfx_Pix_Shoot", SoundType.Voice, new(0.6f, 0f, 0f)),
 				GetSoundNoSub("shock.wav", SoundType.Voice)
 				];
-			// 0 - 2: spot ; 3 - 4: success ; 5 - 6: fail
+			// 0 - 2: spot ; 3 - 4: success ; 5 - 7: fail
 
 			sds[2].additionalKeys = [new() { key = "Vfx_Pix_Stop2", time = 0.732f}, new() { key = "Vfx_Pix_Stop3", time = 1.369f }];
 
@@ -73,7 +73,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			laser.entity = laserHolder.gameObject.CreateEntity(2f, 2f, laserHolder.transform).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
 			laser.audMan = laserHolder.gameObject.CreatePropagatedAudioManager(15, 45);
-			laser.audShock = soundObjects[8];
+			laser.audShock = soundObjects[9];
 			pix.laserPre = laser;
 		}
 	}

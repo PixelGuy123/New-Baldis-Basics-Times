@@ -83,12 +83,17 @@ namespace BBTimes.CustomContent.NPCs
 		internal void StabSatisfied(PlayerManager player, bool superAngry)
 		{
 			PlayerTurnAround();
-			player.plm.AddStamina(superAngry ? -player.plm.stamina : -player.plm.staminaMax / 2, true);
 			if (superAngry)
 			{
+				player.plm.AddStamina(-player.plm.stamina, true);
 				disabledPlayer = player.GetMovementStatModifier();
 				StartCoroutine(DisabledPlayerCooldown());
 				container.RemoveLookerMod(lookerMod);
+			}
+			else
+			{
+				float decrease = -player.plm.staminaMax * 0.5f;
+				player.plm.AddStamina(player.plm.stamina - decrease < 0f ? -player.plm.stamina : decrease, true); // Workaround so the stamina doesn't go below 0
 			}
 			audMan.PlaySingle(ITM_Pencil.audStab);
 			audMan.PlaySingle(audEvilLaught);

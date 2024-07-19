@@ -7,6 +7,6 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override string SoundPath => System.IO.Path.Combine(BasePlugin.ModPath, "items", Name, "Audios");
 		protected override string TexturePath => System.IO.Path.Combine(BasePlugin.ModPath, "items", Name, "Textures");
 
-		public Items myEnum;
+		public ItemObject myItmObj;
 	}
 }

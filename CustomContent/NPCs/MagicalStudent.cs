@@ -79,6 +79,17 @@ namespace BBTimes.CustomContent.NPCs
 	internal class MagicalStudent_StateBase(MagicalStudent mgs) : NpcState(mgs)
 	{
 		protected MagicalStudent mgs = mgs;
+
+		public override void DoorHit(StandardDoor door)
+		{
+			if (door.locked)
+			{
+				door.Unlock();
+				door.OpenTimed(5f, false);
+				return;
+			}
+			base.DoorHit(door);
+		}
 	}
 
 	internal class MagicalStudent_Wander(MagicalStudent mgs, float waitCooldown) : MagicalStudent_StateBase(mgs)

@@ -29,14 +29,32 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		
 	}
+	internal class SuperIntendentJr_StateBase(NPC npc) : NpcState(npc)
+	{
+		public override void DoorHit(StandardDoor door)
+		{
+			if (door.locked)
+			{
+				door.Unlock();
+				door.OpenTimed(5f, false);
+				return;
+			}
+			base.DoorHit(door);
+		}
+
+		public override void Enter()
+		{
+			base.Enter();
+			ChangeNavigationState(new NavigationState_WanderRandom(npc, 0));
+		}
+	}
 	public class SuperIntendentJr : NPC
 	{
 		public override void Initialize()
 		{
 			base.Initialize();
 			timeInSight = new float[players.Count];
-			behaviorStateMachine.ChangeState(new NpcState(this));
-			behaviorStateMachine.ChangeNavigationState(new NavigationState_WanderRandom(this, 0)); // Everything can be done from SuperIntendent
+			behaviorStateMachine.ChangeState(new SuperIntendentJr_StateBase(this));
 		}
 
 		void CallPrincipals()

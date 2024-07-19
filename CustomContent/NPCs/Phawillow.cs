@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BBTimes.Extensions;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -8,15 +9,18 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Initialize()
 		{
 			base.Initialize();
-			rendererPos = floatingRenderer.localPosition;
+			rendererPos = floatingRenderer.transform.localPosition;
 			behaviorStateMachine.ChangeState(new Phawillow_Wandering(this, null));
 		}
 
 		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
-			floatingRenderer.localPosition = rendererPos + Vector3.up * Mathf.Cos(Time.fixedTime * TimeScale * 0.5f * navigator.speed) * 0.88f;
-			itemRenderHolder.transform.localPosition = floatingRenderer.localPosition;
+			floatingRenderer.transform.localPosition = rendererPos + Vector3.up * Mathf.Cos(Time.fixedTime * TimeScale * 0.5f * navigator.speed) * 0.88f;
+			itemRenderHolder.transform.localPosition = floatingRenderer.transform.localPosition;
+			itemRender.transform.localPosition = floatingRenderer.GetRotationalPosFrom(new(3f, -0.8f));
+			floatingRenderer.GetPropertyBlock(block);
+			itemRender.SetSpriteRotation(block.GetFloat("_SpriteRotation"));
 		}
 
 		public void PlayWander() =>
@@ -50,12 +54,13 @@ namespace BBTimes.CustomContent.NPCs
 
 
 		Vector3 rendererPos;
+		MaterialPropertyBlock block = new MaterialPropertyBlock();
 
 		[SerializeField]
-		internal Transform floatingRenderer, itemRenderHolder;
+		internal Transform itemRenderHolder;
 
 		[SerializeField]
-		internal SpriteRenderer itemRender;
+		internal SpriteRenderer floatingRenderer, itemRender;
 
 		[SerializeField]
 		internal SoundObject audWander;
@@ -119,7 +124,6 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class Phawillow_FleeFromPlayer(Phawillow wi, Phawillow_StateBase prevState, PlayerManager pm) : Phawillow_StateBase(wi)
 	{
-		float cooldown = 20f;
 
 		public override void Enter()
 		{
@@ -128,11 +132,10 @@ namespace BBTimes.CustomContent.NPCs
 			wi.SetSpeed(true);
 		}
 
-		public override void Update()
+		public override void PlayerLost(PlayerManager player)
 		{
-			base.Update();
-			cooldown -= wi.TimeScale * Time.deltaTime;
-			if (cooldown <= 0f)
+			base.PlayerLost(player);
+			if (player == pm)
 				wi.behaviorStateMachine.ChangeState(prevState);
 		}
 	}
@@ -149,8 +152,16 @@ namespace BBTimes.CustomContent.NPCs
 			if (previousItem == null)
 			{
 				for (int i = 0; i < pickups.Count; i++)
-					if (!pickups[i].gameObject.activeSelf)
+				{
+					if (!pickups[i].gameObject.activeSelf || wi.ec.CellFromPosition(pickups[i].transform.position).room.category == RoomCategory.Store)
 						pickups.RemoveAt(i--);
+					else
+					{
+						wi.ec.FindPath(wi.ec.CellFromPosition(wi.transform.position), wi.ec.CellFromPosition(pickups[i].transform.position), PathType.Nav, out _, out bool success);
+						if (!success)
+							pickups.RemoveAt(i--);
+					}
+				}
 			}
 
 			if (pickups.Count == 0)
@@ -185,6 +196,12 @@ namespace BBTimes.CustomContent.NPCs
 					if (pickup.icon != null)
 						pickup.icon.spriteRenderer.enabled = true;
 				}
+				return;
+			}
+			wi.ec.FindPath(wi.ec.CellFromPosition(wi.transform.position), wi.ec.CellFromPosition(pickup.transform.position), PathType.Nav, out _, out bool success);
+			if (!success)
+			{
+				Enter();
 				return;
 			}
 			ChangeNavigationState(target);

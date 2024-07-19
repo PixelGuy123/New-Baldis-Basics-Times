@@ -184,6 +184,15 @@ namespace BBTimes.Extensions
 			ec.FreezeNavigationUpdates(false);
 		}
 
+		public static Vector3 GetRotationalPosFrom(this SpriteRenderer renderer, Vector2 offset)
+		{
+			var pro = new MaterialPropertyBlock();
+			renderer.GetPropertyBlock(pro);
+		   float degrees = pro.GetFloat("_SpriteRotation") * Mathf.Deg2Rad; // darn radians
+			return new((Mathf.Cos(degrees) * offset.x) + (-Mathf.Sin(degrees) * offset.y), (Mathf.Cos(degrees) * offset.y) + (Mathf.Sin(degrees) * offset.x));
+																																				  
+		}
+
 		internal static DetentionUi detentionUiPre;
 
 		const int defaultDetentionNoise = 95;

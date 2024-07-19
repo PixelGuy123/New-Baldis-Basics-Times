@@ -37,7 +37,7 @@ namespace BBTimes.Helpers
 
 		public static void SetupItemData<C>(this C data, string name, ItemObject itemObj) where C : CustomItemData
 		{
-			data.myEnum = itemObj.itemType; // custom Item object with customItemData
+			data.myItmObj = itemObj; // custom Item object with customItemData
 			data.Name = name;
 			var sprites = GetAllItemSpritesFrom(name); // Get all sprites from its folder (0 is small icon, 1 is big icon)
 

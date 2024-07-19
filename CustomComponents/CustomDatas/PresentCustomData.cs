@@ -18,7 +18,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override void SetupPrefabPost()
 		{
 			base.SetupPrefabPost();
-			GetComponent<ITM_Present>().items = [.. ItemMetaStorage.Instance.FindAll(x => x.id != myEnum && !x.flags.HasFlag(ItemFlags.InstantUse)).ConvertAll(x => x.value)];
+			GetComponent<ITM_Present>().items = [.. ItemMetaStorage.Instance.FindAll(x => x.id != myItmObj.itemType && !x.flags.HasFlag(ItemFlags.InstantUse)).ConvertAll(x => x.value)];
 
 			// Another workaround for this stupid bug
 			//List<ItemObject> list = new(ItemMetaStorage.Instance.FindAll(x => x.id != myEnum).ConvertAll(x => x.value));

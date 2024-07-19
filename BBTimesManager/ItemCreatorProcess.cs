@@ -412,12 +412,12 @@ namespace BBTimes.Manager
 				.SetShopPrice(9999)
 				.SetNameAndDescription("TimesIcon", string.Empty)
 				.SetAsInstantUse()
-				.Build<CustomItemData>("TimesIcon", Items.Points);
+				.Build<GenericYTPItemData>("TimesIcon", Items.Points);
 
-			floorDatas[0].Items.Add(new() { selection = item, weight = 2 });
-			floorDatas[1].Items.Add(new() { selection = item, weight = 9 });
-			floorDatas[2].Items.Add(new() { selection = item, weight = 15 });
-			floorDatas[3].Items.Add(new() { selection = item, weight = 9 });
+			floorDatas[0].Items.Add(new() { selection = item, weight = 4 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 20 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
 
 			// Cherry Bsoda
 			var itemBs = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;

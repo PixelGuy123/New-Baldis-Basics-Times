@@ -36,10 +36,11 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator AnimatedJump()
 		{
-			Force force = new(pm.transform.forward, 28f, -2.5f);
+			Force force = new(pm.transform.forward, 45f, -2.5f);
 			entity.AddForce(force);
 			pm.plm.Entity.SetFrozen(true);
 			pm.plm.Entity.SetInteractionState(false);
+			pm.plm.Entity.SetTrigger(false);
 
 			float time = 0f;
 
@@ -50,6 +51,13 @@ namespace BBTimes.CustomContent.CustomItems
 
 				if (height > maxHeight)
 					height = maxHeight;
+
+				if ((transform.position - pm.transform.position).magnitude > 5f)
+				{
+					height = 0f;
+					break;
+				}
+					
 
 				pm.Teleport(transform.position);
 
@@ -66,7 +74,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 			pm.plm.Entity.SetInteractionState(true);
 			pm.plm.Entity.SetFrozen(false);
-			pm.Teleport(transform.position);
+			pm.plm.Entity.SetTrigger(true);
+
 			Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).UpdateTargets(null, targetIdx);
 
 			Destroy(gameObject);

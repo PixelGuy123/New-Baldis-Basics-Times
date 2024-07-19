@@ -15,6 +15,10 @@ using System.Collections;
 using System.Collections.Generic;
 using MTM101BaldAPI.SaveSystem;
 using BBTimes.ModPatches;
+using BBTimes.CustomContent.Objects;
+using BBTimes.CustomContent.RoomFunctions;
+using PixelInternalAPI.Classes;
+using System.IO;
 
 
 namespace BBTimes.Plugin
@@ -36,7 +40,33 @@ namespace BBTimes.Plugin
 			yield return "Setup the rest of the assets...";
 			ITM_GoldenQuarter.quarter = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;
 			BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
+			yield return "Creating post assets...";
+			SetupPostAssets();
 			yield break;
+		}
+
+		void SetupPostAssets()
+		{
+			Sprite[] sprs = TextureExtensions.LoadSpriteSheet(2, 1, 55f, Path.Combine(ModPath, "objects", "LightSwitch", "lightSwitchSheet.png"));
+			var lightSwitch = ObjectCreationExtensions.CreateSpriteBillboard(sprs[1], false)
+				.AddSpriteHolder(0, LayerStorage.iClickableLayer);
+			lightSwitch.gameObject.layer = 0;
+			lightSwitch.name = "sprite";
+
+			var sw = lightSwitch.transform.parent.gameObject.AddComponent<LightSwitch>();
+			sw.name = "LightSwitch";
+			sw.gameObject.AddBoxCollider(Vector3.zero, new(2f, 10f, 1f), true);
+			sw.sprOff = sprs[0];
+			sw.sprOn = sprs[1];
+			sw.renderer = lightSwitch;
+			sw.audMan = sw.gameObject.CreatePropagatedAudioManager();
+			sw.audSwitch = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromMod(this, "objects", "LightSwitch", "LightSwitch_Toggle.wav"), string.Empty, SoundType.Effect, Color.white);
+			sw.audSwitch.subtitle = false;
+
+			sw.gameObject.ConvertToPrefab(true);
+
+			var rs = BBTimesManager.AddFunctionToEverythingExcept<LightSwitchSpawner>(RoomCategory.Special, RoomCategory.Test, RoomCategory.Buffer, RoomCategory.Hall, RoomCategory.Mystery, RoomCategory.Store, RoomCategory.FieldTrip, RoomCategory.Null);
+			rs.ForEach(x => x.lightPre = sw);
 		}
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap

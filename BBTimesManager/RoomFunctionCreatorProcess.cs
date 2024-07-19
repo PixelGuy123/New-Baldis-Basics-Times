@@ -11,6 +11,8 @@ using HarmonyLib;
 using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
+using System.Collections.Generic;
+using BBTimes.CustomContent.Objects;
 
 namespace BBTimes.Manager
 {
@@ -82,7 +84,6 @@ namespace BBTimes.Manager
 			cos.nonSafeEntityCell = true;
 
 
-
 			static R AddFunctionToEveryRoom<R>(string prefix) where R : RoomFunction
 			{
 				var r = Resources.FindObjectsOfTypeAll<RoomAsset>().First(x => x.name.StartsWith(prefix));
@@ -90,6 +91,21 @@ namespace BBTimes.Manager
 				r.roomFunctionContainer.AddFunction(comp);
 				return comp;
 			}
+		}
+
+		internal static List<R> AddFunctionToEverythingExcept<R>(params RoomCategory[] exceptions) where R : RoomFunction
+		{
+			List<R> l = [];
+			foreach (var room in Resources.FindObjectsOfTypeAll<RoomAsset>())
+			{
+				if (room.roomFunctionContainer && !exceptions.Contains(room.category) && !room.roomFunctionContainer.GetComponent<R>())
+				{
+					var comp = room.roomFunctionContainer.gameObject.AddComponent<R>();
+					room.roomFunctionContainer.AddFunction(comp);
+					l.Add(comp);
+				}
+			}
+			return l;
 		}
 
 		const string CafeteriaPrefix = "Cafeteria", OfficePrefix = "Office", ClassPrefix = "Class", LibraryPrefix = "Library", FacultyPrefix = "Faculty";
