@@ -65,9 +65,15 @@ namespace BBTimes.Plugin
 
 			sw.gameObject.ConvertToPrefab(true);
 
-			var rs = BBTimesManager.AddFunctionToEverythingExcept<LightSwitchSpawner>(RoomCategory.Special, RoomCategory.Test, RoomCategory.Buffer, RoomCategory.Hall, RoomCategory.Mystery, RoomCategory.Store, RoomCategory.FieldTrip, RoomCategory.Null);
+			var rs = BBTimesManager.AddFunctionToEverythingExcept<LightSwitchSpawner>([.. nonAllowedLightSwitchSpawns, EnumExtensions.GetFromExtendedName<RoomCategory>("AbandonedRoom")]);
 			rs.ForEach(x => x.lightPre = sw);
 		}
+		readonly static HashSet<RoomCategory> nonAllowedLightSwitchSpawns = [RoomCategory.Special, RoomCategory.Test, RoomCategory.Buffer, RoomCategory.Hall, RoomCategory.Mystery, RoomCategory.Store, RoomCategory.FieldTrip, RoomCategory.Null];
+		public static void AddLightSwitchCategoryLimit(RoomCategory cat) =>
+			nonAllowedLightSwitchSpawns.Add(cat);
+
+
+
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
