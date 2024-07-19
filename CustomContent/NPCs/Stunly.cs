@@ -64,6 +64,9 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void SetBlind(Entity subject, bool blind, bool isPlayer)
 		{
+			if (!subject)
+				return;
+
 			if (blind)
 			{
 				subject.ExternalActivity.moveMods.Add(moveMod);
