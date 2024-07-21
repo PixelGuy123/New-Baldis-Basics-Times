@@ -163,7 +163,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPostfix]
 		private static void REDAnimation(Elevator elevator, BaseGameManager __instance, int ___elevatorsClosed, EnvironmentController ___ec)
 		{
-			if (!BooleanStorage.endGameAnimation || __instance is not MainGameManager) // MainGameManager expected
+			if (!BooleanStorage.endGameAnimation || __instance is not MainGameManager || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || Singleton<CoreGameManager>.Instance.sceneObject.levelTitle != "F3") // MainGameManager expected
 				return;
 
 			if (___elevatorsClosed == 1)
