@@ -59,7 +59,7 @@ namespace BBTimes.Manager
 			// Curtains Closed
 			e = new RandomEventBuilder<CurtainsClosedEvent>(plug.Info)
 				.SetEnum("Curtainsclosed")
-				.SetMinMaxTime(30f, 40f)
+				.SetMinMaxTime(60f, 80f)
 				.SetName("CurtainsClosed")
 				.Build()
 				.SetupEvent<CurtainsClosedEventCustomData>();

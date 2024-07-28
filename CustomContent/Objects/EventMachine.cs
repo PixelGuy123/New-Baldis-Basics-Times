@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BBTimes.Extensions;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
@@ -11,7 +12,7 @@ namespace BBTimes.CustomContent.Objects
 		public void InsertItem(PlayerManager pm, EnvironmentController ec)
 		{
 			while (ec.CurrentEventTypes.Count != 0)
-				ec.GetEvent(ec.CurrentEventTypes[0]).End();
+				ec.GetEvent(ec.CurrentEventTypes[0]).EndEarlier();
 			_isDead = true;
 			spriteToChange.sprite = sprDead;
 			if (mapIcon)

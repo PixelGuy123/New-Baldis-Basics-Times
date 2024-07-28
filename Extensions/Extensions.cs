@@ -193,6 +193,9 @@ namespace BBTimes.Extensions
 																																				  
 		}
 
+		public static void EndEarlier(this RandomEvent ev) =>
+			ev.remainingTime = 0;
+
 		internal static DetentionUi detentionUiPre;
 
 		const int defaultDetentionNoise = 95;

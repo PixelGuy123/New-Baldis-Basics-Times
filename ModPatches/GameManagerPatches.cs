@@ -163,7 +163,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPostfix]
 		private static void REDAnimation(Elevator elevator, BaseGameManager __instance, int ___elevatorsClosed, EnvironmentController ___ec)
 		{
-			if (!BooleanStorage.endGameAnimation || __instance is not MainGameManager || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || Singleton<CoreGameManager>.Instance.sceneObject.levelTitle != "F3") // MainGameManager expected
+			if (!BooleanStorage.endGameAnimation || __instance is not MainGameManager || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || !"F1F2F3".Contains(Singleton<CoreGameManager>.Instance.sceneObject.levelTitle)) // MainGameManager expected
 				return;
 
 			if (___elevatorsClosed == 1)
@@ -198,7 +198,7 @@ namespace BBTimes.ModPatches
 				{
 					var v2 = ___ec.GetEvent(___ec.CurrentEventTypes[i]);
 					if (v2.Active)
-						v2.End(); // End all events
+						v2.EndEarlier(); // End all events
 				}
 
 				var gate = elevator.transform.Find("Gate");

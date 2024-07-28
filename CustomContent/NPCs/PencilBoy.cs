@@ -92,8 +92,7 @@ namespace BBTimes.CustomContent.NPCs
 			}
 			else
 			{
-				float decrease = -player.plm.staminaMax * 0.5f;
-				player.plm.AddStamina(player.plm.stamina - decrease < 0f ? -player.plm.stamina : decrease, true); // Workaround so the stamina doesn't go below 0
+				player.plm.AddStamina(-player.plm.staminaMax * 0.5f, true); // Workaround so the stamina doesn't go below 0
 			}
 			audMan.PlaySingle(ITM_Pencil.audStab);
 			audMan.PlaySingle(audEvilLaught);
@@ -101,8 +100,6 @@ namespace BBTimes.CustomContent.NPCs
 
 			spriteRenderer[0].sprite = happySprite;
 			behaviorStateMachine.ChangeState(new PencilBoy_Satisfied(this));
-
-			
 		}
 
 		IEnumerator DisabledPlayerCooldown()

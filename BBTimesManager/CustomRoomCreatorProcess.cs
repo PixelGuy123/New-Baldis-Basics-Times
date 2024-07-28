@@ -803,7 +803,8 @@ namespace BBTimes.Manager
 			//Special Rooms
 
 			AddSpecialRoomCollectionWithName("Cafeteria");
-			//AddSpecialRoomCollectionWithName("Playground");
+			AddSpecialRoomCollectionWithName("Playground");
+			AddSpecialRoomCollectionWithName("Library");
 
 			static void AddSpecialRoomCollectionWithName(string name)
 			{
