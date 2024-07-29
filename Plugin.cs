@@ -55,7 +55,7 @@ namespace BBTimes.Plugin
 
 			var sw = lightSwitch.transform.parent.gameObject.AddComponent<LightSwitch>();
 			sw.name = "LightSwitch";
-			sw.gameObject.AddBoxCollider(Vector3.forward * 0.6f, new(2f, 10f, 0.5f), true);
+			sw.gameObject.AddBoxCollider(Vector3.forward * -1.05f, new(2f, 10f, 1f), true);
 			sw.sprOff = sprs[0];
 			sw.sprOn = sprs[1];
 			sw.renderer = lightSwitch;

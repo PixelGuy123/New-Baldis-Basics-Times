@@ -26,7 +26,7 @@ namespace BBTimes.CustomContent.Builders
 
 			foreach (var cell in web)
 			{
-				if (!cell.HasAnyHardCoverage && !cell.open && !cell.doorHere && (cell.shape == TileShape.Corner || cell.shape == TileShape.Single) && !ec.TrapCheck(cell))
+				if (cell.TileMatches(room) && !cell.HasAnyHardCoverage && !cell.open && !cell.doorHere && (cell.shape == TileShape.Corner || cell.shape == TileShape.Single) && !ec.TrapCheck(cell))
 				{
 					var vent = Instantiate(ventPrefab, room.transform);
 					vent.transform.position = cell.FloorWorldPosition;

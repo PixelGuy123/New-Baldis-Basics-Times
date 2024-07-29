@@ -100,6 +100,7 @@ namespace BBTimes.CustomContent.Objects
 			float t = 0;
 			Vector3 squishPos = ogPos.ZeroOutY();
 			ec.BlockAllDirs(squishPos, true);
+			collider.enabled = true;
 			canSquish = true;
 
 			while (true) // *squishing*
@@ -115,6 +116,7 @@ namespace BBTimes.CustomContent.Objects
 			transform.position = squishPos;
 			canSquish = false;
 			blockCollider.enabled = true; // This should be called after any frozen entity is done
+			collider.enabled = false;
 			cool = Random.Range(2f, 3.5f);
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audHit);

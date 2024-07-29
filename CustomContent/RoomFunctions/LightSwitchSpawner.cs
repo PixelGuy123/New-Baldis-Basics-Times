@@ -1,6 +1,7 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.RoomFunctions
@@ -11,7 +12,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		{
 			base.Build(builder, rng);
 
-			if (builder.ec.standardDarkLevel == Color.white || (1f / Mathf.Max(1f, room.cells.Count * 0.15f)) > rng.NextDouble()) // bigger rooms have a higher chance of spawning light switch
+			if (!room.cells.Any(x => x.hasLight) || builder.ec.standardDarkLevel == Color.white || (1f / Mathf.Max(1f, room.cells.Count * 0.15f)) > rng.NextDouble()) // bigger rooms have a higher chance of spawning light switch
 				return; // If the level is fully light, then there's no reason for lightSwitches
 
 

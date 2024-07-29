@@ -80,12 +80,12 @@ namespace BBTimes.CustomContent.NPCs
         public override void Enter() // Basically go to a random spot
         {
 			base.Enter();
-
-			target.Override(overrider);
+			
 
 			if (target)
 			{
-			//	entityBaseHeight = target.InternalHeight;
+				target.Override(overrider);
+				//	entityBaseHeight = target.InternalHeight;
 				SetTarget(false);
 				target.Teleport(chair.transform.position);
 				overrider.SetHeight(target.InternalHeight + heightOffset);

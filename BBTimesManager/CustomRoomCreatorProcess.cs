@@ -213,7 +213,7 @@ namespace BBTimes.Manager
 			evMac.sprNoEvents = machine.sprite;
 			evMac.sprWorking = sprs[2];
 			evMac.sprDead = sprs[0];
-			machine.gameObject.AddBoxCollider(Vector3.forward * 0.6f, new(6f, 10f, 0.5f), true);
+			machine.gameObject.AddBoxCollider(Vector3.forward * -1.05f, new(6f, 10f, 1f), true);
 
 			sets = RegisterRoom("ComputerRoom", new(0f, 0f, 0.35f),
 				ObjectCreators.CreateDoorDataObject("ComputerDoor",
@@ -726,6 +726,7 @@ namespace BBTimes.Manager
 				x.selection.name.Replace("Class", sets.category.ToString()); // lol
 				x.selection.doorMats = sets.doorMat;
 				x.selection.category = sets.category;
+				x.selection.color = sets.color;
 				x.selection.wallTex = classWeightPre.selection.wallTex;
 				x.selection.florTex = classWeightPre.selection.florTex;
 				x.selection.ceilTex = classWeightPre.selection.ceilTex;
