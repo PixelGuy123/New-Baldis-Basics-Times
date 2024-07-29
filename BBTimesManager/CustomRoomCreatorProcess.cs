@@ -213,7 +213,7 @@ namespace BBTimes.Manager
 			evMac.sprNoEvents = machine.sprite;
 			evMac.sprWorking = sprs[2];
 			evMac.sprDead = sprs[0];
-			machine.gameObject.AddBoxCollider(Vector3.zero, new(6f, 10f, 1f), true);
+			machine.gameObject.AddBoxCollider(Vector3.forward * 0.6f, new(6f, 10f, 0.5f), true);
 
 			sets = RegisterRoom("ComputerRoom", new(0f, 0f, 0.35f),
 				ObjectCreators.CreateDoorDataObject("ComputerDoor",
@@ -230,7 +230,7 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 1,
+				minRooms = 0,
 				maxRooms = 1,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(0)],
 				light = [lightPre],
@@ -242,8 +242,8 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 1,
-				maxRooms = 2,
+				minRooms = 0,
+				maxRooms = 1,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(1)],
 				name = "ComputerRoom",
 				light = [lightPre],
@@ -253,8 +253,8 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 1,
-				maxRooms = 2,
+				minRooms = 0,
+				maxRooms = 1,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(3)],
 				name = "ComputerRoom",
 				light = [lightPre]
@@ -265,8 +265,8 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 1,
-				maxRooms = 3,
+				minRooms = 0,
+				maxRooms = 1,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(2)],
 				name = "ComputerRoom",
 				light = [lightPre]
@@ -723,6 +723,9 @@ namespace BBTimes.Manager
 
 			room.ForEach(x =>
 			{
+				x.selection.name.Replace("Class", sets.category.ToString()); // lol
+				x.selection.doorMats = sets.doorMat;
+				x.selection.category = sets.category;
 				x.selection.wallTex = classWeightPre.selection.wallTex;
 				x.selection.florTex = classWeightPre.selection.florTex;
 				x.selection.ceilTex = classWeightPre.selection.ceilTex;

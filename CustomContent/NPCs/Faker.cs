@@ -104,7 +104,7 @@ namespace BBTimes.CustomContent.NPCs
 			f.Navigator.speed = 0;
 			f.Navigator.SetSpeed(0);
 			ChangeNavigationState(new NavigationState_DoNothing(f, 0));
-			prevHeight = f.Navigator.Entity.Height;
+			prevHeight = f.Navigator.Entity.InternalHeight;
 			f.Navigator.Entity.SetHeight(-15);
 			var cells = f.ec.mainHall.AllTilesNoGarbage(false, false);
 			f.Navigator.Entity.Teleport(cells[Random.Range(0, cells.Count)].CenterWorldPosition);
@@ -140,6 +140,8 @@ namespace BBTimes.CustomContent.NPCs
 			base.PlayerInSight(player);
 			spawnCooldown = 5f;
 		}
+
+		readonly EntityOverrider overrider = new();
 	}
 
 	internal class Faker_BlueVariant(Faker f) : Faker_ActiveState(f)

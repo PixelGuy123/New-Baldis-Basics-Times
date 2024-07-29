@@ -72,7 +72,7 @@ namespace BBTimes.CustomContent.CustomItems
 			while (true)
 			{
 				fallSpeed -= ec.EnvironmentTimeScale * Time.deltaTime * 36f;
-				renderer.transform.localPosition += Vector3.up * fallSpeed * Time.deltaTime;
+				renderer.transform.localPosition += Vector3.up * fallSpeed * Time.deltaTime * ec.EnvironmentTimeScale;
 				if (renderer.transform.localPosition.y <= fallLimit)
 				{
 					renderer.transform.localPosition = Vector3.up * fallLimit;

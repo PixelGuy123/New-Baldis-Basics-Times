@@ -72,7 +72,7 @@ namespace BBTimes.CustomContent.NPCs
 
         Entity target = target;
 
-        float entityBaseHeight = 0f;
+       // float entityBaseHeight = 0f;
 
         readonly float waitCooldown = cooldown;
 
@@ -81,12 +81,14 @@ namespace BBTimes.CustomContent.NPCs
         {
 			base.Enter();
 
+			target.Override(overrider);
+
 			if (target)
 			{
-				entityBaseHeight = target.Height;
+			//	entityBaseHeight = target.InternalHeight;
 				SetTarget(false);
 				target.Teleport(chair.transform.position);
-				target.SetHeight(entityBaseHeight + heightOffset);
+				overrider.SetHeight(target.InternalHeight + heightOffset);
 			}
 
 			var room = chair.ec.CellFromPosition(chair.transform.position).room;
@@ -118,10 +120,12 @@ namespace BBTimes.CustomContent.NPCs
             man.FlushQueue(true);
             if (target)
             {
-                target.SetHeight(entityBaseHeight);
+               // target.SetHeight(entityBaseHeight);
+                overrider.SetHeight(target.BaseHeight);
                 SetTarget(true);
 
                 chair.SetEnabled(false);
+				overrider.Release();
                 target = null;
             }
             chair.behaviorStateMachine.ChangeState(new OfficeChair_WaitForCollision(chair, waitCooldown));
@@ -158,23 +162,26 @@ namespace BBTimes.CustomContent.NPCs
 
         void SetTarget(bool active)
         {
-            target.SetFrozen(!active);
-            target.SetTrigger(active);
-            target.SetInteractionState(active);
-        }
+            overrider.SetFrozen(!active);
+            overrider.SetInteractionState(active);
+		}
 
 		public void CancelTargetGrab()
 		{
 			if (target)
 			{
-				target.SetHeight(entityBaseHeight);
+				//target.SetHeight(entityBaseHeight);
+				overrider.SetHeight(target.InternalHeight);
 				SetTarget(true);
 			}
+			overrider.Release();
 			target = null;
 		}
 
         const float heightOffset = 3f;
-    }
+
+		readonly EntityOverrider overrider = new();
+	}
 
     internal class OfficeChair_WaitForCollision(OfficeChair office, float waitCooldown) : OfficeChair_StateBase(office)
     {
@@ -223,5 +230,7 @@ namespace BBTimes.CustomContent.NPCs
         }
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
+
+		
     }
 }

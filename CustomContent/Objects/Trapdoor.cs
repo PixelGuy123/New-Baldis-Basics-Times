@@ -21,7 +21,7 @@ namespace BBTimes.CustomContent.Objects
 			{
 				Entity e = other.GetComponent<Entity>();
 				var pa = other.GetComponent<PlayerAttributesComponent>();
-				if (e && e.Grounded && (pa == null || !pa.HasAttribute("boots")))
+				if (e && e.Grounded && (pa == null || !pa.HasAttribute("boots") && e.Override(overrider)))
 					StartCoroutine(Teleport(e));
 				
 			}
@@ -82,11 +82,11 @@ namespace BBTimes.CustomContent.Objects
 
 		IEnumerator Teleport(Entity subject)
 		{
+
 			if (subject)
 			{
-				subject.SetFrozen(true);
-				subject.SetTrigger(false);
-				subject.SetInteractionState(false);
+				overrider.SetFrozen(true);
+				overrider.SetInteractionState(false);
 			}
 			ForceDisableCollision = true;
 
@@ -106,14 +106,14 @@ namespace BBTimes.CustomContent.Objects
 				newPos = linkedTrapdoor.transform.position;
 			}
 
-			float height = subject.Height;
+			float height = subject.InternalHeight;
 			subject.Teleport(transform.position);
 			float sink = 1f;
 			while (sink > 0.1f)
 			{
 				sink -= ec.EnvironmentTimeScale * Time.deltaTime * sinkSpeed;
 				if (subject)
-					subject.SetHeight(sink * height);
+					overrider.SetHeight(sink * height);
 				yield return null;
 			}
 
@@ -133,17 +133,18 @@ namespace BBTimes.CustomContent.Objects
 			{
 				sink += ec.EnvironmentTimeScale * Time.deltaTime * sinkSpeed;
 				if (subject)
-					subject.SetHeight(sink * height);
+					overrider.SetHeight(sink * height);
 				yield return null;
 			}
 
 			if (subject)
 			{
-				subject.SetHeight(height);
-				subject.SetFrozen(false);
-				subject.SetTrigger(true);
-				subject.SetInteractionState(true);
+				overrider.SetHeight(height);
+				overrider.SetFrozen(false);
+				overrider.SetInteractionState(true);
 			}
+
+			overrider.Release();
 
 			if (linkedTrapdoor != null)
 			{
@@ -232,6 +233,8 @@ namespace BBTimes.CustomContent.Objects
 
 		[SerializeField]
 		public Transform fakeTrapdoorPre;
+
+		readonly EntityOverrider overrider = new();
 
 		const float minCooldown = 15f, maxCooldown = 30f, sinkSpeed = 0.5f, fakeSpawnSpeed = 5f;
 

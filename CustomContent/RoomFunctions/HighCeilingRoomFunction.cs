@@ -61,6 +61,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					var tile = Instantiate(c.Tile);
 					tile.transform.SetParent(planeHolder.transform);
 					tile.transform.position = c.FloorWorldPosition + (Vector3.up * (LayerStorage.TileBaseOffset * i));
+					tile.MeshRenderer.sharedMaterial = room.baseMat;
 					tile.MeshRenderer.material.mainTexture = fullTex;
 					c.AddRenderer(tile.MeshRenderer);
 
@@ -113,8 +114,17 @@ namespace BBTimes.CustomContent.RoomFunctions
 		{
 			base.Initialize(room);
 			originalCeilTex = room.ceilTex;
+
 			foreach (var c in room.cells)
 				ogCellBins.Add(c, c.ConstBin);
+			
+		}
+
+		public override void OnGenerationFinished()
+		{
+			base.OnGenerationFinished();
+			foreach (var c in room.cells)
+				c.SetBase(room.baseMat); // base mat should be alpha now
 		}
 
 		Texture2D originalCeilTex;

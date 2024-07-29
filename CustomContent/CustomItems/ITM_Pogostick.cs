@@ -1,4 +1,5 @@
-﻿using PixelInternalAPI.Extensions;
+﻿using BBTimes.Manager;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
@@ -38,9 +39,9 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			Force force = new(pm.transform.forward, 45f, -2.5f);
 			entity.AddForce(force);
-			pm.plm.Entity.SetFrozen(true);
-			pm.plm.Entity.SetInteractionState(false);
-			pm.plm.Entity.SetTrigger(false);
+			pm.plm.Entity.Override(overrider);
+			overrider.SetFrozen(true);
+			overrider.SetInteractionState(false);
 
 			float time = 0f;
 
@@ -67,14 +68,14 @@ namespace BBTimes.CustomContent.CustomItems
 					break;
 				}
 
-				entity.SetHeight(pm.plm.Entity.Height + height);
+				entity.SetHeight(pm.plm.Entity.InternalHeight + height);
 
 				yield return null;
 			}
 
-			pm.plm.Entity.SetInteractionState(true);
-			pm.plm.Entity.SetFrozen(false);
-			pm.plm.Entity.SetTrigger(true);
+			overrider.SetInteractionState(true);
+			overrider.SetFrozen(false);
+			overrider.Release();
 
 			Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).UpdateTargets(null, targetIdx);
 
@@ -97,6 +98,8 @@ namespace BBTimes.CustomContent.CustomItems
 		const int targetIdx = 15;
 
 		const float maxHeight = 4.7f;
+
+		readonly EntityOverrider overrider = new();
 
 		[SerializeField]
 		internal ItemObject pogoStickReplacement;

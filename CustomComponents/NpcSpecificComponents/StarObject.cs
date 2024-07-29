@@ -14,7 +14,7 @@ namespace BBTimes.CustomComponents
 		private void Update()
 		{
 			if (!e) return;
-			transform.localPosition = Vector3.up * (e.Height - 1.5f);
+			transform.localPosition = Vector3.up * (e.InternalHeight - 1.5f);
 		}
 	}
 }

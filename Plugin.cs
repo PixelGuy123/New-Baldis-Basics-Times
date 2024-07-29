@@ -55,7 +55,7 @@ namespace BBTimes.Plugin
 
 			var sw = lightSwitch.transform.parent.gameObject.AddComponent<LightSwitch>();
 			sw.name = "LightSwitch";
-			sw.gameObject.AddBoxCollider(Vector3.zero, new(2f, 10f, 1f), true);
+			sw.gameObject.AddBoxCollider(Vector3.forward * 0.6f, new(2f, 10f, 0.5f), true);
 			sw.sprOff = sprs[0];
 			sw.sprOn = sprs[1];
 			sw.renderer = lightSwitch;
@@ -349,7 +349,7 @@ namespace BBTimes.Plugin
 
 		public const string PLUGIN_NAME = "Baldi\'s Basics Times";
 
-		public const string PLUGIN_VERSION = "1.1.6";
+		public const string PLUGIN_VERSION = "1.1.5.2";
 	}
 
 	// Some cheats

@@ -1,5 +1,4 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
@@ -70,7 +69,7 @@ namespace BBTimes.CustomContent.NPCs
 			hh.Navigator.speed = 0;
 			hh.Navigator.SetSpeed(0);
 			ChangeNavigationState(new NavigationState_DoNothing(hh, 0));
-			prevHeight = hh.Navigator.Entity.Height;
+			prevHeight = hh.Navigator.Entity.InternalHeight;
 			hh.Navigator.Entity.SetHeight(-15);
 		}
 

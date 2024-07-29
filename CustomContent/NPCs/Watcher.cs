@@ -95,8 +95,10 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator SpawnDelay()
 		{
-			float normHeight = navigator.Entity.Height;
-			navigator.Entity.SetHeight(0f);
+			EntityOverrider overrider = new();
+			navigator.Entity.Override(overrider);
+			float normHeight = navigator.Entity.InternalHeight;
+			overrider.SetHeight(0f);
 			float curHeight = 0f;
 			float tar = normHeight - 0.05f;
 			while (true)
@@ -105,10 +107,11 @@ namespace BBTimes.CustomContent.NPCs
 				if (curHeight >= tar)
 					break;
 				
-				navigator.Entity.SetHeight(curHeight);
+				overrider.SetHeight(curHeight);
 				yield return null;
 			}
-			navigator.Entity.SetHeight(normHeight);
+			overrider.SetHeight(normHeight);
+			overrider.Release();
 
 			yield break;
 		}

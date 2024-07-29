@@ -207,7 +207,7 @@ namespace BBTimes.Manager
 
 		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc"); static string GlobalAssetsPath => Path.Combine(BasePlugin.ModPath, "GlobalAssets");
 
-		const string AudioFolder = "Audios", TextureFolder = "Textures", SfsFolder = "Sfs";
+		const string AudioFolder = "Audios", TextureFolder = "Textures";
 
 		internal const int MaximumNumballs = 18;
 

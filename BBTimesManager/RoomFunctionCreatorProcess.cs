@@ -55,17 +55,17 @@ namespace BBTimes.Manager
 				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lamp.png")), 25f))
 				.AddSpriteHolder(2.9f, LayerStorage.ignoreRaycast)
 				.transform.parent.gameObject.SetAsPrefab(true)
-				.AddBoxCollider(Vector3.zero, new Vector3(2f, 10f, 2f), false).transform, weight = 75 },
+				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 75 },
 
 				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lightBulb.png")), 65f))
 				.AddSpriteHolder(5.1f, LayerStorage.ignoreRaycast)
 				.transform.parent.gameObject.SetAsPrefab(true)
-				.AddBoxCollider(Vector3.zero, new Vector3(2f, 10f, 2f), false).transform, weight = 35 },
+				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 35 },
 
 				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lampShaped.png")), 25f))
 				.AddSpriteHolder(3.1f, LayerStorage.ignoreRaycast)
 				.transform.parent.gameObject.SetAsPrefab(true)
-				.AddBoxCollider(Vector3.zero, new Vector3(2f, 10f, 2f), false).transform, weight = 55 },
+				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 55 },
 				];
 
 			var cos = AddFunctionToEveryRoom<CornerObjectSpawner>(FacultyPrefix);

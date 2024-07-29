@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
 {
@@ -42,6 +43,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 				renderer.enabled = false;
 				holding = false;
 				SetTarget(true);
+				overrider.Release();
 				StartCoroutine(PopWait());
 			};
 
@@ -59,12 +61,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			if (other.isTrigger)
 			{
 				var e = other.GetComponent<Entity>();
-				if (e)
+				if (e && e.Override(overrider))
 				{
 					target = e;
-					height = e.Height;
+					height = e.InternalHeight;
 					target.Teleport(transform.position);
-					target.SetHeight(height + 0.6f);
+					overrider.SetHeight(height + 0.6f);
 					holding = true;
 					SetTarget(false);
 				}
@@ -90,6 +92,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 				{
 					hasPopped = true;
 					SetTarget(true);
+					overrider.Release();
 					StartCoroutine(PopWait());
 					return;
 				}
@@ -102,11 +105,10 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			if (!target)
 				return;
 
-			target.SetFrozen(!active);
-			target.SetTrigger(active);
-			target.SetInteractionState(active);
+			overrider.SetFrozen(!active);
+			overrider.SetInteractionState(active);
 			if (active)
-				target.SetHeight(height);
+				overrider.SetHeight(height);
 			
 		}
 
@@ -121,5 +123,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 			yield break;
 		}
+
+		readonly EntityOverrider overrider = new();
 	}
 }
