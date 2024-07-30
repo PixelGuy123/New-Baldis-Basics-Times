@@ -55,6 +55,8 @@ namespace BBTimes.Plugin
 
 			var sw = lightSwitch.transform.parent.gameObject.AddComponent<LightSwitch>();
 			sw.name = "LightSwitch";
+			sw.gameObject.ConvertToPrefab(true);
+
 			sw.gameObject.AddBoxCollider(Vector3.forward * -1.05f, new(2f, 10f, 1f), true);
 			sw.sprOff = sprs[0];
 			sw.sprOn = sprs[1];
@@ -63,7 +65,7 @@ namespace BBTimes.Plugin
 			sw.audSwitch = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromMod(this, "objects", "LightSwitch", "LightSwitch_Toggle.wav"), string.Empty, SoundType.Effect, Color.white);
 			sw.audSwitch.subtitle = false;
 
-			sw.gameObject.ConvertToPrefab(true);
+			
 
 			var rs = BBTimesManager.AddFunctionToEverythingExcept<LightSwitchSpawner>((x) => x.standardLightCells.Count != 0, RoomCategory.Special, RoomCategory.Test, RoomCategory.Buffer, RoomCategory.Hall, RoomCategory.Mystery, RoomCategory.Store, RoomCategory.FieldTrip, RoomCategory.Null);
 			rs.ForEach(x => x.lightPre = sw);
