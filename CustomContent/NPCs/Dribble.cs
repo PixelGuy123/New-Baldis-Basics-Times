@@ -49,7 +49,8 @@ namespace BBTimes.CustomContent.NPCs
 		internal void ThrowBasketball(PlayerManager pm)
 		{
 			Vector3 rot = (pm.transform.position - transform.position).normalized;
-			basketball.Throw(rot, transform.position + (rot.ZeroOutY() * 1.5f), pm);
+			basketball.Throw(rot, transform.position + (rot.ZeroOutY() * 1.5f), pm, Mathf.Max(0.125f, 0.7f / (succeededMinigames + 1)), 
+				Random.Range(Mathf.Max(35f, 35f * ((succeededMinigames + 1) * 0.2f)), Mathf.Max(65f, 65f * ((succeededMinigames + 1) * 0.6f))));
 		}
 
 		internal void MinigameEnd(bool failed, PlayerManager player)
@@ -57,15 +58,20 @@ namespace BBTimes.CustomContent.NPCs
 			if (behaviorStateMachine.CurrentState is Dribble_Chase) return; // When he's already chasing, this serves no purpose
 			if (!failed)
 			{
-				Singleton<CoreGameManager>.Instance.AddPoints(100, player.playerNumber, true);
+				succeededMinigames++;
+				Singleton<CoreGameManager>.Instance.AddPoints(Mathf.Min(200, (int)(100 * ((succeededMinigames + 1) * 0.5f))), player.playerNumber, true);
 				behaviorStateMachine.ChangeState(new Dribble_MinigameSucceed(this));
 				return;
 			}
+			succeededMinigames = 0;
 			behaviorStateMachine.ChangeState(new Dribble_MinigameFail(this, player));
 		}
 
-		internal void DisappointDribble() =>
+		internal void DisappointDribble()
+		{
+			succeededMinigames = 0;
 			behaviorStateMachine.ChangeState(new Dribble_Disappointed(this));
+		}
 		internal void Step()
 		{
 			_step = !_step;
@@ -127,6 +133,8 @@ namespace BBTimes.CustomContent.NPCs
 		readonly internal MovementModifier moveMod = new(Vector3.zero, 0f), punchMod = new(Vector3.zero, 0.35f);
 
 		internal float normSpeed = 14f, chaseSpeed = 21f, angryChaseSpeed = 22.5f;
+
+		int succeededMinigames = 0;
 
 		internal RoomController Home { get; private set; }
 	}

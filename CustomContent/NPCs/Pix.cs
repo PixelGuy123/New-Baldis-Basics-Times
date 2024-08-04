@@ -2,7 +2,6 @@
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace BBTimes.CustomContent.NPCs
 {

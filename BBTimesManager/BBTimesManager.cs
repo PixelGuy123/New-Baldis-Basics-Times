@@ -108,6 +108,10 @@ namespace BBTimes.Manager
 
 			basePlane.gameObject.ConvertToPrefab(true);
 
+			basePlane = basePlane.DuplicatePrefab();
+			basePlane.GetComponent<MeshRenderer>().material = GenericExtensions.FindResourceObjectByName<Material>("TileBase_Alpha");
+			man.Add("TransparentPlaneTemplate", basePlane);
+
 			// Grass texture
 			man.Add("Tex_Grass", GenericExtensions.FindResourceObjectByName<Texture2D>("Grass"));
 

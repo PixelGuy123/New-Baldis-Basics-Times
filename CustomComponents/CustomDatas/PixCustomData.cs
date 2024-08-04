@@ -1,6 +1,5 @@
 ﻿using BBTimes.CustomContent.NPCs;
 using BBTimes.Extensions;
-using MTM101BaldAPI.ObjectCreation;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -25,7 +24,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 				];
 			// 0 - 2: spot ; 3 - 4: success ; 5 - 7: fail
 
-			sds[2].additionalKeys = [new() { key = "Vfx_Pix_Stop2", time = 0.732f}, new() { key = "Vfx_Pix_Stop3", time = 1.369f }];
+			sds[2].additionalKeys = [new() { key = "Vfx_Pix_Stop2", time = 1.3f}, new() { key = "Vfx_Pix_Stop3", time = 1.724f }];
 
 			return sds;
 		}

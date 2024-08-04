@@ -31,7 +31,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			{
 				mats = [ // to not create a new material each generation
 					new(renderer.material) { mainTexture =  BBTimesManager.man.Get<Texture2D>("Tex_Grass") },
-					new(renderer.material) { mainTexture = BBTimesManager.man.Get<Texture2D>("Tex_Fence") }
+					new(BBTimesManager.man.Get<GameObject>("TransparentPlaneTemplate").GetComponent<MeshRenderer>().material) { mainTexture = BBTimesManager.man.Get<Texture2D>("Tex_Fence") }
 				];
 			}
 

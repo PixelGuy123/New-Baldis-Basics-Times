@@ -30,6 +30,7 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.PlaySingle(audFillUp);
 			float scale = 0f;
 			b.entity.SetFrozen(true);
+			
 
 			float speed = Random.Range(2.6f, 3.5f);
 			while (true)
@@ -38,6 +39,7 @@ namespace BBTimes.CustomContent.NPCs
 				if (scale >= 1f)
 					break;
 				b.renderer.transform.localScale = Vector3.one * scale;
+				b.entity.Teleport(transform.position);
 				yield return null;
 			}
 			b.renderer.transform.localScale = Vector3.one;

@@ -21,7 +21,7 @@ namespace BBTimes.CustomContent.Objects
 			{
 				Entity e = other.GetComponent<Entity>();
 				var pa = other.GetComponent<PlayerAttributesComponent>();
-				if (e && e.Grounded && (pa == null || !pa.HasAttribute("boots") && e.Override(overrider)))
+				if (e && e.Grounded && (pa == null || !pa.HasAttribute("boots")) && e.Override(overrider))
 					StartCoroutine(Teleport(e));
 				
 			}
@@ -112,8 +112,8 @@ namespace BBTimes.CustomContent.Objects
 			while (sink > 0.1f)
 			{
 				sink -= ec.EnvironmentTimeScale * Time.deltaTime * sinkSpeed;
-				if (subject)
-					overrider.SetHeight(sink * height);
+				if (!subject) yield break;
+				overrider.SetHeight(sink * height);
 				yield return null;
 			}
 
@@ -132,8 +132,8 @@ namespace BBTimes.CustomContent.Objects
 			while (sink < 1f)
 			{
 				sink += ec.EnvironmentTimeScale * Time.deltaTime * sinkSpeed;
-				if (subject)
-					overrider.SetHeight(sink * height);
+				if (!subject) yield break;
+				overrider.SetHeight(sink * height);
 				yield return null;
 			}
 
@@ -142,9 +142,10 @@ namespace BBTimes.CustomContent.Objects
 				overrider.SetHeight(height);
 				overrider.SetFrozen(false);
 				overrider.SetInteractionState(true);
+				overrider.Release();
 			}
 
-			overrider.Release();
+			
 
 			if (linkedTrapdoor != null)
 			{

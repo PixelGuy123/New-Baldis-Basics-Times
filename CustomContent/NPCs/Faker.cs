@@ -175,7 +175,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (players.ContainsKey(player))
 			{
 				player.Am.moveMods.Remove(moveMod);
-				player.GetCustomCam().ResetSlideFOVAnimation(players[player]);
+				player.GetCustomCam().ResetSlideFOVAnimation(new ValueModifier(addend:players[player].addend));
 				players.Remove(player);
 			}
 			if (players.Count == 0)

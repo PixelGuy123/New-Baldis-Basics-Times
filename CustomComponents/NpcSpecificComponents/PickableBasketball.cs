@@ -33,7 +33,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			entity.UpdateInternalMovement(Vector3.zero);
 			_hidden = true;
 		}
-		public void Throw(Vector3 direction, Vector3 position, PlayerManager targetPlayer)
+		public void Throw(Vector3 direction, Vector3 position, PlayerManager targetPlayer, float mult = 0.7f, float speed = 35f)
 		{
 			entity.SetHeight(5f);
 			entity.Teleport(position);
@@ -42,16 +42,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			_hidden = false;
 			expectedPlayer = targetPlayer;
 			expectedRoom = ec.CellFromPosition(position).room;
-			speed = Random.Range(35f, 65f);
+			this.speed = speed;
+			moveMod.movementMultiplier = mult;
 		}
 		void IrritateDribble(bool angry)
 		{
 			dr.MinigameEnd(angry, expectedPlayer);
-			expectedPlayer = null;
-		}
-		void DisappointDribble()
-		{
-			dr.DisappointDribble();
 			expectedPlayer = null;
 		}
 		public void Clicked(int player)

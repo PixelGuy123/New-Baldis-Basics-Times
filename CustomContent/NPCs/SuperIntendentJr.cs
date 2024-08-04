@@ -75,7 +75,7 @@ namespace BBTimes.CustomContent.NPCs
 			UpdateStep();
 			wonder = false;
 			audMan.FlushQueue(true);
-			audMan.PlaySingle(audWarn);
+			audMan.PlaySingle(Random.value <= longAssInstructionChance ? audLongAssInstructions : audWarn);
 			while (audMan.AnyAudioIsPlaying) yield return null;
 
 			callingOut = false;
@@ -165,13 +165,13 @@ namespace BBTimes.CustomContent.NPCs
 
 		float[] timeInSight;
 
-		float noticeCooldown = 0f, wanderCool = 15f;
+		float noticeCooldown = 0f, wanderCool = 15f, longAssInstructionChance = 0.01f;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan, stepMan;
 
 		[SerializeField]
-		internal SoundObject audStep1, audStep2, audWarn, audWonder;
+		internal SoundObject audStep1, audStep2, audWarn, audWonder, audLongAssInstructions;
 
 		[SerializeField]
 		internal SpriteRenderer renderer;

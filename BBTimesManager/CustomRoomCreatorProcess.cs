@@ -59,8 +59,8 @@ namespace BBTimes.Manager
 				.AddSpriteHolder(2f, LayerStorage.ignoreRaycast);
 			bathSink.name = "sink";
 			bathSink.transform.parent.name = "sink";
-			bathSink.transform.parent.gameObject.AddNavObstacle(new(2.5f, 10f, 2.5f));
-			bathSink.transform.parent.gameObject.AddBoxCollider(Vector3.zero, new(2.5f, 10f, 2.5f), false);
+			bathSink.transform.parent.gameObject.AddNavObstacle(new(1f, 10f, 1f));
+			bathSink.transform.parent.gameObject.AddBoxCollider(Vector3.zero, new(0.6f, 10f, 0.6f), false);
 			bathSink.transform.parent.gameObject.AddObjectToEditor();
 
 			var bathLightPre = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "long_hanginglamp.png")), 50f))
@@ -88,7 +88,7 @@ namespace BBTimes.Manager
 			{
 				stickToHallChance = 1f,
 				minRooms = 0,
-				maxRooms = 2,
+				maxRooms = 1,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(0)],
 				name = "Bathroom",
 				light = [new() { selection = bathLightPre }],
@@ -100,7 +100,7 @@ namespace BBTimes.Manager
 			{
 				stickToHallChance = 0.7f,
 				minRooms = 1,
-				maxRooms = 2,
+				maxRooms = 1,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(1)],
 				name = "Bathroom",
 				light = [new() { selection = bathLightPre }]
@@ -122,8 +122,8 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 0.45f,
-				minRooms = 3,
-				maxRooms = 5,
+				minRooms = 1,
+				maxRooms = 2,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(2)],
 				name = "Bathroom",
 				light = [new() { selection = bathLightPre }]
@@ -164,7 +164,6 @@ namespace BBTimes.Manager
 			//*************Computer Room Creation ***************
 			//***************************************************
 			//***************************************************
-
 			//Table
 			var table = new GameObject("FancyComputerTable")
 			{
@@ -213,6 +212,17 @@ namespace BBTimes.Manager
 			evMac.sprNoEvents = machine.sprite;
 			evMac.sprWorking = sprs[2];
 			evMac.sprDead = sprs[0];
+			// Audio Setup from event machine
+			evMac.audBalAngry = [
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "BAL_NoEvent0.wav")), "Vfx_BAL_NoEvent0_0", SoundType.Effect, Color.green),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "BAL_NoEvent1.wav")), "Vfx_BAL_NoEvent1_0", SoundType.Effect, Color.green),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "BAL_NoEvent2.wav")), "Vfx_BAL_NoEvent2_0", SoundType.Effect, Color.green)
+				];
+
+			evMac.audBalAngry[0].additionalKeys = [new() { key = "Vfx_BAL_NoEvent0_1", time = 2.6f }];
+			evMac.audBalAngry[1].additionalKeys = [new() { key = "Vfx_BAL_NoEvent1_1", time = 1.809f }];
+			evMac.audBalAngry[2].additionalKeys = [new() { key = "Vfx_BAL_NoEvent2_1", time = 2.249f }];
+
 			machine.gameObject.AddBoxCollider(Vector3.forward * -1.05f, new(6f, 10f, 1f), true);
 
 			sets = RegisterRoom("ComputerRoom", new(0f, 0f, 0.35f),
@@ -253,7 +263,7 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 0,
+				minRooms = 1,
 				maxRooms = 1,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(3)],
 				name = "ComputerRoom",
@@ -279,7 +289,6 @@ namespace BBTimes.Manager
 			//************* Dribble's Room **********************
 			//***************************************************
 			//***************************************************
-
 			var runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineStraight.png")), 12.5f), false).AddSpriteHolder(0.1f, 0);
 			runLine.gameObject.layer = 0; // default layer
 			runLine.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
@@ -373,6 +382,28 @@ namespace BBTimes.Manager
 			ClearNpcAssets<ZeroPrize>();
 			AddAssetsToNpc<ZeroPrize>(room);
 
+			// ************************************************************
+			// ************************************************************
+			// ******************* Dr Reflex's Room ***********************
+			// ************************************************************
+			// ************************************************************
+
+			sweepCloset = GenericExtensions.FindResourceObject<DrReflex>().potentialRoomAssets[0].selection;
+			room = GetAllAssets(GetRoomAsset("Reflex"), sweepCloset.maxItemValue, 100, sweepCloset.roomFunctionContainer);
+
+			room.ForEach(x => {
+				x.selection.posters = sweepCloset.posters;
+				x.selection.posterChance = sweepCloset.posterChance;
+				x.selection.windowChance = sweepCloset.windowChance;
+				x.selection.windowObject = sweepCloset.windowObject;
+				x.selection.ceilTex = sweepCloset.ceilTex;
+				x.selection.wallTex = sweepCloset.wallTex;
+				x.selection.florTex = sweepCloset.florTex;
+				x.selection.lightPre = sweepCloset.lightPre;
+			});
+
+			AddAssetsToNpc<DrReflex>(room);
+
 			// ***********************************************
 			// ***********************************************
 			// ******************* Kitchen *******************
@@ -425,6 +456,7 @@ namespace BBTimes.Manager
 
 			JoeChef.AddFood(ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value, 15);
 			JoeChef.AddFood(ItemMetaStorage.Instance.FindByEnum(Items.ZestyBar).value, 45);
+			JoeChef.AddFood(ItemMetaStorage.Instance.FindByEnum(Items.Apple).value, 5);
 
 			sets = RegisterRoom("Kitchen", new(0.9f, 0.9f, 0.9f, 1f),
 				ObjectCreators.CreateDoorDataObject("KitchenDoor",
@@ -776,7 +808,7 @@ namespace BBTimes.Manager
 			// Hall
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPrePlotSpecialHalls.Length != 0).potentialPrePlotSpecialHalls[0];
 
-			room = GetAllAssets(GetRoomAsset("PrevHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			room = GetAllAssets(GetRoomAsset("PrevHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures:true, isAHallway:true);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
@@ -791,7 +823,7 @@ namespace BBTimes.Manager
 
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPostPlotSpecialHalls.Length != 0).potentialPostPlotSpecialHalls[0];
 
-			room = GetAllAssets(GetRoomAsset("AfterHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			room = GetAllAssets(GetRoomAsset("AfterHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, isAHallway: true);
 
 			room.ForEach(x => {
 				x.selection.posters = classWeightPre.selection.posters;
@@ -910,13 +942,14 @@ namespace BBTimes.Manager
 			RoomFunctionContainer container = cont;
 			foreach (var file in Directory.GetFiles(path))
 			{
+				if (File.ReadAllBytes(file).Length == 0) continue; // if the cbld file is empty, it means it has been "removed". This is to make sure that anyone who extracts newer versions don't include these layouts.
 				try
 				{
-					var asset = RoomFactory.CreateAssetFromPath(file, maxValue, isOffLimits, container, isAHallway, secretRoom, mapBg, keepTextures, squaredShape);
-					assets.Add(new() { selection = asset, weight = assetWeight });
-					_moddedAssets.Add(asset);
+					var asset = RoomFactory.CreateAssetsFromPath(file, maxValue, isOffLimits, container, isAHallway, secretRoom, mapBg, keepTextures, squaredShape);
+					assets.AddRange(asset.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = assetWeight }));
+					_moddedAssets.AddRange(asset);
 					if (!container)
-						container = asset.roomFunctionContainer;
+						container = asset[0].roomFunctionContainer;
 				}
 				catch { } // supress exception
 			}

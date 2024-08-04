@@ -1,6 +1,5 @@
 ﻿using BBTimes.CustomContent.CustomItems;
-using MTM101BaldAPI.Registers;
-using PixelInternalAPI.Extensions;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
@@ -18,23 +17,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override void SetupPrefabPost()
 		{
 			base.SetupPrefabPost();
-			GetComponent<ITM_Present>().items = [.. ItemMetaStorage.Instance.FindAll(x => x.id != myItmObj.itemType && !x.flags.HasFlag(ItemFlags.InstantUse)).ConvertAll(x => x.value)];
-
-			// Another workaround for this stupid bug
-			//List<ItemObject> list = new(ItemMetaStorage.Instance.FindAll(x => x.id != myEnum).ConvertAll(x => x.value));
-
-			//HashSet<ItemObject> duplicates = [];
-			//for (int i = 0; i < list.Count; i++)
-			//{
-			//	if (duplicates.Contains(list[i]))
-			//	{
-			//		list.RemoveAt(i);
-			//		i--;
-			//		continue;
-			//	}
-			//	duplicates.Add(list[i]);
-			//}
-			//GetComponent<ITM_Present>().items = [.. list];
+			GetComponent<ITM_Present>().items = [.. GameExtensions.GetAllShoppingItems()];
 		}
 	}
 }

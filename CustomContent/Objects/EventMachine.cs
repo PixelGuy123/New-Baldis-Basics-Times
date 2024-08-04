@@ -11,8 +11,12 @@ namespace BBTimes.CustomContent.Objects
 
 		public void InsertItem(PlayerManager pm, EnvironmentController ec)
 		{
-			while (ec.CurrentEventTypes.Count != 0)
-				ec.GetEvent(ec.CurrentEventTypes[0]).EndEarlier();
+			List<RandomEventType> types = new(ec.CurrentEventTypes);
+			types.ForEach(x => ec.GetEvent(x).EndEarlier()); // guarantee every event is ended
+
+			if (audBalAngry != null)
+				Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).BaldiTv.Speak(audBalAngry[Random.Range(0, audBalAngry.Length)]);
+
 			_isDead = true;
 			spriteToChange.sprite = sprDead;
 			if (mapIcon)
@@ -31,6 +35,9 @@ namespace BBTimes.CustomContent.Objects
 
 		[SerializeField]
 		internal SpriteRenderer spriteToChange;
+
+		[SerializeField]
+		internal SoundObject[] audBalAngry;
 
 		public MapIcon mapIcon;
 

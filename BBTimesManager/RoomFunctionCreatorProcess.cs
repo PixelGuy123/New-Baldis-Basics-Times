@@ -47,8 +47,18 @@ namespace BBTimes.Manager
 			highCeil.customLight = man.Get<GameObject>("prefab_libraryHangingLight").transform;
 			// highCeil.customWallProximityToCeil = [Resources.FindObjectsOfTypeAll<RoomAsset>().First(x => x.name.StartsWith("Library")).wallTex];
 			var libraryTex = GenericExtensions.FindResourceObjectByName<Texture2D>("Wall"); // Any instance id > 0 is a prefab (I checked that!)
+			RoomFunctionContainer cont = null;
+			Resources.FindObjectsOfTypeAll<RoomAsset>().DoIf(x => x.name.StartsWith(LibraryPrefix), x => {
+				x.wallTex = libraryTex;
+				if (cont == null)
+					cont = x.roomFunctionContainer;
+				});
 
-			Resources.FindObjectsOfTypeAll<RoomAsset>().DoIf(x => x.name.StartsWith(LibraryPrefix), x => x.wallTex = libraryTex);
+			floorDatas.ForEach(x => x.SpecialRooms.ForEach(x => // Workaround for my modded libraries
+			{
+				if (x.selection.roomFunctionContainer == cont)
+					x.selection.wallTex = libraryTex;
+			}));
 
 			// Random Corner Object
 			WeightedTransform[] transforms = [

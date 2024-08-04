@@ -3,7 +3,7 @@ using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
+using HarmonyLib;
 
 // using System.Reflection;
 using UnityEngine;
@@ -195,6 +195,20 @@ namespace BBTimes.Extensions
 
 		public static void EndEarlier(this RandomEvent ev) =>
 			ev.remainingTime = 0;
+
+		public static List<ItemObject> GetAllShoppingItems()
+		{
+			List<ItemObject> itmObjs = [];
+			foreach (var s in GenericExtensions.FindResourceObjects<SceneObject>())
+			{
+				s.shopItems.Do(x =>
+				{
+					if (!itmObjs.Contains(x.selection))
+						itmObjs.Add(x.selection);
+				});
+			}
+			return itmObjs;
+		}
 
 		internal static DetentionUi detentionUiPre;
 

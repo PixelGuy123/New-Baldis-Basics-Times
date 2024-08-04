@@ -17,7 +17,8 @@ namespace BBTimes.Helpers
 		public static NPC SetupNPCData<C>(this NPC npc, string name, string posterName, string posterDesc, float spriteYoffset = 0f) where C : CustomNPCData
 		{
 			var sprites = GetAllNpcSpritesFrom(name);
-	
+
+			npc.name = name;
 			var data = npc.gameObject.AddComponent<C>();
 			
 			// Setup for CustomNPCData
