@@ -10,6 +10,13 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
+			if (++usedMagnets > 2)
+			{
+				Destroy(gameObject);
+				return false;
+			}
+			pm.RuleBreak("littering", 2f, 0.8f);
+			owner = pm.gameObject;
 			Throw(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, pm.ec, 10f);
 			return true;
 		}
@@ -19,7 +26,7 @@ namespace BBTimes.CustomContent.CustomItems
 			this.ec = ec;
 			audMan.PlaySingle(audThrow);
 			entity.Initialize(ec, pos);
-			entity.AddForce(new(dir, 14f, -12f));
+			entity.AddForce(new(dir, 36f, -15f));
 			this.cooldown = cooldown;
 
 			StartCoroutine(ThrowAnimation());
@@ -27,12 +34,12 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator ThrowAnimation()
 		{
-			float height = entity.InternalHeight;
+			float height = 5.5f;
 			float time = 0f;
 
 			while (true)
 			{
-				time += ec.EnvironmentTimeScale * Time.deltaTime;
+				time += ec.EnvironmentTimeScale * Time.deltaTime * 2f;
 				entity.SetHeight(height + GenericExtensions.QuadraticEquation(time, -0.5f, 1, 0));
 				if (time >= 2f)
 				{
@@ -49,11 +56,16 @@ namespace BBTimes.CustomContent.CustomItems
 			frame %= sprs.Length;
 			renderer.sprite = sprs[Mathf.FloorToInt(frame)];
 
-			foreach (var e in touchedEntities)
+			for (int i = 0; i < touchedEntities.Count; i++)
 			{
-				var vec = transform.position - e.Key.transform.position;
-				e.Value.movementAddend += vec * Mathf.Max(1, maxForce - vec.magnitude);
-				e.Value.movementAddend.Limit(maxForce, maxForce, maxForce);
+				if (touchedEntities[i].Key)
+				{
+					var vec = transform.position - touchedEntities[i].Key.transform.position;
+					touchedEntities[i].Value.movementAddend += vec.normalized * Mathf.Max(0.05f, maxForce - vec.magnitude);
+					touchedEntities[i].Value.movementAddend.Limit(maxForce, maxForce, maxForce);
+				}
+				else
+					touchedEntities.RemoveAt(i--);
 			}
 
 			cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
@@ -64,39 +76,43 @@ namespace BBTimes.CustomContent.CustomItems
 		void OnDestroy()
 		{
 			foreach (var e in touchedEntities)
-				e.Key.ExternalActivity.moveMods.Remove(e.Value);
+				e.Key?.ExternalActivity.moveMods.Remove(e.Value);
+			usedMagnets--;
 		}
 
 		public void EntityTriggerEnter(Collider other)
 		{
-			if (other.gameObject == pm.gameObject) return;
+			if (other.gameObject == owner) return;
 
 			var e = other.GetComponent<Entity>();
 			if (e)
 			{
 				var m = new MovementModifier(Vector3.zero, 0.3f);
 				e.ExternalActivity.moveMods.Add(m);
-				touchedEntities.Add(e, m);
+				touchedEntities.Add(new(e, m));
 			}
 		}
 		public void EntityTriggerStay(Collider other){}
 		public void EntityTriggerExit(Collider other)
 		{
-			if (other.gameObject == pm.gameObject) return;
+			if (other.gameObject == owner) return;
 
 			var e = other.GetComponent<Entity>();
 			if (e)
 			{
-				e.ExternalActivity.moveMods.Remove(touchedEntities[e]);
-				touchedEntities.Remove(e);
+				var entity = touchedEntities.Find(x => x.Key == e);
+				e.ExternalActivity.moveMods.Remove(entity.Value);
+				touchedEntities.Remove(entity);
 			}
 		}
 
 		float frame = 0f, cooldown = 10f;
 
 		EnvironmentController ec;
+		GameObject owner = null;
+		static int usedMagnets = 0;
 
-		Dictionary<Entity, MovementModifier> touchedEntities = [];
+		readonly List<KeyValuePair<Entity, MovementModifier>> touchedEntities = [];
 
 		[SerializeField]
 		internal Entity entity;

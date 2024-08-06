@@ -30,7 +30,7 @@ namespace BBTimes.Plugin
 
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
     public class BasePlugin : BaseUnityPlugin
-    {
+	{ 
 		IEnumerator SetupPost()
 		{
 			yield return 2;

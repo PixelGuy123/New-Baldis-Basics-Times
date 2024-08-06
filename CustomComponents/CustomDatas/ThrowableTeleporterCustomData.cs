@@ -20,7 +20,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			renderer.transform.SetParent(transform);
 			renderer.name = "ThrowableTeleporterVisual";
 
-			itm.audMan = gameObject.CreatePropagatedAudioManager(55f, 75f);
+			itm.audMan = gameObject.CreatePropagatedAudioManager(85f, 115f);
 			itm.audThrow = soundObjects[0];
 			itm.audTeleport = GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport");
 

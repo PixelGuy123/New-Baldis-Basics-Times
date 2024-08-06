@@ -10,6 +10,7 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
+			pm.RuleBreak("littering", 2f, 0.8f);
 			Throw(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, pm.ec);
 			return true;
 		}
@@ -19,19 +20,19 @@ namespace BBTimes.CustomContent.CustomItems
 			this.ec = ec;
 			audMan.PlaySingle(audThrow);
 			entity.Initialize(ec, pos);
-			entity.AddForce(new(dir, 9f, -7f));
+			entity.AddForce(new(dir, 45f, -25f));
 
 			StartCoroutine(ThrowAnimation());
 		}
 
 		IEnumerator ThrowAnimation()
 		{
-			float height = entity.InternalHeight;
+			float height = 1.2f;
 			float time = 0f;
 
 			while (true)
 			{
-				time += ec.EnvironmentTimeScale * Time.deltaTime;
+				time += ec.EnvironmentTimeScale * Time.deltaTime * 2.5f;
 				entity.SetHeight(height + GenericExtensions.QuadraticEquation(time, -0.5f, 1, 0));
 				if (time >= 2f)
 				{
@@ -41,7 +42,7 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			float cooldown = Random.Range(5f, 10f);
+			float cooldown = Random.Range(2f, 4f);
 			while (cooldown > 0f)
 			{
 				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
@@ -75,7 +76,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		EnvironmentController ec;
 
-		Dictionary<Entity, MovementModifier> touchedEntities = [];
+		readonly Dictionary<Entity, MovementModifier> touchedEntities = [];
 
 		[SerializeField]
 		internal Entity entity;

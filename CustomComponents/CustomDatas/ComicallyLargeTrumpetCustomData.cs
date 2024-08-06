@@ -8,7 +8,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class ComicallyLargeTrumpetCustomData : CustomItemData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-			[GetSoundNoSub("hrn_play.wav", SoundType.Effect)];
+			[GetSound("hrn_play.wav", "Vfx_ComicLargTrum_Blow", SoundType.Effect, UnityEngine.Color.white)];
 
 		public override void SetupPrefab()
 		{

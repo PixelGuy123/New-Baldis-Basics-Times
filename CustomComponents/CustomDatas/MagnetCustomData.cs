@@ -24,7 +24,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			itm.audMan = gameObject.CreatePropagatedAudioManager(75f, 100f);
 			itm.audThrow = soundObjects[0];
 
-			itm.entity = gameObject.CreateEntity(2f, 12f, itm.renderer.transform);
+			itm.entity = gameObject.CreateEntity(2f, 65f, itm.renderer.transform);
 		}
 	}
 }

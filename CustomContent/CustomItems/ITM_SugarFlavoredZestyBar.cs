@@ -31,7 +31,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 			while (true)
 			{
-				mod.multiplier -= pm.ec.EnvironmentTimeScale * Time.deltaTime * 1.5f;
+				mod.multiplier -= pm.ec.EnvironmentTimeScale * Time.deltaTime * 0.7f;
 				pm.plm.stamina = Mathf.Min(pm.plm.stamina, pm.plm.staminaMax);
 				if (mod.multiplier <= 0.5f)
 				{
@@ -49,7 +49,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 			while (true)
 			{
-				mod.multiplier += pm.ec.EnvironmentTimeScale * Time.deltaTime * 1.5f;
+				mod.multiplier += pm.ec.EnvironmentTimeScale * Time.deltaTime * 0.7f;
 				if (mod.multiplier >= 1f)
 				{
 					break;

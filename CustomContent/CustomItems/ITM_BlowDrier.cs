@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -27,17 +28,18 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			float timer = Random.Range(15f, 30f);
 			float speed = 0f;
-			MovementModifier moveMod = new(Vector3.zero, 0.85f);
+			MovementModifier moveMod = new(Vector3.zero, 0.85f) { forceTrigger = true };
 			pm.Am.moveMods.Add(moveMod);
 			var cam = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber);
 
 			while (timer > 0f)
 			{
 				timer -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
-				speed += Time.deltaTime * pm.ec.EnvironmentTimeScale;
+				speed += Time.deltaTime * pm.ec.EnvironmentTimeScale * 1.2f;
 				if (speed > maxSpeed)
 					speed = maxSpeed;
-				moveMod.movementAddend = -cam.transform.forward * speed;
+				moveMod.movementAddend += -cam.transform.forward * speed;
+				moveMod.movementAddend.Limit(maxSpeed, maxSpeed, maxSpeed);
 				yield return null;
 			}
 
@@ -52,7 +54,7 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		internal SoundObject audBlow;
 
-		const float maxSpeed = 26f;
+		const float maxSpeed = 45f;
 
 		internal static int blowersUsed = 0;
 	}
