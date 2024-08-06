@@ -719,6 +719,7 @@ namespace BBTimes.Manager
 				x.selection.windowObject = classWeightPre.selection.windowObject;
 				x.selection.lightPre = classWeightPre.selection.lightPre;
 				x.selection.keepTextures = false;
+				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 			});
 
 			floorDatas[0].Classrooms.AddRange(room.Where(x => x.selection.activity.prefab.GetType() == typeof(NoActivity)).ToList().FilterRoomAssetsByFloor()); // why not "is NoActivity"? Well, probably because the game doesn't have the right NET to work like that in runtime
@@ -768,6 +769,7 @@ namespace BBTimes.Manager
 				x.selection.windowObject = classWeightPre.selection.windowObject;
 				x.selection.mapMaterial = classWeightPre.selection.mapMaterial;
 				x.selection.lightPre = classWeightPre.selection.lightPre;
+				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 			});
 
 			for (int i = 1; i < floorDatas.Count; i++)
@@ -784,6 +786,7 @@ namespace BBTimes.Manager
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
 				x.selection.lightPre = classWeightPre.selection.lightPre;
+				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)
@@ -800,6 +803,7 @@ namespace BBTimes.Manager
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
 				x.selection.lightPre = classWeightPre.selection.lightPre;
+				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)

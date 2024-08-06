@@ -20,7 +20,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal void GivePlayerItem(PlayerManager pm)
 		{
-			pm.itm.AddItem(objects[Random.Range(0, objects.Length)]);
+			pm.itm.AddItem(Random.value > coalChance ? objects[Random.Range(0, objects.Length)] : itmCoal);
 			behaviorStateMachine.ChangeState(new HappyHolidays_WaitToRespawn(this));
 			audMan.PlaySingle(audHappyHolidays);
 		}
@@ -31,7 +31,12 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal SoundObject audHappyHolidays;
 
+		[SerializeField]
+		internal float coalChance = 0.5f;
+
 		private AudioManager audMan;
+
+		internal static ItemObject itmCoal;
 	}
 
 	internal class HappyHolidays_StateBase(HappyHolidays hh) : NpcState(hh) // A default npc state

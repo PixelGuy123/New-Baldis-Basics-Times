@@ -8,14 +8,25 @@ namespace BBTimes.CustomContent.CustomItems
 		public override bool Use(PlayerManager pm)
 		{
 			Destroy(gameObject);
+			bool flag = false;
 			if (Stunly.affectedByStunly.Count != 0)
 			{
-				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audSwallow);
+				flag = true;
 				while (Stunly.affectedByStunly.Count != 0)
 					Stunly.affectedByStunly[0].CancelStunEffect();				
-				return true;
 			}
-			return false;
+			foreach (var npc in pm.ec.Npcs)
+			{
+				if (npc is LookAtGuy && npc.behaviorStateMachine.CurrentState is LookAtGuy_Blinding blinding) // Is that C# syntax, wtf???
+				{
+					blinding.time = 0f; // Resets The Test's blind effect
+					flag = true;
+				}
+			}
+			if (flag)
+				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audSwallow);
+
+			return flag;
 		}
 
 		[SerializeField]

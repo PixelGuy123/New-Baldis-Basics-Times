@@ -210,6 +210,18 @@ namespace BBTimes.Extensions
 			return itmObjs;
 		}
 
+		public static void Limit(this ref Vector3 toLimit, float maxX, float maxY, float maxZ)
+		{
+			toLimit.x = Mathf.Min(maxX, toLimit.x);
+			toLimit.x = Mathf.Max(-maxX, toLimit.x);
+
+			toLimit.y = Mathf.Min(maxY, toLimit.y);
+			toLimit.y = Mathf.Max(-maxY, toLimit.y);
+
+			toLimit.z = Mathf.Min(maxZ, toLimit.z);
+			toLimit.z = Mathf.Max(-maxZ, toLimit.z);
+		}
+
 		internal static DetentionUi detentionUiPre;
 
 		const int defaultDetentionNoise = 95;

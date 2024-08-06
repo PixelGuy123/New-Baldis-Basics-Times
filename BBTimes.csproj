@@ -8,7 +8,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;Cheat</Configurations>
-    <AssemblyVersion>1.1.5.2</AssemblyVersion>
+    <AssemblyVersion>1.1.5.4</AssemblyVersion>
     <FileVersion></FileVersion>
   </PropertyGroup>
 
