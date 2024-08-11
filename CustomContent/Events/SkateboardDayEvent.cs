@@ -1,5 +1,7 @@
 ﻿using BBTimes.CustomComponents.EventSpecificComponents;
+using BBTimes.Extensions;
 using MTM101BaldAPI.Registers;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +19,7 @@ namespace BBTimes.CustomContent.Events
 					var s = Instantiate(skatePre);
 					boards.Add(s);
 
+					s.OverrideNavigator(ec.Npcs[i].Navigator);
 					s.Initialize(ec.Npcs[i].Navigator.Entity, ec);
 				}
 			}
@@ -36,7 +39,12 @@ namespace BBTimes.CustomContent.Events
 		public override void End()
 		{
 			base.End();
-			boards.ForEach(Destroy);
+			boards.ForEach(x =>
+			{
+				x.StartCoroutine(GameExtensions.TimerToDestroy(x.gameObject, ec));
+
+				Destroy(x);
+			});
 			boards.Clear();
 		}
 

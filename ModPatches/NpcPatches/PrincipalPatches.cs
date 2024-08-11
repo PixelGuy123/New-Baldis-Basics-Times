@@ -36,7 +36,7 @@ namespace BBTimes.ModPatches.NpcPatches
 			if (other.transform == ___targetedNpc.transform)
 			{
 				int num = Random.Range(0, ___principal.ec.offices.Count); // Stuff from the method itself
-				___targetedNpc.transform.position = ___principal.ec.offices[num].RandomEntitySafeCellNoGarbage().CenterWorldPosition;
+				___targetedNpc.Navigator.Entity.Teleport(___principal.ec.offices[num].RandomEntitySafeCellNoGarbage().FloorWorldPosition);
 				___targetedNpc.SentToDetention();
 
 				// Actual detention below
@@ -44,7 +44,7 @@ namespace BBTimes.ModPatches.NpcPatches
 				var times = ___principal.audTimes; // (SoundObject[])audTimes.GetValue(___principal);
 				var detention = ___principal.audDetention; //(SoundObject)audDetention.GetValue(___principal);
 
-				___principal.transform.position = ___principal.ec.offices[num].RandomEntitySafeCellNoGarbage().CenterWorldPosition;
+				___principal.Navigator.Entity.Teleport(___principal.ec.offices[num].RandomEntitySafeCellNoGarbage().FloorWorldPosition);
 				var man = ___principal.audMan; //(AudioManager)audMan.GetValue(___principal);
 				man.QueueAudio(times[0]);
 				man.QueueAudio(detention);

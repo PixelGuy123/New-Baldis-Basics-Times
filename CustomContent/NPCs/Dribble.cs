@@ -63,12 +63,14 @@ namespace BBTimes.CustomContent.NPCs
 				behaviorStateMachine.ChangeState(new Dribble_MinigameSucceed(this));
 				return;
 			}
+			minigameRecord = succeededMinigames;
 			succeededMinigames = 0;
 			behaviorStateMachine.ChangeState(new Dribble_MinigameFail(this, player));
 		}
 
 		internal void DisappointDribble()
 		{
+			minigameRecord = succeededMinigames;
 			succeededMinigames = 0;
 			behaviorStateMachine.ChangeState(new Dribble_Disappointed(this));
 		}
@@ -82,20 +84,22 @@ namespace BBTimes.CustomContent.NPCs
 			bounceAudMan.PlaySingle(audPunch);
 			audMan.PlayRandomAudio(audPunchResponse);
 			float f = Random.Range(9f, 12f);
-			entity.AddForce(new Force((Random.value < 0.5f ? transform.right : -transform.right) * 2.5f, f, -(f - 2.5f)));
+			float fFactor = (1 + minigameRecord) * 2.5f;
+			entity.AddForce(new Force((Random.value < 0.5f ? transform.right : -transform.right) * fFactor, f, -(f - fFactor)));
 			entity.StartCoroutine(Punched(entity));
 		}
 
 		IEnumerator Punched(Entity entity)
 		{
-			entity.ExternalActivity.moveMods.Add(punchMod);
+			var mod = new MovementModifier(Vector3.zero, 0.35f / (1 + minigameRecord));
+			entity.ExternalActivity.moveMods.Add(mod);
 			float cool = 5f;
 			while (cool > 0f)
 			{
 				cool -= Time.deltaTime * ec.EnvironmentTimeScale;
 				yield return null;
 			}
-			entity.ExternalActivity.moveMods.Remove(punchMod);
+			entity.ExternalActivity.moveMods.Remove(mod);
 			yield break;
 		}
 
@@ -130,11 +134,12 @@ namespace BBTimes.CustomContent.NPCs
 
 		readonly internal TimeScaleModifier introMod = new(0f, 0f, 0f);
 
-		readonly internal MovementModifier moveMod = new(Vector3.zero, 0f), punchMod = new(Vector3.zero, 0.35f);
+		readonly internal MovementModifier moveMod = new(Vector3.zero, 0f);
 
 		internal float normSpeed = 14f, chaseSpeed = 21f, angryChaseSpeed = 22.5f;
 
 		int succeededMinigames = 0;
+		int minigameRecord = 0;
 
 		internal RoomController Home { get; private set; }
 	}

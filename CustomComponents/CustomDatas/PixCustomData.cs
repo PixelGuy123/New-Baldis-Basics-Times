@@ -45,7 +45,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			pix.audShoot = soundObjects[8];
 
 			// setup animated sprites
-			pix.rotator = pix.CreateAnimatedSpriteRotator(
+			pix.rotator = pix.spriteRenderer[0].CreateAnimatedSpriteRotator(
 				GenericExtensions.CreateRotationMap(4, storedSprites[0], storedSprites[2], storedSprites[4], storedSprites[6]), // Normal first frame of rotation map
 				GenericExtensions.CreateRotationMap(4, storedSprites[1], storedSprites[3], storedSprites[5], storedSprites[7]), // Normal second frame of rotation map
 				GenericExtensions.CreateRotationMap(4, storedSprites[8], storedSprites[10], storedSprites[4], storedSprites[12]), // Angry first frame of rotation map

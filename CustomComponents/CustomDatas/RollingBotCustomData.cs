@@ -52,7 +52,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 
 			bot.gameObject.CreatePropagatedAudioManager(10f, 115f).AddStartingAudiosToAudioManager(true, soundObjects[3]);
 
-			bot.CreateAnimatedSpriteRotator(
+			bot.spriteRenderer[0].CreateAnimatedSpriteRotator(
 				GenericExtensions.CreateRotationMap(spriteAmount, [.. storedSprites.Take(spriteAmount)])
 				);
 

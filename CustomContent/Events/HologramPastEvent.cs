@@ -39,7 +39,7 @@ namespace BBTimes.CustomContent.Events
 		public override void End()
 		{
 			base.End();
-			holos.ForEach(Destroy);
+			holos.ForEach(x => Destroy(x.gameObject));
 			holos.Clear();
 		}
 

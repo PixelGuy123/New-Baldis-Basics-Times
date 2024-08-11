@@ -64,7 +64,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				if (dirs.Count == 0) continue;
 
-				int max = lastFloor ? 3 : 8;
+				int max = lastFloor ? 6 : 12;
 				int start = isFirstFloor ? 0 : -8;
 
 				foreach (var dir in dirs)

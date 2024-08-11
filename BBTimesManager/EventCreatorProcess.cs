@@ -85,13 +85,12 @@ namespace BBTimes.Manager
 			// Hologram Past
 			e = new RandomEventBuilder<SkateboardDayEvent>(plug.Info)
 				.SetEnum("Skateboardday")
-				.SetMinMaxTime(65f, 100f)
+				.SetMinMaxTime(95f, 120f)
 				.SetName("SkateboardDay")
 				.Build()
 				.SetupEvent<SkateboardDayEventCustomData>();
 
 
-			floorDatas[0].Events.Add(new() { selection = e, weight = 9999999 });
 			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 77 });

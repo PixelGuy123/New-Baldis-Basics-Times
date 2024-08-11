@@ -39,7 +39,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			gb.audPutGlue = [soundObjects[2], soundObjects[3]];
 			gb.audWander = [soundObjects[4], soundObjects[5], soundObjects[6]];
 
-			gb.renderer = gb.CreateAnimatedSpriteRotator(
+			gb.renderer = gb.spriteRenderer[0].CreateAnimatedSpriteRotator(
 				GenericExtensions.CreateRotationMap(8, [.. storedSprites.Take(8)]),
 				GenericExtensions.CreateRotationMap(8, [.. storedSprites.Skip(8).Take(8)]),
 				GenericExtensions.CreateRotationMap(8, [.. storedSprites.Skip(8).Skip(8).Take(8)])
