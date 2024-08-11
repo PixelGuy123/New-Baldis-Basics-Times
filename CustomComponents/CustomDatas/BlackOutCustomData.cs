@@ -9,10 +9,9 @@ namespace BBTimes.CustomComponents.CustomDatas
 		{
 			var sd = GetSound("baldi_ele.wav", "Event_BlackOut0", SoundType.Effect, UnityEngine.Color.green);
 			sd.additionalKeys = [
-				new() {time = 2.036f, key = "Event_BlackOut1"},
-				new() {time = 5.312f, key = "Event_BlackOut2"},
-				new() {time = 9.225f, key = "Event_BlackOut3"},
-				new() {time = 12.6f, key = "Event_BlackOut4"},
+				new() {time = 1.833f, key = "Event_BlackOut1"},
+				new() {time = 5.378f, key = "Event_BlackOut2"},
+				new() {time = 8.667f, key = "Event_BlackOut3"}
 				];
 			return [GetSoundNoSub("blackout_on.wav", SoundType.Music),
 			GetSoundNoSub("blackout_out.wav", SoundType.Music), sd];

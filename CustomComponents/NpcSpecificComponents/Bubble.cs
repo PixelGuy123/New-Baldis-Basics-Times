@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
 {
@@ -57,7 +56,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		public void OnTriggerEnter(Collider other)
 		{
-			if (!initialized || holding || hasPopped || other.gameObject == owner.gameObject) return;
+			if (!initialized || holding || hasPopped || other.gameObject == owner.gameObject || other.GetComponent<Bubble>()) return;
 			if (other.isTrigger)
 			{
 				var e = other.GetComponent<Entity>();

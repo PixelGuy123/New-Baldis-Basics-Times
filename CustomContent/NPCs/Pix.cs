@@ -28,6 +28,10 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			audMan.PlayRandomAudio(failed ? audAngry : audHappy);
 			currentState = failed ? 1u : 2u;
+			if (failed)
+				rageStreak = Mathf.Max(rageStreak + 1, 3);
+			else
+				rageStreak = 0;
 			navigator.Am.moveMods.Remove(moveMod);
 			rotator.BypassRotation(false);
 		}
@@ -82,10 +86,11 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			hasFailed = true;
 			beams = 0;
+			int max = 3 + (rageStreak + 1) * 3;
 
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < max; i++)
 			{
-				float cooldown = 1f;
+				float cooldown = Mathf.Max(0.25f, 2f - (max / 3f));
 
 				while (audMan.AnyAudioIsPlaying)
 					yield return null; // Wait til it is done
@@ -129,7 +134,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal void DecrementBeamCount() => beams = Mathf.Max(0, beams - 1);
 
 		bool hasFailed = true;
-		int beams = 0;
+		int beams = 0, rageStreak = 0;
 
 		[SerializeField]
 		internal AnimatedSpriteRotator rotator;

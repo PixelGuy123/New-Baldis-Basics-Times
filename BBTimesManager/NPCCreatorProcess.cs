@@ -209,6 +209,7 @@ namespace BBTimes.Manager
 
 			npc.Navigator.SetRoomAvoidance(false);
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 999999 });
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 65 });
 
@@ -300,7 +301,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.Build()
 				.SetupNPCData<FakerCustomData>("Faker", "PST_Faker_Name", "PST_Faker_Desc", -1.36f)
-				.MarkAsReplacement(45, Character.LookAt);
+				.MarkAsReplacement(99999, Character.LookAt); // 45
 
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
 		}

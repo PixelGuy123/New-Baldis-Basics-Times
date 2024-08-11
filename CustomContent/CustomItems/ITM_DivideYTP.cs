@@ -6,13 +6,17 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
-			Singleton<CoreGameManager>.Instance.AddPoints(Mathf.Abs(Singleton<CoreGameManager>.Instance.GetPointsThisLevel(pm.playerNumber)) / divider, pm.playerNumber, true);
+			Singleton<CoreGameManager>.Instance.AddPoints(Mathf.Abs(Singleton<CoreGameManager>.Instance.GetPointsThisLevel(pm.playerNumber)) / Random.Range(minDivider, maxDivider), pm.playerNumber, true);
 			Destroy(gameObject);
 			return true;
 		}
 
 		[SerializeField]
 		[Range(1, int.MaxValue)]
-		internal int divider = 1;
+		internal int minDivider = 2;
+
+		[SerializeField]
+		[Range(1, int.MaxValue)]
+		internal int maxDivider = 4;
 	}
 }

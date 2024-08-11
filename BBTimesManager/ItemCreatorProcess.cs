@@ -596,6 +596,50 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 55 });
+
+			// Rotten Cheese Item
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_RottenCheese>()
+				.SetGeneratorCost(70)
+				.SetShopPrice(900)
+				.SetNameAndDescription("RotCheese_Name", "RotCheese_Desc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build<RottenCheeseCustomData>("RottenCheese");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 18 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 20 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 10 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
+			JoeChef.AddFood(item, 15);
+
+			// Soap Bubbles Item
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_SoapBubbles>()
+				.SetGeneratorCost(55)
+				.SetShopPrice(1100)
+				.SetNameAndDescription("SoapBub_Name3", "SoapBub_Desc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build<SoapBubblesCustomData>("SoapBubbles");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 40 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 60 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 40 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 30 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 30 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 30 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
+			secondItem = item.DuplicateItem(meta, "SoapBub_Name2");
+			((ITM_SoapBubbles)item.item).itmObjToReplace = secondItem;
+			((ITM_SoapBubbles)secondItem.item).itmObjToReplace = secondItem.DuplicateItem(meta, "SoapBub_Name1");
 		}
 	}
 }

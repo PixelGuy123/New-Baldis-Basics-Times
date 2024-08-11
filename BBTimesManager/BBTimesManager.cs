@@ -193,6 +193,7 @@ namespace BBTimes.Manager
 			// Player Visual
 			var tex = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "player.png")), 225f);
 			var playerVisual = ObjectCreationExtensions.CreateSpriteBillboard(tex).AddSpriteHolder(-1.6f);
+			playerVisual.gameObject.AddComponent<PlayerVisual>();
 
 			GameCameraPatch.playerVisual = playerVisual.transform.parent;
 			playerVisual.transform.parent.gameObject.ConvertToPrefab(true);

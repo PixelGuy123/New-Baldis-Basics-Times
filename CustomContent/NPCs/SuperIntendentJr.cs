@@ -42,11 +42,46 @@ namespace BBTimes.CustomContent.NPCs
 			base.DoorHit(door);
 		}
 
+		
+	}
+
+	internal class SuperIntendentJr_Wander(NPC npc) : NpcState(npc)
+	{
 		public override void Enter()
 		{
 			base.Enter();
 			ChangeNavigationState(new NavigationState_WanderRandom(npc, 0));
 		}
+	}
+	
+	internal class SuperIntendentJr_RunForNoise(NPC npc, Vector3 vec, NpcState prevState) : NpcState(npc)
+	{
+		public override void Enter()
+		{
+			base.Enter();
+			npc.Navigator.Am.moveMods.Add(moveMod);
+			ChangeNavigationState(new NavigationState_TargetPosition(npc, 63, vec));
+		}
+
+		public override void DestinationEmpty()
+		{
+			base.DestinationEmpty();
+			if (npc.transform.position == vec)
+			{
+				npc.behaviorStateMachine.ChangeState(prevState);
+				return;
+			}
+			ChangeNavigationState(new NavigationState_TargetPosition(npc, 63, vec));
+			
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			npc.Navigator.Am.moveMods.Remove(moveMod);
+		}
+
+		readonly MovementModifier moveMod = new(Vector3.zero, 2.5f);
 	}
 	public class SuperIntendentJr : NPC
 	{
@@ -54,7 +89,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Initialize();
 			timeInSight = new float[players.Count];
-			behaviorStateMachine.ChangeState(new SuperIntendentJr_StateBase(this));
+			behaviorStateMachine.ChangeState(new SuperIntendentJr_Wander(this));
 		}
 
 		void CallPrincipals()
@@ -64,13 +99,13 @@ namespace BBTimes.CustomContent.NPCs
 					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, ec.CellFromPosition(transform.position)));
 
 			Directions.ReverseList(navigator.currentDirs);
-			behaviorStateMachine.ChangeNavigationState(new NavigationState_WanderRandom(this, 0));
+			behaviorStateMachine.ChangeState(new SuperIntendentJr_Wander(this));
 			StartCoroutine(CallOutDelay());
 		}
 
 		IEnumerator CallOutDelay()
 		{
-			noticeCooldown = 30f;
+			noticeCooldown = 7f;
 			callingOut = true;
 			UpdateStep();
 			wonder = false;
@@ -98,6 +133,13 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			if (wonder && Random.value >= 0.75f)
 				audMan.QueueAudio(audWonder);
+		}
+
+		public override void Hear(Vector3 position, int value)
+		{
+			base.Hear(position, value);
+			if (value >= 78 && value <= 126)
+				behaviorStateMachine.ChangeState(new SuperIntendentJr_RunForNoise(this, position, behaviorStateMachine.CurrentState));
 		}
 
 		public override void VirtualUpdate()

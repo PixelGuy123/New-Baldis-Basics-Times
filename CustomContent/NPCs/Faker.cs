@@ -31,7 +31,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void ChangeRandomState()
 		{
-			int rng = Random.Range(0, 3);
+			//int rng = Random.Range(0, 3);
+			int rng = 0;
 			behaviorStateMachine.ChangeState(new Faker_Spawn(this, rng == 0 ? new Faker_BlueVariant(this) : rng == 1 ? new Faker_RedVariant(this) : new Faker_GreenVariant_Idle(this)));
 		}
 
@@ -140,8 +141,6 @@ namespace BBTimes.CustomContent.NPCs
 			base.PlayerInSight(player);
 			spawnCooldown = 5f;
 		}
-
-		readonly EntityOverrider overrider = new();
 	}
 
 	internal class Faker_BlueVariant(Faker f) : Faker_ActiveState(f)
@@ -162,8 +161,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (!players.ContainsKey(player))
 			{
 				var val = new ValueModifier();
-				players.Add(player, val);
-				player.GetCustomCam().SlideFOVAnimation(val, -25f);
+				players.Add(player, new(val, player.GetCustomCam().SlideFOVAnimation(val, -25f)));
 				player.Am.moveMods.Add(moveMod);
 				CanDespawn = false;
 			}
@@ -175,14 +173,17 @@ namespace BBTimes.CustomContent.NPCs
 			if (players.ContainsKey(player))
 			{
 				player.Am.moveMods.Remove(moveMod);
-				player.GetCustomCam().ResetSlideFOVAnimation(new ValueModifier(addend:players[player].addend));
+				var cam = player.GetCustomCam();
+				var k = players[player];
+				cam.StopCoroutine(k.Value);
+				cam.ResetSlideFOVAnimation(new ValueModifier(addend:k.Key.addend));
 				players.Remove(player);
 			}
 			if (players.Count == 0)
 				CanDespawn = true;
 		}
 
-		readonly Dictionary<PlayerManager, ValueModifier> players = [];
+		readonly Dictionary<PlayerManager, KeyValuePair<ValueModifier, Coroutine>> players = [];
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.5f);
 	}

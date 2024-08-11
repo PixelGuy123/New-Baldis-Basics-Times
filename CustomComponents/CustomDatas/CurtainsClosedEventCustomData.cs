@@ -11,7 +11,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 	{
 		protected override SoundObject[] GenerateSoundObjects() {
 			var sd = GetSound("baldi_curtains.wav", "Event_CurtClosed0", SoundType.Effect, Color.green);
-			sd.additionalKeys = [new() { time = 6f, key = "Event_CurtClosed1" }, new() { time = 11.775f, key = "Event_CurtClosed2" }];
+			sd.additionalKeys = [new() { time = 6.28f, key = "Event_CurtClosed1" }, new() { time = 11.742f, key = "Event_CurtClosed2" }];
 			return [GetSound("curtainClose.wav", "Vfx_Curtain_Slide", SoundType.Voice, Color.white),
 		GetSound("curtainOpen.wav", "Vfx_Curtain_Slide", SoundType.Voice, Color.white), sd];
 			}

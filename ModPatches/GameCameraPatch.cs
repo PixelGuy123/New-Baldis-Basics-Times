@@ -13,4 +13,5 @@ namespace BBTimes.ModPatches
 
 		static internal Transform playerVisual;
 	}
+	public class PlayerVisual : MonoBehaviour { } // Does nothing, just serve as a marker
 }

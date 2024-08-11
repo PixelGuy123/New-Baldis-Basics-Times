@@ -7,8 +7,14 @@ namespace BBTimes.CustomContent.Objects
 {
 	public class Squisher : EnvironmentObject, IButtonReceiver
 	{
-		public void ButtonPressed(bool val) => // Just instantly squish
-			cooldown = 0f;
+		public void ButtonPressed(bool val)
+		{
+			if (!active)
+			{
+				forceSquish = true;
+				cooldown = 0f;
+			}
+		}
 
 		public void TurnMe(bool on)
 		{
@@ -80,17 +86,24 @@ namespace BBTimes.CustomContent.Objects
 
 		IEnumerator SquishSequence()
 		{
-			float cool = Random.Range(2f, 3.5f);
-			audMan.QueueAudio(audPrepare);
-			audMan.SetLoop(true);
-
-			while (cool > 0f) // preparing to squish
+			active = true;
+			float cool;
+			if (forceSquish)
 			{
-				if (Time.timeScale > 0f)
-					transform.position = new(ogPos.x + Random.Range(-0.2f, 0.2f), ogPos.y, ogPos.z + Random.Range(-0.2f, 0.2f));
-				cool -= ec.EnvironmentTimeScale * Time.deltaTime;
-				yield return null;
+				cool = Random.Range(2f, 3.5f);
+				audMan.QueueAudio(audPrepare);
+				audMan.SetLoop(true);
+
+				while (cool > 0f) // preparing to squish
+				{
+					if (Time.timeScale > 0f)
+						transform.position = new(ogPos.x + Random.Range(-0.2f, 0.2f), ogPos.y, ogPos.z + Random.Range(-0.2f, 0.2f));
+					cool -= ec.EnvironmentTimeScale * Time.deltaTime;
+					yield return null;
+				}
 			}
+
+			forceSquish = false;
 
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audRun);
@@ -153,6 +166,7 @@ namespace BBTimes.CustomContent.Objects
 			waitingForSquish = true;
 			cooldown = Random.Range(5f, 10f);
 			audMan.FlushQueue(true);
+			active = false;
 
 			yield break;
 		}
@@ -168,7 +182,7 @@ namespace BBTimes.CustomContent.Objects
 
 		float cooldown = Random.Range(5f, 10f);
 		float speed;
-		bool waitingForSquish = true, canSquish = false;
+		bool waitingForSquish = true, canSquish = false, forceSquish = false, active = false;
 
 		readonly List<Entity> squishedEntities = [];
 
