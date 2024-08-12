@@ -41,7 +41,7 @@ namespace BBTimes.CustomContent.Events
 			base.End();
 			boards.ForEach(x =>
 			{
-				x.StartCoroutine(GameExtensions.TimerToDestroy(x.gameObject, ec));
+				StartCoroutine(GameExtensions.TimerToDestroy(x.gameObject, ec));
 
 				Destroy(x);
 			});

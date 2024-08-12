@@ -29,7 +29,7 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.PlayRandomAudio(failed ? audAngry : audHappy);
 			currentState = failed ? 1u : 2u;
 			if (failed)
-				rageStreak = Mathf.Max(rageStreak + 1, 3);
+				rageStreak = Mathf.Min(rageStreak + 1, 3);
 			else
 				rageStreak = 0;
 			navigator.Am.moveMods.Remove(moveMod);

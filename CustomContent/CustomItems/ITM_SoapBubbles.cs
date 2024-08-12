@@ -52,6 +52,7 @@ namespace BBTimes.CustomContent.CustomItems
 			b.Initialize();
 
 			pm.Am.moveMods.Remove(moveMod);
+			Destroy(gameObject);
 
 			yield break;
 		}

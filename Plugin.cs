@@ -19,6 +19,7 @@ using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.RoomFunctions;
 using PixelInternalAPI.Classes;
 using System.IO;
+using BBTimes.CompatibilityModule;
 
 
 namespace BBTimes.Plugin
@@ -78,8 +79,9 @@ namespace BBTimes.Plugin
 
 		private void Awake()
 		{
+			i = this;
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
-			harmony.PatchAll();
+			harmony.PatchAllConditionals();
 
 			ModdedSaveGame.AddSaveHandler(Info);
 
@@ -87,6 +89,7 @@ namespace BBTimes.Plugin
 			BBTimesManager.plug = this;
 
 			MainMenuPatch.newMidi = AssetLoader.MidiFromMod("timeNewJingle", this, "misc", "Audios", "newJingle.mid");
+			CompatibilityInitializer.Initialize();
 			
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), false);
@@ -342,6 +345,8 @@ namespace BBTimes.Plugin
 
 		internal static List<CustomBaseData> _cstData = [];
 
+		internal static BasePlugin i;
+
 	}
 
 	static class ModInfo
@@ -351,7 +356,7 @@ namespace BBTimes.Plugin
 
 		public const string PLUGIN_NAME = "Baldi\'s Basics Times";
 
-		public const string PLUGIN_VERSION = "1.1.5.4";
+		public const string PLUGIN_VERSION = "1.1.6";
 	}
 
 	// Some cheats

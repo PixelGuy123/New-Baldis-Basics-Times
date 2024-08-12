@@ -25,11 +25,26 @@
   
   <ItemGroup>
     <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
+    <Reference Include="BBPCustomPosters">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBPCustomPosters.dll</HintPath>
+    </Reference>
+    <Reference Include="BBPlusAnimations">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBPlusAnimations.dll</HintPath>
+    </Reference>
+    <Reference Include="BBPlusCustomMusics">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBPlusCustomMusics.dll</HintPath>
+    </Reference>
 
     <!-- Publicize directly when referencing -->
     <Reference Include="C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Assembly-CSharp.dll" Publicize="true" />
+    <Reference Include="CustomVendingMachines">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\CustomVendingMachines.dll</HintPath>
+    </Reference>
     <Reference Include="EditorCustomRooms">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\EditorCustomRooms.dll</HintPath>
+    </Reference>
+    <Reference Include="GrapplingHookTweaks">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\GrapplingHookTweaks.dll</HintPath>
     </Reference>
     <Reference Include="MTM101BaldAPI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\MTM101BaldAPI.dll</HintPath>

@@ -82,7 +82,7 @@ namespace BBTimes.Manager
 			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 77 });
 
-			// Hologram Past
+			// Skateboard Day
 			e = new RandomEventBuilder<SkateboardDayEvent>(plug.Info)
 				.SetEnum("Skateboardday")
 				.SetMinMaxTime(95f, 120f)
@@ -91,9 +91,23 @@ namespace BBTimes.Manager
 				.SetupEvent<SkateboardDayEventCustomData>();
 
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
+			floorDatas[1].Events.Add(new() { selection = e, weight = 75 });
+			floorDatas[2].Events.Add(new() { selection = e, weight = 75 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 45 });
+
+			// Earthquake
+			e = new RandomEventBuilder<Earthquake>(plug.Info)
+				.SetEnum("Earthquake")
+				.SetMinMaxTime(55f, 85f)
+				.SetName("Earthquake")
+				.Build()
+				.SetupEvent<EarthquakeCustomData>();
+
+
+			floorDatas[0].Events.Add(new() { selection = e, weight = 9999 });
+			floorDatas[1].Events.Add(new() { selection = e, weight = 25 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 77 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 35 });
 		}
 
 		
