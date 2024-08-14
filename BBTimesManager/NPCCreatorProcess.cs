@@ -174,6 +174,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData<WatcherCustomData>("Watcher", "PST_Wch_Name", "PST_Wch_Desc", 0f);
 
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 9999999 });
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
 
@@ -209,7 +210,6 @@ namespace BBTimes.Manager
 
 			npc.Navigator.SetRoomAvoidance(false);
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 999999 });
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 65 });
 
@@ -304,6 +304,7 @@ namespace BBTimes.Manager
 				.MarkAsReplacement(99999, Character.LookAt); // 45
 
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
 		}
 
 		

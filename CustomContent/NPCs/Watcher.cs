@@ -1,4 +1,6 @@
-﻿using MTM101BaldAPI.Components;
+﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBTimes.Extensions;
+using MTM101BaldAPI.Components;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
@@ -23,7 +25,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			navigator.maxSpeed = 500f;
 			navigator.SetSpeed(0f);
-			navigator.accel = 35f;
+			navigator.accel = 95f;
 		}
 
 		public void Hide(bool hide)
@@ -89,6 +91,12 @@ namespace BBTimes.CustomContent.NPCs
 			yield return null;
 
 			pm.plm.Entity.IgnoreEntity(npc.Navigator.Entity, false);
+			int halls = Random.Range(minHallucinations, maxHallucinations);
+			for (int i = 0; i < halls; i++)
+			{
+				Instantiate(hallPre).AttachToPlayer(pm);
+				yield return null;
+			}
 
 			yield break;
 		}
@@ -127,6 +135,12 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal SoundObject audAmbience, audAngry, audSpot, audTeleport;
+
+		[SerializeField]
+		internal Hallucinations hallPre;
+
+		[SerializeField]
+		internal int minHallucinations = 7, maxHallucinations = 9;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
 	}
@@ -188,14 +202,20 @@ namespace BBTimes.CustomContent.NPCs
 			w.screenAudMan.Pause(true);
 			mod.addend = 0;
 			stillInSight = false;
+			if (lastSawPlayer && moveMods.TryGetValue(lastSawPlayer, out var mmod))
+				mmod.movementAddend = Vector3.zero;
 		}
 
 		public override void InPlayerSight(PlayerManager player)
 		{
 			base.InPlayerSight(player);
+			lastSawPlayer = player;
 			spotStrength += w.TimeScale * Time.deltaTime * 6.5f;
 			if (Time.timeScale > 0)
 				mod.addend = spotStrength * (-1f + Random.value * 2f) * 2f;
+			Vector3 distance = w.transform.position - player.transform.position;
+			moveMods[player].movementAddend = distance.normalized * Mathf.Min(15f, distance.magnitude * 0.6f);
+			player.transform.RotateSmoothlyToNextPoint(w.transform.position, 0.35f);
 			if (spotStrength > strengthLimit)
 			{
 				player.GetCustomCam().RemoveModifier(mod);
@@ -206,6 +226,11 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerSighted(PlayerManager player)
 		{
 			base.PlayerSighted(player);
+
+			var moveMod = new MovementModifier(Vector3.zero, 1f);
+			player.Am.moveMods.Add(moveMod);
+			moveMods.Add(player, moveMod);
+			
 			mod.addend = 0;
 			player.GetCustomCam().AddModifier(mod);
 		}
@@ -214,6 +239,8 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerLost(player);
 			player.GetCustomCam().RemoveModifier(mod);
+			player.Am.moveMods.Remove(moveMods[player]);
+			moveMods.Remove(player);
 		}
 
 		public override void Update()
@@ -226,12 +253,22 @@ namespace BBTimes.CustomContent.NPCs
 				w.behaviorStateMachine.ChangeState(new Watcher_WaitBelow(w));
 		}
 
+		public override void Exit()
+		{
+			base.Exit();
+			foreach (var move in moveMods)
+				move.Key?.Am.moveMods.Remove(move.Value);
+		}
+
 		bool hasPlayed = false, stillInSight = false;
 
 
 		float spotStrength = 0f, leaveCooldown = Random.Range(30f, 60f);
 		const float strengthLimit = 12f;
 		readonly ValueModifier mod = new();
+
+		readonly Dictionary<PlayerManager, MovementModifier> moveMods = [];
+		PlayerManager lastSawPlayer;
 
 	}
 

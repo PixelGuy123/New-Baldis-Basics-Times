@@ -1,4 +1,5 @@
-﻿using BBTimes.CustomComponents;
+﻿using BBTimes.CompatibilityModule;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
@@ -74,6 +75,16 @@ namespace BBTimes.Manager
 
 		static void SetAssets()
 		{
+			try
+			{
+				CompatibilityInitializer.InitializeOnLoadMods();
+			}
+			catch (Exception e)
+			{
+				Debug.LogError("Failed to load compatibility modules due to an error:");
+				Debug.LogException(e);
+				MTM101BaldiDevAPI.CauseCrash(plug.Info, e);
+			}
 			// Some materials
 			ObjectCreationExtension.defaultMaterial = GenericExtensions.FindResourceObjectByName<Material>("Locker_Red"); // Actually a good material, has even lightmap
 			ObjectCreationExtension.defaultDustMaterial = GenericExtensions.FindResourceObjectByName<Material>("DustTest");

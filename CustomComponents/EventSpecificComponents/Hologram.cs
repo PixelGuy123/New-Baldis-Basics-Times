@@ -17,6 +17,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 			color.a = Mathf.Clamp01(transparency);
 			this.renderer.color = color;
 
+			this.renderer.sprite = renderer.sprite;
 			transform.position = renderer.transform.position;
 
 			StartCoroutine(StartDelay(spawnDelay));

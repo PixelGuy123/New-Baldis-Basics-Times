@@ -1,13 +1,13 @@
-﻿using BBTimes.Plugin;
-using LuisRandomness.BBPCustomPosters;
+﻿using LuisRandomness.BBPCustomPosters;
 using MTM101BaldAPI.AssetTools;
 using System.IO;
+using BBTimes.Manager;
 
 namespace BBTimes.CompatibilityModule
 {
 	internal class CustomPostersCompat
 	{
 		internal static void Loadup() =>
-			CustomPostersPlugin.AddBuiltInPackFromDirectory(BasePlugin.i, Path.Combine(AssetLoader.GetModPath(BasePlugin.i), "posters", "custompostermod"));
+			CustomPostersPlugin.AddBuiltInPackFromDirectory(BBTimesManager.plug, Path.Combine(AssetLoader.GetModPath(BBTimesManager.plug), "posters", "custompostermod"));
 	}
 }

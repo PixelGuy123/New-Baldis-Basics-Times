@@ -2,6 +2,7 @@
 using BBPlusAnimations.Patches;
 using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.CustomContent.CustomItems;
+using BBTimes.Manager;
 using BBTimes.Plugin;
 using BepInEx.Bootstrap;
 using HarmonyLib;
@@ -40,7 +41,7 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 			((ITM_Gum)ItemMetaStorage.Instance.FindByEnum(EnumExtensions.GetFromExtendedName<Items>("Gum")).value.item).aud_splash = GumSplash.splash;
 
 			Items target = EnumExtensions.GetFromExtendedName<Items>("Soap");
-			ItemMetaStorage.Instance.FindAll(x => x.info == BasePlugin.i.Info && x.id == target).Do(x =>
+			ItemMetaStorage.Instance.FindAll(x => x.info == BBTimesManager.plug.Info && x.id == target).Do(x =>
 			{
 				var slip = ObjectCreationExtensions.CreateSpriteBillboard(animations.AssetMan.Get<Sprite>("nanaPeelSlide"), false);
 				var slipper = slip.gameObject.AddComponent<SoapSlipper>();

@@ -66,12 +66,24 @@ namespace BBTimes.CustomContent.RoomFunctions
 			player.plm.Entity.SetFrozen(true);
 			player.plm.Entity.SetInteractionState(false);
 			player.gameObject.layer = layer; // Workaround lol
+			float timer = 30f;
 			int i = 0;
 			while (true)
 			{
+				if (!player)
+				{
+					activeRunners--;
+					yield break;
+				}
+				timer -= player.ec.EnvironmentTimeScale * Time.deltaTime;
 				Vector3 difference = cornersToGo[i] - pos;
 				while (difference.magnitude > 0.5f)
 				{
+					if (!player)
+					{
+						activeRunners--;
+						yield break;
+					}
 					Vector3 mov = difference.normalized * player.plm.runSpeed * player.PlayerTimeScale * Time.deltaTime;
 					pos += mov.magnitude < difference.magnitude ? mov : difference;
 					difference = cornersToGo[i] - pos;
@@ -90,7 +102,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					pos = player.transform.position;
 
 					
-					if (player.plm.stamina <= 0f)
+					if (player.plm.stamina <= 0f || timer <= 0f)
 					{
 						activeRunners--;
 						player.plm.Entity.SetFrozen(false);

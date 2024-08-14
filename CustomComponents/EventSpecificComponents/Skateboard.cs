@@ -53,7 +53,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 				return;
 			}
 
-			entity.UpdateInternalMovement(direction * speed * ec.EnvironmentTimeScale);
+			entity.UpdateInternalMovement(tar.ExternalActivity.Addend + (direction * speed) * ec.EnvironmentTimeScale);
 
 			// Get all these velocities to 0
 			if (speed > 0f)

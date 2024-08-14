@@ -49,7 +49,7 @@ namespace BBTimes.CustomContent.Events
 		internal Hologram hologramPre;
 
 		[SerializeField]
-		internal int pastLayers = 5;
+		internal int pastLayers = 7;
 
 		[SerializeField]
 		internal float timeOffset = 8f;

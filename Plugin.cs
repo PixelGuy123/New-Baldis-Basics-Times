@@ -79,7 +79,6 @@ namespace BBTimes.Plugin
 
 		private void Awake()
 		{
-			i = this;
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAllConditionals();
 
@@ -88,8 +87,8 @@ namespace BBTimes.Plugin
 			_modPath = AssetLoader.GetModPath(this);
 			BBTimesManager.plug = this;
 
+			CompatibilityInitializer.InitializeOnAwake();
 			MainMenuPatch.newMidi = AssetLoader.MidiFromMod("timeNewJingle", this, "misc", "Audios", "newJingle.mid");
-			CompatibilityInitializer.Initialize();
 			
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), false);
@@ -344,8 +343,6 @@ namespace BBTimes.Plugin
 		internal const string CharacterRadarGUID = "org.aestheticalz.baldi.characterradar";
 
 		internal static List<CustomBaseData> _cstData = [];
-
-		internal static BasePlugin i;
 
 	}
 
