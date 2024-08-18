@@ -14,6 +14,7 @@ namespace BBTimes.CustomContent.CustomItems
 				Destroy(gameObject);
 				return false;
 			}
+			ec = pm.ec;
 			this.pm = pm;
 			StartCoroutine(BlowAndPush());
             return true;
@@ -21,14 +22,11 @@ namespace BBTimes.CustomContent.CustomItems
 
 		void PushEveryone()
 		{
-			foreach (var entity in FindObjectsOfType<Entity>()) // Find every existing entity to make them suffer lol
+			foreach (var entity in ec.Npcs)
 			{
-				var ray = new Ray(transform.position, (entity.transform.position - transform.position).normalized);
-				if (entity == pm.plm.Entity) continue;
-
 				float force = pushForce - (Vector3.Distance(entity.transform.position, pm.transform.position) * pushDistance);
 				if (force > 0f)
-					entity.AddForce(new((entity.transform.position - pm.transform.position).normalized, force, -force * pushForceDecrement));
+					entity.Navigator.Entity.AddForce(new((entity.transform.position - pm.transform.position).normalized, force, -force * pushForceDecrement));
 			}
 		}
 
@@ -37,6 +35,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator BlowAndPush()
 		{
+			audMan.PlaySingle(audInhale);
 			ValueModifier val = new();
 			var cam = pm.GetCustomCam();
 			cam.SlideFOVAnimation(val, -35f, 3f);
@@ -73,9 +72,10 @@ namespace BBTimes.CustomContent.CustomItems
 		internal AudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject audBlow;
+		internal SoundObject audBlow, audInhale;
 
 		static int usingTrompets = 0;
+		EnvironmentController ec;
 
 	}
 

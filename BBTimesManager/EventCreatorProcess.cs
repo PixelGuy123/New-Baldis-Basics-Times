@@ -107,6 +107,32 @@ namespace BBTimes.Manager
 			floorDatas[1].Events.Add(new() { selection = e, weight = 25 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 35 });
+
+			// Shuffling Chaos
+			e = new RandomEventBuilder<ShufflingChaos>(plug.Info)
+				.SetEnum("Shufflingchaos")
+				.SetMinMaxTime(100f, 120f)
+				.SetName("ShufflingChaos")
+				.Build()
+				.SetupEvent<ShufflingChaosCustomData>();
+
+
+			floorDatas[1].Events.Add(new() { selection = e, weight = 10 });
+			floorDatas[2].Events.Add(new() { selection = e, weight = 35 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 55 });
+
+			// Super Fans
+			e = new RandomEventBuilder<SuperFans>(plug.Info)
+				.SetEnum("Superfans")
+				.SetMinMaxTime(75f, 100f)
+				.SetName("SuperFans")
+				.Build()
+				.SetupEvent<SuperFansCustomData>();
+
+
+			floorDatas[1].Events.Add(new() { selection = e, weight = 60 });
+			floorDatas[2].Events.Add(new() { selection = e, weight = 25 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 45 });
 		}
 
 		

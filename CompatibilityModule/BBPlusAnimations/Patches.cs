@@ -2,7 +2,6 @@
 using BBPlusAnimations.Patches;
 using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.CustomContent.CustomItems;
-using BBTimes.Manager;
 using BBTimes.Plugin;
 using BepInEx.Bootstrap;
 using HarmonyLib;
@@ -17,11 +16,12 @@ using UnityEngine;
 
 namespace BBTimes.CompatibilityModule.BBPlusAnimations
 {
+	[HarmonyPatch]
 	[ConditionalPatchMod("pixelguy.pixelmodding.baldiplus.newanimations")]
-	internal class PostTimesPatch
+	internal static class PostTimesPatchForAnimations
 	{
 		[HarmonyPatch(typeof(BasePlugin), "SetupPostAssets")]
-		[HarmonyPrefix]
+		[HarmonyPostfix]
 		static void Preload() // Actually load the stuff
 		{
 			var animations = (global::BBPlusAnimations.BasePlugin)Chainloader.PluginInfos["pixelguy.pixelmodding.baldiplus.newanimations"].Instance;
@@ -29,29 +29,16 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 			var sweepSprs = TextureExtensions.LoadSpriteSheet(7, 1, 26f,
 					BasePlugin.ModPath, "npcs", "ClassicGottaSweep", "Textures", "anims", "oldsweep.png");
 
-			NPCMetaStorage.Instance.Get(Character.Sweep).prefabs.DoIf(x => x.Value.name == "ClassicGottaSweep" && x.Value.GetComponent<ClassicGottaSweepCustomData>(), (x) =>
+			NPCMetaStorage.Instance.Get(Character.Sweep).prefabs.DoIf(x => x.Value.GetComponent<ClassicGottaSweepCustomData>(), (x) =>
 			{
-				var comp = x.Value.gameObject.GetComponent<GenericAnimationExtraComponent>() ?? x.Value.gameObject.AddComponent<GenericAnimationExtraComponent>();
+				var comp = x.Value.gameObject.AddComponent<GenericAnimationExtraComponent>();
 				comp.sprites = [x.Value.spriteRenderer[0].sprite, .. sweepSprs];
 
-				var c = x.Value.GetComponent<GottaSweepComponent>() ?? x.Value.gameObject.AddComponent<GottaSweepComponent>();
+				var c = x.Value.gameObject.AddComponent<GottaSweepComponent>();
 				c.aud_sweep = aud;
 
 			});
 			((ITM_Gum)ItemMetaStorage.Instance.FindByEnum(EnumExtensions.GetFromExtendedName<Items>("Gum")).value.item).aud_splash = GumSplash.splash;
-
-			Items target = EnumExtensions.GetFromExtendedName<Items>("Soap");
-			ItemMetaStorage.Instance.FindAll(x => x.info == BBTimesManager.plug.Info && x.id == target).Do(x =>
-			{
-				var slip = ObjectCreationExtensions.CreateSpriteBillboard(animations.AssetMan.Get<Sprite>("nanaPeelSlide"), false);
-				var slipper = slip.gameObject.AddComponent<SoapSlipper>();
-				slipper.renderer = slip;
-
-				slipper.transform.SetParent(x.value.item.transform);
-				slipper.transform.localPosition = Vector3.zero;
-
-				slipper.SetMyPeel((ITM_Soap)x.value.item);
-			});
 		}
 
 		[HarmonyPatch(typeof(ITM_Gum), "HitSomething")] // Override gum hit animation

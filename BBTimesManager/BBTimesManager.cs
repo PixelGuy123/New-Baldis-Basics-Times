@@ -24,7 +24,7 @@ namespace BBTimes.Manager
 {
 	internal static partial class BBTimesManager // basically holds the logic to create everything to the game
 	{
-		internal static BaseUnityPlugin plug;
+		internal static BasePlugin plug;
 		internal static IEnumerator InitializeContentCreation()
 		{
 			yield return 14;
@@ -98,6 +98,7 @@ namespace BBTimes.Manager
 			man.Add("outsideSkybox", Resources.FindObjectsOfTypeAll<Skybox>()[0]);
 			man.Add("woodTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("wood 1").MakeReadableTexture()); // Wood from the tables
 			man.Add("plasticTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("PlasticTable").MakeReadableTexture());
+			man.Add("teleportAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport"));
 
 
 			// Make a transparent texture
@@ -256,6 +257,7 @@ namespace BBTimes.Manager
 
 		public readonly List<WeightedNPC> NPCs = [];
 		public readonly List<WeightedItemObject> Items = [];
+		public readonly List<ItemObject> ForcedItems = [];
 		public readonly List<WeightedItemObject> ShopItems = [];
 		public readonly List<WeightedItem> FieldTripItems = [];
 		public readonly List<WeightedRandomEvent> Events = [];

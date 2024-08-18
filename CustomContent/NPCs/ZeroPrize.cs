@@ -13,7 +13,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Initialize()
 		{
 			base.Initialize();
-			behaviorStateMachine.ChangeState(new ZeroPrize_Wait(this, Random.Range(45f, 60f), false));
+			behaviorStateMachine.ChangeState(new ZeroPrize_Wait(this, SleepingCooldown, false));
 		}
 
 		internal void StartSweeping()
@@ -94,7 +94,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (!blinking)
 				spriteRenderer[0].sprite = IsSleeping ? deactiveSprite : activeSprite;
 
-			moveMod.movementAddend = navigator.Velocity.normalized * navigator.speed * 0.97f * navigator.Am.Multiplier;
+			moveMod.movementAddend = navigator.Velocity.normalized * navigator.speed * moveModMultiplier * navigator.Am.Multiplier;
 		}
 		
 		internal void Blink()
@@ -105,13 +105,13 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal bool IsHome => home == ec.CellFromPosition(transform.position);
 		internal bool IsSleeping => navigationStateMachine.currentState is NavigationState_DoNothing;
-		internal float ActiveCooldown => Random.Range(30f, 50f);
+		internal float ActiveCooldown => Random.Range(minActive, maxActive);
+		internal float SleepingCooldown => Random.Range(minWait, maxWait);
 		internal Cell home;
 
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
 		readonly List<ActivityModifier> actMods = [];
-
 
 		[SerializeField]
 		internal SoundObject audSweep, audStartSweep;
@@ -122,7 +122,8 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal AudioManager audMan;
 
-		const float speed = 80f;
+		[SerializeField]
+		internal float moveModMultiplier = 0.97f, minActive = 30f, maxActive = 50f, minWait = 40f, maxWait = 60f, speed = 80f;
 
 		bool blinking = false;
 	}
@@ -209,7 +210,7 @@ namespace BBTimes.CustomContent.NPCs
 				prize.behaviorStateMachine.CurrentNavigationState.UpdatePosition(prize.home.FloorWorldPosition);
 				return;
 			}
-			prize.behaviorStateMachine.ChangeState(new ZeroPrize_Wait(prize, prize.ActiveCooldown, false));
+			prize.behaviorStateMachine.ChangeState(new ZeroPrize_Wait(prize, prize.SleepingCooldown, false));
 		}
 	}
 }

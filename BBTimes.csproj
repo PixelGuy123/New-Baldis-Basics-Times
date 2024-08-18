@@ -8,7 +8,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;Cheat</Configurations>
-    <AssemblyVersion>1.1.5.4</AssemblyVersion>
+    <AssemblyVersion>1.1.6</AssemblyVersion>
     <FileVersion></FileVersion>
   </PropertyGroup>
 
@@ -25,6 +25,9 @@
   
   <ItemGroup>
     <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
+    <Reference Include="BBE">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBE.dll</HintPath>
+    </Reference>
     <Reference Include="BBPCustomPosters">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBPCustomPosters.dll</HintPath>
     </Reference>

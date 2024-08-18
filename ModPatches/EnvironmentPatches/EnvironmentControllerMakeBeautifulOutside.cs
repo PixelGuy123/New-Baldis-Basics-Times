@@ -16,7 +16,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		[HarmonyPostfix]
 		private static void CoverEmptyWallsFromOutside(EnvironmentController __instance)
 		{
-			if (PostRoomCreation.i == null) // Make sure this only happens in generated maps
+			if ((bool)BBTimesManager.plug.disableOutside.BoxedValue || PostRoomCreation.i == null) // Make sure this only happens in generated maps
 				return;
 
 			Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting

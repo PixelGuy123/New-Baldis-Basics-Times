@@ -1,4 +1,5 @@
 ﻿using BBTimes.Extensions;
+using BBTimes.Manager;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -70,7 +71,8 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		{
 			if (i == null) return;
 
-			WindowsPointingOutside();
+			if (!(bool)BBTimesManager.plug.disableOutside.BoxedValue)
+				WindowsPointingOutside();
 		}
 
 		static void WindowsPointingOutside()

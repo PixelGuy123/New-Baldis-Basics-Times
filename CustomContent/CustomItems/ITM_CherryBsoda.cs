@@ -12,6 +12,7 @@ namespace BBTimes.CustomContent.CustomItems
 				dir = Vector3.Reflect(dir, hit.normal);
 				transform.forward = dir;
 				audMan.PlaySingle(audHit);
+				time -= 0.5f;
 			};
 			return base.Use(pm);
 		}

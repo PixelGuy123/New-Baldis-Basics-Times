@@ -25,7 +25,13 @@ namespace BBTimes.CustomContent.Misc
 				return;
 			}
 			if (workingOn) return;
+			if (Singleton<CoreGameManager>.Instance.GetPoints(player) <= price)
+			{
+				audMan.PlaySingle(audScream);
+				return;
+			}
 			workingOn = true;
+			Singleton<CoreGameManager>.Instance.AddPoints(-price, player, true);
 			audMan.PlaySingle(audWelcome);
 			kitchenAudMan.QueueAudio(audKitchen);
 			kitchenAudMan.SetLoop(true);
@@ -74,6 +80,9 @@ namespace BBTimes.CustomContent.Misc
 
 		[SerializeField]
 		internal SpriteRenderer itemRenderer;
+
+		[SerializeField]
+		internal int price = 250;
 
 		readonly static List<WeightedItemObject> foods = [];
 

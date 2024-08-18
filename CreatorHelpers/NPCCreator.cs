@@ -18,7 +18,6 @@ namespace BBTimes.Helpers
 		{
 			var sprites = GetAllNpcSpritesFrom(name);
 
-			npc.name = name;
 			var data = npc.gameObject.AddComponent<C>();
 			
 			// Setup for CustomNPCData

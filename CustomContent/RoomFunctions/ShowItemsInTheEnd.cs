@@ -16,13 +16,14 @@ namespace BBTimes.CustomContent.RoomFunctions
 					itemsToShowUp.Add(pick);
 			}
 			HideItems(true);
+			targetNotebooks = Mathf.FloorToInt(Singleton<BaseGameManager>.Instance.NotebookTotal * notebookCheckFactor);
 		}
 
 		void Update()
 		{
-			if (end) return;
+			if (end || targetNotebooks == -1) return;
 
-			if (Singleton<BaseGameManager>.Instance.allNotebooksFound)
+			if (Singleton<BaseGameManager>.Instance.FoundNotebooks >= targetNotebooks)
 			{
 				end = true;
 				HideItems(false);
@@ -39,7 +40,12 @@ namespace BBTimes.CustomContent.RoomFunctions
 		}
 
 		bool end = false;
+		int targetNotebooks = -1;
 
 		readonly List<Pickup> itemsToShowUp = [];
+
+		[SerializeField]
+		[Range(0.05f, 1f)]
+		internal float notebookCheckFactor = 0.5f;
 	}
 }

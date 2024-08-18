@@ -31,8 +31,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void ChangeRandomState()
 		{
-			//int rng = Random.Range(0, 3);
-			int rng = 0;
+			int rng = Random.Range(0, 3);
 			behaviorStateMachine.ChangeState(new Faker_Spawn(this, rng == 0 ? new Faker_BlueVariant(this) : rng == 1 ? new Faker_RedVariant(this) : new Faker_GreenVariant_Idle(this)));
 		}
 
@@ -176,7 +175,7 @@ namespace BBTimes.CustomContent.NPCs
 				var cam = player.GetCustomCam();
 				var k = players[player];
 				cam.StopCoroutine(k.Value);
-				cam.ResetSlideFOVAnimation(new ValueModifier(addend:k.Key.addend));
+				cam.ResetSlideFOVAnimation(k.Key);
 				players.Remove(player);
 			}
 			if (players.Count == 0)

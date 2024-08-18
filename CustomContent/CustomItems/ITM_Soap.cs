@@ -56,10 +56,10 @@ namespace BBTimes.CustomContent.CustomItems
 				var e = other.GetComponent<Entity>();
 				if (e)
 				{
+					entity.Teleport(other.transform.position);
 					canHitEntities = true;
 					canCarry = false;
 					target = e;
-					e.Teleport(transform.position);
 					e.ExternalActivity.moveMods.Add(moveMod);
 				}
 			}

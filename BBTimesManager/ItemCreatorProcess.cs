@@ -44,7 +44,7 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 15 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 86 });
-			// present
+			// Present
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Present>()
 				.SetGeneratorCost(0)
@@ -60,7 +60,7 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 35 });
 
-			// gum
+			// GUM
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Gum>()
 				.SetGeneratorCost(20)
@@ -81,7 +81,7 @@ namespace BBTimes.Manager
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
 			JoeChef.AddFood(item, 25);
-			// bell
+			// Bell
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Bell>()
 				.SetGeneratorCost(25)
@@ -384,6 +384,9 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 54 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 20 });
+			floorDatas[0].ForcedItems.Add(item);
+			floorDatas[1].ForcedItems.Add(item);
+			floorDatas[1].ForcedItems.Add(item);
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
 			EventMachine.AddItemToTrigger(item.itemType);
 
@@ -419,6 +422,7 @@ namespace BBTimes.Manager
 			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 20 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].ForcedItems.Add(item);
 
 			// Cherry Bsoda
 			var itemBs = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
@@ -432,8 +436,10 @@ namespace BBTimes.Manager
 			var cherryCustomData = itemBs.item.gameObject.AddComponent<CherryBsodaCustomData>();
 			cherryCustomData.SetupItemData("CherryBsoda", itemBs);
 			cherryCustomData.name = "ITM_CherryBsoda";
+			var ch = cherryCustomData.GetComponent<ITM_CherryBsoda>();
+			ch.time = 30f;
 
-			itemBs.item = cherryCustomData.GetComponent<ITM_CherryBsoda>();
+			itemBs.item = ch;
 			itemBs.itemType = EnumExtensions.ExtendEnum<Items>("CherryBsoda");
 			itemBs.AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists);
 
@@ -445,6 +451,7 @@ namespace BBTimes.Manager
 			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 39 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].ForcedItems.Add(item);
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });
@@ -496,6 +503,7 @@ namespace BBTimes.Manager
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 30 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[1].ForcedItems.Add(item);
 
 			// Blow Drier Item
 			item = new ItemBuilder(plug.Info)

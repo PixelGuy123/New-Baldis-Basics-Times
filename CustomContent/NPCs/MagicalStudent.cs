@@ -22,6 +22,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator Throw(Transform target)
 		{
+			audMan.QueueAudio(audPrepare);
+			audMan.SetLoop(true);
 			navigator.maxSpeed = 0f;
 			navigator.SetSpeed(0f);
 			float cool = 4.5f;
@@ -38,6 +40,7 @@ namespace BBTimes.CustomContent.NPCs
 			renderer.transform.localPosition = pos;
 			cool = 0.3f;
 			renderer.sprite = throwSprites[2];
+			audMan.FlushQueue(true);
 			audMan.PlaySingle(audThrow);
 
 			magic.Throw((target.position - transform.position).normalized);
@@ -71,7 +74,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal PropagatedAudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject audThrow;
+		internal SoundObject audThrow, audPrepare;
 
 		const float speed = 15f;
 	}

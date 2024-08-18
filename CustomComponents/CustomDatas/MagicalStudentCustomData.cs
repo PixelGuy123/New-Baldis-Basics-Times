@@ -10,7 +10,8 @@ namespace BBTimes.CustomComponents.CustomDatas
 	public class MagicalStudentCustomData : CustomNPCData
 	{
 		protected override SoundObject[] GenerateSoundObjects() =>
-			[GetSound("MGS_Throw.wav", "Vfx_MGS_Magic", SoundType.Voice, Color.white)];
+			[GetSound("MGS_Throw.wav", "Vfx_MGS_Magic", SoundType.Voice, new(0f, 0.33203125f, 0.99609375f)), 
+			GetSound("MGS_Prep.wav", "Vfx_MGS_PrepMagic", SoundType.Voice, new(0f, 0.33203125f, 0.99609375f))];
 		protected override Sprite[] GenerateSpriteOrder() =>
 			[.. GetSpriteSheet(3, 1, 65f, "MGS.png"), GetSprite(25f, "MGS_Magic.png")];
 
@@ -34,6 +35,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 			mgs.magicPre = mo;
 			mgs.audMan = GetComponent<PropagatedAudioManager>();
 			mgs.audThrow = soundObjects[0];
+			mgs.audPrepare = soundObjects[1];
 			mgs.throwSprites = storedSprites;
 			mgs.renderer = mgs.spriteRenderer[0];
 		}

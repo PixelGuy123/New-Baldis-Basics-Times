@@ -20,6 +20,8 @@ using BBTimes.CustomContent.RoomFunctions;
 using PixelInternalAPI.Classes;
 using System.IO;
 using BBTimes.CompatibilityModule;
+using BepInEx.Configuration;
+using System.Reflection;
 
 
 namespace BBTimes.Plugin
@@ -28,6 +30,14 @@ namespace BBTimes.Plugin
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.pixelinternalapi", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.levelloader", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.editorcustomrooms", BepInDependency.DependencyFlags.HardDependency)]
+
+	// Soft dependencies / has exclusive compatibility with
+	[BepInDependency("pixelguy.pixelmodding.baldiplus.newanimations", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("rost.moment.baldiplus.extramod", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("io.github.luisrandomness.bbp_custom_posters", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("pixelguy.pixelmodding.baldiplus.customvendingmachines", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("pixelguy.pixelmodding.baldiplus.custommusics", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("pixelguy.pixelmodding.baldiplus.grapplinghooktweaks", BepInDependency.DependencyFlags.SoftDependency)]
 
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
     public class BasePlugin : BaseUnityPlugin
@@ -77,10 +87,14 @@ namespace BBTimes.Plugin
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
+		internal ConfigEntry<bool> disableOutside;
+
 		private void Awake()
 		{
+			disableOutside = Config.Bind("Environment Settings", "Disable the outside", false, "Setting this \"true\" will completely disable the outside seen in-game. This should increase performance BUT will also change the seed layouts in the game.");
+
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
-			harmony.PatchAllConditionals();
+			harmony.PatchAllConditionals(Assembly.GetAssembly(GetType()));
 
 			ModdedSaveGame.AddSaveHandler(Info);
 
@@ -250,6 +264,7 @@ namespace BBTimes.Plugin
 				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
 				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
 				//ld.fieldTripItems.AddRange(floordata.FieldTripItems);
+				ld.forcedItems.AddRange(floordata.ForcedItems);
 				ld.shopItems = ld.shopItems.AddRangeToArray([.. floordata.ShopItems]);
 				ld.roomGroup = ld.roomGroup.AddRangeToArray([.. floordata.RoomAssets]);
 				ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. floordata.SpecialRooms]);
