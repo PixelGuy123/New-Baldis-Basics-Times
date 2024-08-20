@@ -321,6 +321,21 @@ namespace BBTimes.Manager
 
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+
+			// Camera Stand
+			npc = new NPCBuilder<CameraStand>(plug.Info)
+				.SetMinMaxAudioDistance(90f, 140f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Camerastand")
+				.SetMetaName("PST_CamSt_Name")
+				.SetName("CameraStand")
+				.AddLooker()
+				.AddTrigger()
+				.Build()
+				.SetupNPCData<CameraStandCustomData>("CameraStand", "PST_CamSt_Name", "PST_CamSt_Desc", -0.75f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 66 });
 		}
 
 		

@@ -11,7 +11,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override SoundObject[] GenerateSoundObjects()
 		{
 			SoundObject[] sds = [GetSound("Earthquake.wav", "Event_Earthquake1", SoundType.Effect, Color.green), GetSoundNoSub("earthQuakeGoing.wav", SoundType.Effect)];
-			sds[0].additionalKeys = [new() { key = "Event_Earthquake2", time = 2.199f }, new() { key = "Event_Earthquake3", time = 6.789f }];
+			sds[0].additionalKeys = [new() { key = "Event_Earthquake2", time = 3.907f }, new() { key = "Event_Earthquake3", time = 7.896f }];
 
 			return sds;
 		}

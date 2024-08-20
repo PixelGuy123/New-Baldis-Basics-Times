@@ -86,7 +86,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			hasFailed = true;
 			beams = 0;
-			int max = 3 + (rageStreak + 1) * 3;
+			int max = 3 + (rageStreak * 3);
 
 			for (int i = 0; i < max; i++)
 			{

@@ -7,14 +7,26 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public override bool Use(PlayerManager pm)
 		{
-			Destroy(gameObject);
 			bool flag = false;
-			if (Stunly.affectedByStunly.Count != 0)
+			for (int i = 0; i < Stunly.affectedByStunly.Count; i++)
 			{
-				flag = true;
-				while (Stunly.affectedByStunly.Count != 0)
-					Stunly.affectedByStunly[0].CancelStunEffect();				
+				if (Stunly.affectedByStunly[i].Value == pm)
+				{
+					flag = true;
+					Stunly.affectedByStunly[i].Key.CancelStunEffect();
+					Stunly.affectedByStunly.RemoveAt(i--);
+				}
 			}
+
+			for (int i = 0; i < CameraStand.affectedByCamStand.Count; i++)
+			{
+				if (CameraStand.affectedByCamStand[i].Value == pm)
+				{
+					flag = true;
+					CameraStand.affectedByCamStand[i].Key.DisableLatestTimer();
+				}
+			}
+
 			foreach (var npc in pm.ec.Npcs)
 			{
 				if (npc is LookAtGuy && npc.behaviorStateMachine.CurrentState is LookAtGuy_Blinding blinding) // Is that C# syntax, wtf???
@@ -25,6 +37,7 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 			if (flag)
 				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audSwallow);
+			Destroy(gameObject);
 
 			return flag;
 		}

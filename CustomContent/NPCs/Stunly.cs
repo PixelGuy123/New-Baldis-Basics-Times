@@ -80,12 +80,13 @@ namespace BBTimes.CustomContent.NPCs
 				else
 				{
 					stunlyCanvas.gameObject.SetActive(true);
-					stunlyCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(subject.GetComponent<PlayerManager>().playerNumber).canvasCam;
+					var pm = subject.GetComponent<PlayerManager>();
+					stunlyCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 					if (stunCor != null)
 						StopCoroutine(stunCor);
 
 					stunCor = StartCoroutine(FadeInAndOutBlindness());
-					affectedByStunly.Add(this);
+					affectedByStunly.Add(new(this, pm));
 				}
 			}
 			else
@@ -142,14 +143,14 @@ namespace BBTimes.CustomContent.NPCs
 
 			image.color = color;
 			stunlyCanvas.gameObject.SetActive(false);
-			affectedByStunly.Remove(this);
+			affectedByStunly.RemoveAll(x => x.Key == this);
 
 			yield break;
 		}
 
 		public void CancelStunEffect()
 		{
-			affectedByStunly.Remove(this);
+			affectedByStunly.RemoveAll(x => x.Key == this);
 			if (stunCor != null)
 				StopCoroutine(stunCor);
 			stunlyCanvas.gameObject.SetActive(false);
@@ -203,7 +204,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal Stunly_Flee stunlyState;
 
-		public static List<Stunly> affectedByStunly = [];
+		public static List<KeyValuePair<Stunly, PlayerManager>> affectedByStunly = [];
 
 		internal bool cancelledEffect = false;
 

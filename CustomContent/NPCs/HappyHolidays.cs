@@ -71,7 +71,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			hh.Navigator.Entity.Enable(false);
-			hh.Navigator.speed = 0;
+			hh.Navigator.maxSpeed = 0;
 			hh.Navigator.SetSpeed(0);
 			ChangeNavigationState(new NavigationState_DoNothing(hh, 0));
 			prevHeight = hh.Navigator.Entity.InternalHeight;

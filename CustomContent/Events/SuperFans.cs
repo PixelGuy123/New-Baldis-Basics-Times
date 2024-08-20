@@ -22,7 +22,7 @@ namespace BBTimes.CustomContent.Events
 			List<Cell> list = ec.AllCells();
 
 			for (int i = 0; i < list.Count; i++)
-				if (list[i].HasAnyHardCoverage || list[i].open || !list[i].HasFreeWall || (list[i].shape != TileShape.Single && list[i].shape != TileShape.Corner))
+				if (!list[i].TileMatches(ec.mainHall)|| list[i].HasAnyHardCoverage || list[i].open || !list[i].HasFreeWall || (list[i].shape != TileShape.Single && list[i].shape != TileShape.Corner))
 					list.RemoveAt(i--);
 
 

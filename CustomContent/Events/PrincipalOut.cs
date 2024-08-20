@@ -70,6 +70,7 @@ namespace BBTimes.CustomContent.Events
 			priority = 0;
 			npc.behaviorStateMachine.RestoreNavigationState();
 			npc.GetNPCContainer().RemoveLookerMod(blindMod);
+			npc.Navigator.Am.moveMods.Remove(moveMod);
 		}
 	}
 }

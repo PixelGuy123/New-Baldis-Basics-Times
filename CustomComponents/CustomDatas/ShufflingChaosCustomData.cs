@@ -13,7 +13,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override SoundObject[] GenerateSoundObjects()
 		{
 			SoundObject[] sds = [GetSound("ShuffleBal.wav", "Event_ShuffleChaos1", SoundType.Effect, Color.green), GetSoundNoSub("teleporting.wav", SoundType.Voice), BBTimesManager.man.Get<SoundObject>("teleportAud")];
-			sds[0].additionalKeys = [new() { time = 1.271f, key = "Event_ShuffleChaos2" }, new() { time = 5.02f, key = "Event_ShuffleChaos3" }];
+			sds[0].additionalKeys = [new() { time = 1.434f, key = "Event_ShuffleChaos2" }, new() { time = 6.12f, key = "Event_ShuffleChaos3" }];
 
 			return sds;
 		}

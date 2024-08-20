@@ -13,7 +13,7 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override SoundObject[] GenerateSoundObjects()
 		{
 			SoundObject[] sds = [GetSound("SuperFans.wav", "Event_SuperFans1", SoundType.Effect, Color.green)];
-			sds[0].additionalKeys = [new() { time = 5.129f, key = "Event_SuperFans2" }];
+			sds[0].additionalKeys = [new() { time = 7.073f, key = "Event_SuperFans2" }];
 
 			return sds;
 		}
