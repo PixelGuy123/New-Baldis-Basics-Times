@@ -10,7 +10,7 @@ namespace BBTimes.CustomContent.Events
 		public override void Begin()
 		{
 			base.Begin();
-			telCooldown = 6;
+			telCooldown = eventIntro.soundClip.length + 0.15f; // Yeah, let Baldo talk
 
 			foreach (var npc in ec.Npcs)
 				if (npc.Navigator.isActiveAndEnabled && npc.GetMeta().flags.HasFlag(NPCFlags.Standard))

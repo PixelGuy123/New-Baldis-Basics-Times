@@ -239,9 +239,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			state.UpdatePosition(player.transform.position);
-			if (player.Tagged && player == this.player)
-				dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr));
+			if (player == this.player)
+				state.UpdatePosition(player.transform.position);
 		}
 
 		public override void OnStateTriggerEnter(Collider other)

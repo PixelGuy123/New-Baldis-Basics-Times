@@ -44,6 +44,8 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 15 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 86 });
+			Mugh.AddHittableItem(item.itemType);
+			((ITM_Hammer)item.item).item = item.itemType;
 			// Present
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Present>()
@@ -632,7 +634,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(55)
 				.SetShopPrice(1100)
 				.SetNameAndDescription("SoapBub_Name3", "SoapBub_Desc")
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity | ItemFlags.MultipleUse, [])
 				.Build<SoapBubblesCustomData>("SoapBubbles");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 25 });
@@ -645,6 +647,7 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 30 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 30 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
+			meta = item.GetMeta();
 			secondItem = item.DuplicateItem(meta, "SoapBub_Name2");
 			((ITM_SoapBubbles)item.item).itmObjToReplace = secondItem;
 			((ITM_SoapBubbles)secondItem.item).itmObjToReplace = secondItem.DuplicateItem(meta, "SoapBub_Name1");

@@ -261,6 +261,7 @@ namespace BBTimes.Manager
 				.SetEnum("Dribble")
 				.SetName("Coach Dribble")
 				.SetMetaName("PST_Dribble_Name")
+				.AddSpawnableRoomCategories(RoomCategory.Special)
 				.AddLooker()
 				.IgnoreBelts()
 				.AddTrigger()
@@ -268,7 +269,6 @@ namespace BBTimes.Manager
 				.SetupNPCData<DribbleCustomData>("Dribble", "PST_Dribble_Name", "PST_Dribble_Desc", -0.7f)
 				.MarkAsReplacement(45, Character.DrReflex);
 
-			npc.spawnableRooms.Clear();
 			npc.Navigator.SetRoomAvoidance(false);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
@@ -336,6 +336,22 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 66 });
+
+			// Mugh
+			npc = new NPCBuilder<Mugh>(plug.Info)
+				.SetMinMaxAudioDistance(165f, 175f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Mugh")
+				.SetMetaName("PST_Mugh_Name")
+				.SetName("Mugh")
+				.AddLooker()
+				.SetMaxSightDistance(65f)
+				.AddTrigger()
+				.Build()
+				.SetupNPCData<MughCustomData>("Mugh", "PST_Mugh_Name", "PST_Mugh_Desc", -1.36f);
+
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 75 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 		}
 
 		

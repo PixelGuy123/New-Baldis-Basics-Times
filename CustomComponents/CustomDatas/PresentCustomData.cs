@@ -17,7 +17,10 @@ namespace BBTimes.CustomComponents.CustomDatas
 		protected override void SetupPrefabPost()
 		{
 			base.SetupPrefabPost();
-			GetComponent<ITM_Present>().items = [.. GameExtensions.GetAllShoppingItems()];
+			var shops = GameExtensions.GetAllShoppingItems();
+			shops.RemoveAll(x => x.itemType == myItmObj.itemType);
+
+			GetComponent<ITM_Present>().items = [.. shops];
 		}
 	}
 }

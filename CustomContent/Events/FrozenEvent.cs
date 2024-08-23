@@ -38,7 +38,7 @@ namespace BBTimes.CustomContent.Events
 			}
 			foreach (var cell in ec.AllCells())
 			{
-				cellColors.Add(cell, cell.lightColor);
+				cellColors.Add(cell, new(cell.lightColor, cell.lightOn));
 				cell.lightColor = Color.cyan;
 				cell.SetLight(true);
 			}
@@ -102,8 +102,9 @@ namespace BBTimes.CustomContent.Events
 			pMoveMods.Clear();
 			foreach (var cell in cellColors)
 			{
-				cell.Key.lightColor = cell.Value;
+				cell.Key.lightColor = cell.Value.Key;
 				cell.Key.SetLight(true);
+				cell.Key.SetLight(cell.Value.Value);
 			}
 			cellColors.Clear();
 
@@ -147,7 +148,7 @@ namespace BBTimes.CustomContent.Events
 
 		readonly List<Image> canvasToDespawn = [];
 
-		readonly Dictionary<Cell, Color> cellColors = [];
+		readonly Dictionary<Cell, KeyValuePair<Color, bool>> cellColors = [];
 
 		const float maxVel = 0.6f, slowDownMultiplier = 0.15f, speedDivider = 15f;
 

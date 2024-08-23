@@ -240,7 +240,7 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 0,
+				minRooms = 1,
 				maxRooms = 1,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(0)],
 				light = [lightPre],
@@ -264,7 +264,7 @@ namespace BBTimes.Manager
 			{
 				stickToHallChance = 1f,
 				minRooms = 1,
-				maxRooms = 1,
+				maxRooms = 2,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(3)],
 				name = "ComputerRoom",
 				light = [lightPre]

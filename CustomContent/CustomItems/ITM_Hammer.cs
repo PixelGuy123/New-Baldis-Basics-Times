@@ -11,14 +11,32 @@ namespace BBTimes.CustomContent.CustomItems
             Destroy(gameObject);
             if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var raycastHit, pm.pc.reach, LayerStorage.windowLayer, QueryTriggerInteraction.Collide) && raycastHit.transform.CompareTag("Window"))
             {
-                raycastHit.transform.GetComponent<Window>().Break(true);
-				bool broken = !raycastHit.transform.GetComponent<CustomWindowComponent>()?.unbreakable ?? true;
-				if (broken)
-					pm.RuleBreak("breakingproperty", 3f, 0.15f);
+				var w = raycastHit.transform.GetComponent<Window>();
+				bool broken = false;
+				if (w)
+				{ 
+					w.Break(true);
+					broken = !raycastHit.transform.GetComponent<CustomWindowComponent>()?.unbreakable ?? true;
+					if (broken)
+						pm.RuleBreak("breakingproperty", 3f, 0.15f);
+				}
 				return broken;
             }
-            return false;
+
+			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.reach, 131072)) // Npc layer I guess? Not sure, it was from the scissors
+			{
+				IItemAcceptor component = hit.transform.GetComponent<IItemAcceptor>();
+				if (component != null && component.ItemFits(item))
+				{
+					component.InsertItem(pm, pm.ec);
+					return true;
+				}
+			}
+
+			return false;
         }
 
+		[SerializeField]
+		internal Items item;
 	}
 }

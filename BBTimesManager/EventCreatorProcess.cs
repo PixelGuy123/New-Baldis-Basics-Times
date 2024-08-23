@@ -80,7 +80,7 @@ namespace BBTimes.Manager
 
 			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 77 }); // 77
+			floorDatas[3].Events.Add(new() { selection = e, weight = 77 });
 
 			// Skateboard Day
 			e = new RandomEventBuilder<SkateboardDayEvent>(plug.Info)
@@ -111,7 +111,7 @@ namespace BBTimes.Manager
 			// Shuffling Chaos
 			e = new RandomEventBuilder<ShufflingChaos>(plug.Info)
 				.SetEnum("Shufflingchaos")
-				.SetMinMaxTime(100f, 120f)
+				.SetMinMaxTime(120f, 155f)
 				.SetName("ShufflingChaos")
 				.Build()
 				.SetupEvent<ShufflingChaosCustomData>();

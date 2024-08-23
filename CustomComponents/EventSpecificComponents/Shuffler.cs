@@ -99,15 +99,14 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 	{
 		public override void ShuffleCall(Pickup next)
 		{
-			ItemObject itm = target.item;
-			target.AssignItem(next.item);
-			next.AssignItem(itm);
+			Vector3 pos = next.transform.position;
+			next.transform.position = target.transform.position;
+			next.icon.UpdatePosition(ec.map);
+			target.transform.position = pos;
+			target.icon.UpdatePosition(ec.map);
 		}
-		
-
-		
 
 		protected override bool ShuffleCheckCondition(Pickup obj) =>
-			obj.item.itemType == Items.None;
+			obj.item.itemType == Items.None || !obj.free;
 	}
 }
