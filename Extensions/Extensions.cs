@@ -222,9 +222,8 @@ namespace BBTimes.Extensions
 			toLimit.z = Mathf.Max(-maxZ, toLimit.z);
 		}
 
-		public static IEnumerator TimerToDestroy(GameObject target, EnvironmentController ec)
+		public static IEnumerator TimerToDestroy(GameObject target, EnvironmentController ec, float timer)
 		{
-			float timer = Random.Range(2f, 6f);
 			while (timer > 0f)
 			{
 				timer -= ec.EnvironmentTimeScale * Time.deltaTime;

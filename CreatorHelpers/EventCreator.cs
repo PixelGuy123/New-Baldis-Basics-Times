@@ -1,4 +1,4 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
+﻿using BBTimes.CustomComponents;
 using MTM101BaldAPI.ObjectCreation;
 
 namespace BBTimes.Helpers
@@ -6,15 +6,9 @@ namespace BBTimes.Helpers
     public static partial class CreatorExtensions
 	{
 
-		public static RandomEvent SetupEvent<C>(this RandomEvent ev) where C : CustomEventData
+		public static RandomEvent SetupEvent(this RandomEvent ev)
 		{
-			var cus = ev.gameObject.AddComponent<C>();
-			cus.Name = ev.name;
-			cus.GetAudioClips();
-			cus.GetSprites();
-			cus.SetupPrefab();
-			
-
+			ev.gameObject.GetComponent<IObjectPrefab>().SetupPrefab();
 			return ev;
 		}
 

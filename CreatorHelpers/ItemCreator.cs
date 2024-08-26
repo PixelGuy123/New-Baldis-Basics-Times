@@ -1,5 +1,4 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
-using BBTimes.Plugin;
+﻿using BBTimes.Plugin;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
@@ -10,14 +9,15 @@ using System.Linq;
 using UnityEngine;
 using static UnityEngine.Object;
 using MTM101BaldAPI.ObjectCreation;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.Helpers
 {
     public static partial class CreatorExtensions
 	{
-		public static ItemObject Build<C>(this ItemBuilder itmB, string name) where C : CustomItemData =>
-			Build<C>(itmB, name, itemsEnum: Items.None);
-		public static ItemObject Build<C>(this ItemBuilder itmB, string name, Items itemsEnum = Items.None) where C : CustomItemData
+		public static ItemObject Build(this ItemBuilder itmB, string name) =>
+			Build(itmB, name, itemsEnum: Items.None);
+		public static ItemObject Build(this ItemBuilder itmB, string name, Items itemsEnum = Items.None)
 		{
 
 			var en = itemsEnum == Items.None ? EnumExtensions.ExtendEnum<Items>(name) : itemsEnum; // Make enum
@@ -25,29 +25,23 @@ namespace BBTimes.Helpers
 			itmB.SetEnum(en);
 			var actualItem = itmB.Build();
 
-			var item = actualItem.item;
-
-			var itemobj = item.gameObject.AddComponent<C>();
-
-			SetupItemData(itemobj, name, actualItem);
+			SetupItemData(actualItem.item.gameObject.GetComponent<IItemPrefab>(), name, actualItem);
 			
 
 			return actualItem;
 		}
 
-		public static void SetupItemData<C>(this C data, string name, ItemObject itemObj) where C : CustomItemData
+		public static void SetupItemData(this IItemPrefab data, string name, ItemObject itemObj)
 		{
-			data.myItmObj = itemObj; // custom Item object with customItemData
-			data.Name = name;
 			var sprites = GetAllItemSpritesFrom(name); // Get all sprites from its folder (0 is small icon, 1 is big icon)
 
+			data.ItmObj = itemObj;
 			itemObj.itemSpriteLarge = sprites[1];
 			itemObj.itemSpriteSmall = sprites[0];
 
-
-			data.GetAudioClips();
-			data.GetSprites();
 			data.SetupPrefab();
+
+			BasePlugin._cstData.Add(data);
 		}
 
 		public static ItemObject DuplicateItem(this ItemObject item, string nameKey)

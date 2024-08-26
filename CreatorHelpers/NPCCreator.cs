@@ -1,5 +1,4 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
-using MTM101BaldAPI;
+﻿using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using System.IO;
 using System.Linq;
@@ -9,16 +8,15 @@ using static UnityEngine.Object;
 using BBTimes.Manager;
 using BBTimes.Extensions;
 using MTM101BaldAPI.Registers;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.Helpers
 {
 	public static partial class CreatorExtensions
 	{
-		public static NPC SetupNPCData<C>(this NPC npc, string name, string posterName, string posterDesc, float spriteYoffset = 0f) where C : CustomNPCData
+		public static NPC SetupNPCData(this NPC npc, string name, string posterName, string posterDesc, float spriteYoffset = 0f)
 		{
 			var sprites = GetAllNpcSpritesFrom(name);
-
-			var data = npc.gameObject.AddComponent<C>();
 			
 			// Setup for CustomNPCData
 
@@ -30,13 +28,11 @@ namespace BBTimes.Helpers
 			npc.spriteBase.transform.Find("Sprite").localPosition = Vector3.up * spriteYoffset;
 			npc.GetComponent<PropagatedAudioManager>().overrideSubtitleColor = false; // Workaround for the overriding being active
 
-			data.Name = name;
+			var data = npc.GetComponent<INPCPrefab>();
 			data.Npc = npc;
-			data.GetAudioClips(); // Of course
-			data.GetSprites();
 			data.SetupPrefab();
 
-			npc.spriteRenderer[0].sprite = data.storedSprites[0];
+			// npc.spriteRenderer[0].sprite = data.storedSprites[0]; WILL be defined in the setup prefab by the npc, leave this comment as a reminder
 
 
 			return npc;
@@ -51,7 +47,7 @@ namespace BBTimes.Helpers
 			return (T)cnpc;
 		}
 
-		public static T CreateCustomNPCFromExistent<T, C>(Character target, string name, float spriteYOffset = 0f) where T : NPC where C : CustomNPCData
+		public static T CreateCustomNPCFromExistent<T>(Character target, string name, float spriteYOffset = 0f) where T : NPC
 		{
 			var npc = (T)NPCMetaStorage.Instance.Get(target).value.SafeInstantiate();
 			npc.gameObject.name = name;
@@ -74,17 +70,9 @@ namespace BBTimes.Helpers
 
 			npc.poster = poster; //_npc_poster.SetValue(npc, poster);
 
-			var data = npc.gameObject.AddComponent<C>();
+			var data = npc.gameObject.GetComponent<INPCPrefab>();
 			data.Npc = npc;
-
-			// Setup for CustomNPCData
-
-			data.Name = name;
-			data.GetAudioClips(); // Of course
-			data.GetSprites();
 			data.SetupPrefab();
-
-			npc.spriteRenderer[0].sprite = data.storedSprites[0];
 
 
 			return npc;
@@ -92,11 +80,11 @@ namespace BBTimes.Helpers
 
 		public static T MarkAsReplacement<T>(this T npc, int weight, params Character[] targets) where T : NPC // I think that's what's called "Builder design"
 		{
-			var comp = npc.GetComponent<CustomNPCData>();
+			var comp = npc.GetComponent<INPCPrefab>();
 			if (comp != null)
 			{
-				comp.npcsBeingReplaced = targets;
-				comp.replacementWeight = weight;
+				comp.ReplacementNpcs = targets;
+				comp.ReplacementWeight = weight;
 			}
 
 			if (!BBTimesManager.replacementNpcs.Contains(comp))

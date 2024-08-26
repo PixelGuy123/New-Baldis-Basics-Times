@@ -22,6 +22,7 @@ using System.IO;
 using BBTimes.CompatibilityModule;
 using BepInEx.Configuration;
 using System.Reflection;
+using BBTimes.CustomComponents;
 
 
 namespace BBTimes.Plugin
@@ -46,7 +47,7 @@ namespace BBTimes.Plugin
 		{
 			yield return 2;
 			yield return "Calling custom data setup prefab post...";
-			_cstData.ForEach(x => x.PostPrefabSetup());
+			_cstData.ForEach(x => x.SetupPrefabPost());
 			// Other stuff to setup
 			yield return "Setup the rest of the assets...";
 			ITM_GoldenQuarter.quarter = ItemMetaStorage.Instance.FindByEnum(Items.Quarter).value;
@@ -252,7 +253,7 @@ namespace BBTimes.Plugin
 
 				foreach(var npc in floordata.NPCs)
 				{
-					if (npc.selection.GetComponent<CustomNPCData>().npcsBeingReplaced.Length == 0)
+					if (npc.selection.GetComponent<INPCPrefab>().ReplacementNpcs.Length == 0)
 						ld.potentialNPCs.Add(npc); // Only non-replacement Npcs
 					else
 						ld.forcedNpcs = ld.forcedNpcs.AddToArray(npc.selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
@@ -357,7 +358,7 @@ namespace BBTimes.Plugin
 
 		internal const string CharacterRadarGUID = "org.aestheticalz.baldi.characterradar";
 
-		internal static List<CustomBaseData> _cstData = [];
+		internal static List<IObjectPrefab> _cstData = [];
 
 	}
 

@@ -1,14 +1,15 @@
 ﻿using BBTimes.CustomContent.NPCs;
+using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
-using System.Linq;
 using UnityEngine;
+using System.Linq;
 
 namespace BBTimes.CustomComponents.CustomDatas
 {
 	public class MughCustomData : CustomNPCData
 	{
 		protected override Sprite[] GenerateSpriteOrder() =>
-			GetSpriteSheet(5, 1, 55f, "muggy.png");
+			[.. GetSpriteSheet(5, 1, 55f, "muggy.png"), GetSprite(1, "mud_screen.png")];
 		protected override SoundObject[] GenerateSoundObjects() =>
 			[
 			GetSound("Mugh_LetsHug.wav", "Vfx_Mugh_Hug1", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
@@ -41,6 +42,15 @@ namespace BBTimes.CustomComponents.CustomDatas
 			mug.audDie = soundObjects[9];
 			mug.audWalk = soundObjects[8];
 			mug.audRevive = soundObjects[7];
+
+			var can = ObjectCreationExtensions.CreateCanvas();
+			can.gameObject.ConvertToPrefab(false);
+			can.transform.SetParent(transform);
+
+			var img = ObjectCreationExtensions.CreateImage(can, storedSprites[storedSprites.Length - 1]);
+
+			mug.mudCanvas = can;
+			mug.mudImage = img;
 		}
 	}
 }

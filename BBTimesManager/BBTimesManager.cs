@@ -242,10 +242,10 @@ namespace BBTimes.Manager
 		internal static List<Texture2D> specialRoomTextures = [];
 
 		// All the npcs that are replacement marked will be added to this list
-		internal static List<CustomNPCData> replacementNpcs = [];
+		internal static List<INPCPrefab> replacementNpcs = [];
 
 		internal static IEnumerable<Character> GetReplacementNPCs(params Character[] npcsReplaced) =>
-			replacementNpcs.Where(x => npcsReplaced.Any(z => x.npcsBeingReplaced.Contains(z))).Select(x => x.Npc.Character);
+			replacementNpcs.Where(x => npcsReplaced.Any(z => x.ReplacementNpcs.Contains(z))).Select(x => x.Npc.Character);
 
 
 

@@ -21,7 +21,7 @@ namespace BBTimes.Manager
 			// 3 - END
 
 			// Vent Builder
-			VentBuilder vent = CreatorExtensions.CreateObjectBuilder<VentBuilder, VentBuilderCustomData>("VentBuilder", "Vent");
+			VentBuilder vent = CreatorExtensions.CreateObjectBuilder<VentBuilder>("VentBuilder", "Vent");
 			vent.AddMeta(plug);
 			vent.minAmount = 3;
 			vent.maxAmount = 5;
@@ -46,7 +46,7 @@ namespace BBTimes.Manager
 			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(forcedPosterBuilder));
 
 			// Trapdoor Builder
-			TrapDoorBuilder trapdoor = CreatorExtensions.CreateObjectBuilder<TrapDoorBuilder, TrapdoorBuilderCustomData>("TrapdoorBuilder", "Trapdoor");
+			TrapDoorBuilder trapdoor = CreatorExtensions.CreateObjectBuilder<TrapDoorBuilder>("TrapdoorBuilder", "Trapdoor");
 			trapdoor.minAmount = 3;
 			trapdoor.maxAmount = 5;
 			trapdoor.AddMeta(plug);
@@ -65,7 +65,7 @@ namespace BBTimes.Manager
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 75 });
 
 			// Camera Builder
-			CameraBuilder cams = CreatorExtensions.CreateObjectBuilder<CameraBuilder, CameraBuilderCustomData>("CameraBuilder", "SecurityCamera");
+			CameraBuilder cams = CreatorExtensions.CreateObjectBuilder<CameraBuilder>("CameraBuilder", "SecurityCamera");
 			cams.AddMeta(plug);
 			cams.minAmount = 1;
 			cams.maxAmount = 3;
@@ -85,7 +85,7 @@ namespace BBTimes.Manager
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = cams, weight = 25 });
 
 			// Squisher builder
-			SquisherBuilder squish = CreatorExtensions.CreateObjectBuilder<SquisherBuilder, SquisherBuilderCustomData>("SquisherBuilder", "Squisher");
+			SquisherBuilder squish = CreatorExtensions.CreateObjectBuilder<SquisherBuilder>("SquisherBuilder", "Squisher");
 			squish.AddMeta(plug);
 
 			squish.minAmount = 1;

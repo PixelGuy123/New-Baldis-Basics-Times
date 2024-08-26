@@ -29,7 +29,7 @@ namespace BBTimes.CustomContent.CustomItems
 					pm.ec.map.AddArrow(pm.ec.Npcs[i].transform, Color.yellow);
 				
 			
-			float cooldown = 15f;
+			float cooldown = timerSeconds;
 
 			while (cooldown >= 0f)
 			{
@@ -54,6 +54,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal SoundObject aud_beep;
+
+		[SerializeField]
+		internal float timerSeconds = 30f;
 
 		static bool usedGps = false;
 	}

@@ -11,6 +11,7 @@ using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.Misc;
 using MTM101BaldAPI;
 using BBTimes.CustomContent.NPCs;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.Manager
 {
@@ -32,7 +33,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(30)
 				.SetShopPrice(205)
 				.SetNameAndDescription("HAM_Name", "HAM_Desc")
-				.Build<CustomItemData>("Hammer");
+				.Build("Hammer");
 			//CreatorExtensions.CreateItem<ITM_Hammer, CustomItemData>("Hammer", "HAM_Name", "HAM_Desc", 125, 30).AddMeta(plug, ItemFlags.None).value;
 
 
@@ -52,7 +53,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(0)
 				.SetShopPrice(245)
 				.SetNameAndDescription("PRS_Name", "PRS_Desc")
-				.Build<PresentCustomData>("Present");
+				.Build("Present");
 
 			// CreatorExtensions.CreateItem<ITM_Present, PresentCustomData>("Present", "PRS_Name", "PRS_Desc", 245, 0).AddMeta(plug, ItemFlags.None).value;
 
@@ -69,7 +70,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(325)
 				.SetNameAndDescription("GUM_Name", "GUM_Desc")
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
-				.Build<GumCustomData>("Gum");
+				.Build("Gum");
 
 			//CreatorExtensions.CreateItem<ITM_Gum, GumCustomData>("Gum", "GUM_Name", "GUM_Desc", 225, 20).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
@@ -90,7 +91,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(240)
 				.SetNameAndDescription("BEL_Name", "BEL_Desc")
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
-				.Build<BellCustomData>("Bell");
+				.Build("Bell");
 
 			//CreatorExtensions.CreateItem<ITM_Bell, BellCustomData>("Bell", "BEL_Name", "BEL_Desc", 155, 25).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 45 });
@@ -109,7 +110,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(20)
 				.SetShopPrice(243)
 				.SetNameAndDescription("HDP_Name", "HDP_Desc")
-				.Build<HeadachePillCustomData>("Headachepill");
+				.Build("Headachepill");
 			//CreatorExtensions.CreateItem<ITM_HeadachePill, HeadachePillCustomData>("Headachepill", "HDP_Name", "HDP_Desc", 145, 20).AddMeta(plug, ItemFlags.None).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 55 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 25 });
@@ -130,7 +131,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(500)
 				.SetNameAndDescription("GPS_Name", "GPS_Desc")
 				.SetMeta(ItemFlags.Persists, [])
-				.Build<GpsCustomData>("Gps");
+				.Build("Gps");
 
 				//CreatorExtensions.CreateItem<ITM_GPS, GpsCustomData>("Gps", "GPS_Name", "GPS_Desc", 185, 30).AddMeta(plug, ItemFlags.Persists).value;
 				floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
@@ -148,7 +149,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(22)
 				.SetShopPrice(750)
 				.SetNameAndDescription("gquarter_Name", "gquarter_Desc")
-				.Build<CustomItemData>("GoldenQuarter");
+				.Build("GoldenQuarter");
 			//CreatorExtensions.CreateItem<ITM_GoldenQuarter, CustomItemData>("GoldenQuarter", "gquarter_Name", "gquarter_Desc", 175, 22).AddMeta(plug, ItemFlags.None).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 15 });
@@ -166,7 +167,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(450)
 				.SetNameAndDescription("BSED_Name", "BSED_Desc")
 				.SetMeta(ItemFlags.Persists, [])
-				.Build<CustomItemData>("BSED");
+				.Build("BSED");
 			//CreatorExtensions.CreateItem<ITM_StaminaDrinkable, CustomItemData>("BSED", "BSED_Name", "BSED_Desc", 245, 20).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 48 });
@@ -188,7 +189,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(600)
 				.SetNameAndDescription("SPP_Name", "SPP_Desc")
 				.SetMeta(ItemFlags.Persists, [])
-				.Build<SpeedPotionCustomData>("SpeedPotion");
+				.Build("SpeedPotion");
 
 			//CreatorExtensions.CreateItem<ITM_SpeedPotion, SpeedPotionCustomData>("SpeedPotion", "SPP_Name", "SPP_Desc", 165, 28).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
@@ -210,7 +211,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(250)
 				.SetNameAndDescription("PC_Name", "PC_Desc")
 				.SetMeta(ItemFlags.Persists, [])
-				.Build<PencilCustomData>("Pencil");
+				.Build("Pencil");
 			//CreatorExtensions.CreateItem<ITM_Pencil, PencilCustomData>("Pencil", "PC_Name", "PC_Desc", 255, 20).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 5 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
@@ -231,7 +232,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(350)
 				.SetNameAndDescription("WBottle_Name", "WBottle_Desc")
 				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, [])
-				.Build<CustomItemData>("WaterBottle");
+				.Build("WaterBottle");
 			//CreatorExtensions.CreateItem<ITM_WaterBottle, CustomItemData>("WaterBottle", "WBottle_Name", "WBottle_Desc", 155, 20).AddMeta(plug, ItemFlags.MultipleUse | ItemFlags.Persists).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 25 });
@@ -251,7 +252,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(200)
 				.SetNameAndDescription("EBottle_Name", "EBottle_Desc")
 				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, [])
-				.Build<CustomItemData>("EmptyWaterBottle");
+				.Build("EmptyWaterBottle");
 			//CreatorExtensions.CreateItem<ITM_EmptyWaterBottle, CustomItemData>("EmptyWaterBottle", "EBottle_Name", "EBottle_Desc", 90, 18).AddMeta(plug, ItemFlags.MultipleUse | ItemFlags.Persists).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
@@ -271,7 +272,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(800)
 				.SetNameAndDescription("POGST_Name3", "POGST_Desc")
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists | ItemFlags.MultipleUse, [])
-				.Build<PogostickCustomData>("Pogostick");
+				.Build("Pogostick");
 			//CreatorExtensions.CreateItem<ITM_Pogostick, PogostickCustomData>("Pogostick", "POGST_Name3", "POGST_Desc", 475, 25);
 			var meta = item.GetMeta();
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
@@ -294,7 +295,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(350)
 				.SetNameAndDescription("BT_Name", "BT_Desc")
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
-				.Build<BearTrapCustomData>("Beartrap");
+				.Build("Beartrap");
 			//CreatorExtensions.CreateItem<ITM_Beartrap, BearTrapCustomData>("Beartrap", "BT_Name", "BT_Desc", 335, 18).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
@@ -313,7 +314,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(365)
 				.SetNameAndDescription("BB_Name", "BB_Desc")
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
-				.Build<BasketballCustomData>("Basketball");
+				.Build("Basketball");
 			//CreatorExtensions.CreateItem<ITM_Basketball, BasketballCustomData>("Basketball", "BB_Name", "BB_Desc", 365, 29).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 10 });
@@ -334,7 +335,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(250)
 				.SetNameAndDescription("HotChoc_Name", "HotChoc_Desc")
 				.SetMeta(ItemFlags.Persists, [])
-				.Build<CustomItemData>("HotChocolate");
+				.Build("HotChocolate");
 			//CreatorExtensions.CreateItem<ITM_StaminaDrinkable, CustomItemData>("HotChocolate", "HotChoc_Name", "HotChoc_Desc", 365, 24).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
@@ -357,7 +358,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(355)
 				.SetNameAndDescription("InvCon_Name", "InvCon_Desc")
 				.SetMeta(ItemFlags.Persists, [])
-				.Build<InvisibilityControllerCustomData>("InvRemControl");
+				.Build("InvRemControl");
 			//CreatorExtensions.CreateItem<ITM_InvisibilityController, InvisibilityControllerCustomData>("InvRemControl", "InvCon_Name", "InvCon_Desc", 265, 29).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
@@ -375,7 +376,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(45)
 				.SetShopPrice(350)
 				.SetNameAndDescription("SD_Name", "SD_Desc")
-				.Build<ScrewdriverCustomData>("Screwdriver");
+				.Build("Screwdriver");
 			//CreatorExtensions.CreateItem<ITM_Screwdriver, ScrewdriverCustomData>("Screwdriver", "SD_Name", "SD_Desc", 175, 25).AddMeta(plug, ItemFlags.None).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 55 });
@@ -399,7 +400,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(250)
 				.SetNameAndDescription("Hardhat_Name", "Hardhat_Desc")
 				.SetMeta(ItemFlags.Persists, [])
-				.Build<HardHatCustomData>("Hardhat");
+				.Build("Hardhat");
 			//CreatorExtensions.CreateItem<ITM_HardHat, HardHatCustomData>("Hardhat", "Hardhat_Name", "Hardhat_Desc", 250, 27).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 45 });
@@ -418,7 +419,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(9999)
 				.SetNameAndDescription("TimesIcon", string.Empty)
 				.SetAsInstantUse()
-				.Build<GenericYTPItemData>("TimesIcon", Items.Points);
+				.Build("TimesIcon", Items.Points);
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 4 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
@@ -435,10 +436,10 @@ namespace BBTimes.Manager
 			itemBs.descKey = "CherryBsoda_Desc";
 			itemBs.value += 5;
 
-			var cherryCustomData = itemBs.item.gameObject.AddComponent<CherryBsodaCustomData>();
+			var cherryCustomData = itemBs.item.gameObject.GetComponent<IItemPrefab>();
 			cherryCustomData.SetupItemData("CherryBsoda", itemBs);
-			cherryCustomData.name = "ITM_CherryBsoda";
-			var ch = cherryCustomData.GetComponent<ITM_CherryBsoda>();
+			itemBs.item.name = "ITM_CherryBsoda";
+			var ch = itemBs.item.GetComponent<ITM_CherryBsoda>();
 			ch.time = 30f;
 
 			itemBs.item = ch;
@@ -470,7 +471,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(450)
 				.SetNameAndDescription("Soap_Name", "Soap_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
-				.Build<SoapCustomData>("Soap");
+				.Build("Soap");
 
 			floorDatas[1].Items.Add(new() { selection = item, weight = 55 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 65 });
@@ -488,7 +489,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(450)
 				.SetNameAndDescription("Coal_Name", string.Empty)
 				.SetMeta(ItemFlags.Persists | ItemFlags.NoUses, [])
-				.Build<CustomItemData>("Coal");
+				.Build("Coal");
 
 			HappyHolidays.itmCoal = item;
 
@@ -499,7 +500,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(9999)
 				.SetNameAndDescription("DivisionPoint", string.Empty)
 				.SetAsInstantUse()
-				.Build<GenericYTPItemData>("DivisionPoint", Items.Points);
+				.Build("DivisionPoint", Items.Points);
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
@@ -514,7 +515,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(600)
 				.SetNameAndDescription("BlowDrier_Name", "BlowDrier_Desc")
 				.SetMeta(ItemFlags.Persists, [])
-				.Build<BlowDrierCustomData>("BlowDrier");
+				.Build("BlowDrier");
 
 			floorDatas[1].Items.Add(new() { selection = item, weight = 65 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 75 });
@@ -534,7 +535,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(400)
 				.SetNameAndDescription("ComicLargTrum_Name", "ComicLargTrum_Desc")
 				.SetMeta(ItemFlags.Persists, [])
-				.Build<ComicallyLargeTrumpetCustomData>("ComicallyLargeTrumpet");
+				.Build("ComicallyLargeTrumpet");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
@@ -554,7 +555,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(650)
 				.SetNameAndDescription("StrMag_Name", "StrMag_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
-				.Build<MagnetCustomData>("Magnet");
+				.Build("Magnet");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 4 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
@@ -574,7 +575,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(400)
 				.SetNameAndDescription("ThrTelep_Name", "ThrTelep_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
-				.Build<ThrowableTeleporterCustomData>("ThrowableTeleporter");
+				.Build("ThrowableTeleporter");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 30 });
@@ -594,7 +595,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(750)
 				.SetNameAndDescription("SugZestyBar_Name", "SugZestyBar_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
-				.Build<SugarFlavoredZestyBarCustomData>("SugarFlavorZestyBar");
+				.Build("SugarFlavorZestyBar");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 12 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
@@ -614,7 +615,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(900)
 				.SetNameAndDescription("RotCheese_Name", "RotCheese_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
-				.Build<RottenCheeseCustomData>("RottenCheese");
+				.Build("RottenCheese");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 18 });
@@ -635,7 +636,7 @@ namespace BBTimes.Manager
 				.SetShopPrice(1100)
 				.SetNameAndDescription("SoapBub_Name3", "SoapBub_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity | ItemFlags.MultipleUse, [])
-				.Build<SoapBubblesCustomData>("SoapBubbles");
+				.Build("SoapBubbles");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 40 });

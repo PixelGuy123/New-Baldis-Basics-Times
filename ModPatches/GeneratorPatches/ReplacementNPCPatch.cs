@@ -4,6 +4,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.ModPatches.GeneratorPatches
 {
@@ -28,9 +29,9 @@ namespace BBTimes.ModPatches.GeneratorPatches
 				var metas = ld.forcedNpcs;
 				for (int i = 0; i < metas.Length; i++)
 				{
-					var co = metas[i].GetComponent<CustomNPCData>();
-					if (co) // Replacement npcs will always be in this array. That's why there's no check for the npc replacing field.
-						replacementNpcs.Add(new() { selection = metas[i], weight = co.replacementWeight });
+					var co = metas[i].GetComponent<INPCPrefab>();
+					if (co != null) // Replacement npcs will always be in this array. That's why there's no check for the npc replacing field.
+						replacementNpcs.Add(new() { selection = metas[i], weight = co.ReplacementWeight });
 				}
 
 				if (replacementNpcs.Count <= 1) return;
@@ -49,7 +50,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 				foreach (var npc in replacementNpcs)
 				{
 					if (npc.selection != null)
-						__instance.Ec.npcsToSpawn.RemoveAll(x => x.GetComponent<CustomNPCData>() && x.Character == npc.selection.Character); // Just remove any replacementnpc from the list (since they are inside the forcedNpc list)
+						__instance.Ec.npcsToSpawn.RemoveAll(x => x.GetComponent<INPCPrefab>() != null && x.Character == npc.selection.Character); // Just remove any replacementnpc from the list (since they are inside the forcedNpc list)
 				}
 
 #if CHEAT
@@ -66,8 +67,8 @@ namespace BBTimes.ModPatches.GeneratorPatches
 
 					if (rIndex == 0) continue; // the first index is null, which means there's no replacement npc
 
-					var data = replacementNpcs[rIndex].selection.GetComponent<CustomNPCData>();
-					List<Character> npcsBeingReplaced = [.. data.npcsBeingReplaced.Where(x => __instance.Ec.npcsToSpawn.Any(z => z.Character == x))];
+					var data = replacementNpcs[rIndex].selection.GetComponent<INPCPrefab>();
+					List<Character> npcsBeingReplaced = [.. data.ReplacementNpcs.Where(x => __instance.Ec.npcsToSpawn.Any(z => z.Character == x))];
 #if CHEAT
 					Debug.Log("chosen replacement npc: " + replacementNpcs[rIndex].selection.name);
 					Debug.Log("npcs to replace count: " + npcsBeingReplaced.Count);

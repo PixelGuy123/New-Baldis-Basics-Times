@@ -29,7 +29,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_OFC_Name")
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<OfficeChairCustomData>("OfficeChair", "PST_OFC_Name", "PST_OFC_Desc", -2f);
+				.SetupNPCData("OfficeChair", "PST_OFC_Name", "PST_OFC_Desc", -2f);
 
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 60 });
@@ -45,12 +45,12 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetMaxSightDistance(125)
 				.Build()
-				.SetupNPCData<HappyHolidaysCustomData>("HappyHolidays", "PST_HapH_Name", "PST_HapH_Desc", -2f);
+				.SetupNPCData("HappyHolidays", "PST_HapH_Name", "PST_HapH_Desc", -2f);
 			//CreatorExtensions.CreateNPC<HappyHolidays, HappyHolidaysCustomData>("HappyHolidays", 45f, 80f, [RoomCategory.Hall], [], "PST_HapH_Name", "PST_HapH_Desc", lookerDistance: 125, spriteYOffset: -2f).AddMeta(plug, NPCFlags.Standard).value;
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
 
 			// Classic Gotta Sweep
-			npc = CreatorExtensions.CreateCustomNPCFromExistent<GottaSweep, ClassicGottaSweepCustomData>(Character.Sweep, "ClassicGottaSweep").MarkAsReplacement(45, Character.Sweep);
+			npc = CreatorExtensions.CreateCustomNPCFromExistent<GottaSweep>(Character.Sweep, "ClassicGottaSweep").MarkAsReplacement(45, Character.Sweep);
 			npc.AddMetaPrefab();
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 100 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 90 });
@@ -68,7 +68,7 @@ namespace BBTimes.Manager
 				.IgnoreBelts()
 				.SetStationary()
 				.Build()
-				.SetupNPCData<CrazyClockCustomData>("CrazyClock", "PST_CC_Name", "PST_CC_Desc", 0f);
+				.SetupNPCData("CrazyClock", "PST_CC_Name", "PST_CC_Desc", 0f);
 			//CreatorExtensions.CreateNPC<CrazyClock, CrazyClockCustomData>("CrazyClock", 55f, 90f, [RoomCategory.Hall], [], "PST_CC_Name", "PST_CC_Desc", ignorePlayerOnSpawn:true, ignoreBelts:true, hasTrigger: false, lookerDistance: 55f, grounded: false).AddMeta(plug, NPCFlags.StandardNoCollide).value;
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 20 });
 
@@ -84,7 +84,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.AddHeatmap()
 				.Build()
-				.SetupNPCData<SuperintendentCustomData>("Superintendent", "PST_SI_Name", "PST_SI_Desc", -0.5f);
+				.SetupNPCData("Superintendent", "PST_SI_Name", "PST_SI_Desc", -0.5f);
 			//CreatorExtensions.CreateNPC<Superintendent, SuperintendentCustomData>("Superintendent", 110f, 140f, [RoomCategory.Office, RoomCategory.Class, RoomCategory.Faculty], [], "PST_SI_Name", "PST_SI_Desc", usesHeatMap:true, lookerDistance: 90f, avoidRooms:false, spriteYOffset: -0.5f).AddMeta(plug, NPCFlags.Standard).value;
 			npc.Navigator.SetRoomAvoidance(false);
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
@@ -101,7 +101,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetMaxSightDistance(60)
 				.Build()
-				.SetupNPCData<StunlyCustomData>("Stunly", "PST_Stunly_Name", "PST_Stunly_Desc", -1.5f);
+				.SetupNPCData("Stunly", "PST_Stunly_Name", "PST_Stunly_Desc", -1.5f);
 			//CreatorExtensions.CreateNPC<Stunly, StunlyCustomData>("Stunly", 75f, 100f, [RoomCategory.Hall, RoomCategory.Special], [], "PST_Stunly_Name", "PST_Stunly_Desc", lookerDistance: 60f, spriteYOffset: -1.5f).AddMeta(plug , NPCFlags.Standard).value;
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
@@ -118,7 +118,7 @@ namespace BBTimes.Manager
 				.SetMaxSightDistance(90)
 				.SetFOV(100f)
 				.Build()
-				.SetupNPCData<PixCustomData>("Pix", "PST_Pix_Name", "PST_Pix_Desc", -1f);
+				.SetupNPCData("Pix", "PST_Pix_Name", "PST_Pix_Desc", -1f);
 
 			//CreatorExtensions.CreateNPC<Pix, PixCustomData>("Pix", 155f, 165f, [RoomCategory.Hall], [], "PST_Pix_Name", "PST_Pix_Desc", lookerDistance: 90f, spriteYOffset:-1f).AddMeta(plug, NPCFlags.Standard).value.SetNPCLookerFov(100f);
 
@@ -135,7 +135,7 @@ namespace BBTimes.Manager
 				.IgnorePlayerOnSpawn()
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<ZeroPrizeCustomData>("0thPrize", "PST_0TH_Name", "PST_0TH_Desc", -0.4f)
+				.SetupNPCData("0thPrize", "PST_0TH_Name", "PST_0TH_Desc", -0.4f)
 				.MarkAsReplacement(75, Character.Sweep); // 25
 
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
@@ -151,7 +151,7 @@ namespace BBTimes.Manager
 				.SetMaxSightDistance(45f)
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<PencilBoyCustomData>("PencilBoy", "PST_PB_Name", "PST_PB_Desc", -1.77f);
+				.SetupNPCData("PencilBoy", "PST_PB_Name", "PST_PB_Desc", -1.77f);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
@@ -166,7 +166,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.DisableAutoRotation()
 				.Build()
-				.SetupNPCData<RollingBotCustomData>("RollingBot", "PST_Rollbot_Name", "PST_Rollbot_Desc", -1.88f);
+				.SetupNPCData("RollingBot", "PST_Rollbot_Name", "PST_Rollbot_Desc", -1.88f);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 65 });
@@ -182,7 +182,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.EnableAcceleration()
 				.Build()
-				.SetupNPCData<WatcherCustomData>("Watcher", "PST_Wch_Name", "PST_Wch_Desc", 0f);
+				.SetupNPCData("Watcher", "PST_Wch_Name", "PST_Wch_Desc", 0f);
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
 
@@ -197,7 +197,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.AddHeatmap()
 				.Build()
-				.SetupNPCData<MagicalStudentCustomData>("MagicalStudent", "PST_MGS_Name", "PST_MGS_Desc", -1.91f)
+				.SetupNPCData("MagicalStudent", "PST_MGS_Name", "PST_MGS_Desc", -1.91f)
 				.MarkAsReplacement(35, Character.Principal); //35
 			
 			npc.Navigator.SetRoomAvoidance(false);
@@ -216,7 +216,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetMaxSightDistance(155)
 				.Build()
-				.SetupNPCData<SuperIntendentJrCustomData>("SuperintendentJr", "PST_Spj_Name", "PST_Spj_Desc", -1.73f);
+				.SetupNPCData("SuperintendentJr", "PST_Spj_Name", "PST_Spj_Desc", -1.73f);
 
 			npc.Navigator.SetRoomAvoidance(false);
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
@@ -232,7 +232,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_Leapy_Name")
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<LeapyCustomData>("Leapy", "PST_Leapy_Name", "PST_Leapy_Desc", -1.1f);
+				.SetupNPCData("Leapy", "PST_Leapy_Name", "PST_Leapy_Desc", -1.1f);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
@@ -250,7 +250,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.DisableAutoRotation()
 				.Build()
-				.SetupNPCData<GlubotronyCustomData>("Glubotrony", "PST_Gboy_Name", "PST_Gboy_Desc", -0.7f);
+				.SetupNPCData("Glubotrony", "PST_Gboy_Name", "PST_Gboy_Desc", -0.7f);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 28 });
@@ -266,7 +266,7 @@ namespace BBTimes.Manager
 				.IgnoreBelts()
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<DribbleCustomData>("Dribble", "PST_Dribble_Name", "PST_Dribble_Desc", -0.7f)
+				.SetupNPCData("Dribble", "PST_Dribble_Name", "PST_Dribble_Desc", -0.7f)
 				.MarkAsReplacement(45, Character.DrReflex);
 
 			npc.Navigator.SetRoomAvoidance(false);
@@ -283,7 +283,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_Bubbly_Name")
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<BubblyCustomData>("Bubbly", "PST_Bubbly_Name", "PST_Bubbly_Desc", -1.03f)
+				.SetupNPCData("Bubbly", "PST_Bubbly_Name", "PST_Bubbly_Desc", -1.03f)
 				.MarkAsReplacement(55, Character.Cumulo);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
@@ -301,7 +301,7 @@ namespace BBTimes.Manager
 				.SetAirborne()
 				.IgnoreBelts()
 				.Build()
-				.SetupNPCData<PhawillowCustomData>("Phawillow", "PST_Phawillow_Name", "PST_Phawillow_Desc", 0f);
+				.SetupNPCData("Phawillow", "PST_Phawillow_Name", "PST_Phawillow_Desc", 0f);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 45 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 25 });
@@ -316,7 +316,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<FakerCustomData>("Faker", "PST_Faker_Name", "PST_Faker_Desc", -1.36f)
+				.SetupNPCData("Faker", "PST_Faker_Name", "PST_Faker_Desc", -1.36f)
 				.MarkAsReplacement(99999, Character.LookAt); // 45
 
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
@@ -332,7 +332,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<CameraStandCustomData>("CameraStand", "PST_CamSt_Name", "PST_CamSt_Desc", -0.75f);
+				.SetupNPCData("CameraStand", "PST_CamSt_Name", "PST_CamSt_Desc", -0.75f);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 66 });
@@ -348,9 +348,9 @@ namespace BBTimes.Manager
 				.SetMaxSightDistance(65f)
 				.AddTrigger()
 				.Build()
-				.SetupNPCData<MughCustomData>("Mugh", "PST_Mugh_Name", "PST_Mugh_Desc", -1.36f);
+				.SetupNPCData("Mugh", "PST_Mugh_Name", "PST_Mugh_Desc", -1.36f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 75 });
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 999999 }); //75
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 		}
 

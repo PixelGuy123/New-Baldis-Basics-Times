@@ -1,10 +1,50 @@
-﻿using System.Collections;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.CustomDatas;
+using BBTimes.Manager;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Basketball : Item, IEntityTrigger
+	public class ITM_Basketball : Item, IEntityTrigger, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			var sprs = BBTimesManager.man.Get<Sprite[]>("basketBall");
+			var rendererBase = ObjectCreationExtensions.CreateSpriteBillboard(sprs[0]);
+			rendererBase.transform.SetParent(transform);
+			rendererBase.transform.localPosition = Vector3.zero;
+			rendererBase.gameObject.SetActive(true);
+
+			var comp = GetComponent<ITM_Basketball>();
+			gameObject.layer = LayerStorage.standardEntities;
+			comp.entity = gameObject.CreateEntity(2f, 2f, rendererBase.transform);
+
+			comp.audMan = gameObject.CreatePropagatedAudioManager(75, 105);
+			comp.audThrow = this.GetSoundNoSub("throw.wav", SoundType.Effect);
+			comp.audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
+			comp.audBong = this.GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white);
+			comp.audPop = BBTimesManager.man.Get<SoundObject>("audPop");
+			comp.spriteAnim = sprs;
+
+			comp.renderer = rendererBase;
+		}
+
+		public void SetupPrefabPost() { }
+
+		public string TexturePath => gameObject.GenerateDataPath("items", "Textures");
+		public string SoundPath => gameObject.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
+
+
+
+
+
+		// Prefab Setup Above^^
 		public override bool Use(PlayerManager pm)
 		{
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audThrow);

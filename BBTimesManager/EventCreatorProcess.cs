@@ -23,7 +23,7 @@ namespace BBTimes.Manager
 				.AddRequiredCharacters([Character.Principal, ..GetReplacementNPCs(Character.Principal)])
 				.SetName("Principalout")
 				.Build()
-				.SetupEvent<PrincipalOutCustomData>();
+				.SetupEvent();
 
 
 			floorDatas[0].Events.Add(new() { selection = e, weight = 65 });
@@ -36,7 +36,7 @@ namespace BBTimes.Manager
 				.SetMinMaxTime(55f, 90f)
 				.SetName("Blackout")
 				.Build()
-				.SetupEvent<BlackOutCustomData>();
+				.SetupEvent();
 
 
 			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
@@ -47,7 +47,7 @@ namespace BBTimes.Manager
 				.SetMinMaxTime(45f, 60f)
 				.SetName("FrozenEvent")
 				.Build()
-				.SetupEvent<FrozenEventCustomData>();
+				.SetupEvent();
 
 
 			
@@ -62,7 +62,7 @@ namespace BBTimes.Manager
 				.SetMinMaxTime(60f, 80f)
 				.SetName("CurtainsClosed")
 				.Build()
-				.SetupEvent<CurtainsClosedEventCustomData>();
+				.SetupEvent();
 
 
 			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
@@ -75,7 +75,7 @@ namespace BBTimes.Manager
 				.SetMinMaxTime(165f, 200f)
 				.SetName("HologramPast")
 				.Build()
-				.SetupEvent<HologramPastEventCustomData>();
+				.SetupEvent();
 
 
 			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
@@ -88,7 +88,7 @@ namespace BBTimes.Manager
 				.SetMinMaxTime(95f, 120f)
 				.SetName("SkateboardDay")
 				.Build()
-				.SetupEvent<SkateboardDayEventCustomData>();
+				.SetupEvent();
 
 
 			floorDatas[1].Events.Add(new() { selection = e, weight = 75 });
@@ -101,7 +101,7 @@ namespace BBTimes.Manager
 				.SetMinMaxTime(55f, 85f)
 				.SetName("Earthquake")
 				.Build()
-				.SetupEvent<EarthquakeCustomData>();
+				.SetupEvent();
 
 
 			floorDatas[1].Events.Add(new() { selection = e, weight = 25 });
@@ -114,7 +114,7 @@ namespace BBTimes.Manager
 				.SetMinMaxTime(120f, 155f)
 				.SetName("ShufflingChaos")
 				.Build()
-				.SetupEvent<ShufflingChaosCustomData>();
+				.SetupEvent();
 
 
 			floorDatas[1].Events.Add(new() { selection = e, weight = 10 });
@@ -127,7 +127,7 @@ namespace BBTimes.Manager
 				.SetMinMaxTime(75f, 100f)
 				.SetName("SuperFans")
 				.Build()
-				.SetupEvent<SuperFansCustomData>();
+				.SetupEvent();
 
 
 			floorDatas[1].Events.Add(new() { selection = e, weight = 60 });

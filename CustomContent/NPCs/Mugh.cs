@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Bindings;
+using UnityEngine.UI;
 
 namespace BBTimes.CustomContent.NPCs
 {
@@ -84,8 +85,17 @@ namespace BBTimes.CustomContent.NPCs
 			pm.RuleBreak("Bullying", 3f);
 			behaviorStateMachine.ChangeState(new Mugh_DieSadMoment(this));
 		}
-		
 
+		public void HugPlayer(PlayerManager pm)
+		{
+			mudCanvas.gameObject.SetActive(true);
+			mudCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
+		}
+
+		public void DisablePlayerHug() => mudCanvas.gameObject.SetActive(false);
+
+
+		public Image MudImg => mudImage;
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
@@ -114,6 +124,12 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		[Range(0.0f, 1.0f)]
 		internal float slownessWalkFactor = 0.1f;
+
+		[SerializeField]
+		internal Canvas mudCanvas;
+
+		[SerializeField]
+		internal Image mudImage;
 
 		readonly MovementModifier walkMod = new(Vector3.zero, 1f);
 
@@ -215,6 +231,7 @@ namespace BBTimes.CustomContent.NPCs
 			mu.Navigator.SetSpeed(0);
 			mu.HugState();
 			pm.Am.moveMods.Add(hugMod);
+			mu.HugPlayer(pm);
 		}
 
 		public override void Update()
@@ -227,14 +244,13 @@ namespace BBTimes.CustomContent.NPCs
 			}
 			var dist = mu.transform.position - pm.transform.position;
 			hugMod.movementAddend = dist * 115f * Time.deltaTime * mu.TimeScale;
-			
-		}
 
-		public override void OnStateTriggerExit(Collider other)
-		{
-			base.OnStateTriggerExit(other);
-			if (other.gameObject == pm.gameObject)
+			if (dist.magnitude > 30f)
 				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 30f, true));
+
+			var color = mu.MudImg.color;
+			color.a = 1f / (dist.magnitude * 0.45f);
+			mu.MudImg.color = color;
 		}
 
 		public override void PlayerLost(PlayerManager player)
@@ -248,6 +264,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Exit();
 			pm?.Am.moveMods.Remove(hugMod);
+			mu.DisablePlayerHug();
 		}
 	}
 

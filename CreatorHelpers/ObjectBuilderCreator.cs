@@ -1,12 +1,13 @@
 ﻿using MTM101BaldAPI;
 using UnityEngine;
 using BBTimes.CustomComponents.CustomDatas;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.Helpers
 {
     public static partial class CreatorExtensions
 	{
-		public static O CreateObjectBuilder<O, C>(string name, string obstacleName = null) where O : ObjectBuilder where C : CustomBaseData
+		public static O CreateObjectBuilder<O>(string name, string obstacleName = null) where O : ObjectBuilder
 		{
 			var obj = new GameObject(name).AddComponent<O>();
 
@@ -17,11 +18,7 @@ namespace BBTimes.Helpers
 
 			obj.gameObject.ConvertToPrefab(true);
 
-			var data = obj.gameObject.AddComponent<C>();
-			data.Name = obstacleName;
-			data.GetAudioClips();
-			data.GetSprites();
-			data.SetupPrefab();
+			obj.GetComponent<IObjectPrefab>().SetupPrefab();
 			
 
 			return obj;
