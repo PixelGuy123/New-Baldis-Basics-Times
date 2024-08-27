@@ -30,10 +30,12 @@ namespace BBTimes.Helpers
 
 			var data = npc.GetComponent<INPCPrefab>();
 			data.Npc = npc;
+			data.Name = name;
 			data.SetupPrefab();
 
 			// npc.spriteRenderer[0].sprite = data.storedSprites[0]; WILL be defined in the setup prefab by the npc, leave this comment as a reminder
 
+			BasePlugin._cstData.Add(data);
 
 			return npc;
 		}
@@ -46,8 +48,16 @@ namespace BBTimes.Helpers
 			ec.Npcs.RemoveAt(ec.Npcs.Count - 1); // Removes the runtime npc from the list to not be affected by the environment
 			return (T)cnpc;
 		}
-
-		public static T CreateCustomNPCFromExistent<T>(Character target, string name, float spriteYOffset = 0f) where T : NPC
+		/// <summary>
+		/// Create custom npc from existent, read parameters for more info.
+		/// </summary>
+		/// <typeparam name="T">The og npc's component for casting.</typeparam>
+		/// <typeparam name="N">The overrider for the component, having the <see cref="INPCPrefab"/> inheritance.</typeparam>
+		/// <param name="target">The enum for it.</param>
+		/// <param name="name">The name (important for searching assets).</param>
+		/// <param name="spriteYOffset">Y offset</param>
+		/// <returns></returns>
+		public static T CreateCustomNPCFromExistent<T, N>(Character target, string name, float spriteYOffset = 0f) where T : NPC where N : MonoBehaviour
 		{
 			var npc = (T)NPCMetaStorage.Instance.Get(target).value.SafeInstantiate();
 			npc.gameObject.name = name;
@@ -70,10 +80,12 @@ namespace BBTimes.Helpers
 
 			npc.poster = poster; //_npc_poster.SetValue(npc, poster);
 
-			var data = npc.gameObject.GetComponent<INPCPrefab>();
+			var data = npc.gameObject.AddComponent<N>().GetComponent<INPCPrefab>();
 			data.Npc = npc;
-			data.SetupPrefab();
+			data.Name = name;
 
+			data.SetupPrefab();
+			BasePlugin._cstData.Add(data);
 
 			return npc;
 		}

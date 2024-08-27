@@ -1,12 +1,80 @@
-﻿using BBTimes.CustomComponents;
+﻿
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Pix : NPC
+    public class Pix : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			SoundObject[] soundObjects = [
+				this.GetSound("Pix_Detected.wav", "Vfx_Pix_TarDet", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSound("Pix_Prepare.wav", "Vfx_Pix_Prepare", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSound("Pix_Stop.wav", "Vfx_Pix_Stop1", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSound("Pix_Easy.wav", "Vfx_Pix_Ez", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSound("Pix_Successful.wav", "Vfx_Pix_MisSuc", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSound("Pix_Failed.wav", "Vfx_Pix_MisFail", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSound("Pix_Grrr.wav", "Vfx_Pix_Grr", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSound("Pix_NextTime.wav", "Vfx_Pix_this.GetYou", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSound("Pix_Shoot.wav", "Vfx_Pix_Shoot", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSoundNoSub("shock.wav", SoundType.Voice)
+				];
+
+			soundObjects[2].additionalKeys = [new() { key = "Vfx_Pix_Stop2", time = 1.3f }, new() { key = "Vfx_Pix_Stop3", time = 1.724f }];
+
+			// Setup audio
+			audMan = GetComponent<PropagatedAudioManager>();
+			audReady = [soundObjects[0], soundObjects[1], soundObjects[2]];
+			audHappy = [soundObjects[3], soundObjects[4]];
+			audAngry = [soundObjects[5], soundObjects[6], soundObjects[7]];
+			audShoot = soundObjects[8];
+
+			Sprite[] storedSprites = [.. this.GetSpriteSheet(22, 1, 12f, "pix.png"), .. this.GetSpriteSheet(2, 1, 25f, "laserBeam.png"), .. this.GetSpriteSheet(4, 1, 15f, "shock.png")];
+			// setup animated sprites
+			rotator = spriteRenderer[0].CreateAnimatedSpriteRotator(
+				GenericExtensions.CreateRotationMap(4, storedSprites[0], storedSprites[2], storedSprites[4], storedSprites[6]), // Normal first frame of rotation map
+				GenericExtensions.CreateRotationMap(4, storedSprites[1], storedSprites[3], storedSprites[5], storedSprites[7]), // Normal second frame of rotation map
+				GenericExtensions.CreateRotationMap(4, storedSprites[8], storedSprites[10], storedSprites[4], storedSprites[12]), // Angry first frame of rotation map
+				GenericExtensions.CreateRotationMap(4, storedSprites[9], storedSprites[11], storedSprites[5], storedSprites[13]), // Angry second frame of rotation map
+				GenericExtensions.CreateRotationMap(4, storedSprites[14], storedSprites[16], storedSprites[4], storedSprites[18]), // Happy first frame of rotation map
+				GenericExtensions.CreateRotationMap(4, storedSprites[15], storedSprites[17], storedSprites[5], storedSprites[19]) // Happy second frame of rotation map
+				);
+			normalSprites = [storedSprites[0], storedSprites[1]];
+			angrySprites = [storedSprites[8], storedSprites[9]];
+			happySprites = [storedSprites[14], storedSprites[15]];
+			idleShootingSprites = [storedSprites[20], storedSprites[21]];
+
+			// laser (16, 17)
+			var laserRend = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[23]).AddSpriteHolder(0f, LayerStorage.standardEntities);
+			var laserHolder = laserRend.transform.parent;
+			laserHolder.gameObject.SetAsPrefab(true);
+			laserRend.name = "PixLaserBeamRenderer";
+			laserHolder.name = "PixLaserBeam";
+
+			var laser = laserHolder.gameObject.AddComponent<PixLaserBeam>();
+			laser.flyingSprites = [storedSprites[22], storedSprites[23]];
+			laser.shockSprites = [storedSprites[24], storedSprites[25], storedSprites[26], storedSprites[27]];
+			laser.renderer = laserRend;
+
+			laser.entity = laserHolder.gameObject.CreateEntity(2f, 2f, laserHolder.transform).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
+			laser.audMan = laserHolder.gameObject.CreatePropagatedAudioManager(15, 45);
+			laser.audShock = soundObjects[9];
+			laserPre = laser;
+		}
+
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		public override void Initialize()
 		{
 			base.Initialize();

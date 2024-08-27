@@ -1,12 +1,34 @@
-﻿using BBTimes.Manager;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Pogostick : Item
+	public class ITM_Pogostick : Item, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			audBoing = this.GetSound("boing.wav", "POGST_Boing", SoundType.Effect, Color.white);
+			var falseRenderer = new GameObject("PogoStickRendererBase");
+			falseRenderer.transform.SetParent(transform);
+			falseRenderer.transform.localPosition = Vector3.zero;
+
+
+			entity = gameObject.CreateEntity(2f, rendererBase: falseRenderer.transform);
+			gameObject.layer = LayerStorage.ignoreRaycast;
+
+			rendererBase = falseRenderer.transform;
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			if (usingPogo || pm.plm.Entity.Frozen)

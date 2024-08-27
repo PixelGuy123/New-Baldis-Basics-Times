@@ -1,13 +1,78 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
+using MTM101BaldAPI;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using BBTimes.Extensions;
+
 
 namespace BBTimes.CustomContent.Builders
 {
 
-	public class TrapDoorBuilder : ObjectBuilder
+    public class TrapDoorBuilder : ObjectBuilder, IObjectPrefab
 	{
+		public void SetupPrefab()
+		{
+			var trapdoorholder = new GameObject("TrapDoor").AddComponent<Trapdoor>();
+			trapdoorholder.gameObject.ConvertToPrefab(true);
+
+
+			var text = new GameObject("TrapdoorText").AddComponent<TextMeshPro>();
+			text.gameObject.layer = LayerStorage.billboardLayer;
+			text.transform.SetParent(trapdoorholder.transform);
+			text.transform.localPosition = Vector3.up * 0.02f;
+			text.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			text.alignment = TextAlignmentOptions.Center;
+			text.rectTransform.offsetMin = new(-4f, -3.99f);
+			text.rectTransform.offsetMax = new(4f, 4.01f);
+			trapdoorholder.text = text;
+
+			var collider = trapdoorholder.gameObject.AddComponent<BoxCollider>();
+			collider.size = Vector3.one * 4.9f;
+			collider.isTrigger = true;
+
+			var builder = GetComponent<TrapDoorBuilder>();
+			builder.trapDoorpre = trapdoorholder;
+
+			var trapSprites = this.GetSpriteSheet(2, 2, 25f, "traps.png");
+
+			builder.closedSprites = [trapSprites[0], trapSprites[1]];
+			builder.openSprites = [trapSprites[2], trapSprites[3]];
+
+			trapdoorholder.aud_shut = this.GetSound("trapDoor_shut.wav", "Sfx_Doors_StandardShut", SoundType.Voice, Color.white);
+			trapdoorholder.aud_open = this.GetSound("trapDoor_open.wav", "Sfx_Doors_StandardOpen", SoundType.Voice, Color.white);
+
+			var trapdoor = ObjectCreationExtensions.CreateSpriteBillboard(builder.closedSprites[0], false);
+			trapdoor.transform.SetParent(trapdoorholder.transform); // prefab stuf
+
+
+			trapdoor.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			trapdoor.transform.localPosition = Vector3.up * 0.02f;
+			trapdoor.name = "TrapdoorVisual";
+			trapdoor.gameObject.layer = 0; // default layer
+
+			trapdoorholder.renderer = trapdoor;
+			trapdoorholder.audMan = trapdoorholder.gameObject.CreatePropagatedAudioManager(35f, 45f);
+
+			// Fake trapdoor
+			var fake = trapdoor.SafeDuplicatePrefab(true);
+			fake.name = "FakeTrapDoor";
+			fake.gameObject.CreatePropagatedAudioManager(35f, 45f);
+			trapdoorholder.fakeTrapdoorPre = fake.transform;
+		}
+
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("objects", "Textures");
+		public string SoundPath => this.GenerateDataPath("objects", "Audios");
+
+
+
+
+		// setup prefab ^^
 		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
 		{
 			base.Build(ec, builder, room, cRng);

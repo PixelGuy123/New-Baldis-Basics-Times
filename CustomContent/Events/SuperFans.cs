@@ -1,11 +1,48 @@
-﻿using BBTimes.CustomComponents.EventSpecificComponents;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.EventSpecificComponents;
+using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
+using MTM101BaldAPI;
+using BBTimes.Extensions;
+
 
 namespace BBTimes.CustomContent.Events
 {
-	public class SuperFans : RandomEvent
+    public class SuperFans : RandomEvent, IObjectPrefab
 	{
+		public void SetupPrefab()
+		{
+			eventIntro = this.GetSound("SuperFans.wav", "Event_SuperFans1", SoundType.Effect, Color.green);
+			eventIntro.additionalKeys = [new() { time = 7.073f, key = "Event_SuperFans2" }];
+
+			Cumulo cloud = (Cumulo)NPCMetaStorage.Instance.Get(Character.Cumulo).value;
+
+			var storedSprites = this.GetSpriteSheet(3, 3, 75f, "fan.png");
+
+			var superFanRend = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0], false);
+			superFanRend.gameObject.ConvertToPrefab(true);
+			superFanRend.name = "Superfan";
+			var superFan = superFanRend.gameObject.AddComponent<SuperFan>();
+
+			superFan.audBlow = cloud.audBlowing;
+
+			superFan.renderer = superFanRend;
+			superFan.sprites = storedSprites;
+			superFan.windManager = Instantiate(cloud.windManager);
+			superFan.windManager.transform.SetParent(superFan.transform);
+			superFan.windGraphicsParent = superFan.windManager.transform.Find("WindGraphicsParent");
+			superFan.audMan = superFan.windManager.GetComponentInChildren<AudioManager>();
+			superFan.windGraphics = superFan.windGraphicsParent.GetComponentsInChildren<MeshRenderer>();
+
+			superFanPre = superFan;
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("events", "Textures");
+		public string SoundPath => this.GenerateDataPath("events", "Audios");
+		// ---------------------------------------------------
+
 		public override void PremadeSetup()
 		{
 			base.PremadeSetup();

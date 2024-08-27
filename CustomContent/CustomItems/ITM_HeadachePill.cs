@@ -1,10 +1,20 @@
-﻿using BBTimes.CustomContent.NPCs;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomContent.NPCs;
+using BBTimes.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_HeadachePill : Item
+	public class ITM_HeadachePill : Item, IItemPrefab
 	{
+		public void SetupPrefab() =>
+			audSwallow = this.GetSound("swallow.wav", "HDP_Swallow", SoundType.Effect, Color.white);
+		
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
 		public override bool Use(PlayerManager pm)
 		{
 			bool flag = false;

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection.Emit;
-// using System.Reflection;
 
 namespace BBTimes.ModPatches.NpcPatches
 {
@@ -14,10 +13,10 @@ namespace BBTimes.ModPatches.NpcPatches
 		[HarmonyPrefix]
 		private static bool CustomScold(AudioManager ___audMan, string brokenRule)
 		{
-			if (ruleBreaks.ContainsKey(brokenRule))
+			if (ruleBreaks.TryGetValue(brokenRule, out SoundObject sound))
 			{
 				___audMan.FlushQueue(true);
-				___audMan.QueueAudio(ruleBreaks[brokenRule]);
+				___audMan.QueueAudio(sound);
 
 				return false;
 			}

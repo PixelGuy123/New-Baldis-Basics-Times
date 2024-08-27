@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using MTM101BaldAPI.ObjectCreation;
+using BBTimes.Plugin;
 
 namespace BBTimes.Helpers
 {
@@ -8,7 +9,10 @@ namespace BBTimes.Helpers
 
 		public static RandomEvent SetupEvent(this RandomEvent ev)
 		{
-			ev.gameObject.GetComponent<IObjectPrefab>().SetupPrefab();
+			var data = ev.gameObject.GetComponent<IObjectPrefab>();
+			data.Name = ev.name;
+			data.SetupPrefab();
+			BasePlugin._cstData.Add(data);
 			return ev;
 		}
 

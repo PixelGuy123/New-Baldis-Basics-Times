@@ -1,13 +1,114 @@
-﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+﻿
+using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
+using BBTimes.Manager;
+using MTM101BaldAPI;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Dribble : NPC
+    public class Dribble : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			SoundObject[] soundObjects = [ // huge ass array lmao
+			this.GetSound("bounce.wav", "BB_Bong", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSoundNoSub("throw.wav", SoundType.Voice),
+			this.GetSound("DRI_Idle1.wav", "Vfx_Dribble_Idle1", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Idle2.wav", "Vfx_Dribble_Idle2", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Chase1.wav", "Vfx_Dribble_Notice1", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Chase2.wav", "Vfx_Dribble_Notice2", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Caught1.wav", "Vfx_Dribble_Caught1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Caught2.wav", "Vfx_Dribble_Caught2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Clap.wav", "Vfx_Dribble_Clap", SoundType.Voice, Color.white),
+			this.GetSound("DRI_Instructions.wav", "Vfx_Dribble_Instructions", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), // 9
+			this.GetSound("DRI_Ready.wav", "Vfx_Dribble_Ready", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Catch.wav", "Vfx_Dribble_Catch", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Praise1.wav", "Vfx_Dribble_Praise1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Praise2.wav", "Vfx_Dribble_Praise2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Dismissed.wav", "Vfx_Dribble_Dismissed", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSoundNoSub("punch.wav", SoundType.Voice),
+			this.GetSound("DRI_Disappointed1.wav", "Vfx_Dribble_Disappointed1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Disappointed2.wav", "Vfx_Dribble_Disappointed2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Angry1.wav", "Vfx_Dribble_Angry1", SoundType.Voice, new(1f, 0.15f, 0.15f)), // 18
+			this.GetSound("DRI_Angry2.wav", "Vfx_Dribble_Angry2", SoundType.Voice, new(1f, 0.15f, 0.15f)),
+			this.GetSound("DRI_Step1.wav", "Vfx_Spj_Step", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Step2.wav", "Vfx_Spj_Step", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_AngryChase1.wav", "Vfx_Dribble_ChaseAngry1", SoundType.Voice, new(1f, 0.15f, 0.15f)),
+			this.GetSound("DRI_AngryChase2.wav", "Vfx_Dribble_ChaseAngry2", SoundType.Voice, new(1f, 0.15f, 0.15f)),
+			this.GetSound("DRI_AngryCaught1.wav", "Vfx_Dribble_CaughtAngry1", SoundType.Voice, new(1f, 0.15f, 0.15f)),
+			this.GetSound("DRI_AngryCaught2.wav", "Vfx_Dribble_CaughtAngry2", SoundType.Voice, new(1f, 0.15f, 0.15f)),
+			this.GetSound("DRI_AngryPush1.wav", "Vfx_Dribble_Punch1", SoundType.Voice, new(1f, 0.15f, 0.15f)),
+			this.GetSound("DRI_AngryPush2.wav", "Vfx_Dribble_Punch2", SoundType.Voice, new(1f, 0.15f, 0.15f))
+			];
+
+			audMan = GetComponent<PropagatedAudioManager>();
+			bounceAudMan = gameObject.CreatePropagatedAudioManager(85f, 125f);
+			audBounceBall = soundObjects[0];
+			audThrow = soundObjects[1];
+			audIdle = [soundObjects[2], soundObjects[3]];
+			audNotice = [soundObjects[4], soundObjects[5]];
+			audCaught = [soundObjects[6], soundObjects[7]];
+			audClap = soundObjects[8];
+			audInstructions = soundObjects[9];
+			audReady = soundObjects[10];
+			audCatch = soundObjects[11];
+			audPraise = [soundObjects[12], soundObjects[13]];
+			audDismissed = soundObjects[14];
+			audDisappointed = [soundObjects[16], soundObjects[17]];
+			audAngry = [soundObjects[18], soundObjects[19]];
+			audStep = [soundObjects[20], soundObjects[21]];
+			audChaseAngry = [soundObjects[22], soundObjects[23]];
+			audAngryCaught = [soundObjects[24], soundObjects[25]];
+			audPunchResponse = [soundObjects[26], soundObjects[27]];
+			audPunch = soundObjects[15];
+
+			renderer = spriteRenderer[0];
+
+			var storedSprites = this.GetSpriteSheet(13, 1, pixelsPerUnit, "dribbleSpriteSheet.png");
+			spriteRenderer[0].sprite = storedSprites[0];
+			idleSprs = [storedSprites[0], storedSprites[1]];
+			clapSprs = [storedSprites[5], storedSprites[6]];
+			classSprs = [storedSprites[2], storedSprites[3], storedSprites[4]];
+			disappointedSprs = [storedSprites[7], storedSprites[8]];
+			crazySprs = [storedSprites[9], storedSprites[10]];
+			chasingSprs = [storedSprites[11], storedSprites[12]];
+
+			var basket = new GameObject("DribbleBasketBall");
+
+			var rendererBase = ObjectCreationExtensions.CreateSpriteBillboard(BBTimesManager.man.Get<Sprite[]>("basketBall")[0]);
+			rendererBase.transform.SetParent(basket.transform);
+			rendererBase.transform.localPosition = Vector3.zero;
+			rendererBase.name = "sprite";
+			basket.ConvertToPrefab(true);
+
+			var comp = basket.AddComponent<PickableBasketball>();
+			comp.gameObject.layer = LayerStorage.iClickableLayer;
+			comp.entity = basket.CreateEntity(2f, 2f, basket.transform);
+			comp.spriteAnim = BBTimesManager.man.Get<Sprite[]>("basketBall");
+			comp.audHit = soundObjects[15];
+
+			comp.renderer = rendererBase;
+
+			basketPre = comp;
+		}
+
+		const float pixelsPerUnit = 87f;
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+
+		// ---------------------------------------------------------------
+
+
 		public override void Initialize()
 		{
 			base.Initialize();

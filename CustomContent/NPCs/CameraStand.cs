@@ -1,11 +1,40 @@
-﻿using System.Collections;
+﻿using BBTimes.Extensions;
+using BBTimes.CustomComponents;
+using BBTimes.Manager;
+using PixelInternalAPI.Extensions;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class CameraStand : NPC
+    public class CameraStand : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			spriteRenderer[0].sprite = this.GetSprite(70f, "camStand.png");
+			audMan = GetComponent<PropagatedAudioManager>();
+			audPic = this.GetSoundNoSub("photo.wav", SoundType.Voice);
+
+			var canvas = ObjectCreationExtensions.CreateCanvas();
+			canvas.transform.SetParent(transform);
+			canvas.transform.localPosition = Vector3.zero; // I don't know if I really need this but whatever
+			canvas.name = "CameraStandOverlay";
+
+			image = ObjectCreationExtensions.CreateImage(canvas, BBTimesManager.man.Get<Sprite>("whiteScreen"));
+
+			stunCanvas = canvas;
+			stunCanvas.gameObject.SetActive(false);
+		}
+
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+
+		// stuff above^^
 		public override void Initialize()
 		{
 			base.Initialize();

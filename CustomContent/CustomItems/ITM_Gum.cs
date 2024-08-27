@@ -1,10 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
+using BBTimes.CustomComponents;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Gum : Item, IEntityTrigger
+	public class ITM_Gum : Item, IEntityTrigger, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			gameObject.layer = LayerStorage.standardEntities;
+
+			audMan = gameObject.CreatePropagatedAudioManager(55, 75);
+			aud_fly = GenericExtensions.FindResourceObjectByName<SoundObject>("Ben_Gum_Whoosh");
+			aud_splash = GenericExtensions.FindResourceObjectByName<SoundObject>("Ben_Splat");
+			aud_spit = this.GetSound("gum_spit.wav", "Vfx_GUM_spit", SoundType.Effect, new Color(1, 0.2039f, 0.8863f));
+
+			rendererBase = Instantiate(Resources.FindObjectsOfTypeAll<Gum>()[0].transform.Find("RendererBase"));
+			rendererBase.SetParent(transform);
+			rendererBase.localPosition = Vector3.zero;
+
+			flyingSprite = rendererBase.Find("Sprite_Flying");
+			groundedSprite = rendererBase.Find("Sprite_Grounded");
+
+			entity = gameObject.CreateEntity(1f, 1f, out var collider, out _, rendererBase).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
+			collider.height = 4;
+
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
 		public override bool Use(PlayerManager pm)
 		{
 			gameObject.SetActive(true); // do not forget this lol

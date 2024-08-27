@@ -1,5 +1,4 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
-using PixelInternalAPI.Extensions;
+﻿using PixelInternalAPI.Extensions;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +29,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 				for (int i = 0; i < metas.Length; i++)
 				{
 					var co = metas[i].GetComponent<INPCPrefab>();
-					if (co != null) // Replacement npcs will always be in this array. That's why there's no check for the npc replacing field.
+					if (co != null && co.ReplacementNpcs != null) // Replacement npcs will always be in this array. That's why there's no check for the npc replacing field.
 						replacementNpcs.Add(new() { selection = metas[i], weight = co.ReplacementWeight });
 				}
 

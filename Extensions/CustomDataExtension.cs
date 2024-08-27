@@ -4,13 +4,14 @@ using MTM101BaldAPI.AssetTools;
 using System.IO;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
+using BBTimes.CustomComponents;
 
-namespace BBTimes.CustomComponents.CustomDatas
+namespace BBTimes.Extensions
 {
-    public static class CustomDataExtension
+	public static class CustomDataExtension
 	{
-		public static string GenerateDataPath(this GameObject pr, string category, string folder) =>
-			Path.Combine(BasePlugin.ModPath, category, pr.name, folder);
+		public static string GenerateDataPath(this IPrefab pr, string category, string folder) =>
+			Path.Combine(BasePlugin.ModPath, category, pr.Name, folder);
 		public static Texture2D GetTexture(this IPrefab pr, string texName) =>
 			AssetLoader.TextureFromFile(Path.Combine(pr.TexturePath, texName));
 

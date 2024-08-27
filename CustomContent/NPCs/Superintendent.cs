@@ -1,11 +1,26 @@
-﻿using PixelInternalAPI.Classes;
+﻿using BBTimes.Extensions;
+using BBTimes.CustomComponents;
+using PixelInternalAPI.Classes;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Superintendent : NPC
+    public class Superintendent : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			spriteRenderer[0].sprite = this.GetSprite(46f, "Superintendent.png");
+			audMan = GetComponent<AudioManager>();
+			audOverHere = this.GetSound("Superintendent.wav", "Vfx_SI_BaldiHere", SoundType.Voice, new(0f, 0f, 0.796875f));
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
 		public override void Initialize()
 		{
 			base.Initialize();

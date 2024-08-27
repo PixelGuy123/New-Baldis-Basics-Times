@@ -1,11 +1,46 @@
-﻿using BBTimes.Extensions;
+﻿
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Components;
+using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Phawillow : NPC, IClickable<int>
+    public class Phawillow : NPC, IClickable<int>, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			audMan = GetComponent<PropagatedAudioManager>();
+			audWander = this.GetSound("breathing.wav", "Vfx_Phawillow_Wandering", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
+			audLaugh = this.GetSound("Phawillow_Laughing.wav", "Vfx_Phawillow_Laught", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
+			audRestart = this.GetSound("Phawillow_Laughing.wav", "Vfx_Phawillow_Restart", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
+			gameObject.layer = LayerStorage.iClickableLayer;
+			floatingRenderer = spriteRenderer[0];
+
+			var itemHolder = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(new Vector3(3f, -0.8f, 0f), 0);
+			itemHolder.transform.parent.SetParent(transform);
+			itemHolder.transform.parent.localPosition = Vector3.zero;
+			itemHolder.transform.parent.gameObject.AddComponent<BillboardRotator>();
+
+			itemRender = itemHolder;
+			itemRenderHolder = itemHolder.transform.parent;
+			var storedSprites = this.GetSpriteSheet(3, 1, 22f, "phawillowSpritesheet.png");
+			spriteRenderer[0].sprite = storedSprites[0];
+			sprNormal = storedSprites[0];
+			sprSplashed = storedSprites[1];
+			sprActive = storedSprites[2];
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		public override void Initialize()
 		{
 			base.Initialize();

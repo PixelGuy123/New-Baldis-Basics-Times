@@ -1,10 +1,38 @@
-﻿using System.Collections;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using BBTimes.Manager;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Soap : Item, IEntityTrigger
+	public class ITM_Soap : Item, IEntityTrigger, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			gameObject.layer = LayerStorage.standardEntities;
+
+			var soapRenderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "soap.png"));
+			soapRenderer.transform.SetParent(transform);
+			soapRenderer.transform.localPosition = Vector3.zero;
+
+			entity = gameObject.CreateEntity(2.5f, 3.5f, soapRenderer.transform);
+			renderer = soapRenderer.transform;
+			audMan = gameObject.CreatePropagatedAudioManager(65f, 85f);
+			audThrow = GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Slip");
+			audRunLoop = GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Loop");
+			audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
+
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			ec = pm.ec;

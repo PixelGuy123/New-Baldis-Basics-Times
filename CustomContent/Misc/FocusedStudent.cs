@@ -1,6 +1,7 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
+﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomContent.RoomFunctions;
+using System.Linq;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Misc
@@ -35,7 +36,7 @@ namespace BBTimes.CustomContent.Misc
 				player.RuleBreak("Running", 5f, 0.2f);
 				audMan.QueueAudio(audDisturbed);
 				foreach (var n in ec.Npcs)
-					if (n.Navigator.enabled && (n.Character == Character.Principal || (n.GetComponent<CustomNPCData>()?.ReplacesCharacter(Character.Principal) ?? false)))
+					if (n.Navigator.enabled && (n.Character == Character.Principal || (n.GetComponent<INPCPrefab>()?.ReplacementNpcs.Contains(Character.Principal) ?? false)))
 						n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, ec.CellFromPosition(player.transform.position)));
 				return true;
 			}

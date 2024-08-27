@@ -1,10 +1,40 @@
-﻿using System.Collections;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Bell : Item, IEntityTrigger
+	public class ITM_Bell : Item, IEntityTrigger, IItemPrefab
 	{
+
+		public void SetupPrefab()
+		{
+			var storedSprites = this.GetSpriteSheet(2, 1, 25f, "bellWorld.png");
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]).AddSpriteHolder(-4f);
+			var rendererBase = renderer.transform.parent;
+			rendererBase.SetParent(transform);
+			rendererBase.localPosition = Vector3.zero;
+
+			gameObject.layer = LayerStorage.standardEntities;
+			entity = gameObject.CreateEntity(1.5f, 2.5f, rendererBase);
+
+			audMan = gameObject.CreatePropagatedAudioManager(165, 200);
+			audBell = this.GetSound("bell_bellnoise.wav", "Vfx_BEL_Ring", SoundType.Voice, Color.white);
+
+			this.renderer = renderer;
+			deactiveSprite = storedSprites[1];
+		}
+
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			owner = pm.gameObject;

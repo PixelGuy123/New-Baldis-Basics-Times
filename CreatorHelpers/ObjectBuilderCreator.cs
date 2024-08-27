@@ -1,6 +1,6 @@
 ﻿using MTM101BaldAPI;
 using UnityEngine;
-using BBTimes.CustomComponents.CustomDatas;
+using BBTimes.Plugin;
 using BBTimes.CustomComponents;
 
 namespace BBTimes.Helpers
@@ -17,9 +17,11 @@ namespace BBTimes.Helpers
 				obj.obstacle = Obstacle.Null;
 
 			obj.gameObject.ConvertToPrefab(true);
+			var data = obj.GetComponent<IObjectPrefab>();
 
-			obj.GetComponent<IObjectPrefab>().SetupPrefab();
-			
+			data.Name = obstacleName;
+			data.SetupPrefab();
+			BasePlugin._cstData.Add(data);
 
 			return obj;
 		}

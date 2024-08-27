@@ -3,11 +3,40 @@ using System.Collections.Generic;
 using BBTimes.CustomComponents;
 using UnityEngine.UI;
 using BBTimes.Extensions;
+using PixelInternalAPI.Extensions;
+
 
 namespace BBTimes.CustomContent.Events
 {
-	public class FrozenEvent : RandomEvent
+    public class FrozenEvent : RandomEvent, IObjectPrefab
 	{
+		public void SetupPrefab()
+		{
+			eventIntro = this.GetSound("baldi_freeze.wav", "Event_FreezeEvent0", SoundType.Effect, Color.green);
+			eventIntro.additionalKeys = [
+				new() {time = 1.975f, key = "Event_FreezeEvent1"},
+				new() {time = 7.271f, key = "Event_FreezeEvent2"},
+				new() {time = 12.464f, key = "Event_FreezeEvent3"},
+				new() {time = 20.121f, key = "Event_FreezeEvent0"}
+				];
+			audMan = gameObject.CreateAudioManager(65, 85).MakeAudioManagerNonPositional();
+
+			audFreeze = this.GetSoundNoSub("freeze.wav", SoundType.Effect);
+
+			var canvas = ObjectCreationExtensions.CreateCanvas();
+			canvas.transform.SetParent(transform);
+			canvas.transform.localPosition = Vector3.zero; // I don't know if I really need this but whatever
+			canvas.name = "iceOverlay";
+			ObjectCreationExtensions.CreateImage(canvas, this.GetSprite(1f, "icehud.png"), true); // stunly stare moment
+			canvas.gameObject.SetActive(false);
+
+			canvasPre = canvas;
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("events", "Textures");
+		public string SoundPath => this.GenerateDataPath("events", "Audios");
+		// ---------------------------------------------------
+
 		public override void Begin()
 		{
 			base.Begin();

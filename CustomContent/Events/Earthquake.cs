@@ -1,11 +1,59 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using MTM101BaldAPI.Registers;
+using BBTimes.CustomComponents;
+using BBTimes.Extensions.ObjectCreationExtensions;
+using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
+using BBTimes.Extensions;
+
 
 namespace BBTimes.CustomContent.Events
 {
-	public class Earthquake : RandomEvent
+    public class Earthquake : RandomEvent, IObjectPrefab
 	{
+		public void SetupPrefab()
+		{
+			eventIntro = this.GetSound("Earthquake.wav", "Event_Earthquake1", SoundType.Effect, Color.green);
+			eventIntro.additionalKeys = [new() { key = "Event_Earthquake2", time = 3.907f }, new() { key = "Event_Earthquake3", time = 7.896f }];
+
+			// Particles
+			var flipperParticle = new GameObject("Earthquake", typeof(ParticleSystem)); // Copypaste from BB+ Animations
+			flipperParticle.ConvertToPrefab(true);
+
+			var mat = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = this.GetTexture("shakeness.png") };
+			flipperParticle.GetComponent<ParticleSystemRenderer>().material = mat;
+
+			var particleSystem = flipperParticle.GetComponent<ParticleSystem>();
+			var anim = particleSystem.textureSheetAnimation;
+			anim.enabled = true;
+			anim.numTilesX = 1;
+			anim.numTilesY = 8;
+			anim.animation = ParticleSystemAnimationType.WholeSheet;
+			anim.mode = ParticleSystemAnimationMode.Grid;
+			anim.cycleCount = 1;
+			anim.timeMode = ParticleSystemAnimationTimeMode.FPS;
+			anim.fps = 11f;
+
+			var main = particleSystem.main;
+			main.gravityModifierMultiplier = 0f;
+			main.startLifetimeMultiplier = 0.8f;
+			main.startSpeedMultiplier = 0f;
+			main.simulationSpace = ParticleSystemSimulationSpace.World;
+			main.startSize = 9f;
+
+			var emission = particleSystem.emission;
+			emission.rateOverTimeMultiplier = 16f;
+
+			partPre = particleSystem;
+			audMan = gameObject.CreateAudioManager(55f, 65f).MakeAudioManagerNonPositional();
+			audTrembling = this.GetSoundNoSub("earthQuakeGoing.wav", SoundType.Effect);
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("events", "Textures");
+		public string SoundPath => this.GenerateDataPath("events", "Audios");
+		// ---------------------------------------------------
+
 		public override void PremadeSetup()
 		{
 			base.PremadeSetup();

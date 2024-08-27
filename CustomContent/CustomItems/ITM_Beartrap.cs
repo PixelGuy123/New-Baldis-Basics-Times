@@ -1,9 +1,36 @@
-﻿using UnityEngine;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Manager;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Beartrap : Item, IEntityTrigger
+	public class ITM_Beartrap : Item, IEntityTrigger, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+
+			audMan = gameObject.CreatePropagatedAudioManager(75f, 105f);
+			audTrap = BBTimesManager.man.Get<SoundObject>("BeartrapCatch");
+			var trapSprs = BBTimesManager.man.Get<Sprite[]>("Beartrap");
+			closedTrap = trapSprs[0];
+
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(trapSprs[1]).AddSpriteHolder(-4f);
+			var rendererBase = renderer.transform.parent;
+			rendererBase.SetParent(transform);
+			rendererBase.localPosition = Vector3.zero;
+
+			this.renderer = renderer;
+			entity = gameObject.CreateEntity(1f, 1f, rendererBase);
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+		// -------------------------------------------------------------------
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;

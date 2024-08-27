@@ -2,11 +2,27 @@
 using BBTimes.CustomComponents;
 using System.Collections;
 using UnityEngine;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_HardHat : Item
+	public class ITM_HardHat : Item, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			var canvas = ObjectCreationExtensions.CreateCanvas();
+			canvas.transform.SetParent(transform);
+			canvas.transform.localPosition = Vector3.zero; // I don't know if I really need this but whatever
+			canvas.name = "hardHatOverlay";
+			ObjectCreationExtensions.CreateImage(canvas, this.GetSprite(1f, "hardHatHud.png"));
+			this.canvas = canvas;
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
 		public override bool Use(PlayerManager pm)
 		{
 			if (used)

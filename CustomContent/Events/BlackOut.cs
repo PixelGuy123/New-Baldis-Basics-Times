@@ -2,11 +2,34 @@
 using BBTimes.CustomComponents;
 using System.Collections;
 using UnityEngine;
+using PixelInternalAPI.Extensions;
+
 
 namespace BBTimes.CustomContent.Events
 {
-	public class BlackOut : RandomEvent
+    public class BlackOut : RandomEvent, IObjectPrefab
 	{
+		public void SetupPrefab()
+		{
+			eventIntro = this.GetSound("baldi_ele.wav", "Event_BlackOut0", SoundType.Effect, Color.green);
+			eventIntro.additionalKeys = [
+				new() {time = 1.832f, key = "Event_BlackOut1"},
+				new() {time = 4.88f, key = "Event_BlackOut2"},
+				new() {time = 8.849f, key = "Event_BlackOut3"},
+				new() {time = 12.788f, key = "Event_BlackOut4"}
+				];
+
+			audMan = gameObject.CreateAudioManager(85, 105)
+				.MakeAudioManagerNonPositional();
+			audOff = this.GetSoundNoSub("blackout_out.wav", SoundType.Music);
+			audOn = this.GetSoundNoSub("blackout_on.wav", SoundType.Music);
+		}
+
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("events", "Textures");
+		public string SoundPath => this.GenerateDataPath("events", "Audios");
+		// ---------------------------------------------------
+
 		public override void Begin()
 		{
 			base.Begin();

@@ -1,10 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using BBTimes.Extensions;
+using BBTimes.CustomComponents;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class ZeroPrize : NPC
+    public class ZeroPrize : NPC, INPCPrefab
 	{
+
+		public void SetupPrefab()
+		{
+			audStartSweep = this.GetSound("0thprize_timetosweep.wav", "Vfx_0TH_WannaSweep", SoundType.Voice, new(0.99609375f, 0.99609375f, 0.796875f));
+			audSweep = this.GetSound("0thprize_mustsweep.wav", "Vfx_0TH_Sweep", SoundType.Voice, new(0.99609375f, 0.99609375f, 0.796875f));
+			var storedSprites = this.GetSpriteSheet(2, 1, 45f, "0thprize.png");
+			activeSprite = storedSprites[0];
+			deactiveSprite = storedSprites[1];
+			spriteRenderer[0].sprite = activeSprite;
+
+			audMan = GetComponent<PropagatedAudioManager>();
+
+			((CapsuleCollider)baseTrigger[0]).radius = 4f; // default radius of Gotta Sweep
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		void Start()
 		{
 			home = ec.CellFromPosition(transform.position);

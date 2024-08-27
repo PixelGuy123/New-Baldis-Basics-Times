@@ -1,34 +1,54 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class OfficeChair : NPC // Npc here
-    {
-        public override void Initialize()
-        {
-            base.Initialize();
+	public class OfficeChair : NPC, INPCPrefab // Npc here
+	{
+		public void SetupPrefab()
+		{
+			audRoll = this.GetSound("ChairRolling.wav", "Vfx_OFC_Walk", SoundType.Voice, new(0.74609375f, 0.74609375f, 0.74609375f));
 
-            behaviorStateMachine.ChangeState(new OfficeChair_FindOffice(this, true));
+			var storedSprites = this.GetSpriteSheet(2, 1, 24f, "officeChair.png");
+			spriteRenderer[0].sprite = storedSprites[0];
+			sprActive = storedSprites[0];
+			sprDeactive = storedSprites[1];
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
 
-            navigator.maxSpeed = normSpeed;
-            navigator.SetSpeed(normSpeed);
+		public override void Initialize()
+		{
+			base.Initialize();
 
-            var man = GetComponent<PropagatedAudioManager>();
-            man.maintainLoop = true;
-            man.FlushQueue(true);
-        }
+			behaviorStateMachine.ChangeState(new OfficeChair_FindOffice(this, true));
 
-        public void CarryEntityAround(Entity en) =>
-            behaviorStateMachine.ChangeState(new OfficeChair_FindOffice(this, false, awaitCooldown, en));
+			navigator.maxSpeed = normSpeed;
+			navigator.SetSpeed(normSpeed);
+
+			var man = GetComponent<PropagatedAudioManager>();
+			man.maintainLoop = true;
+			man.FlushQueue(true);
+		}
+
+		public void CarryEntityAround(Entity en) =>
+			behaviorStateMachine.ChangeState(new OfficeChair_FindOffice(this, false, awaitCooldown, en));
 
 
-        public void SetEnabled(bool active) => spriteRenderer[0].sprite = active ? sprActive : sprDeactive;
+		public void SetEnabled(bool active) => spriteRenderer[0].sprite = active ? sprActive : sprDeactive;
 
-        const float normSpeed = 50f;
+		const float normSpeed = 50f;
 
-        const float awaitCooldown = 40f;
+		const float awaitCooldown = 40f;
 
 		internal OfficeChair_FindOffice bringingState;
 
@@ -47,11 +67,11 @@ namespace BBTimes.CustomContent.NPCs
 
 	}
 
-    internal class OfficeChair_StateBase(OfficeChair office) : NpcState(office) // A default npc state
-    {
-        protected OfficeChair chair = office;
+	internal class OfficeChair_StateBase(OfficeChair office) : NpcState(office) // A default npc state
+	{
+		protected OfficeChair chair = office;
 
-        protected PropagatedAudioManager man = office.GetComponent<PropagatedAudioManager>();
+		protected PropagatedAudioManager man = office.GetComponent<PropagatedAudioManager>();
 
 		public override void DoorHit(StandardDoor door)
 		{
@@ -65,21 +85,21 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-    internal class OfficeChair_FindOffice(OfficeChair office, bool useCurrent, float cooldown = -1f, Entity target = null) : OfficeChair_StateBase(office) // A basic moving npc state
-    {
-        readonly bool useCurrent = useCurrent;
+	internal class OfficeChair_FindOffice(OfficeChair office, bool useCurrent, float cooldown = -1f, Entity target = null) : OfficeChair_StateBase(office) // A basic moving npc state
+	{
+		readonly bool useCurrent = useCurrent;
 
-        Entity target = target;
+		Entity target = target;
 
-       // float entityBaseHeight = 0f;
+		// float entityBaseHeight = 0f;
 
-        readonly float waitCooldown = cooldown;
+		readonly float waitCooldown = cooldown;
 
 		Cell targetCell;
-        public override void Enter() // Basically go to a random spot
-        {
+		public override void Enter() // Basically go to a random spot
+		{
 			base.Enter();
-			
+
 
 			if (target)
 			{
@@ -91,24 +111,24 @@ namespace BBTimes.CustomContent.NPCs
 			}
 
 			var room = chair.ec.CellFromPosition(chair.transform.position).room;
-            List<Cell> cells = useCurrent ? room.GetTilesOfShape([TileShape.Single], true) : GetRandomOffice(room);
-            if (cells.Count == 0)
-                cells = useCurrent ? room.AllEntitySafeCellsNoGarbage() : GetRandomOffice(room, true);
+			List<Cell> cells = useCurrent ? room.GetTilesOfShape([TileShape.Single], true) : GetRandomOffice(room);
+			if (cells.Count == 0)
+				cells = useCurrent ? room.AllEntitySafeCellsNoGarbage() : GetRandomOffice(room, true);
 
 			targetCell = cells[Random.Range(0, cells.Count)];
 
 			ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, targetCell.FloorWorldPosition));
-            man.QueueAudio(chair.audRoll, true);
-            man.SetLoop(true);
+			man.QueueAudio(chair.audRoll, true);
+			man.SetLoop(true);
 			chair.bringingState = this;
 
-           
-        }
 
-        public override void DestinationEmpty() // Destination empty (means it got to its location), now just wait idle
-        {
-            base.DestinationEmpty();
-            if (!initialized) return;
+		}
+
+		public override void DestinationEmpty() // Destination empty (means it got to its location), now just wait idle
+		{
+			base.DestinationEmpty();
+			if (!initialized) return;
 
 			if (chair.ec.CellFromPosition(chair.transform.position) != targetCell)
 			{
@@ -116,28 +136,28 @@ namespace BBTimes.CustomContent.NPCs
 				return;
 			}
 
-            man.FlushQueue(true);
-            if (target)
-            {
-               // target.SetHeight(entityBaseHeight);
-                overrider.SetHeight(target.BaseHeight);
-                SetTarget(true);
+			man.FlushQueue(true);
+			if (target)
+			{
+				// target.SetHeight(entityBaseHeight);
+				overrider.SetHeight(target.BaseHeight);
+				SetTarget(true);
 
-                chair.SetEnabled(false);
+				chair.SetEnabled(false);
 				overrider.Release();
-                target = null;
-            }
-            chair.behaviorStateMachine.ChangeState(new OfficeChair_WaitForCollision(chair, waitCooldown));
-        }
+				target = null;
+			}
+			chair.behaviorStateMachine.ChangeState(new OfficeChair_WaitForCollision(chair, waitCooldown));
+		}
 
-        public override void Update()
-        {
-            if (!target) return;
-            
+		public override void Update()
+		{
+			if (!target) return;
+
 			if (!chair || chair.Navigator.Entity.Frozen || (chair.transform.position - target.transform.position).magnitude > 5f) // If chair ever becomes null, also stop this
-            {
+			{
 				CancelTargetGrab();
-            }
+			}
 			else
 				target.Teleport(chair.transform.position);
 
@@ -145,24 +165,24 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		List<Cell> GetRandomOffice(RoomController room, bool allTiles = false)
-        {
-            List<RoomController> rooms = new(chair.ec.rooms);
-            rooms.RemoveAll(x => x == room || x.category != RoomCategory.Office && x.category != RoomCategory.Faculty);
+		{
+			List<RoomController> rooms = new(chair.ec.rooms);
+			rooms.RemoveAll(x => x == room || (x.category != RoomCategory.Office && x.category != RoomCategory.Faculty));
 
 #if CHEAT
             Debug.Log($"(Office Chair): Original amount of rooms found: {chair.ec.rooms.Count}");
             Debug.Log($"(Office Chair): Amount of rooms found: {rooms.Count}");
 #endif
-            if (rooms.Count == 0) // Just for pre-caution.... even though this might not even happen
-                return [];
+			if (rooms.Count == 0) // Just for pre-caution.... even though this might not even happen
+				return [];
 
-            return allTiles ? rooms[Random.Range(0, rooms.Count)].AllEntitySafeCellsNoGarbage() : rooms[Random.Range(0, rooms.Count)].GetTilesOfShape([TileShape.Single], true);
-        }
+			return allTiles ? rooms[Random.Range(0, rooms.Count)].AllEntitySafeCellsNoGarbage() : rooms[Random.Range(0, rooms.Count)].GetTilesOfShape([TileShape.Single], true);
+		}
 
-        void SetTarget(bool active)
-        {
-            overrider.SetFrozen(!active);
-            overrider.SetInteractionState(active);
+		void SetTarget(bool active)
+		{
+			overrider.SetFrozen(!active);
+			overrider.SetInteractionState(active);
 		}
 
 		public void CancelTargetGrab()
@@ -177,38 +197,38 @@ namespace BBTimes.CustomContent.NPCs
 			target = null;
 		}
 
-        const float heightOffset = 3f;
+		const float heightOffset = 3f;
 
 		readonly EntityOverrider overrider = new();
 	}
 
-    internal class OfficeChair_WaitForCollision(OfficeChair office, float waitCooldown) : OfficeChair_StateBase(office)
-    {
-        float cooldown = waitCooldown;
+	internal class OfficeChair_WaitForCollision(OfficeChair office, float waitCooldown) : OfficeChair_StateBase(office)
+	{
+		float cooldown = waitCooldown;
 
-        public override void Enter()
-        {
+		public override void Enter()
+		{
 			ChangeNavigationState(new NavigationState_DoNothing(chair, 0));
-            base.Enter();
+			base.Enter();
 			chair.Navigator.Am.moveMods.Add(moveMod);
-            if (cooldown > 0f)
-                chair.StartCoroutine(Cooldown());
-        }
+			if (cooldown > 0f)
+				chair.StartCoroutine(Cooldown());
+		}
 
-        public override void OnStateTriggerEnter(Collider other)
-        {
-            if (cooldown > 0f) return;
+		public override void OnStateTriggerEnter(Collider other)
+		{
+			if (cooldown > 0f) return;
 
-            if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
-            {
-                Entity component = other.GetComponent<Entity>();
-                if (component != null)
-                    chair.CarryEntityAround(component);
+			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
+			{
+				Entity component = other.GetComponent<Entity>();
+				if (component != null)
+					chair.CarryEntityAround(component);
 
 
-            }
+			}
 
-        }
+		}
 
 		public override void Exit()
 		{
@@ -217,19 +237,19 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		IEnumerator Cooldown()
-        {
-            while (cooldown > 0f)
-            {
+		{
+			while (cooldown > 0f)
+			{
 				cooldown -= Time.deltaTime * chair.TimeScale;
-                yield return null;
-            }
-            chair.SetEnabled(true);
+				yield return null;
+			}
+			chair.SetEnabled(true);
 
-            yield break;
-        }
+			yield break;
+		}
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
 
-		
-    }
+
+	}
 }

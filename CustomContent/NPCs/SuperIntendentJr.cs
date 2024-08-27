@@ -1,10 +1,14 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
+﻿using BBTimes.CustomComponents;
 using System.Collections;
 using UnityEngine;
+using PixelInternalAPI.Extensions;
+using System.Linq;
+using BBTimes.Extensions;
+
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class NavigationState_FollowToSpot(NPC npc, Cell target) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
+    public class NavigationState_FollowToSpot(NPC npc, Cell target) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
 	{
 		readonly Cell tar = target;
 		readonly MovementModifier moveMod = new(Vector3.zero, 13.33f);
@@ -27,7 +31,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Exit();
 			npc.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
 		}
-		
+
 	}
 	internal class SuperIntendentJr_StateBase(NPC npc) : NpcState(npc)
 	{
@@ -42,7 +46,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.DoorHit(door);
 		}
 
-		
+
 	}
 
 	internal class SuperIntendentJr_Wander(NPC npc) : NpcState(npc)
@@ -53,7 +57,7 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(new NavigationState_WanderRandom(npc, 0));
 		}
 	}
-	
+
 	internal class SuperIntendentJr_RunForNoise(NPC npc, Vector3 vec, NpcState prevState) : NpcState(npc)
 	{
 		public override void Enter()
@@ -72,7 +76,7 @@ namespace BBTimes.CustomContent.NPCs
 				return;
 			}
 			ChangeNavigationState(new NavigationState_TargetPosition(npc, 63, vec));
-			
+
 		}
 
 		public override void Exit()
@@ -83,8 +87,42 @@ namespace BBTimes.CustomContent.NPCs
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 2.5f);
 	}
-	public class SuperIntendentJr : NPC
+	public class SuperIntendentJr : NPC, INPCPrefab
 	{
+		public void SetupPrefab() // edit me
+		{
+			SoundObject[] soundObjects = [
+			this.GetSound("spj_principal.wav", "Vfx_Spj_Found", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f)),
+			this.GetSound("spj_wonder.wav", "Vfx_Spj_Wander", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f)),
+			this.GetSound("spj_step1.wav", "Vfx_Spj_Step", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f)),
+			this.GetSound("spj_step2.wav", "Vfx_Spj_Step", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f)),
+			this.GetSound("spj_wtfisthis.wav", "Vfx_Spj_FoundLong1", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f))
+			];
+
+			soundObjects[4].additionalKeys = [
+					new () { key = "Vfx_Spj_FoundLong2", time = 7.27f },
+				new () { key = "Vfx_Spj_FoundLong3", time = 17.911f },
+				new() { key = "Vfx_Spj_FoundLong4", time = 27.379f }
+			];
+			anim = this.GetSpriteSheet(2, 2, 72f, "spj.png");
+			audWarn = soundObjects[0];
+			audWonder = soundObjects[1];
+			audStep1 = soundObjects[2];
+			audStep2 = soundObjects[3];
+			audLongAssInstructions = soundObjects[4];
+			audMan = GetComponent<PropagatedAudioManager>();
+			stepMan = gameObject.CreatePropagatedAudioManager(audMan.minDistance, audMan.maxDistance);
+			renderer = spriteRenderer[0];
+			spriteRenderer[0].sprite = anim[0];
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		public override void Initialize()
 		{
 			base.Initialize();
@@ -95,7 +133,7 @@ namespace BBTimes.CustomContent.NPCs
 		void CallPrincipals()
 		{
 			foreach (var n in ec.Npcs)
-				if (n.Navigator.enabled && (n.Character == Character.Principal || (n.GetComponent<CustomNPCData>()?.ReplacesCharacter(Character.Principal) ?? false)))
+				if (n.Navigator.enabled && (n.Character == Character.Principal || (n.GetComponent<INPCPrefab>()?.ReplacementNpcs.Contains(Character.Principal) ?? false)))
 					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, ec.CellFromPosition(transform.position)));
 
 			Directions.ReverseList(navigator.currentDirs);
@@ -163,7 +201,7 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					if (npc.Disobeying)
 					{
-						looker.Raycast(npc.transform, Mathf.Min((transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,looker.distance,npc.ec.MaxRaycast), out bool flag);
+						looker.Raycast(npc.transform, Mathf.Min((transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude, looker.distance, npc.ec.MaxRaycast), out bool flag);
 						if (flag)
 						{
 							npc.SetGuilt(brokenRuleTimer, npc.BrokenRule);
@@ -206,9 +244,9 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		float[] timeInSight;
-
-		float noticeCooldown = 0f, wanderCool = 15f, longAssInstructionChance = 0.01f;
-
+		private float noticeCooldown = 0f;
+		private float wanderCool = 15f;
+		private readonly float longAssInstructionChance = 0.01f;
 		[SerializeField]
 		internal PropagatedAudioManager audMan, stepMan;
 

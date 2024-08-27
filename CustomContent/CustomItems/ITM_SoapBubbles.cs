@@ -1,11 +1,26 @@
 ﻿using BBTimes.CustomComponents.NpcSpecificComponents;
 using UnityEngine;
 using System.Collections;
+using BBTimes.CustomComponents;
+using BBTimes.CustomContent.NPCs;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_SoapBubbles : Item
+	public class ITM_SoapBubbles : Item, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			bubPre = Resources.FindObjectsOfTypeAll<Bubble>()[0];
+			audFill = Resources.FindObjectsOfTypeAll<Bubbly>()[0].audFillUp;
+			audFill = Instantiate(audFill);
+			audFill.color = Color.white;
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;

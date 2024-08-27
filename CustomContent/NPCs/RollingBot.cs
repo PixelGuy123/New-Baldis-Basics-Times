@@ -1,14 +1,70 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MTM101BaldAPI;
+using System.Linq;
+
 
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class RollingBot : NPC
+    public class RollingBot : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			SoundObject[] soundObjects = [this.GetSound("rol_warning.wav", "Vfx_Rollbot_Warning", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
+			this.GetSound("rol_error.wav", "Vfx_Rollbot_Error", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
+			this.GetSoundNoSub("shock.wav", SoundType.Voice),
+			this.GetSound("motor.wav", "Sfx_1PR_Motor", SoundType.Voice, new(0.7f, 0.7f, 0.7f))];
+			// eletricity creation
+			Sprite[] storedSprites = [.. this.GetSpriteSheet(4, 4, 25f, "rollBotSheet.png"), .. this.GetSpriteSheet(2, 2, 25f, "shock.png")];
+			Sprite[] anim = [.. storedSprites.Skip(spriteAmount)];
+			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, 0);
+			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
+			eleRender.name = "Sprite";
+
+			var ele = eleRender.transform.parent.gameObject.AddComponent<Eletricity>();
+			ele.name = "RollingEletricity";
+			var ani = ele.gameObject.AddComponent<AnimationComponent>();
+			ani.animation = anim;
+			ani.renderer = eleRender;
+			ani.speed = 15f;
+
+			ele.ani = ani;
+
+			ele.gameObject.CreatePropagatedAudioManager(5f, 35f).AddStartingAudiosToAudioManager(true, soundObjects[2]);
+
+			ele.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
+
+
+			// npc setup
+			audError = soundObjects[1];
+			audWarning = soundObjects[0];
+			audMan = GetComponent<PropagatedAudioManager>();
+
+			gameObject.CreatePropagatedAudioManager(10f, 115f).AddStartingAudiosToAudioManager(true, soundObjects[3]);
+
+			spriteRenderer[0].CreateAnimatedSpriteRotator(
+				GenericExtensions.CreateRotationMap(spriteAmount, [.. storedSprites.Take(spriteAmount)])
+				);
+			spriteRenderer[0].sprite = storedSprites[0];
+
+			eletricityPre = ele;
+		}
+
+		const int spriteAmount = 16;
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
 		public override void Initialize()
 		{
 			base.Initialize();

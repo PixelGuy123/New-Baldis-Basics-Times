@@ -8,6 +8,7 @@ using UnityEngine;
 using PixelInternalAPI.Extensions;
 using MTM101BaldAPI.Components;
 using System.Linq;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.ModPatches
 {
@@ -192,7 +193,7 @@ namespace BBTimes.ModPatches
 			}
 			if (___elevatorsClosed == 3)
 			{
-				___ec.StopAllCoroutines(); // Might look a little dangerous, but I have no other way to disable events
+				___ec.GetComponent<EnvironmentControllerData>()?.OngoingEvents.ForEach(x => { if (x != null) ___ec.StopCoroutine(x); }); // Disable active/about to activate events
 
 				for (int i = 0; i < ___ec.CurrentEventTypes.Count; i++)
 				{

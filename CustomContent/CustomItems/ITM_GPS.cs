@@ -1,10 +1,22 @@
-﻿using System.Collections;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_GPS : Item
+	public class ITM_GPS : Item, IItemPrefab
 	{
+		public void SetupPrefab() =>
+			aud_beep = this.GetSound("gps_beep.wav", "Vfx_GPS_Beep", SoundType.Effect, Color.white);
+		
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			if (usedGps || pm.ec.npcsLeftToSpawn.Count != 0 || pm.ec.Npcs.Count == 0)

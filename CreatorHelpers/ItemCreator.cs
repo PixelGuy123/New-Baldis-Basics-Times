@@ -25,7 +25,7 @@ namespace BBTimes.Helpers
 			itmB.SetEnum(en);
 			var actualItem = itmB.Build();
 
-			SetupItemData(actualItem.item.gameObject.GetComponent<IItemPrefab>(), name, actualItem);
+			actualItem.item.gameObject.GetComponent<IItemPrefab>().SetupItemData(name, actualItem);
 			
 
 			return actualItem;
@@ -35,13 +35,17 @@ namespace BBTimes.Helpers
 		{
 			var sprites = GetAllItemSpritesFrom(name); // Get all sprites from its folder (0 is small icon, 1 is big icon)
 
-			data.ItmObj = itemObj;
 			itemObj.itemSpriteLarge = sprites[1];
 			itemObj.itemSpriteSmall = sprites[0];
 
-			data.SetupPrefab();
+			if (data != null)
+			{
+				data.ItmObj = itemObj;
+				data.Name = name;
+				data.SetupPrefab();
 
-			BasePlugin._cstData.Add(data);
+				BasePlugin._cstData.Add(data);
+			}
 		}
 
 		public static ItemObject DuplicateItem(this ItemObject item, string nameKey)

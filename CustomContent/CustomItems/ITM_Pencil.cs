@@ -1,11 +1,23 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Pencil : Item
+	public class ITM_Pencil : Item, IItemPrefab
 	{
+		public void SetupPrefab() =>
+			audMan = gameObject.CreatePropagatedAudioManager(65f, 85f);
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
+
 		public override bool Use(PlayerManager pm)
 		{				
 			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.reach))
@@ -20,7 +32,7 @@ namespace BBTimes.CustomContent.CustomItems
 						this.pm = pm;
 						audMan.PlaySingle(audStab);
 						pm.RuleBreak("stabbing", 2f, 0.6f);
-						e.GetComponent<CustomNPCData>()?.Stabbed();
+						e.GetComponent<INPCCustomBehavior>()?.GetStabbed();
 
 						StartCoroutine(Timer(e));
 						return true;

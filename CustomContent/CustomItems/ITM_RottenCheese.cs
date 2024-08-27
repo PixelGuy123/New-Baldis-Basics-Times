@@ -1,12 +1,36 @@
-﻿using MTM101BaldAPI.Registers;
+﻿using BBTimes.CustomComponents;
+using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_RottenCheese : Item
+	public class ITM_RottenCheese : Item, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			var storedSprites = this.GetSpriteSheet(3, 2, 35f, "cheese.png");
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]);
+			renderer.transform.SetParent(transform);
+			renderer.name = "RottenCheeseVisual";
+
+			entity = gameObject.CreateEntity(2f, 2f, renderer.transform);
+			entity.SetHeight(1f);
+			sprs = [.. storedSprites];
+			this.renderer = renderer;
+			audPut = this.GetSound("cheesePlace.wav", "Vfx_RotCheese_Place", SoundType.Effect, Color.white);
+			audMan = gameObject.CreatePropagatedAudioManager();
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;

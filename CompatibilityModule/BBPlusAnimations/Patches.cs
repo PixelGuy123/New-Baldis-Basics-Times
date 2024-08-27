@@ -1,6 +1,6 @@
 ﻿using BBPlusAnimations.Components;
 using BBPlusAnimations.Patches;
-using BBTimes.CustomComponents.CustomDatas;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
 using BBTimes.Plugin;
 using BepInEx.Bootstrap;
@@ -29,7 +29,7 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 			var sweepSprs = TextureExtensions.LoadSpriteSheet(7, 1, 26f,
 					BasePlugin.ModPath, "npcs", "ClassicGottaSweep", "Textures", "anims", "oldsweep.png");
 
-			NPCMetaStorage.Instance.Get(Character.Sweep).prefabs.DoIf(x => x.Value.GetComponent<ClassicGottaSweepCustomData>(), (x) =>
+			NPCMetaStorage.Instance.Get(Character.Sweep).prefabs.DoIf(x => x.Value.GetComponent<INPCPrefab>() != null, (x) =>
 			{
 				var comp = x.Value.gameObject.AddComponent<GenericAnimationExtraComponent>();
 				comp.sprites = [x.Value.spriteRenderer[0].sprite, .. sweepSprs];

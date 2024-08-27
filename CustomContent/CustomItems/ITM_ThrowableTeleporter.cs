@@ -1,4 +1,7 @@
-﻿using MTM101BaldAPI.Registers;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using BBTimes.Manager;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,8 +9,27 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_ThrowableTeleporter : Item
+	public class ITM_ThrowableTeleporter : Item, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "telep.png"));
+			renderer.transform.SetParent(transform);
+			renderer.name = "ThrowableTeleporterVisual";
+
+			audMan = gameObject.CreatePropagatedAudioManager(85f, 115f);
+			audThrow = this.GetSoundNoSub("throw.wav", SoundType.Effect);
+			audTeleport = BBTimesManager.man.Get<SoundObject>("teleportAud");
+
+			entity = gameObject.CreateEntity(2f, 2f, renderer.transform);
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			pm.RuleBreak("littering", 2f, 0.8f);

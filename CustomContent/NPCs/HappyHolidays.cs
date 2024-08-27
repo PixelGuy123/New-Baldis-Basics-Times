@@ -1,22 +1,32 @@
-﻿using UnityEngine;
+﻿
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class HappyHolidays : NPC//, IItemAcceptor
+    public class HappyHolidays : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			spriteRenderer[0].sprite = this.GetSprite(65f, "happyholidays.png");
+			audHappyHolidays = this.GetSound("HappyHolidays.wav", "Vfx_HapH_MerryChristmas", SoundType.Voice, new(0.796875f, 0f, 0f));
+		}
+		public void SetupPrefabPost() =>
+			objects = [.. GameExtensions.GetAllShoppingItems()];
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		public override void Initialize()
 		{
 			base.Initialize();
 			audMan = GetComponent<AudioManager>();
 			behaviorStateMachine.ChangeState(new HappyHolidays_Wondering(this));
 		}
-
-		//public void InsertItem(PlayerManager pm, EnvironmentController ec)
-		//{
-		//	audMan.PlaySingle(GetComponent<HappyHolidaysCustomData>().soundObjects[0]); // First sound object is the merry christmas one
-		//}
-
-		//public bool ItemFits(Items item) => item == Items.Scissors;
 
 		internal void GivePlayerItem(PlayerManager pm)
 		{

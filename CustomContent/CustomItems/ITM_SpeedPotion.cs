@@ -9,8 +9,21 @@ using PixelInternalAPI.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_SpeedPotion : Item
+	public class ITM_SpeedPotion : Item, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			audPower = this.GetSoundNoSub("potion_speedCoilNoises.wav", SoundType.Effect);
+			audMan = gameObject.CreateAudioManager(75f, 75f)
+				.MakeAudioManagerNonPositional();
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			if (usedPotions >= 2)

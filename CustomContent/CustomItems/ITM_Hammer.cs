@@ -1,12 +1,24 @@
 ﻿using BBTimes.CustomComponents;
 using UnityEngine;
 using PixelInternalAPI.Classes;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-    public class ITM_Hammer : Item
+    public class ITM_Hammer : Item, IItemPrefab
     {
-        public override bool Use(PlayerManager pm)
+		public void SetupPrefab()
+		{
+			item = ItmObj.itemType;
+		}
+
+		public void SetupPrefabPost(){}
+
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+		public override bool Use(PlayerManager pm)
         {
             Destroy(gameObject);
             if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var raycastHit, pm.pc.reach, LayerStorage.windowLayer, QueryTriggerInteraction.Collide) && raycastHit.transform.CompareTag("Window"))

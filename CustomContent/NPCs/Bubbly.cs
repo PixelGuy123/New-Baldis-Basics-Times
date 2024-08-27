@@ -1,12 +1,68 @@
-﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBTimes.Manager;
+using MTM101BaldAPI;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Components;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using BBTimes.Extensions;
+
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Bubbly : NPC
+    public class Bubbly : NPC, INPCPrefab
 	{
+		public  void SetupPrefab()
+		{
+			var sprs = this.GetSpriteSheet(3, 3, pixs, "bubblySheet.png");
+			spriteRenderer[0].sprite = sprs[0];
+			audMan = GetComponent<PropagatedAudioManager>();
+			sprWalkingAnim = [..sprs.Take(7)];
+			sprPrepareBub = sprs[8];
+			renderer = spriteRenderer[0];
+			audFillUp = this.GetSound("Bubbly_BubbleSpawn.mp3", "Vfx_Bubbly_Fillup", SoundType.Voice, new(0.6f, 0.6f, 0f));
+
+			var bubble = new GameObject("Bubble").AddComponent<Bubble>();
+			bubble.gameObject.ConvertToPrefab(true);
+			bubble.audPop = BBTimesManager.man.Get<SoundObject>("audPop");
+			bubble.audMan = bubble.gameObject.CreatePropagatedAudioManager(85, 105);
+
+			var visual = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(16f, "bubble.png")).AddSpriteHolder(0f, 0);
+			visual.transform.parent.SetParent(bubble.transform);
+			visual.transform.parent.localPosition = Vector3.zero;
+			visual.transform.parent.gameObject.AddComponent<BillboardRotator>().invertFace = true;
+
+			visual.transform.localPosition = Vector3.forward * 0.5f;
+
+			bubble.renderer = visual;
+			bubble.gameObject.layer = LayerStorage.standardEntities;
+			bubble.entity = bubble.gameObject.CreateEntity(1f, 4f, visual.transform);
+			var canvas = ObjectCreationExtensions.CreateCanvas();
+			canvas.transform.SetParent(bubble.transform);
+			ObjectCreationExtensions.CreateImage(canvas, TextureExtensions.CreateSolidTexture(1, 1, new(0f, 0.5f, 0.5f, 0.35f)));
+			bubble.bubbleCanvas = canvas;
+			canvas.gameObject.SetActive(false);
+
+			bubPre = bubble;
+		}
+		public void SetupPrefabPost() { }
+
+		const float pixs = 21f;
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+
+
+
+
+
+		// prefab ^^
 		public override void Initialize()
 		{
 			base.Initialize();

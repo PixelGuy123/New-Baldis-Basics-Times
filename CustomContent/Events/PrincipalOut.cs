@@ -1,22 +1,39 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using PixelInternalAPI.Extensions;
 using MTM101BaldAPI.Components;
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+
 
 namespace BBTimes.CustomContent.Events
 {
-	public class PrincipalOut : RandomEvent
+    public class PrincipalOut : RandomEvent, IObjectPrefab
 	{
+		public void SetupPrefab()
+		{
+			eventIntro = this.GetSound("baldi_walking.wav", "Event_PriOut0", SoundType.Effect, Color.green);
+			eventIntro.additionalKeys = [
+				new() {time = 1.614f, key = "Event_PriOut1"},
+				new() {time = 6.079f, key = "Event_PriOut2"},
+				new() {time = 8.622f, key = "Event_PriOut3"},
+				new() {time = 10.051f, key = "Event_PriOut4"},
+				new() {time = 12.888f, key = "Event_PriOut5"}
+				];
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("events", "Textures");
+		public string SoundPath => this.GenerateDataPath("events", "Audios");
+		// ---------------------------------------------------
 		public override void Begin()
 		{
 			base.Begin();
 			office = ec.offices[crng.Next(0, ec.offices.Count)];
 			foreach (NPC npc in ec.Npcs)
 			{
-				var data = npc.GetComponent<CustomNPCData>();
-				if (npc.Navigator.enabled && (npc.Character == Character.Principal || (data != null && data.npcsBeingReplaced.Contains(Character.Principal)))) // Reminder to change for 
+				var data = npc.GetComponent<INPCPrefab>();
+				if (npc.Navigator.enabled && (npc.Character == Character.Principal || (data != null && data.ReplacementNpcs.Contains(Character.Principal)))) // Reminder to change for 
 				{
 					NavigationState_PrincipalOut navigationState_PartyEvent = new(npc, 88, office);
 					navigationStates.Add(navigationState_PartyEvent);

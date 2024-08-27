@@ -1,10 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using BBTimes.Extensions;
+using BBTimes.CustomComponents;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Leapy : NPC
+    public class Leapy : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			
+			audMan = GetComponent<PropagatedAudioManager>();
+			audJump = this.GetSound("leapy_jump.wav", "Vfx_Leapy_Leap", SoundType.Voice, new Color(0f, 0.3984f, 0f));
+			audStomp = this.GetSound("leapy_stomp.wav", "Vfx_Leapy_Stomp", SoundType.Voice, new Color(0f, 0.3984f, 0f));
+
+			renderer = spriteRenderer[0];
+			var sprs = this.GetSpriteSheet(3, 1, 25f, "leapy.png");
+			spriteRenderer[0].sprite = sprs[0];
+			sprIdle = sprs[0];
+			sprPrepare = sprs[1];
+			sprJump = sprs[2];
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+		
 		public override void Initialize()
 		{
 			base.Initialize();

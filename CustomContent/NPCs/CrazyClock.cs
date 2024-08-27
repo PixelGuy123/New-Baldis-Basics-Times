@@ -4,11 +4,45 @@ using System.Linq;
 using System.Collections;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
+using BBTimes.CustomComponents;
+using HarmonyLib;
+using PixelInternalAPI.Extensions;
+using BBTimes.Extensions;
+
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class CrazyClock : NPC // He's not very well coded because I removed the CustomClockData reference from it, but I'll leave it like that
+    public class CrazyClock : NPC, INPCPrefab // He's not very well coded because I removed the CustomClockData reference from it, but I'll leave it like that
 	{
+		public void SetupPrefab()
+		{
+			SoundObject[] audios = [this.GetSound("clock_tick.wav", "Vfx_CC_Tick", SoundType.Voice, Color.yellow),
+		this.GetSound("clock_tack.wav", "Vfx_CC_Tack", SoundType.Voice, Color.yellow),
+		this.GetSound("clock_Scream.wav", "Vfx_CC_Scream", SoundType.Voice, Color.yellow),
+		this.GetSound("clock_frown.wav", "Vfx_CC_Frown", SoundType.Voice, Color.yellow)];
+
+			audTick = audios[0];
+			audTack = audios[1];
+			allClockAudios = audios;
+			allClockSprites = this.GetSpriteSheet(5, 5, 35f, "crazyClockSheet.png");
+
+			spriteRenderer[0].sprite = allClockSprites[0];
+
+			spriteRenderer[0].material = new(ObjectCreationExtensions.NonBillBoardPrefab.material);
+			baseTrigger.Do(x => x.enabled = false);
+			audMan = GetComponent<AudioManager>();
+			Navigator.enabled = false; // It's a static npc
+			Navigator.Entity.SetActive(false);
+			Navigator.Entity.enabled = false;
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+
+		// ---------------------------------------------------------------
 
 		public override void Initialize()
 		{

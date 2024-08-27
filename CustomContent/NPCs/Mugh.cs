@@ -1,13 +1,69 @@
-﻿using System.Collections;
+﻿using BBTimes.CustomComponents;
+using PixelInternalAPI.Extensions;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Bindings;
+using MTM101BaldAPI;
+using System.Linq;
 using UnityEngine.UI;
+using BBTimes.Extensions;
+
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Mugh : NPC, IItemAcceptor
+    public class Mugh : NPC, IItemAcceptor, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+
+			SoundObject[] soundObjects = [
+			this.GetSound("Mugh_LetsHug.wav", "Vfx_Mugh_Hug1", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("Mugh_LetsBeFriends.wav", "Vfx_Mugh_Hug2", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("Mugh_LoveYou.wav", "Vfx_Mugh_Hug3", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("Mugh_WhyAreYouRunning.wav", "Vfx_Mugh_Left1", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("Mugh_DontLeaveMe.wav", "Vfx_Mugh_Left2", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("Mugh_WhatDidYouDo.wav", "Vfx_Mugh_Die1", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("Mugh_Why.wav", "Vfx_Mugh_Die2", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("Mugh_Revived.wav", "Vfx_Mugh_Revive", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("mugh_noises.wav", "Vfx_Mugh_Noise", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("mugh_die.wav", "Vfx_Mugh_Noise", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			];
+
+			audMan = GetComponent<PropagatedAudioManager>();
+			walkAudMan = gameObject.CreatePropagatedAudioManager(65, 75);
+			renderer = spriteRenderer[0];
+			var storedSprites = this.GetSpriteSheet(5, 1, 55f, "muggy.png");
+			normSprite = storedSprites[0];
+			hugSprite = storedSprites[1];
+			sadSprite = storedSprites[2];
+			holeSprite = storedSprites[3];
+			deadSprite = storedSprites[4];
+
+			audFindPlayer = [.. soundObjects.Take(3)];
+			audLostPlayer = [.. soundObjects.Skip(3).Take(2)];
+			audGetHit = [.. soundObjects.Skip(5).Take(2)];
+			audDie = soundObjects[9];
+			audWalk = soundObjects[8];
+			audRevive = soundObjects[7];
+
+			var can = ObjectCreationExtensions.CreateCanvas();
+			can.gameObject.ConvertToPrefab(false);
+			can.gameObject.SetActive(false);
+			can.transform.SetParent(transform);
+
+			var img = ObjectCreationExtensions.CreateImage(can, this.GetSprite(1, "mud_screen.png"));
+
+			mudCanvas = can;
+			mudImage = img;
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		public override void Initialize()
 		{
 			base.Initialize();
@@ -245,7 +301,7 @@ namespace BBTimes.CustomContent.NPCs
 			var dist = mu.transform.position - pm.transform.position;
 			hugMod.movementAddend = dist * 115f * Time.deltaTime * mu.TimeScale;
 
-			if (dist.magnitude > 30f)
+			if (dist.magnitude >= 5.5f)
 				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 30f, true));
 
 			var color = mu.MudImg.color;

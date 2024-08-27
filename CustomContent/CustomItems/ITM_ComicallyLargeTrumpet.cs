@@ -1,13 +1,28 @@
-﻿using MTM101BaldAPI.Components;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-    public class ITM_ComicallyLargeTrumpet : Item
+    public class ITM_ComicallyLargeTrumpet : Item, IItemPrefab
     {
-        public override bool Use(PlayerManager pm)
+		public void SetupPrefab()
+		{
+			audMan = gameObject.CreateAudioManager(100f, 110f).MakeAudioManagerNonPositional();
+			audBlow = this.GetSound("hrn_play.wav", "Vfx_ComicLargTrum_Blow", SoundType.Effect, Color.white);
+			audInhale = this.GetSound("hrn_inhale.wav", "Vfx_ComicLargTrum_Inhale", SoundType.Effect, Color.white);
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
+		public override bool Use(PlayerManager pm)
         {
 			if (++usingTrompets > 1)
 			{

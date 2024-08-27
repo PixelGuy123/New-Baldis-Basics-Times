@@ -1,11 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 using BBTimes.Extensions;
+using BBTimes.CustomComponents;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_BlowDrier : Item
+	public class ITM_BlowDrier : Item, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			audMan = gameObject.CreateAudioManager(45, 65).MakeAudioManagerNonPositional();
+			audBlow = this.GetSoundNoSub("blowDrier.wav", SoundType.Effect);
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			if (++blowersUsed > 1)

@@ -1,15 +1,52 @@
-﻿using BBTimes.CustomContent.CustomItems;
+﻿
+using BBTimes.CustomComponents;
+using BBTimes.CustomContent.CustomItems;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class PencilBoy : NPC
+    public class PencilBoy : NPC, INPCPrefab, INPCCustomBehavior
 	{
+		public void SetupPrefab()
+		{
+			SoundObject[] soundObjects = [this.GetSound("PB_Angry0.wav", "Vfx_PB_Wander1", SoundType.Voice, Color.yellow),
+			this.GetSound("PB_Angry1.wav", "Vfx_PB_Wander2", SoundType.Voice, Color.yellow),
+			this.GetSound("PB_Angry2.wav", "Vfx_PB_Wander3", SoundType.Voice, Color.yellow),
+			this.GetSound("PB_EvilLaught.wav", "Vfx_PB_Catch", SoundType.Voice, Color.yellow),
+			this.GetSound("PB_SeeLaught.wav", "Vfx_PB_Spot", SoundType.Voice, Color.yellow),
+			this.GetSound("PB_DeathIncoming.wav", "Vfx_PB_SuperAngry", SoundType.Voice, Color.yellow)];
+			audMan = GetComponent<PropagatedAudioManager>();
+
+			audWandering = [soundObjects[0], soundObjects[1], soundObjects[2]];
+			audEvilLaught = soundObjects[3];
+			audSeeLaught = soundObjects[4];
+			audSuperAngry = soundObjects[5];
+
+			var storedSprites = this.GetSpriteSheet(2, 2, 65f, "pencilBoy.png");
+			angrySprite = storedSprites[0];
+			findPlayerSprite = storedSprites[1];
+			happySprite = storedSprites[2];
+			superAngrySprite = storedSprites[3];
+			spriteRenderer[0].sprite = storedSprites[0];
+		}
+
+		public void GetStabbed() =>
+			GetSuperAngry();
+
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);

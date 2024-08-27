@@ -1,10 +1,11 @@
-﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Mopper : NPC
+	public class Mopper : NPC//, INPCPrefab
 	{
 		void Start()
 		{

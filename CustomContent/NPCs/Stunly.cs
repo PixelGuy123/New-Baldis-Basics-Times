@@ -1,14 +1,51 @@
-﻿using BBTimes.CustomComponents;
+﻿using BBTimes.Extensions;
+using BBTimes.CustomComponents;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Components;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Stunly : NPC
+    public class Stunly : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			allSprites = [.. this.GetSpriteSheet(7, 1, 35f, "stunly.png"), .. this.GetSpriteSheet(2, 1, 1f, "stunlyScreen.png"), this.GetSprite(30f, "StunningStars.png")];
+			spriteRenderer[0].sprite = allSprites[0];
+			allSounds = [this.GetSoundNoSub("stunly_noises.wav", SoundType.Voice),
+		this.GetSound("stunly_stun.wav", "Vfx_Stunly_Stun", SoundType.Voice, Color.white),
+		this.GetSound("StunlyChaseLaughter.wav", "Vfx_Stunly_Laughter", SoundType.Voice, Color.white)]; ;
+
+			noiseMan = GetComponent<PropagatedAudioManager>();
+
+			laughterMan = gameObject.CreatePropagatedAudioManager(75f, 100f);
+
+			var canvas = ObjectCreationExtensions.CreateCanvas();
+			canvas.transform.SetParent(transform);
+			canvas.transform.localPosition = Vector3.zero; // I don't know if I really need this but whatever
+			canvas.name = "stunlyOverlay";
+
+			image = ObjectCreationExtensions.CreateImage(canvas, allSprites[7]);
+
+			stunlyCanvas = canvas;
+			stunlyCanvas.gameObject.SetActive(false);
+
+			var billboard = ObjectCreationExtensions.CreateSpriteBillboard(allSprites[9]);
+			billboard.transform.SetParent(transform);
+			billboard.gameObject.SetActive(false);
+			stars = billboard.gameObject.AddComponent<StarObject>();
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		public override void Initialize()
 		{
 			base.Initialize();

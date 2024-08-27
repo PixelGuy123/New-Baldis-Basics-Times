@@ -8,6 +8,7 @@ using HarmonyLib;
 // using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Linq;
 
 namespace BBTimes.Extensions
 {
@@ -61,7 +62,7 @@ namespace BBTimes.Extensions
 			{
 				while (time > 0f)
 				{
-					time -= Time.deltaTime;
+					time -= Time.deltaTime * ec.EnvironmentTimeScale;
 					yield return null;
 				}
 				time = delay;

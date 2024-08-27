@@ -1,12 +1,79 @@
-﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
+using System.Linq;
+using MTM101BaldAPI;
+
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Glubotrony : NPC
+    public class Glubotrony : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			SoundObject[] soundObjects = [this.GetSoundNoSub("PrepareWalk.wav", SoundType.Voice),
+		this.GetSound("step.wav", "Vfx_Gboy_Walk", SoundType.Voice, new(0.19921875f, 0.59765625f, 0.99609375f)),
+		this.GetSound("GB_There.wav", "Vfx_Gboy_putGlue2", SoundType.Voice, new(0.19921875f, 0.59765625f, 0.99609375f)),
+		this.GetSound("GB_Done.wav", "Vfx_Gboy_putGlue1", SoundType.Voice, new(0.19921875f, 0.59765625f, 0.99609375f)),
+		this.GetSound("GB_PrankingTime.wav", "Vfx_Gboy_PrankTime", SoundType.Voice, new(0.19921875f, 0.59765625f, 0.99609375f)),
+		this.GetSound("GB_Situation.wav", "Vfx_Gboy_Situation", SoundType.Voice, new(0.19921875f, 0.59765625f, 0.99609375f)),
+		this.GetSound("GB_Mischievous.wav", "Vfx_Gboy_Mischiveous", SoundType.Voice, new(0.19921875f, 0.59765625f, 0.99609375f)),
+		this.GetSoundNoSub("glueSplash.wav", SoundType.Voice),
+		this.GetSoundNoSub("glueStep.wav", SoundType.Voice)
+		];
+			
+			audMan = GetComponent<PropagatedAudioManager>();
+			stepAudMan = gameObject.CreatePropagatedAudioManager(90f, 165f);
+			audPrepareStep = soundObjects[0];
+			audStep = soundObjects[1];
+			audPutGlue = [soundObjects[2], soundObjects[3]];
+			audWander = [soundObjects[4], soundObjects[5], soundObjects[6]];
+
+			Sprite[] storedSprites = [.. this.GetSpriteSheet(8, 1, pixelsPerUnit, "gluebotronyIdle.png"), .. this.GetSpriteSheet(4, 4, pixelsPerUnit, "gluebotronyMoving.png")];
+			spriteRenderer[0].sprite = storedSprites[0];
+
+			renderer = spriteRenderer[0].CreateAnimatedSpriteRotator(
+				GenericExtensions.CreateRotationMap(8, [.. storedSprites.Take(8)]),
+				GenericExtensions.CreateRotationMap(8, [.. storedSprites.Skip(8).Take(8)]),
+				GenericExtensions.CreateRotationMap(8, [.. storedSprites.Skip(8).Skip(8).Take(8)])
+				);
+
+			sprIdle = storedSprites[0];
+			sprStep1 = storedSprites[8];
+			sprStep2 = storedSprites[16];
+
+			// Glue setup
+			var glueRender = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "glue.png"), false).AddSpriteHolder(-4.9f, 0);
+			glueRender.gameObject.layer = 0;
+			glueRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			glueRender.transform.parent.gameObject.ConvertToPrefab(true);
+
+			var glue = glueRender.transform.parent.gameObject.AddComponent<Glue>();
+			glue.render = glueRender.transform;
+
+			glue.audMan = glue.gameObject.CreatePropagatedAudioManager(45f, 65f).AddStartingAudiosToAudioManager(false, soundObjects[7]);
+			glue.audSteppedOn = soundObjects[8];
+
+			glue.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
+
+			gluePre = glue;
+
+		}
+
+		const float pixelsPerUnit = 55f;
+
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		public override void Initialize()
 		{
 			base.Initialize();

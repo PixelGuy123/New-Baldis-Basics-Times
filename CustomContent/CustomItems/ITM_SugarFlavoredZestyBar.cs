@@ -1,12 +1,24 @@
-﻿using MTM101BaldAPI.Components;
+﻿using BBTimes.CustomComponents;
+using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_SugarFlavoredZestyBar : Item
+	public class ITM_SugarFlavoredZestyBar : Item, IItemPrefab
 	{
+		public void SetupPrefab() =>
+			audEat = GenericExtensions.FindResourceObject<ITM_ZestyBar>().audEat;
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;

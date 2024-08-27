@@ -1,11 +1,49 @@
-﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
+using MTM101BaldAPI;
+using BBTimes.Extensions;
+
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class MagicalStudent : NPC
+    public class MagicalStudent : NPC, INPCPrefab
 	{
+
+		public void SetupPrefab()
+		{
+
+			// magic prefab
+			var mos = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "MGS_Magic.png")).AddSpriteHolder(0f, LayerStorage.standardEntities);
+			var moHolder = mos.transform.parent;
+			mos.name = "MagicRenderer";
+			moHolder.name = "Magic";
+
+			moHolder.gameObject.ConvertToPrefab(true);
+
+			var mo = moHolder.gameObject.AddComponent<MagicObject>();
+			mo.entity = moHolder.gameObject.CreateEntity(4f, 4f, mos.transform).SetEntityCollisionLayerMask(0);
+
+			// MGS Setup
+			magicPre = mo;
+			audMan = GetComponent<PropagatedAudioManager>();
+			audThrow = this.GetSound("MGS_Throw.wav", "Vfx_MGS_Magic", SoundType.Voice, new(0f, 0.33203125f, 0.99609375f));
+			audPrepare = this.GetSound("MGS_Prep.wav", "Vfx_MGS_PrepMagic", SoundType.Voice, new(0f, 0.33203125f, 0.99609375f));
+			throwSprites = this.GetSpriteSheet(3, 1, 65f, "MGS.png");
+			spriteRenderer[0].sprite = throwSprites[0];
+			renderer = spriteRenderer[0];
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
 		public override void Initialize()
 		{
 			base.Initialize();

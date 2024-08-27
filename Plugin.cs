@@ -5,7 +5,6 @@ using BBTimes.Manager;
 using System.Linq;
 using UnityEngine;
 using MTM101BaldAPI.AssetTools;
-using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
 using MTM101BaldAPI;
@@ -253,7 +252,8 @@ namespace BBTimes.Plugin
 
 				foreach(var npc in floordata.NPCs)
 				{
-					if (npc.selection.GetComponent<INPCPrefab>().ReplacementNpcs.Length == 0)
+					var dat = npc.selection.GetComponent<INPCPrefab>();
+					if (dat == null || dat.ReplacementNpcs == null || dat.ReplacementNpcs.Length == 0)
 						ld.potentialNPCs.Add(npc); // Only non-replacement Npcs
 					else
 						ld.forcedNpcs = ld.forcedNpcs.AddToArray(npc.selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time

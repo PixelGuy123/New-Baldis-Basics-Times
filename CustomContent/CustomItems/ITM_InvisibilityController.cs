@@ -1,10 +1,24 @@
-﻿using System.Collections;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_InvisibilityController : Item
+	public class ITM_InvisibilityController : Item, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			audUse = this.GetSound("longHighBeep.wav", "InvCon_Active", SoundType.Effect, Color.white);
+			audDeuse = this.GetSound("longDownBeep.wav", "InvCon_Deactive", SoundType.Effect, Color.white);
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			if (use)

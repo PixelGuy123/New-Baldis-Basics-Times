@@ -1,5 +1,4 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
-using BBTimes.CustomContent.CustomItems;
+﻿using BBTimes.CustomContent.CustomItems;
 using BepInEx.Bootstrap;
 using BBTimes.Helpers;
 using BepInEx;
@@ -46,7 +45,6 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 86 });
 			Mugh.AddHittableItem(item.itemType);
-			((ITM_Hammer)item.item).item = item.itemType;
 			// Present
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Present>()
@@ -436,10 +434,10 @@ namespace BBTimes.Manager
 			itemBs.descKey = "CherryBsoda_Desc";
 			itemBs.value += 5;
 
-			var cherryCustomData = itemBs.item.gameObject.GetComponent<IItemPrefab>();
-			cherryCustomData.SetupItemData("CherryBsoda", itemBs);
+			var ch = itemBs.item.gameObject.AddComponent<ITM_CherryBsoda>();
+			itemBs.item.gameObject.GetComponent<IItemPrefab>().SetupItemData("CherryBsoda", itemBs);
 			itemBs.item.name = "ITM_CherryBsoda";
-			var ch = itemBs.item.GetComponent<ITM_CherryBsoda>();
+			
 			ch.time = 30f;
 
 			itemBs.item = ch;

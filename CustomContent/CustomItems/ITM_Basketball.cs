@@ -1,5 +1,5 @@
-﻿using BBTimes.CustomComponents;
-using BBTimes.CustomComponents.CustomDatas;
+﻿using BBTimes.Extensions;
+using BBTimes.CustomComponents;
 using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Basketball : Item, IEntityTrigger, IItemPrefab
+    public class ITM_Basketball : Item, IEntityTrigger, IItemPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -18,24 +18,23 @@ namespace BBTimes.CustomContent.CustomItems
 			rendererBase.transform.localPosition = Vector3.zero;
 			rendererBase.gameObject.SetActive(true);
 
-			var comp = GetComponent<ITM_Basketball>();
 			gameObject.layer = LayerStorage.standardEntities;
-			comp.entity = gameObject.CreateEntity(2f, 2f, rendererBase.transform);
+			entity = gameObject.CreateEntity(2f, 2f, rendererBase.transform);
 
-			comp.audMan = gameObject.CreatePropagatedAudioManager(75, 105);
-			comp.audThrow = this.GetSoundNoSub("throw.wav", SoundType.Effect);
-			comp.audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
-			comp.audBong = this.GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white);
-			comp.audPop = BBTimesManager.man.Get<SoundObject>("audPop");
-			comp.spriteAnim = sprs;
+			audMan = gameObject.CreatePropagatedAudioManager(75, 105);
+			audThrow = this.GetSoundNoSub("throw.wav", SoundType.Effect);
+			audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
+			audBong = this.GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white);
+			audPop = BBTimesManager.man.Get<SoundObject>("audPop");
+			spriteAnim = sprs;
 
-			comp.renderer = rendererBase;
+			renderer = rendererBase;
 		}
 
 		public void SetupPrefabPost() { }
 
-		public string TexturePath => gameObject.GenerateDataPath("items", "Textures");
-		public string SoundPath => gameObject.GenerateDataPath("items", "Audios");
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
 		public ItemObject ItmObj { get; set; }
 
 

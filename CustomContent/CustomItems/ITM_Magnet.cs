@@ -3,11 +3,32 @@ using UnityEngine;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using BBTimes.Extensions;
+using BBTimes.CustomComponents;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Magnet : Item, IEntityTrigger
+	public class ITM_Magnet : Item, IEntityTrigger, IItemPrefab
 	{
+		public void SetupPrefab()
+		{
+			var storedSprites = this.GetSpriteSheet(2, 2, 35f, "magnet.png");
+			renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]);
+			renderer.transform.SetParent(transform);
+			renderer.name = "MagnetVisual";
+			sprs = [.. storedSprites];
+
+			audMan = gameObject.CreatePropagatedAudioManager(75f, 100f);
+			audThrow = this.GetSoundNoSub("throw.wav", SoundType.Effect);
+
+			entity = gameObject.CreateEntity(2f, 65f, renderer.transform);
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
 		public override bool Use(PlayerManager pm)
 		{
 			if (++usedMagnets > 2)

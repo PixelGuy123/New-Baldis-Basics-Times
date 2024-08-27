@@ -1,5 +1,8 @@
-﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+﻿
+using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
+using MTM101BaldAPI;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Components;
@@ -10,8 +13,50 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Watcher : NPC
+    public class Watcher : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			SoundObject[] soundObjects = [this.GetSound("WCH_ambience.wav", "Vfx_Wch_Idle", SoundType.Voice, new Color(0.8f, 0.8f, 0.8f)),
+		this.GetSoundNoSub("WCH_see.wav", SoundType.Effect),
+		this.GetSound("WCH_angered.wav", "Vfx_Wch_Angry", SoundType.Effect, new Color(0.8f, 0.8f, 0.8f)),
+		this.GetSound("WCH_teleport.wav", "Vfx_Wch_Teleport", SoundType.Effect, new Color(0.8f, 0.8f, 0.8f)),
+		this.GetSound("SHDWCH_spawn.wav", "Vfx_Wch_Spawn", SoundType.Effect, new Color(0.6f, 0.6f, 0.6f)),
+		this.GetSound("SHDWCH_ambience.wav", "Vfx_Wch_Idle", SoundType.Effect, new Color(0.6f, 0.6f, 0.6f))
+			];
+			var storedSprites = this.GetSpriteSheet(2, 1, 35f, "watcher.png");
+			spriteRenderer[0].sprite = storedSprites[0];
+
+			audMan = GetComponent<PropagatedAudioManager>();
+
+			audAmbience = soundObjects[0];
+			audSpot = soundObjects[1];
+			audAngry = soundObjects[2];
+			audTeleport = soundObjects[3];
+
+			spriteToHide = spriteRenderer[0];
+			screenAudMan = gameObject.CreateAudioManager(45f, 75f).MakeAudioManagerNonPositional();
+
+			var hallRender = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[1]);
+			hallRender.gameObject.layer = LayerMask.NameToLayer("Overlay");
+			hallRender.name = "WatcherHallucination";
+			hallRender.gameObject.ConvertToPrefab(true);
+
+			var hall = hallRender.gameObject.AddComponent<Hallucinations>();
+			hall.audMan = hall.gameObject.CreateAudioManager(45f, 65f);
+			hall.audSpawn = soundObjects[4];
+			hall.audLoop = soundObjects[5];
+			hall.renderer = hallRender;
+
+			hallPre = hall;
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
 		public override void Initialize()
 		{
 			base.Initialize();

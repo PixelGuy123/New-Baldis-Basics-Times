@@ -1,6 +1,11 @@
-﻿using HarmonyLib;
+﻿using BBTimes.CustomComponents;
+using HarmonyLib;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
+using UnityEngine;
 
 namespace BBTimes.ModPatches.EnvironmentPatches
 {
@@ -63,6 +68,29 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			}
 		}
 
+
+		[HarmonyPatch("StartEventTimers")]
+		[HarmonyTranspiler]
+		static IEnumerable<CodeInstruction> GetMyEvents(IEnumerable<CodeInstruction> i) =>
+			new CodeMatcher(i)
+			.MatchForward(true, 
+				new(OpCodes.Ldarg_0),
+				new(OpCodes.Ldarg_0),
+				new(OpCodes.Ldarg_0),
+				new(CodeInstruction.LoadField(typeof(EnvironmentController), "events")),
+				new(OpCodes.Ldloc_0),
+				new(OpCodes.Callvirt, AccessTools.Method(typeof(List<RandomEvent>), "get_Item", [typeof(int)])),
+				new(OpCodes.Ldarg_0),
+				new(CodeInstruction.LoadField(typeof(EnvironmentController), "eventTimes")),
+				new(OpCodes.Ldloc_0),
+				new(OpCodes.Callvirt, AccessTools.Method(typeof(List<float>), "get_Item", [typeof(int)])),
+				new(CodeInstruction.Call(typeof(EnvironmentController), "EventTimer", [typeof(RandomEvent), typeof(float)])),
+				new(CodeInstruction.Call(typeof(MonoBehaviour), "StartCoroutine", [typeof(IEnumerator)]))
+				)
+			.Advance(1)
+			.SetInstruction(Transpilers.EmitDelegate<Action<Coroutine, EnvironmentController>>((c, e) => e.GetComponent<EnvironmentControllerData>()?.OngoingEvents.Add(c))) // Replace 'pop' (which basically means, "take out of the stack") to actually use it in a delegate
+			.Insert(new CodeInstruction(OpCodes.Ldarg_0)) // Before the delegate to grab the ec reference
+			.InstructionEnumeration();
 		
     }
 }

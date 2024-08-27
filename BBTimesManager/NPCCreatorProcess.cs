@@ -1,5 +1,4 @@
-﻿using BBTimes.CustomComponents.CustomDatas;
-using BBTimes.CustomContent.NPCs;
+﻿using BBTimes.CustomContent.NPCs;
 using BBTimes.Helpers;
 using BepInEx;
 using MTM101BaldAPI.ObjectCreation;
@@ -50,7 +49,7 @@ namespace BBTimes.Manager
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
 
 			// Classic Gotta Sweep
-			npc = CreatorExtensions.CreateCustomNPCFromExistent<GottaSweep>(Character.Sweep, "ClassicGottaSweep").MarkAsReplacement(45, Character.Sweep);
+			npc = CreatorExtensions.CreateCustomNPCFromExistent<GottaSweep, ClassicGottaSweep>(Character.Sweep, "ClassicGottaSweep").MarkAsReplacement(45, Character.Sweep);
 			npc.AddMetaPrefab();
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 100 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 90 });
@@ -350,7 +349,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("Mugh", "PST_Mugh_Name", "PST_Mugh_Desc", -1.36f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 999999 }); //75
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 75 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 		}
 

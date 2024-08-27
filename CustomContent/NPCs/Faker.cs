@@ -1,13 +1,67 @@
-﻿using BBTimes.Extensions;
+﻿
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using HarmonyLib;
 using MTM101BaldAPI.Components;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Faker : NPC
+    public class Faker : NPC, INPCPrefab
 	{
+		public void SetupPrefab()
+		{
+			forms = this.GetSpriteSheet(3, 1, 31f, "faker.png");
+			spriteRenderer[0].sprite = forms[0];
+			audMan = GetComponent<PropagatedAudioManager>();
+			renderer = spriteRenderer[0];
+		}
+		public void SetupPrefabPost()
+		{
+			List<SoundObject> sds = [];
+			foreach (var npc in NPCMetaStorage.Instance.All()) // get literally every sound from npcs registered in the meta storage
+			{
+				foreach (var pre in npc.prefabs)
+				{
+					if (pre.Value is Faker)
+						continue;
+
+
+					foreach (var field in AccessTools.GetDeclaredFields(pre.Value.GetType()))
+					{
+						if (field.FieldType == typeof(SoundObject))
+						{
+							var obj = (SoundObject)field.GetValue(pre.Value);
+							if (obj != null && !sds.Contains(obj))
+								sds.Add(obj);
+						}
+						else if (field.FieldType == typeof(SoundObject[]))
+						{
+							var obj = (SoundObject[])field.GetValue(pre.Value);
+							if (obj != null)
+							{
+								for (int i = 0; i < obj.Length; i++)
+									if (obj[i] != null && !sds.Contains(obj[i]))
+										sds.Add(obj[i]);
+							}
+						}
+					}
+				}
+
+			}
+			soundsToEmit = [.. sds];
+		}
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		public Character[] ReplacementNpcs { get; set; }
+		public int ReplacementWeight { get; set; }
+
+		// ---------------------------------------------------------------
+
 		public override void Initialize()
 		{
 			base.Initialize();

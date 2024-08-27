@@ -1,5 +1,4 @@
 ﻿using BBTimes.CustomComponents;
-using BBTimes.CustomComponents.CustomDatas;
 using BBTimes.CustomContent.Objects;
 using HarmonyLib;
 using PixelInternalAPI.Extensions;
@@ -10,7 +9,7 @@ using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.Builders
 {
-	public class CameraBuilder : ObjectBuilder, IObjectPrefab
+    public class CameraBuilder : ObjectBuilder, IObjectPrefab
 	{
 
 		public void SetupPrefab()
@@ -44,8 +43,8 @@ namespace BBTimes.CustomContent.Builders
 		}
 		public void SetupPrefabPost() { }
 
-		public string TexturePath => gameObject.GenerateDataPath("objects", "Textures");
-		public string SoundPath => gameObject.GenerateDataPath("objects", "Audios");
+		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("objects", "Textures");
+		public string SoundPath => this.GenerateDataPath("objects", "Audios");
 
 
 		// Prefab stuff above ^^
