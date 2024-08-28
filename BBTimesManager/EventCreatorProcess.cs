@@ -25,9 +25,9 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[0].Events.Add(new() { selection = e, weight = 65 });
+			floorDatas[0].Events.Add(new() { selection = e, weight = 45 });
 			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 75 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 50 });
 
 			// BlackOut
 			e = new RandomEventBuilder<BlackOut>(plug.Info)

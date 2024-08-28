@@ -11,6 +11,7 @@ using BBTimes.CustomContent.Misc;
 using MTM101BaldAPI;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomComponents;
+using System.Linq.Expressions;
 
 namespace BBTimes.Manager
 {
@@ -146,7 +147,8 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_GoldenQuarter>()
 				.SetGeneratorCost(22)
 				.SetShopPrice(750)
-				.SetNameAndDescription("gquarter_Name", "gquarter_Desc")
+				.SetMeta(ItemFlags.MultipleUse, [])
+				.SetNameAndDescription("gquarter_Name3", "gquarter_Desc")
 				.Build("GoldenQuarter");
 			//CreatorExtensions.CreateItem<ITM_GoldenQuarter, CustomItemData>("GoldenQuarter", "gquarter_Name", "gquarter_Desc", 175, 22).AddMeta(plug, ItemFlags.None).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
@@ -157,6 +159,10 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 65 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 70 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			var meta = item.GetMeta();
+			var secondItem = item.DuplicateItem(meta, "gquarter_Name2");
+			((ITM_GoldenQuarter)item.item).nextGoldQuart = secondItem;
+			((ITM_GoldenQuarter)secondItem.item).nextGoldQuart = secondItem.DuplicateItem(meta, "gquarter_Name1");
 
 			// BSED
 			item = new ItemBuilder(plug.Info)
@@ -272,7 +278,7 @@ namespace BBTimes.Manager
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists | ItemFlags.MultipleUse, [])
 				.Build("Pogostick");
 			//CreatorExtensions.CreateItem<ITM_Pogostick, PogostickCustomData>("Pogostick", "POGST_Name3", "POGST_Desc", 475, 25);
-			var meta = item.GetMeta();
+			meta = item.GetMeta();
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 20 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 15 });
@@ -282,7 +288,7 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 25 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
 			ResourceManager.AddMysteryItem(new() { selection = item, weight = 45 });
-			var secondItem = item.DuplicateItem(meta, "POGST_Name2");
+			secondItem = item.DuplicateItem(meta, "POGST_Name2");
 			((ITM_Pogostick)item.item).pogoStickReplacement = secondItem;
 			((ITM_Pogostick)secondItem.item).pogoStickReplacement = secondItem.DuplicateItem(meta, "POGST_Name1");
 

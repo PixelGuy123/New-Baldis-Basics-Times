@@ -179,7 +179,12 @@ namespace BBTimes.CustomContent.Events
 
 		readonly Dictionary<Cell, KeyValuePair<Color, bool>> cellColors = [];
 
-		const float maxVel = 0.6f, slowDownMultiplier = 0.15f, speedDivider = 15f;
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float maxVel = 0.6f, slowDownMultiplier = 0.35f;
+
+		[SerializeField]
+		internal float speedDivider = 15f;
 
 		internal static int activeFrozenEvents = 0;
 	}

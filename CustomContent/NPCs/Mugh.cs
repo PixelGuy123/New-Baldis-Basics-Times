@@ -279,6 +279,8 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		readonly PlayerManager pm = pm;
 		readonly MovementModifier hugMod = new(Vector3.zero, 0.72f);
+		float hugTolerance = 8f;
+		const float minHugTolerance = 5.5f;
 
 		public override void Enter()
 		{
@@ -301,8 +303,12 @@ namespace BBTimes.CustomContent.NPCs
 			var dist = mu.transform.position - pm.transform.position;
 			hugMod.movementAddend = dist * 115f * Time.deltaTime * mu.TimeScale;
 
-			if (dist.magnitude >= 5.5f)
+			if (dist.magnitude >= hugTolerance)
 				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 30f, true));
+
+			hugTolerance -= mu.TimeScale * Time.deltaTime * 0.65f;
+			if (hugTolerance < minHugTolerance)
+				hugTolerance = minHugTolerance;
 
 			var color = mu.MudImg.color;
 			color.a = 1f / (dist.magnitude * 0.45f);

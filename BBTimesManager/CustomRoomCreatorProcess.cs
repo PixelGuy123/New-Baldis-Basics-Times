@@ -330,8 +330,6 @@ namespace BBTimes.Manager
 
 			var sweepCloset = GenericExtensions.FindResourceObject<GottaSweep>().potentialRoomAssets[0].selection;
 
-			ClearNpcAssets<GottaSweep>();
-
 			// Shelf creation
 			var darkWood = Object.Instantiate(man.Get<Texture2D>("woodTexture"));
 			darkWood.name = "Times_darkWood";
@@ -378,8 +376,6 @@ namespace BBTimes.Manager
 			});
 
 			AddAssetsToNpc<GottaSweep>(room);
-
-			ClearNpcAssets<ZeroPrize>();
 			AddAssetsToNpc<ZeroPrize>(room);
 
 			// ************************************************************
@@ -888,19 +884,6 @@ namespace BBTimes.Manager
 						npc.Value.potentialRoomAssets = npc.Value.potentialRoomAssets.AddRangeToArray([.. assets]);
 				});
 
-			}
-
-			static void ClearNpcAssets<N>() where N : NPC
-			{
-				NPCMetaStorage.Instance.All().Do(x =>
-				{
-					if (x.value is not N)
-						return;
-
-					foreach (var npc in x.prefabs)
-						npc.Value.potentialRoomAssets = [];
-					
-				});
 			}
 		}
 

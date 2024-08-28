@@ -84,7 +84,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (!active)
 				return;
 
-			if (!Superintendent.allowedRooms.Contains(player.plm.Entity.CurrentRoom.category))
+			if (!player.Tagged && !Superintendent.allowedRooms.Contains(player.plm.Entity.CurrentRoom.category))
 			{
 				superintendent.Navigator.maxSpeed = 0f;
 				noticeCooldown -= superintendent.TimeScale * Time.deltaTime;

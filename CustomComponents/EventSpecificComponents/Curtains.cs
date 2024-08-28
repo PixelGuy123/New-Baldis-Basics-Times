@@ -6,32 +6,40 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 {
 	public class Curtains : MonoBehaviour
 	{
-		public void AttachToWindow(Window window) =>
-			attachedWindow = window;
+		public void AttachToCell(EnvironmentController ec, Cell cell, Direction dir)
+		{
+			this.ec = ec;
+			this.dir = dir;
+			cellA = cell;
+			cellB = ec.CellFromPosition(cell.position + dir.ToIntVector2());
+		}
 		public void Close(bool close)
 		{
 			ThrowIfNoAttach();
 
 			audMan.PlaySingle(close ? audClose : audOpen);
-			renderers.Do(x => x.sprite = close ? sprClosed : sprOpen);
+			renderer.sprite = close ? sprClosed : sprOpen;
+			cellA.Mute(dir, close);
+			cellB.Mute(dir.GetOpposite(), close);
 			collider.enabled = close;
-			attachedWindow.aTile.Block(attachedWindow.direction, close);
-			attachedWindow.bTile.Block(attachedWindow.direction.GetOpposite(), close);
 
-			StopAllCoroutines();
+			if (closeTimer != null)
+				StopCoroutine(closeTimer);
 		}
 
 		public void TimedClose(bool close, float timer)
 		{
 			ThrowIfNoAttach();
-			StartCoroutine(CloseTimer(close, timer));
-		}
+			if (closeTimer != null)
+				StopCoroutine(closeTimer);
+			closeTimer = StartCoroutine(CloseTimer(close, timer));
+		} 
 
 		IEnumerator CloseTimer(bool close, float timer)
 		{ 
 			while (timer > 0f)
 			{
-				timer -= Time.deltaTime * attachedWindow.ec.EnvironmentTimeScale;
+				timer -= Time.deltaTime * ec.EnvironmentTimeScale;
 				yield return null;
 			}
 
@@ -41,20 +49,23 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 
 		void ThrowIfNoAttach()
 		{
-			if (!attachedWindow)
-				throw new System.ArgumentNullException("The curtain doesn\'t have a window attached to function");
+			if (cellA == null || cellB == null)
+				throw new System.ArgumentNullException("The curtain doesn\'t have a cell pair attached to function");
 		}
 
-		Window attachedWindow;
+		Coroutine closeTimer;
+		Cell cellA, cellB;
+		Direction dir;
+		EnvironmentController ec;
+
+		[SerializeField]
+		internal Collider collider;
 
 		[SerializeField]
 		internal Sprite sprClosed, sprOpen;
 
 		[SerializeField]
-		internal SpriteRenderer[] renderers;
-
-		[SerializeField]
-		internal BoxCollider collider;
+		internal SpriteRenderer renderer;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
