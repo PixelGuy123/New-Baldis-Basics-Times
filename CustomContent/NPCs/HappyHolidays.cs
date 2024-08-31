@@ -9,7 +9,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
-			spriteRenderer[0].sprite = this.GetSprite(65f, "happyholidays.png");
+			spriteRenderer[0].sprite = this.GetSprite(45f, "happyholidays.png");
 			audHappyHolidays = this.GetSound("HappyHolidays.wav", "Vfx_HapH_MerryChristmas", SoundType.Voice, new(0.796875f, 0f, 0f));
 		}
 		public void SetupPrefabPost() =>

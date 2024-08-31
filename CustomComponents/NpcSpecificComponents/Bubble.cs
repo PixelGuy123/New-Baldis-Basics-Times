@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
@@ -33,22 +34,44 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			this.ec = ec;
 			entity.Initialize(ec, position);
 			entity.UpdateInternalMovement(Vector3.zero);
-			entity.OnEntityMoveInitialCollision += (hit) =>
-			{
-				if (hasPopped) return;
-
-				hasPopped = true;
-				entity.UpdateInternalMovement(Vector3.zero);
-				renderer.enabled = false;
-				holding = false;
-				SetTarget(true);
-				overrider.Release();
-				StartCoroutine(PopWait());
-			};
+			entity.OnEntityMoveInitialCollision += hit => Pop();
 
 			this.direction = direction;
 			this.speed = speed;
 			
+		}
+
+		public void Pop()
+		{
+			if (hasPopped) return;
+
+			hasPopped = true;
+			entity.UpdateInternalMovement(Vector3.zero);
+			renderer.enabled = false;
+			holding = false;
+
+			SetTarget(true);
+
+			overrider.Release();
+			if (target)
+			{
+				var pm = target.GetComponent<PlayerManager>();
+				if (pm)
+					affectedPlayers.RemoveAll(x => x.Key == pm);
+			}
+
+			StartCoroutine(PopWait());
+			target = null;
+		}
+		
+		void OnDestroy() 
+		{
+			if (target)
+			{
+				var pm = target.GetComponent<PlayerManager>();
+				if (pm)
+					affectedPlayers.RemoveAll(x => x.Key == pm);
+			}
 		}
 
 		public void Initialize() =>
@@ -72,6 +95,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 				PlayerManager pm = other.GetComponent<PlayerManager>();
 				if (other.CompareTag("Player") && pm)
 				{
+					affectedPlayers.Add(new(pm, this));
 					bubbleCanvas.gameObject.SetActive(true);
 					bubbleCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 				}
@@ -89,10 +113,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			{
 				if (!target || (transform.position - target.transform.position).magnitude > 10f)
 				{
-					hasPopped = true;
-					SetTarget(true);
-					overrider.Release();
-					StartCoroutine(PopWait());
+					Pop();
 					return;
 				}
 				target.Teleport(transform.position);
@@ -124,5 +145,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		}
 
 		readonly EntityOverrider overrider = new();
+
+		public static List<KeyValuePair<PlayerManager, Bubble>> affectedPlayers = [];
 	}
 }

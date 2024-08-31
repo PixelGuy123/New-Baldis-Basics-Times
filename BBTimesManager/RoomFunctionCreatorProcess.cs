@@ -36,9 +36,10 @@ namespace BBTimes.Manager
 			var highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(CafeteriaPrefix);
 			highCeil.ceilingHeight = 5;
 			highCeil.customCeiling = ObjectCreationExtension.blackTex;
-			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "rooms", "Cafeteria", "wallFadeInBlack.png"))];
+			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "wallFadeInBlack.png"))];
 			highCeil.chanceToHappen = 0.8f;
 			highCeil.customLight = man.Get<GameObject>("prefab_cafeHangingLight").transform;
+			AddFunctionToEveryRoom<RandomPosterFunction>(CafeteriaPrefix).posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "CafeteriaRules.png"))])];
 
 			highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(LibraryPrefix);
 			highCeil.ceilingHeight = 1;

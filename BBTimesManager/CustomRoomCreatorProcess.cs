@@ -586,6 +586,7 @@ namespace BBTimes.Manager
 			room[0].selection.AddRoomFunctionToContainer<SpecialRoomSwingingDoorsBuilder>().swingDoorPre = man.Get<SwingDoor>("swingDoorPre");
 			room[0].selection.AddRoomFunctionToContainer<HighCeilingRoomFunction>().ceilingHeight = 9;
 			room[0].selection.AddRoomFunctionToContainer<RuleFreeZone>();
+			room[0].selection.AddRoomFunctionToContainer<RandomPosterFunction>().posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "basketAreaWarning.png"))])]; 
 
 			sets.container = room[0].selection.roomFunctionContainer;
 

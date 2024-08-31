@@ -432,9 +432,9 @@ namespace BBTimes.Manager
 			floorDatas[2].ForcedItems.Add(item);
 
 			// Cherry Bsoda
-			var itemBs = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
+			var normBsoda = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
 
-			itemBs = itemBs.DuplicateItem("CherryBsoda_Name");
+			var itemBs = normBsoda.DuplicateItem("CherryBsoda_Name");
 
 			itemBs.price += 100;
 			itemBs.descKey = "CherryBsoda_Desc";
@@ -656,6 +656,53 @@ namespace BBTimes.Manager
 			secondItem = item.DuplicateItem(meta, "SoapBub_Name2");
 			((ITM_SoapBubbles)item.item).itmObjToReplace = secondItem;
 			((ITM_SoapBubbles)secondItem.item).itmObjToReplace = secondItem.DuplicateItem(meta, "SoapBub_Name1");
+
+			// GSoda
+			itemBs = normBsoda.DuplicateItem("GSoda_Name");
+
+			itemBs.price += 350;
+			itemBs.descKey = "GSoda_Desc";
+			itemBs.value += 7;
+
+			var gs = itemBs.item.gameObject.AddComponent<ITM_GSoda>();
+			itemBs.item.gameObject.GetComponent<IItemPrefab>().SetupItemData("GSoda", itemBs);
+			itemBs.item.name = "ITM_GSoda";
+
+			itemBs.item = gs;
+			itemBs.itemType = EnumExtensions.ExtendEnum<Items>("GSoda");
+			itemBs.AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists);
+
+			item = itemBs;
+			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 20 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 60 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 50 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 55 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 45 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 25 });
+
+			// Beehive
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_Beehive>()
+				.SetGeneratorCost(50)
+				.SetShopPrice(750)
+				.SetNameAndDescription("Beehive_Name", "Beehive_Desc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build("Beehive");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 5 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 40 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 5 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 10 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
+
 		}
 	}
 }

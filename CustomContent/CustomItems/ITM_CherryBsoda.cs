@@ -1,6 +1,5 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
-using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -11,20 +10,18 @@ namespace BBTimes.CustomContent.CustomItems
 		public void SetupPrefab()
 		{
 			var nbsoda = GetComponent<ITM_BSODA>();
-			var bsoda = gameObject.GetComponent<ITM_CherryBsoda>();
 
-			bsoda.spriteRenderer = nbsoda.spriteRenderer;
-			bsoda.sound = nbsoda.sound;
-			bsoda.entity = nbsoda.entity;
-			bsoda.time = nbsoda.time;
-			bsoda.moveMod = nbsoda.moveMod;
-			bsoda.audMan = gameObject.CreatePropagatedAudioManager(65, 125);
-			bsoda.audHit = this.GetSoundNoSub("hit.wav", SoundType.Voice);
+			spriteRenderer = nbsoda.spriteRenderer;
+			sound = nbsoda.sound;
+			entity = nbsoda.entity;
+			time = nbsoda.time;
+			moveMod = nbsoda.moveMod;
+			audMan = gameObject.CreatePropagatedAudioManager(65, 125);
+			audHit = this.GetSoundNoSub("hit.wav", SoundType.Voice);
 
-			bsoda.spriteRenderer.sprite = this.GetSprite(bsoda.spriteRenderer.sprite.pixelsPerUnit, "spray.png");
-			bsoda.speed = 45f;
-			bsoda.entity.collisionLayerMask = LayerStorage.entityCollisionMask; // Default entity collision mask
-			Destroy(bsoda.transform.Find("RendereBase").Find("Particles").gameObject);
+			spriteRenderer.sprite = this.GetSprite(spriteRenderer.sprite.pixelsPerUnit, "spray.png");
+			speed = 45f;
+			Destroy(transform.Find("RendereBase").Find("Particles").gameObject);
 
 			Destroy(nbsoda);
 		}

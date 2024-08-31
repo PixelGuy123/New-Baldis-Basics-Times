@@ -124,12 +124,13 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				player.plm.AddStamina(-player.plm.stamina, true);
 				disabledPlayer = player.GetMovementStatModifier();
-				StartCoroutine(DisabledPlayerCooldown());
+				StartCoroutine(DisabledPlayerCooldown(true));
 				container.RemoveLookerMod(lookerMod);
 			}
 			else
 			{
 				player.plm.AddStamina(-player.plm.staminaMax * 0.5f, true); // Workaround so the stamina doesn't go below 0
+				StartCoroutine(DisabledPlayerCooldown(false));
 			}
 			audMan.PlaySingle(ITM_Pencil.audStab);
 			audMan.PlaySingle(audEvilLaught);
@@ -139,16 +140,16 @@ namespace BBTimes.CustomContent.NPCs
 			behaviorStateMachine.ChangeState(new PencilBoy_Satisfied(this));
 		}
 
-		IEnumerator DisabledPlayerCooldown()
+		IEnumerator DisabledPlayerCooldown(bool superStab)
 		{
-			disabledPlayer.AddModifier("staminaRise", stMod);
+			disabledPlayer.AddModifier("staminaRise", superStab ? stMod : normStMod);
 			float time = 10f;
 			while (time > 0f)
 			{
 				time -= TimeScale * Time.deltaTime;
 				yield return null;
 			}
-			disabledPlayer.RemoveModifier(stMod);
+			disabledPlayer.RemoveModifier(superStab ? stMod : normStMod);
 
 			yield break;
 		}
@@ -159,7 +160,7 @@ namespace BBTimes.CustomContent.NPCs
 			disabledPlayer?.RemoveModifier(stMod);
 		}
 
-		readonly ValueModifier stMod = new(0f);
+		readonly ValueModifier stMod = new(0f), normStMod = new(0.7f);
 		PlayerMovementStatModifier disabledPlayer;
 
 		[SerializeField]
