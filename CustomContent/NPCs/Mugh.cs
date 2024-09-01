@@ -279,7 +279,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		readonly PlayerManager pm = pm;
 		readonly MovementModifier hugMod = new(Vector3.zero, 0.72f);
-		float hugTolerance = 8f;
+		float hugTolerance = 14f;
 		const float minHugTolerance = 5.5f;
 
 		public override void Enter()
@@ -306,7 +306,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (dist.magnitude >= hugTolerance)
 				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 30f, true));
 
-			hugTolerance -= mu.TimeScale * Time.deltaTime * 0.65f;
+			hugTolerance -= mu.TimeScale * Time.deltaTime * dist.magnitude * 0.5f;
 			if (hugTolerance < minHugTolerance)
 				hugTolerance = minHugTolerance;
 

@@ -349,7 +349,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("Mugh", "PST_Mugh_Name", "PST_Mugh_Desc", -1.36f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 75 });
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 50 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 		}
 

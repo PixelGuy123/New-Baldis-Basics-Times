@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class OfficeChair : NPC, INPCPrefab // Npc here
+	public class OfficeChair : NPC, INPCPrefab, IItemAcceptor // Npc here
 	{
 		public void SetupPrefab()
 		{
@@ -58,11 +58,26 @@ namespace BBTimes.CustomContent.NPCs
 			base.Despawn();
 		}
 
+		public bool ItemFits(Items itm) {
+			if (behaviorStateMachine.CurrentState is OfficeChair_WaitForCollision col && col.cooldown > 0f && itemsThatFixMe.Contains(itm))
+				return true;
+			return false;
+		}
+
+		public void InsertItem(PlayerManager pm, EnvironmentController ec)
+		{
+			if (behaviorStateMachine.CurrentState is OfficeChair_WaitForCollision col)
+				col.cooldown = -1f;
+		}
+
 		[SerializeField]
 		internal Sprite sprActive, sprDeactive;
 
 		[SerializeField]
 		internal SoundObject audRoll;
+
+		readonly static HashSet<Items> itemsThatFixMe = [];
+		public static void AddFixableItem(Items i) => itemsThatFixMe.Add(i);
 
 
 	}
@@ -204,7 +219,7 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class OfficeChair_WaitForCollision(OfficeChair office, float waitCooldown) : OfficeChair_StateBase(office)
 	{
-		float cooldown = waitCooldown;
+		internal float cooldown = waitCooldown;
 
 		public override void Enter()
 		{

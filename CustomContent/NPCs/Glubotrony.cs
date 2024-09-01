@@ -133,7 +133,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			audMan.FlushQueue(true);
 			audMan.QueueRandomAudio(audPutGlue);
-			Instantiate(gluePre).Initialize(this, transform.position, 0.08f);
+			Instantiate(gluePre).Initialize(gameObject, transform.position, 0.08f, ec);
 			Directions.ReverseList(navigator.currentDirs);
 			behaviorStateMachine.ChangeNavigationState(new NavigationState_WanderRandom(this, 0));
 			SetGuilt(3f, "littering");

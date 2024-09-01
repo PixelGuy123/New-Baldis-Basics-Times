@@ -22,7 +22,7 @@ namespace BBTimes.CustomContent.CustomItems
 			entity = gameObject.CreateEntity(2f, 2f, rendererBase.transform);
 
 			audMan = gameObject.CreatePropagatedAudioManager(75, 105);
-			audThrow = this.GetSoundNoSub("throw.wav", SoundType.Effect);
+			audThrow = BBTimesManager.man.Get<SoundObject>("audGenericThrow");
 			audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
 			audBong = this.GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white);
 			audPop = BBTimesManager.man.Get<SoundObject>("audPop");

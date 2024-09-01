@@ -40,8 +40,6 @@ namespace BBTimes.CustomContent.CustomItems
 			owner = pm.gameObject;
 			pm.RuleBreak("littering", 5f, 0.8f);
 
-			gameObject.SetActive(true);
-
 			entity.Initialize(pm.ec, pm.transform.position);
 			ec = pm.ec;
 

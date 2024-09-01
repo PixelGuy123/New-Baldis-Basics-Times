@@ -23,14 +23,12 @@ namespace BBTimes.CustomContent.NPCs
 
 			laughterMan = gameObject.CreatePropagatedAudioManager(75f, 100f);
 
-			var canvas = ObjectCreationExtensions.CreateCanvas();
-			canvas.transform.SetParent(transform);
-			canvas.transform.localPosition = Vector3.zero; // I don't know if I really need this but whatever
-			canvas.name = "stunlyOverlay";
+			stunlyCanvas = ObjectCreationExtensions.CreateCanvas();
+			stunlyCanvas.transform.SetParent(transform);
+			stunlyCanvas.transform.localPosition = Vector3.zero; // I don't know if I really need this but whatever
+			stunlyCanvas.name = "stunlyOverlay";
 
-			image = ObjectCreationExtensions.CreateImage(canvas, allSprites[7]);
-
-			stunlyCanvas = canvas;
+			image = ObjectCreationExtensions.CreateImage(stunlyCanvas, allSprites[7]);
 			stunlyCanvas.gameObject.SetActive(false);
 
 			var billboard = ObjectCreationExtensions.CreateSpriteBillboard(allSprites[9]);

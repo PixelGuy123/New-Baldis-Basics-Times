@@ -132,6 +132,19 @@ namespace BBTimes.Manager
 			floorDatas[1].Events.Add(new() { selection = e, weight = 60 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 25 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 45 });
+
+			// Thunderstorm
+			e = new RandomEventBuilder<LightningEvent>(plug.Info)
+				.SetEnum("LightningEvent")
+				.SetMinMaxTime(75f, 100f)
+				.SetName("LightningEvent")
+				.Build()
+				.SetupEvent();
+
+
+			floorDatas[1].Events.Add(new() { selection = e, weight = 50 });
+			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 15 });
 		}
 
 		

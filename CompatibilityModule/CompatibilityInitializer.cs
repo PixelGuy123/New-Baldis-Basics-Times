@@ -9,6 +9,11 @@ namespace BBTimes.CompatibilityModule
 			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.grapplinghooktweaks"))
 				GrapplingHookTweaksCompat.Loadup();
 		}
+		internal static void InitializePostOnLoadMods()
+		{
+			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.stackableitems"))
+				StackableItemsCompat.Loadup();
+		}
 		internal static void InitializeOnAwake()
 		{
 			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.custommusics"))
@@ -17,6 +22,8 @@ namespace BBTimes.CompatibilityModule
 				CustomVendingMachinesCompat.Loadup();
 			if (Chainloader.PluginInfos.ContainsKey("io.github.luisrandomness.bbp_custom_posters"))
 				CustomPostersCompat.Loadup();
+			if (Chainloader.PluginInfos.ContainsKey("baldi.basics.plus.advanced.mod"))
+				AdvancedEditionCompat.Loadup();
 		}
 	}
 }

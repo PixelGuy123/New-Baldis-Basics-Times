@@ -60,8 +60,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator Throw(Transform target)
 		{
-			audMan.QueueAudio(audPrepare);
 			audMan.SetLoop(true);
+			audMan.QueueAudio(audPrepare);
 			navigator.maxSpeed = 0f;
 			navigator.SetSpeed(0f);
 			float cool = 4.5f;

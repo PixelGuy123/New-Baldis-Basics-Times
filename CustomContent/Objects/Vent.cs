@@ -10,13 +10,13 @@ namespace BBTimes.CustomContent.Objects
 	{
 		private void Start()
 		{
-			if (!Enabled)
-			{
-				normalVentAudioMan.QueueAudio(ventAudios[0]);
-				normalVentAudioMan.SetLoop(true);
-			}
 			normalVentAudioMan.maintainLoop = true;
 			gasLeakVentAudioMan.maintainLoop = true;
+			if (!Enabled)
+			{
+				normalVentAudioMan.SetLoop(true);
+				normalVentAudioMan.QueueAudio(ventAudios[0]);
+			}
 		}
 
 		public void BlockMe() => animation = StartCoroutine(BlockAnimation());
@@ -39,9 +39,9 @@ namespace BBTimes.CustomContent.Objects
 			}
 
 			renderer.material.mainTexture = ventTexs[ventTexs.Length - 1];
+			gasLeakVentAudioMan.SetLoop(true);
 			gasLeakVentAudioMan.QueueAudio(ventAudios[1]);
 			gasLeakVentAudioMan.QueueAudio(ventAudios[2]);
-			gasLeakVentAudioMan.SetLoop(true);
 
 			var e = particle.emission;
 			e.rateOverTimeMultiplier = emissionRate;
@@ -59,8 +59,9 @@ namespace BBTimes.CustomContent.Objects
 			gasLeakVentAudioMan.SetLoop(false);
 			gasLeakVentAudioMan.QueueAudio(ventAudios[3]);
 
-			normalVentAudioMan.QueueAudio(ventAudios[0]);
 			normalVentAudioMan.SetLoop(true);
+			normalVentAudioMan.QueueAudio(ventAudios[0]);
+			
 			float sprite = ventTexs.Length - 1;
 			float speed = 0f;
 			while (sprite > 1f)

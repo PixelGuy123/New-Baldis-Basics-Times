@@ -42,6 +42,7 @@ namespace BBTimes.CustomContent.CustomItems
 		// Prefab Setup Above^^
 		public override bool Use(PlayerManager pm)
 		{
+			this.pm = pm;
 			target = pm.gameObject;
 			Setup(pm.ec, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, pm.transform.position);
 
@@ -53,9 +54,10 @@ namespace BBTimes.CustomContent.CustomItems
 			entity.Initialize(ec, pos);
 			this.ec = ec;
 			dir = direction;
-			audMan.QueueAudio(audBees);
 			audMan.maintainLoop = true;
 			audMan.SetLoop(true);
+			audMan.QueueAudio(audBees);
+			entity.OnEntityMoveInitialCollision += hit => dir = Vector3.Reflect(dir, hit.normal);
 		}
 
 		void Update()
@@ -69,7 +71,8 @@ namespace BBTimes.CustomContent.CustomItems
 			
 			if (hasHit)
 			{
-				renderer.transform.localPosition = Random.insideUnitSphere * 3f;
+				if (Time.timeScale != 0f)
+					renderer.transform.localPosition = Random.insideUnitSphere * 3f;
 				if (!e)
 				{
 					Destroy(gameObject);
@@ -130,9 +133,6 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
-
-		[SerializeField]
-		internal Sprite[] spriteAnim;
 
 		[SerializeField]
 		internal AudioManager audMan, stungAudMan;

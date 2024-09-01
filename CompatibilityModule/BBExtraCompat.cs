@@ -35,8 +35,9 @@ namespace BBTimes.CompatibilityModule
 			}
 		}
 
-		[HarmonyPatch(typeof(Kulak_Angry), "OnTriggerStay")]
-		[HarmonyPatch(typeof(Kulak_Wandering), "OnTriggerStay")]
+		[HarmonyPatch(typeof(Kulak_Angry), "OnStateTriggerStay")]
+		[HarmonyPatch(typeof(Kulak_Wandering), "OnStateTriggerStay")]
+		[HarmonyTranspiler]
 		static IEnumerable<CodeInstruction> KulakDontBreakUnbreakable(IEnumerable<CodeInstruction> i) =>
 			new CodeMatcher(i)
 			.MatchForward(true,
@@ -55,7 +56,7 @@ namespace BBTimes.CompatibilityModule
 				new(OpCodes.Callvirt, AccessTools.Method(typeof(Component), "GetComponent", [], [typeof(CustomWindowComponent)])),
 				new(Transpilers.EmitDelegate<Func<bool, CustomWindowComponent, bool>>((loc, win) =>
 				{
-					if (!loc) return false; // If it's already false, it means it is broken
+					if (!win || !loc) return false; // If it's already false, it means it is broken
 					return !win.unbreakable; // Otherwise, if the window is unbreakable, return the inverse
 				})),
 				new(OpCodes.Stloc_1)

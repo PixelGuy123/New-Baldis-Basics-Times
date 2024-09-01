@@ -1,5 +1,6 @@
 ﻿using BBTimes.CompatibilityModule;
 using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Misc.SelectionHolders;
@@ -99,6 +100,32 @@ namespace BBTimes.Manager
 			man.Add("plasticTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("PlasticTable").MakeReadableTexture());
 			man.Add("teleportAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport"));
 			man.Add("whiteScreen", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, Color.white), 1f));
+			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "throw.wav")), string.Empty, SoundType.Effect, Color.white);
+			sd.subtitle = false;
+			man.Add("audGenericThrow", sd);
+
+			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, "shock.png");
+			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, 0);
+			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
+			eleRender.name = "Sprite";
+
+			var ele = eleRender.transform.parent.gameObject.AddComponent<Eletricity>();
+			ele.name = "Eletricity";
+			var ani = ele.gameObject.AddComponent<AnimationComponent>();
+			ani.animation = anim;
+			ani.renderer = eleRender;
+			ani.speed = 15f;
+
+			ele.ani = ani;
+
+			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "shock.wav")), string.Empty, SoundType.Effect, Color.white);
+			sd.subtitle = false;
+
+			ele.gameObject.CreatePropagatedAudioManager(10f, 30f).AddStartingAudiosToAudioManager(true, sd);
+
+			ele.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
+			man.Add("EletricityPrefab", ele);
 
 
 			// Make a transparent texture

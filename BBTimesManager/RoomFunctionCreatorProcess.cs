@@ -6,13 +6,11 @@ using UnityEngine;
 using MTM101BaldAPI;
 using System.Linq;
 using BBTimes.Extensions.ObjectCreationExtensions;
-using BBTimes.Plugin;
 using HarmonyLib;
 using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
-using BBTimes.CustomContent.Objects;
 
 namespace BBTimes.Manager
 {
@@ -20,17 +18,21 @@ namespace BBTimes.Manager
 	{
 		static void CreateRoomFunctions() // This is specifically for base game rooms, custom rooms can add their room functions by other ways
 		{
-			// Random Window Function for cafe
-			AddFunctionToEveryRoom<RandomWindowFunction>(CafeteriaPrefix).window = CreatorExtensions.CreateWindow("classicWindow", // Little tricks to make this function
+			var classicWindow = CreatorExtensions.CreateWindow("classicWindow",
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow.png")),
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow_Broken.png")),
-				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow_Mask.png"))); // Yeah, it creates a window here too. But the WindowCreationprocess is for those that are supposed to spawn naturally;
+				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow_Mask.png")));
+			// Random Window Function for cafe
+			AddFunctionToEveryRoom<RandomWindowFunction>(CafeteriaPrefix).window = classicWindow; // Yeah, it creates a window here too. But the WindowCreationprocess is for those that are supposed to spawn naturally;
+			AddFunctionToEveryRoom<RandomWindowFunction>(PlaygroundPrefix).window = classicWindow;
 
 			// Random poster functon for class and office
 			PosterObject[] poster = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "wall_clock.png"))])];
 
 			AddFunctionToEveryRoom<RandomPosterFunction>(ClassPrefix).posters = poster;
 			AddFunctionToEveryRoom<RandomPosterFunction>(OfficePrefix).posters = poster;
+			AddFunctionToEveryRoom<RandomPosterFunction>(CafeteriaPrefix).posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "CafeteriaRules.png"))]),
+				ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "food_allergy_.png"))])];
 
 			// High ceiling function
 			var highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(CafeteriaPrefix);
@@ -39,8 +41,6 @@ namespace BBTimes.Manager
 			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "wallFadeInBlack.png"))];
 			highCeil.chanceToHappen = 0.8f;
 			highCeil.customLight = man.Get<GameObject>("prefab_cafeHangingLight").transform;
-			AddFunctionToEveryRoom<RandomPosterFunction>(CafeteriaPrefix).posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "CafeteriaRules.png"))])];
-
 			highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(LibraryPrefix);
 			highCeil.ceilingHeight = 1;
 			highCeil.targetTransformNamePrefix = "Bookshelf";
@@ -121,6 +121,6 @@ namespace BBTimes.Manager
 			return l;
 		}
 
-		const string CafeteriaPrefix = "Cafeteria", OfficePrefix = "Office", ClassPrefix = "Class", LibraryPrefix = "Library", FacultyPrefix = "Faculty";
+		const string CafeteriaPrefix = "Cafeteria", OfficePrefix = "Office", ClassPrefix = "Class", LibraryPrefix = "Library", PlaygroundPrefix = "Playground", FacultyPrefix = "Faculty";
 	}
 }

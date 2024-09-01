@@ -57,7 +57,8 @@ namespace BBTimes.Extensions
 
 		public static IEnumerator LightChanger(this EnvironmentController ec, List<Cell> lights, float delay)
 		{
-			float time = delay;
+			float maxDelay = delay;
+			float time = maxDelay;
 			while (lights.Count != 0)
 			{
 				while (time > 0f)
@@ -65,7 +66,8 @@ namespace BBTimes.Extensions
 					time -= Time.deltaTime * ec.EnvironmentTimeScale;
 					yield return null;
 				}
-				time = delay;
+				maxDelay *= 0.95f;
+				time = maxDelay;
 				int num = Random.Range(0, lights.Count);
 				lights[num].lightColor = Color.red;
 				lights[num].SetLight(true);

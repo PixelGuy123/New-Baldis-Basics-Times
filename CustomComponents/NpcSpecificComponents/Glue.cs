@@ -1,10 +1,9 @@
-﻿using BBTimes.CustomContent.NPCs;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
 {
-	public class Glue : GlueObject<Glubotrony>
+	public class Glue : GlueObject
 	{
 		protected override void ActivityEnter(ActivityModifier actMod)
 		{
@@ -15,7 +14,6 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		protected override void Initialize()
 		{
 			base.Initialize();
-			ec = owner.ec;
 			StartCoroutine(Spawn());
 		}
 		IEnumerator Spawn()
@@ -65,10 +63,6 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			Destroy(gameObject);
 			yield break;
 		}
-
-		
-
-		EnvironmentController ec;
 
 		float cooldown = Random.Range(20f, 35f);
 

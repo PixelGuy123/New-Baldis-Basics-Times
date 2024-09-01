@@ -18,6 +18,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			if (rng.NextDouble() > chanceToHappen)
 				return;
+			changed = true;
 
 			room.ceilTex = ObjectCreationExtension.transparentTex;
 			room.GenerateTextureAtlas();
@@ -61,7 +62,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					var tile = Instantiate(c.Tile);
 					tile.transform.SetParent(planeHolder.transform);
 					tile.transform.position = c.FloorWorldPosition + (Vector3.up * (LayerStorage.TileBaseOffset * i));
-					tile.MeshRenderer.sharedMaterial = room.baseMat;
+					tile.MeshRenderer.material = room.baseMat;
 					tile.MeshRenderer.material.mainTexture = fullTex;
 					c.AddRenderer(tile.MeshRenderer);
 
@@ -123,11 +124,14 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public override void OnGenerationFinished()
 		{
 			base.OnGenerationFinished();
-			foreach (var c in room.cells)
-				c.SetBase(room.baseMat); // base mat should be alpha now
+			if (changed)
+				foreach (var c in room.cells)
+					c.SetBase(c.Tile.MeshRenderer.material.name.StartsWith(room.defaultPosterMat.name) ? room.posterMat : room.baseMat); // base mat should be alpha now
+			
 		}
 
 		Texture2D originalCeilTex;
+		bool changed = false;
 
 		[SerializeField]
 		public string targetTransformNamePrefix = string.Empty;

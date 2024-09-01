@@ -396,6 +396,8 @@ namespace BBTimes.Manager
 			floorDatas[1].ForcedItems.Add(item);
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
 			EventMachine.AddItemToTrigger(item.itemType);
+			OfficeChair.AddFixableItem(item.itemType);
+			RollingBot.AddFixableItem(item.itemType);
 
 			// Hardhat
 			item = new ItemBuilder(plug.Info)
@@ -692,16 +694,94 @@ namespace BBTimes.Manager
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("Beehive");
 
-			floorDatas[0].Items.Add(new() { selection = item, weight = 5 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 40 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 5 });
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
-			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 10 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 70 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 60 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 8 });
+
+			// SuperCamera
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_SuperCamera>()
+				.SetGeneratorCost(45)
+				.SetShopPrice(500)
+				.SetNameAndDescription("Supercam_Name", "Supercam_Desc")
+				.SetMeta(ItemFlags.Persists, [])
+				.Build("SuperCamera");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 40 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 50 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 5 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 10 });
+
+			// Sticky Gun
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_PickupGun>()
+				.SetGeneratorCost(40)
+				.SetShopPrice(600)
+				.SetNameAndDescription("Pickupgun_Name", "Pickupgun_Desc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build("GrabGun");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 10 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 10 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 10 });
+
+			// Toilet Paper
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_ToiletPaper>()
+				.SetGeneratorCost(45)
+				.SetShopPrice(700)
+				.SetNameAndDescription("Toilerpaper_Name", "Toilerpaper_Desc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build("ToiletPaper");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 40 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 15 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 55 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 16 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
+
+			// FidgetSpinner
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_FidgetSpinner>()
+				.SetGeneratorCost(55)
+				.SetShopPrice(900)
+				.SetNameAndDescription("FidgetSpinner_Name", "FidgetSpinner_Desc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build("FidgetSpinner");
+
+			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 40 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 15 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 55 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 16 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 20 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 20 });
 
 		}
 	}

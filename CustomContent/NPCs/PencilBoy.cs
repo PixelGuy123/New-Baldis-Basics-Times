@@ -120,10 +120,10 @@ namespace BBTimes.CustomContent.NPCs
 		internal void StabSatisfied(PlayerManager player, bool superAngry)
 		{
 			PlayerTurnAround();
+			disabledPlayer = player.GetMovementStatModifier();
 			if (superAngry)
 			{
 				player.plm.AddStamina(-player.plm.stamina, true);
-				disabledPlayer = player.GetMovementStatModifier();
 				StartCoroutine(DisabledPlayerCooldown(true));
 				container.RemoveLookerMod(lookerMod);
 			}
@@ -157,10 +157,14 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Despawn()
 		{
 			base.Despawn();
-			disabledPlayer?.RemoveModifier(stMod);
+			if (disabledPlayer)
+			{
+				disabledPlayer.RemoveModifier(stMod);
+				disabledPlayer.RemoveModifier(normStMod);
+			}
 		}
 
-		readonly ValueModifier stMod = new(0f), normStMod = new(0.7f);
+		readonly ValueModifier stMod = new(0f), normStMod = new(0.45f);
 		PlayerMovementStatModifier disabledPlayer;
 
 		[SerializeField]

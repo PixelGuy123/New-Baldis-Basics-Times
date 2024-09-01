@@ -60,9 +60,30 @@ namespace BBTimes.CustomContent.NPCs
 		IEnumerator PictureTimer(PlayerManager pm)
 		{
 			Color color = image.color;
-			color.a = 1f;
-			image.color = color;
 			pm.Am.moveMods.Add(moveMod);
+
+			if (Singleton<PlayerFileManager>.Instance.reduceFlashing)
+			{
+				color.a = 0f;
+				image.color = color;
+				while (true)
+				{
+					color.a += 3f * TimeScale * Time.deltaTime;
+					if (color.a >= 1f)
+					{
+						color.a = 1f;
+						image.color = color;
+						break;
+					}
+					image.color = color;
+					yield return null;
+				}
+			}
+			else
+			{
+				color.a = 1f;
+				image.color = color;
+			}
 
 			float cooldown = 2.5f;
 			while (cooldown > 0f)

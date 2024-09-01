@@ -143,6 +143,7 @@ namespace BBTimes.Manager
 
 			room = GetAllAssets(GetRoomAsset("AbandonedRoom"), 250, 45, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("AbandonedRoom", "MapBG_AbandonedRoom.png")));
 			room[0].selection.AddRoomFunctionToContainer<ShowItemsInTheEnd>();
+			room[0].selection.AddRoomFunctionToContainer<RandomPosterFunction>().posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("AbandonedRoom", "abandonedRoomTut.png"))])];
 			room.ForEach(x => x.selection.posterChance = 0f);
 			sets.container = room[0].selection.roomFunctionContainer;
 
@@ -214,14 +215,12 @@ namespace BBTimes.Manager
 			evMac.sprDead = sprs[0];
 			// Audio Setup from event machine
 			evMac.audBalAngry = [
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "BAL_NoEvent0.wav")), "Vfx_BAL_NoEvent0_0", SoundType.Effect, Color.green),
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "BAL_NoEvent1.wav")), "Vfx_BAL_NoEvent1_0", SoundType.Effect, Color.green),
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "BAL_NoEvent2.wav")), "Vfx_BAL_NoEvent2_0", SoundType.Effect, Color.green)
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "NoEv1.wav")), "Vfx_BAL_NoEvent0_0", SoundType.Effect, Color.green),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "NoEv2.wav")), "Vfx_BAL_NoEvent1_0", SoundType.Effect, Color.green),
 				];
 
-			evMac.audBalAngry[0].additionalKeys = [new() { key = "Vfx_BAL_NoEvent0_1", time = 2.6f }];
-			evMac.audBalAngry[1].additionalKeys = [new() { key = "Vfx_BAL_NoEvent1_1", time = 1.809f }];
-			evMac.audBalAngry[2].additionalKeys = [new() { key = "Vfx_BAL_NoEvent2_1", time = 2.249f }];
+			evMac.audBalAngry[0].additionalKeys = [new() { key = "Vfx_BAL_NoEvent0_1", time = 2.215f }];
+			evMac.audBalAngry[1].additionalKeys = [new() { key = "Vfx_BAL_NoEvent1_1", time = 2.016f }];
 
 			machine.gameObject.AddBoxCollider(Vector3.forward * -1.05f, new(6f, 10f, 1f), true);
 

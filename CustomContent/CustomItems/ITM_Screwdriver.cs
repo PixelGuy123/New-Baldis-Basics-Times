@@ -22,7 +22,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			Destroy(gameObject);
 
-			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.reach, pm.pc.ClickLayers))
+			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.reach))
 			{
 				var math = hit.transform.GetComponentInParent<MathMachine>();
 				if (math && !math.IsCompleted)

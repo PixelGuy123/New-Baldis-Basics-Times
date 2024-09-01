@@ -8,7 +8,6 @@ using MTM101BaldAPI.AssetTools;
 using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
 using MTM101BaldAPI;
-using BBTimes.CustomContent.CustomItems;
 using BBTimes.CustomContent.Events;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,6 +21,7 @@ using BBTimes.CompatibilityModule;
 using BepInEx.Configuration;
 using System.Reflection;
 using BBTimes.CustomComponents;
+using System;
 
 
 namespace BBTimes.Plugin
@@ -38,6 +38,8 @@ namespace BBTimes.Plugin
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.customvendingmachines", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.custommusics", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.grapplinghooktweaks", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("baldi.basics.plus.advanced.mod", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("pixelguy.pixelmodding.baldiplus.stackableitems", BepInDependency.DependencyFlags.SoftDependency)]
 
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
     public class BasePlugin : BaseUnityPlugin
@@ -79,6 +81,17 @@ namespace BBTimes.Plugin
 
 			var rs = BBTimesManager.AddFunctionToEverythingExcept<LightSwitchSpawner>((x) => x.standardLightCells.Count != 0, RoomCategory.Special, RoomCategory.Test, RoomCategory.Buffer, RoomCategory.Hall, RoomCategory.Mystery, RoomCategory.Store, RoomCategory.FieldTrip, RoomCategory.Null);
 			rs.ForEach(x => x.lightPre = sw);
+
+			try
+			{
+				CompatibilityInitializer.InitializePostOnLoadMods();
+			}
+			catch (Exception e)
+			{
+				Debug.LogError("Failed to load compatibility modules due to an error:");
+				Debug.LogException(e);
+				MTM101BaldiDevAPI.CauseCrash(Info, e);
+			}
 		}
 
 
@@ -93,7 +106,7 @@ namespace BBTimes.Plugin
 			disableOutside = Config.Bind("Environment Settings", "Disable the outside", false, "Setting this \"true\" will completely disable the outside seen in-game. This should increase performance BUT will also change the seed layouts in the game.");
 
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
-			harmony.PatchAllConditionals(Assembly.GetAssembly(GetType()));
+			harmony.PatchAllConditionals();
 
 			ModdedSaveGame.AddSaveHandler(Info);
 

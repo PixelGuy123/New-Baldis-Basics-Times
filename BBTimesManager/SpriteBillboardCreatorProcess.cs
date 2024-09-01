@@ -5,7 +5,6 @@ using MTM101BaldAPI.AssetTools;
 using System.IO;
 using UnityEngine;
 using HarmonyLib;
-using BBTimes.Plugin;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using BBTimes.Extensions;
@@ -18,7 +17,13 @@ namespace BBTimes.Manager
 		static void CreateSpriteBillboards() // Solo sprite bill boards btw, that isn't added to other categorized stuff like Room Function (that would be in RoomFunctionCreatorProcess)
 		{
 			// Decorations outside
-			EnvironmentControllerMakeBeautifulOutside.decorations = [ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "flower.png")), 15f)).AddSpriteHolder(2.6f).transform.parent.gameObject.SetAsPrefab(true)];
+			var flowerSprites = TextureExtensions.LoadSpriteSheet(8, 1, 25f, MiscPath, TextureFolder, "flowers.png");
+
+			GameObject[] flowers = new GameObject[flowerSprites.Length];
+			for (int i = 0; i < flowers.Length; i++)
+				flowers[i] = ObjectCreationExtensions.CreateSpriteBillboard(flowerSprites[i]).AddSpriteHolder(2.6f).transform.parent.gameObject.SetAsPrefab(true);
+
+			EnvironmentControllerMakeBeautifulOutside.decorations = flowers;
 			// Fire Object
 			var fire = ObjectCreationExtensions.CreateSpriteBillboard(null);
 			fire.gameObject.ConvertToPrefab(true);

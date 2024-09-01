@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
 {
-	public class GlueObject<T> : MonoBehaviour where T : NPC
+	public class GlueObject : MonoBehaviour
 	{
 		void OnTriggerEnter(Collider other)
 		{
@@ -69,6 +69,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		void Update()
 		{
+			if (Time.timeScale == 0) return;
+
 			if (!ignoreBootsAttribute)
 			{
 				for (int i = 0; i < pms.Count; i++)
@@ -86,10 +88,10 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		protected virtual void VirtualUpdate() { }
 
-		public void Initialize(T npc, Vector3 position, float modMultiplier)
+		public void Initialize(GameObject owner, Vector3 position, float modMultiplier, EnvironmentController ec)
 		{
-			owner = npc;
-			ownerObject = owner.gameObject;
+			this.ec = ec;
+			ownerObject = owner;
 			transform.position = position;
 			moveMod.movementMultiplier = modMultiplier;
 			Initialize();
@@ -101,11 +103,11 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		protected readonly List<KeyValuePair<ActivityModifier, PlayerAttributesComponent>> pms = [];
 
-		protected T owner;
-
 		GameObject ownerObject;
 
-		readonly MovementModifier moveMod = new(Vector3.zero, 1f);
+		protected readonly MovementModifier moveMod = new(Vector3.zero, 1f);
+
+		protected EnvironmentController ec;
 
 		[SerializeField]
 		internal bool affectOwnerAfterExit = false, ignoreBootsAttribute = false;

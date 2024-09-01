@@ -107,7 +107,7 @@ namespace BBTimes.CustomContent.Events
 			float strength = 0f;
 			while (strength < 1f)
 			{
-				strength += 0.45f * Time.deltaTime;
+				strength += 0.45f * Time.deltaTime * ec.EnvironmentTimeScale;
 				fog.strength = strength;
 				ec.UpdateFog();
 				yield return null;

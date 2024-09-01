@@ -1,63 +1,43 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MTM101BaldAPI;
 using System.Linq;
+using BBTimes.Manager;
 
 
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class RollingBot : NPC, INPCPrefab
+    public class RollingBot : NPC, INPCPrefab, IItemAcceptor
 	{
 		public void SetupPrefab()
 		{
 			SoundObject[] soundObjects = [this.GetSound("rol_warning.wav", "Vfx_Rollbot_Warning", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
 			this.GetSound("rol_error.wav", "Vfx_Rollbot_Error", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
-			this.GetSoundNoSub("shock.wav", SoundType.Voice),
-			this.GetSound("motor.wav", "Sfx_1PR_Motor", SoundType.Voice, new(0.7f, 0.7f, 0.7f))];
-			// eletricity creation
-			Sprite[] storedSprites = [.. this.GetSpriteSheet(4, 4, 25f, "rollBotSheet.png"), .. this.GetSpriteSheet(2, 2, 25f, "shock.png")];
-			Sprite[] anim = [.. storedSprites.Skip(spriteAmount)];
-			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, 0);
-			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
-			eleRender.name = "Sprite";
-
-			var ele = eleRender.transform.parent.gameObject.AddComponent<Eletricity>();
-			ele.name = "RollingEletricity";
-			var ani = ele.gameObject.AddComponent<AnimationComponent>();
-			ani.animation = anim;
-			ani.renderer = eleRender;
-			ani.speed = 15f;
-
-			ele.ani = ani;
-
-			ele.gameObject.CreatePropagatedAudioManager(5f, 35f).AddStartingAudiosToAudioManager(true, soundObjects[2]);
-
-			ele.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
-
+			this.GetSound("motor.wav", "Sfx_1PR_Motor", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
+			this.GetSound("rol_fix.wav", "Vfx_Rollbot_Fix", SoundType.Voice, new(0.7f, 0.7f, 0.7f))];
+			Sprite[] storedSprites = this.GetSpriteSheet(4, 4, 25f, "rollBotSheet.png");
 
 			// npc setup
 			audError = soundObjects[1];
 			audWarning = soundObjects[0];
+			audThanks = soundObjects[3];
 			audMan = GetComponent<PropagatedAudioManager>();
 
-			gameObject.CreatePropagatedAudioManager(10f, 115f).AddStartingAudiosToAudioManager(true, soundObjects[3]);
+			gameObject.CreatePropagatedAudioManager(10f, 115f).AddStartingAudiosToAudioManager(true, soundObjects[2]);
 
 			spriteRenderer[0].CreateAnimatedSpriteRotator(
-				GenericExtensions.CreateRotationMap(spriteAmount, [.. storedSprites.Take(spriteAmount)])
+				GenericExtensions.CreateRotationMap(storedSprites.Length, storedSprites)
 				);
 			spriteRenderer[0].sprite = storedSprites[0];
 
-			eletricityPre = ele;
+			eletricityPre = BBTimesManager.man.Get<Eletricity>("EletricityPrefab");
 		}
-
-		const int spriteAmount = 16;
 		public void SetupPrefabPost() { }
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
 		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
@@ -95,7 +75,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal void SpawnEletricity(Cell cell)
 		{
 			var eletricity = Instantiate(eletricityPre);
-			eletricity.Initialize(this, cell.FloorWorldPosition, 0.5f);
+			eletricity.Initialize(gameObject, cell.FloorWorldPosition, 0.5f, ec);
 			eletricities.Add(eletricity.transform);
 		}
 
@@ -127,9 +107,24 @@ namespace BBTimes.CustomContent.NPCs
 			Destroy(eletricities[0].gameObject);
 			eletricities.RemoveAt(0);
 		}
+		public bool ItemFits(Items itm)
+		{
+			if (behaviorStateMachine.CurrentState is RollingBot_Error col && col.cooldown > 0f && itemsThatFixMe.Contains(itm))
+				return true;
+			return false;
+		}
+
+		public void InsertItem(PlayerManager pm, EnvironmentController ec)
+		{
+			if (behaviorStateMachine.CurrentState is RollingBot_Error col)
+			{
+				col.cooldown = -1f;
+				audMan.PlaySingle(audThanks);
+			}
+		}
 
 		[SerializeField]
-		internal SoundObject audError, audWarning;
+		internal SoundObject audError, audWarning, audThanks;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
@@ -140,6 +135,10 @@ namespace BBTimes.CustomContent.NPCs
 		readonly List<Transform> eletricities = [];
 
 		internal int EletricitiesCreated => eletricities.Count;
+
+		readonly static HashSet<Items> itemsThatFixMe = [];
+
+		public static void AddFixableItem(Items i) => itemsThatFixMe.Add(i);
 	}
 
 	internal class RollingBot_StateBase(RollingBot bot) : NpcState(bot)
@@ -180,7 +179,7 @@ namespace BBTimes.CustomContent.NPCs
 		Cell currentCell = null;
 		List<Cell> usedCells = [];
 
-		float cooldown = Random.Range(15f, 30f);
+		internal float cooldown = Random.Range(15f, 30f);
 
 		const int eletricityLimit = 12;
 		public override void Initialize()

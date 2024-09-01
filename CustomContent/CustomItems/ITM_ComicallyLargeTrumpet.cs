@@ -39,9 +39,12 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			foreach (var entity in ec.Npcs)
 			{
-				float force = pushForce - (Vector3.Distance(entity.transform.position, pm.transform.position) * pushDistance);
-				if (force > 0f)
-					entity.Navigator.Entity.AddForce(new((entity.transform.position - pm.transform.position).normalized, force, -force * pushForceDecrement));
+				if (entity.Navigator.isActiveAndEnabled)
+				{
+					float force = pushForce - (Vector3.Distance(entity.transform.position, pm.transform.position) * pushDistance);
+					if (force > 0f)
+						entity.Navigator.Entity.AddForce(new((entity.transform.position - pm.transform.position).normalized, force, -force * pushForceDecrement));
+				}
 			}
 		}
 

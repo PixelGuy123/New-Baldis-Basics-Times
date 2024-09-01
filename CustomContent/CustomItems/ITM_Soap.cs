@@ -61,7 +61,10 @@ namespace BBTimes.CustomContent.CustomItems
 				{
 					e.AddForce(new((other.transform.position - transform.position).normalized, speed * 2.5f, -speed * 2.5f));
 					audMan.PlaySingle(audHit);
-					direction = Random.insideUnitSphere.normalized;
+					ray.origin = transform.position;
+					ray.direction = (transform.position - other.transform.position).normalized;
+					if (Physics.Raycast(ray, out var hit))
+						direction = Vector3.Reflect(direction, hit.normal);
 				}
 			}
 		}
@@ -99,7 +102,7 @@ namespace BBTimes.CustomContent.CustomItems
 			float fallSpeed = 5f;
 			while (true)
 			{
-				fallSpeed -= ec.EnvironmentTimeScale * Time.deltaTime * 36f;
+				fallSpeed -= ec.EnvironmentTimeScale * Time.deltaTime * 56f;
 				renderer.transform.localPosition += Vector3.up * fallSpeed * Time.deltaTime * ec.EnvironmentTimeScale;
 				if (renderer.transform.localPosition.y <= fallLimit)
 				{
@@ -112,8 +115,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 			canCarry = true;
 			audMan.FlushQueue(true);
-			audMan.QueueAudio(audRunLoop);
+			audMan.maintainLoop = true;
 			audMan.SetLoop(true);
+			audMan.QueueAudio(audRunLoop);
 			yield break;
 		}
 
@@ -155,6 +159,7 @@ namespace BBTimes.CustomContent.CustomItems
 		EnvironmentController ec;
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f, 6);
 		Vector3 direction;
+		Ray ray = new();
 
 		public bool HoldingEntity => canHitEntities;
 		public Vector3 Direction => direction;
