@@ -107,11 +107,11 @@ namespace BBTimes.CustomContent.Events
 			{
 				if (thunderAnimation != null)
 					StopCoroutine(thunderAnimation);
-				thunderAnimation = StartCoroutine(ThrowThunderFog());
+				thunderAnimation = StartCoroutine(ThrowThunderFog(Random.Range(0.8f, 1f), Random.Range(0.5f, 0.7f), Random.Range(0.37f, 0.4f)));
 				thunderCooldown += Random.Range(minLightningDelay, maxLightningDelay);
 				audMan.PlaySingle(audThunder);
 
-				KillAllEletricities(eletricityAmount * lightningRange / 2);
+				KillAllEletricities((int)(eletricityAmount * 0.3f) * lightningRange);
 
 				List<Cell> cells = new(spots);
 				for (int i = 0; i < eletricityAmount; i++)
@@ -162,43 +162,29 @@ namespace BBTimes.CustomContent.Events
 			yield break;
 		}
 
-		IEnumerator ThrowThunderFog()
+		IEnumerator ThrowThunderFog(params float[] floats)
 		{
-			float yellowOffset = 1f;
-			float speed = 0f;
-			while (true)
-			{
-				speed -= 0.25f * ec.EnvironmentTimeScale * Time.deltaTime;
-				yellowOffset += speed;
-				if (yellowOffset <= 0.35f)
+			for (int i = 0; i < floats.Length; i++) {
+				float yellowOffset = floats[i];
+				float speed = 0f;
+				while (true)
 				{
-					yellowOffset = 0.35f;
+					speed -= 0.25f * ec.EnvironmentTimeScale * Time.deltaTime;
+					yellowOffset += speed;
+					if (yellowOffset <= 0.35f)
+					{
+						yellowOffset = 0.35f;
+						fog.color = new(yellowOffset, yellowOffset, 0.35f);
+						ec.UpdateFog();
+						break;
+					}
 					fog.color = new(yellowOffset, yellowOffset, 0.35f);
 					ec.UpdateFog();
-					break;
+					yield return null;
 				}
-				fog.color = new(yellowOffset, yellowOffset, 0.35f);
-				ec.UpdateFog();
-				yield return null;
 			}
 
-			yellowOffset = 0.65f;
-			speed = 0f;
-			while (true)
-			{
-				speed -= 0.25f * ec.EnvironmentTimeScale * Time.deltaTime;
-				yellowOffset += speed;
-				if (yellowOffset <= 0.35f)
-				{
-					yellowOffset = 0.35f;
-					fog.color = new(yellowOffset, yellowOffset, 0.35f);
-					ec.UpdateFog();
-					yield break;
-				}
-				fog.color = new(yellowOffset, yellowOffset, 0.35f);
-				ec.UpdateFog();
-				yield return null;
-			}
+			yield break;
 		}
 
 		IEnumerator FadeOutLightning(SpriteRenderer renderer)

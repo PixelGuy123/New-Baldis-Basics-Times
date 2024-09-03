@@ -19,12 +19,11 @@ using PixelInternalAPI.Classes;
 using System.IO;
 using BBTimes.CompatibilityModule;
 using BepInEx.Configuration;
-using System.Reflection;
 using BBTimes.CustomComponents;
 using System;
 
 
-namespace BBTimes.Plugin
+namespace BBTimes
 {
     [BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)] // let's not forget this
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.pixelinternalapi", BepInDependency.DependencyFlags.HardDependency)]

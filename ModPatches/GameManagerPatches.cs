@@ -46,8 +46,11 @@ namespace BBTimes.ModPatches
 				return true;
 			var cam = new GameObject("CameraView").AddComponent<Camera>();
 			var player = Singleton<CoreGameManager>.Instance.GetPlayer(0); // Specifically for Player 0
-			player.plm.Entity.SetInteractionState(false);
-			player.plm.Entity.SetFrozen(true);
+			while (!player.plm.Entity.InteractionDisabled || !player.plm.Entity.Frozen)
+			{
+				player.plm.Entity.SetInteractionState(false);
+				player.plm.Entity.SetFrozen(true);
+			}
 			player.Teleport(__instance.Ec.CellFromPosition(player.transform.position).CenterWorldPosition);
 
 			cam.transform.position = player.transform.position;
