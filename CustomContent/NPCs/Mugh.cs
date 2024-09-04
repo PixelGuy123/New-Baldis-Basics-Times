@@ -280,7 +280,7 @@ namespace BBTimes.CustomContent.NPCs
 		readonly PlayerManager pm = pm;
 		readonly MovementModifier hugMod = new(Vector3.zero, 0.72f);
 		float hugTolerance = 14f;
-		const float minHugTolerance = 5.5f;
+		const float minHugTolerance = 3f;
 
 		public override void Enter()
 		{

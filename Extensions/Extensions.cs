@@ -8,7 +8,6 @@ using HarmonyLib;
 // using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Linq;
 
 namespace BBTimes.Extensions
 {
@@ -235,6 +234,17 @@ namespace BBTimes.Extensions
 			Object.Destroy(target);
 
 			yield break;
+		}
+
+		public static Rigidbody AddStaticRigidBody(this GameObject obj)
+		{
+			var rigid = obj.AddComponent<Rigidbody>();
+
+			rigid.mass = 0f;
+			rigid.constraints = RigidbodyConstraints.FreezeAll;
+			rigid.angularDrag = 0f;
+
+			return rigid;
 		}
 
 		internal static DetentionUi detentionUiPre;

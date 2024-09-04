@@ -316,7 +316,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("Faker", "PST_Faker_Name", "PST_Faker_Desc", -1.36f)
-				.MarkAsReplacement(99999, Character.LookAt); // 45
+				.MarkAsReplacement(45, Character.LookAt); // 45
 
 			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
@@ -351,6 +351,37 @@ namespace BBTimes.Manager
 
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 50 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+
+			// Penny
+			npc = new NPCBuilder<Penny>(plug.Info)
+				.SetMinMaxAudioDistance(140f, 170f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Penny")
+				.SetMetaName("PST_PEN_Name")
+				.SetName("Penny")
+				.AddLooker()
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("Penny", "PST_PEN_Name", "PST_PEN_Desc", -0.525f)
+				.MarkAsReplacement(30, Character.DrReflex);
+
+			npc.Navigator.SetRoomAvoidance(false);
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+
+			// Pran the Dancer
+			npc = new NPCBuilder<PranTheDancer>(plug.Info)
+				.SetMinMaxAudioDistance(165f, 170f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Pran")
+				.SetMetaName("PST_Pran_Name")
+				.SetName("Pran")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("Pran", "PST_Pran_Name", "PST_Pran_Desc", 0f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
 		}
 
 		

@@ -5,6 +5,7 @@ using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Experimental.Rendering;
 
 namespace BBTimes.CustomContent.RoomFunctions
 {
@@ -28,7 +29,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			else
 				room.lightPre = BBTimesManager.EmptyGameObject.transform; // Literally an empty gameObject
 
-			
+
 			var planeHolder = new GameObject("PlaneCover");
 			planeHolder.transform.SetParent(room.transform);
 			planeHolder.transform.localPosition = Vector3.zero;
@@ -39,18 +40,16 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			for (int i = 1; i <= ceilingHeight; i++)
 			{
+				var currentWall = customWallProximityToCeil[offset];
 				if (i > ceilingHeight - customWallProximityToCeil.Length)
-					fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, customWallProximityToCeil[offset++], ObjectCreationExtension.transparentTex);
+				{
+					fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, currentWall, ObjectCreationExtension.transparentTex);
+					offset++;
+				}
 
-
-
-				//CreateWalls(room.position, Direction.South, 1, 0, room.size.x);
-				//CreateWalls(room.position, Direction.West, 0, 1, room.size.z);
-				//CreateWalls(room.position + room.size - new IntVector2(1, 1), Direction.North, -1, 0, room.size.x);
-				//CreateWalls(room.position + room.size - new IntVector2(1, 1), Direction.East, 0, -1, room.size.z);
 
 				foreach (var cell in ogCellBins)
-						AddWalls(cell.Key, cell.Value);
+					AddWalls(cell.Key, cell.Value);
 
 				void AddWalls(Cell c, int ogbin)
 				{
@@ -62,7 +61,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					var tile = Instantiate(c.Tile);
 					tile.transform.SetParent(planeHolder.transform);
 					tile.transform.position = c.FloorWorldPosition + (Vector3.up * (LayerStorage.TileBaseOffset * i));
-					tile.MeshRenderer.material = room.baseMat;
+					tile.MeshRenderer.material = GraphicsFormatUtility.HasAlphaChannel(currentWall.graphicsFormat) ? room.defaultAlphaMat : room.defaultMat;
 					tile.MeshRenderer.material.mainTexture = fullTex;
 					c.AddRenderer(tile.MeshRenderer);
 
@@ -70,6 +69,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 				}
 			}
+
 			if (!string.IsNullOrEmpty(targetTransformNamePrefix) && targetTransformOffset > 0f)
 			{
 				var objects = room.transform.Find("RoomObjects");
@@ -118,7 +118,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			foreach (var c in room.cells)
 				ogCellBins.Add(c, c.ConstBin);
-			
+
 		}
 
 		public override void OnGenerationFinished()
@@ -127,7 +127,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			if (changed)
 				foreach (var c in room.cells)
 					c.SetBase(c.Tile.MeshRenderer.material.name.StartsWith(room.defaultPosterMat.name) ? room.posterMat : room.baseMat); // base mat should be alpha now
-			
+
 		}
 
 		Texture2D originalCeilTex;

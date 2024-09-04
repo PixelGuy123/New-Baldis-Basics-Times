@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
-using BBTimes.Plugin;
 using MTM101BaldAPI.AssetTools;
 using System.IO;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using BBTimes.CustomComponents;
+using System.Linq;
 
 namespace BBTimes.Extensions
 {
 	public static class CustomDataExtension
 	{
+		public static bool ReplacesCharacter(this INPCPrefab prefab, Character c) =>
+			prefab.ReplacementNpcs != null && prefab.ReplacementNpcs.Contains(c);
 		public static string GenerateDataPath(this IPrefab pr, string category, string folder) =>
 			Path.Combine(BasePlugin.ModPath, category, pr.Name, folder);
 		public static Texture2D GetTexture(this IPrefab pr, string texName) =>

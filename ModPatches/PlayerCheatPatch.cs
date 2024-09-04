@@ -17,7 +17,7 @@ namespace BBTimes.ModPatches
 						__instance.pm.ec.StopCoroutine(ev);
 
 				dat.OngoingEvents.Clear();
-				if (__instance.pm.ec.events.Count == 0)
+				if (__instance.pm.ec.events.Count == 0 || __instance.pm.ec.events[0].Active)
 				{
 					Debug.LogWarning("No event detected!");
 					return;

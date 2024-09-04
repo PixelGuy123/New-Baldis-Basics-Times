@@ -15,12 +15,16 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			base.VirtualUpdate();
 			if (++frameDelay >= 3)
 			{
-				moveMod.movementAddend = new(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
+				moveMod.movementAddend = new(Random.Range(-eletricityForce, eletricityForce), 0f, Random.Range(-eletricityForce, eletricityForce));
 				frameDelay = 0;
 			}
 		}
 		[SerializeField]
 		internal AnimationComponent ani;
+
+		[SerializeField]
+		internal float eletricityForce = 5f;
+
 		int frameDelay = 0;
 	}
 }

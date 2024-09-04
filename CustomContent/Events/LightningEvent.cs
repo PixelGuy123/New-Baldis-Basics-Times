@@ -86,7 +86,8 @@ namespace BBTimes.CustomContent.Events
 					if (!cell.Null && cell.TileMatches(pos.room))
 					{
 						var el = Instantiate(eletricityPre);
-						el.Initialize(gameObject, cell.FloorWorldPosition, 0.4f, ec);
+						el.Initialize(gameObject, cell.FloorWorldPosition, 0.7f, ec);
+						el.eletricityForce = 11f;
 						spawnedEletricities.Add(el);
 						cells.Remove(cell);
 

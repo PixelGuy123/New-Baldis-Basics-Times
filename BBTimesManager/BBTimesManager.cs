@@ -95,6 +95,8 @@ namespace BBTimes.Manager
 			man.AddFromResources<StandardDoorMats>();
 			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
 			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
+			man.Add("audBuzz", GenericExtensions.FindResourceObjectByName<SoundObject>("Elv_Buzz"));
+			man.Add("audRing", GenericExtensions.FindResourceObjectByName<SoundObject>("CashBell"));
 			man.Add("outsideSkybox", Resources.FindObjectsOfTypeAll<Skybox>()[0]);
 			man.Add("woodTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("wood 1").MakeReadableTexture()); // Wood from the tables
 			man.Add("plasticTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("PlasticTable").MakeReadableTexture());
@@ -103,6 +105,10 @@ namespace BBTimes.Manager
 			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "throw.wav")), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
 			man.Add("audGenericThrow", sd);
+
+			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "mildGrab.wav")), string.Empty, SoundType.Effect, Color.white);
+			sd.subtitle = false;
+			man.Add("audGenericGrab", sd);
 
 			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, "shock.png");
 			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, 0);

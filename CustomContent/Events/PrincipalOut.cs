@@ -33,7 +33,7 @@ namespace BBTimes.CustomContent.Events
 			foreach (NPC npc in ec.Npcs)
 			{
 				var data = npc.GetComponent<INPCPrefab>();
-				if (npc.Navigator.enabled && (npc.Character == Character.Principal || (data != null && data.ReplacementNpcs.Contains(Character.Principal)))) // Reminder to change for 
+				if (npc.Navigator.enabled && (npc.Character == Character.Principal || (data != null && data.ReplacesCharacter(Character.Principal)))) // Reminder to change for 
 				{
 					NavigationState_PrincipalOut navigationState_PartyEvent = new(npc, 88, office);
 					navigationStates.Add(navigationState_PartyEvent);
