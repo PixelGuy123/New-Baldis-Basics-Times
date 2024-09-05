@@ -138,6 +138,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("pix", "Pix");
 			AddNPC("pran", "Pran");
 			AddNPC("rollBot", "Rollingbot");
+			AddNPC("serOran", "SerOran");
 			AddNPC("stunly", "Stunly");
 			AddNPC("superintendent", "Superintendent");
 			AddNPC("spj", "Superintendentjr");
@@ -272,7 +273,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 		internal static void AddPoint(ItemObject point) =>
 			points.Add(point);
 
-		static List<ItemObject> points = [];
+		readonly static List<ItemObject> points = [];
 		struct ObjectData(GameObject obj, Vector3 vec, Quaternion rot)
 		{
 			public GameObject Item1 = obj;

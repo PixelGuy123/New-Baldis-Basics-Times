@@ -382,6 +382,20 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 45 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
+
+			// Ser Oran
+			npc = new NPCBuilder<SerOran>(plug.Info)
+				.SetMinMaxAudioDistance(165f, 170f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("SerOran")
+				.SetMetaName("PST_Oran_Name")
+				.SetName("SerOran")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("SerOran", "PST_Oran_Name", "PST_Oran_Desc", 0f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 10 });
 		}
 
 		

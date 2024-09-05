@@ -6,16 +6,42 @@ namespace BBTimes.CustomComponents
 	{
 		void Update()
 		{
-			if (ec)
+			if (ec && pause != 0)
 			{
 				frame += speed * ec.EnvironmentTimeScale * Time.deltaTime;
-				frame %= animation.Length;
+				if (frame >= animation.Length)
+				{
+					if (lastFrameMode)
+					{
+						StopLastFrameMode();
+						Pause(true);
+						frame = animation.Length - 1;
+					}
+					else
+						frame %= animation.Length;
+				}
 				renderer.sprite = animation[Mathf.FloorToInt(frame)];
 			}
 		}
 
 		public void Initialize(EnvironmentController ec) =>
-		this.ec = ec;
+			this.ec = ec;
+
+		public void Pause(bool pause)
+		{
+			if (pause)
+				this.pause++;
+			else
+				this.pause = Mathf.Max(0, this.pause - 1);
+		}
+
+		public void StopLastFrameMode() =>
+			lastFrameMode = true;
+		
+		public void ResetFrame() => frame = 0f;
+
+		public bool Paused => pause != 0;
+		public bool LastFrameMode => lastFrameMode;
 
 		protected EnvironmentController ec;
 
@@ -24,10 +50,14 @@ namespace BBTimes.CustomComponents
 		internal float speed = 5;
 
 		[SerializeField]
-		internal Sprite[] animation;
+		public Sprite[] animation;
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
+
+		int pause = 0;
+
+		bool lastFrameMode = false;
 
 		float frame = 0f;
 	}

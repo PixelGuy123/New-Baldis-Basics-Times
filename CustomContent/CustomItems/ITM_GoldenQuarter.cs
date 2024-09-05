@@ -1,7 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using MTM101BaldAPI.Registers;
-using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
@@ -22,7 +21,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			
 			bool nextNull = nextGoldQuart != null;
-			if (!nextNull || pm.itm.SlotsAvailable() >= 1)
+			if (!nextNull || pm.itm.InventoryFull())
 			{
 				StartCoroutine(Delay(pm));
 				if (nextNull)
