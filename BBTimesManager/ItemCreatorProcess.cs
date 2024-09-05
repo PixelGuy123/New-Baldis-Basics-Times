@@ -13,6 +13,7 @@ using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomComponents;
 using System.Linq.Expressions;
 using BBTimes.CompatibilityModule.EditorCompat;
+using System.Linq;
 
 namespace BBTimes.Manager
 {
@@ -164,6 +165,7 @@ namespace BBTimes.Manager
 			var secondItem = item.DuplicateItem(meta, "gquarter_Name2");
 			((ITM_GoldenQuarter)item.item).nextGoldQuart = secondItem;
 			((ITM_GoldenQuarter)secondItem.item).nextGoldQuart = secondItem.DuplicateItem(meta, "gquarter_Name1");
+			meta.itemObjects = [.. meta.itemObjects.Reverse()];
 
 			// BSED
 			item = new ItemBuilder(plug.Info)
@@ -292,6 +294,7 @@ namespace BBTimes.Manager
 			secondItem = item.DuplicateItem(meta, "POGST_Name2");
 			((ITM_Pogostick)item.item).pogoStickReplacement = secondItem;
 			((ITM_Pogostick)secondItem.item).pogoStickReplacement = secondItem.DuplicateItem(meta, "POGST_Name1");
+			meta.itemObjects = [.. meta.itemObjects.Reverse()];
 
 			// BearTrap
 			item = new ItemBuilder(plug.Info)
@@ -433,7 +436,8 @@ namespace BBTimes.Manager
 			floorDatas[2].Items.Add(new() { selection = item, weight = 20 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].ForcedItems.Add(item);
-			EditorLevelPatch.points.Add(item);
+			if (EditorExists)
+				EditorLevelPatch.AddPoint(item);
 
 			// Cherry Bsoda
 			var normBsoda = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
@@ -515,7 +519,8 @@ namespace BBTimes.Manager
 			floorDatas[2].Items.Add(new() { selection = item, weight = 30 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].ForcedItems.Add(item);
-			EditorLevelPatch.points.Add(item);
+			if (EditorExists)
+				EditorLevelPatch.AddPoint(item);
 
 			// Blow Drier Item
 			item = new ItemBuilder(plug.Info)
@@ -661,6 +666,7 @@ namespace BBTimes.Manager
 			secondItem = item.DuplicateItem(meta, "SoapBub_Name2");
 			((ITM_SoapBubbles)item.item).itmObjToReplace = secondItem;
 			((ITM_SoapBubbles)secondItem.item).itmObjToReplace = secondItem.DuplicateItem(meta, "SoapBub_Name1");
+			meta.itemObjects = [.. meta.itemObjects.Reverse()];
 
 			// GSoda
 			itemBs = normBsoda.DuplicateItem("GSoda_Name");
@@ -773,7 +779,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(55)
 				.SetShopPrice(900)
 				.SetNameAndDescription("FidgetSpinner_Name", "FidgetSpinner_Desc")
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.SetMeta(ItemFlags.Persists, [])
 				.Build("FidgetSpinner");
 
 			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });

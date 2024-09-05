@@ -284,8 +284,11 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerLost(player);
 			player.GetCustomCam().RemoveModifier(mod);
-			player.Am.moveMods.Remove(moveMods[player]);
-			moveMods.Remove(player);
+			if (moveMods.TryGetValue(player, out var modifier))
+			{
+				player.Am.moveMods.Remove(modifier);
+				moveMods.Remove(player);
+			}
 		}
 
 		public override void Update()

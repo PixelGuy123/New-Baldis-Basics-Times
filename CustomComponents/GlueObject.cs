@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace BBTimes.CustomComponents.NpcSpecificComponents
+namespace BBTimes.CustomComponents
 {
 	public class GlueObject : MonoBehaviour
 	{

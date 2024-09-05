@@ -188,7 +188,8 @@ namespace BBTimes.CustomContent.NPCs
 			
 			rotator.targetSprite = idleShootingSprites[1];
 			yield return null;
-			beam.transform.position = transform.position; // workaround for the stupid entity thing from the game
+			if (beam)
+				beam.transform.position = transform.position; // workaround for the stupid entity thing from the game
 
 			int frame = 0;
 			while (frame++ < idleSpeed)

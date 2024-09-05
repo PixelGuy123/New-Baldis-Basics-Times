@@ -19,6 +19,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 	[ConditionalPatchMod("mtm101.rulerp.baldiplus.leveleditor")]
 	internal static class EditorLevelPatch
 	{
+
 		[HarmonyPatch(typeof(BasePlugin), "PostSetup")]
 		[HarmonyPostfix]
 		private static void MakeEditorSeeAssets(AssetManager man)
@@ -33,11 +34,11 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				man.Get<GameObject>("editorPrefab_sink")
 			];
 			MarkRotatingObject(array[0], Vector3.up * array[0].transform.localScale.y / 2f);
-			MarkRotatingObject(array[1], Vector3.up * array[1].transform.localScale.y / 2f);
+			MarkRotatingObject(array[1], Vector3.zero);
 			MarkObject(array[2], Vector3.zero);
 			MarkObjectRow("fullStall", [
 				new ObjectData(array[0], new Vector3(-5f, 5f, 0f), Quaternion.Euler(0f, 90f, 0f)),
-				new ObjectData(array[1], new Vector3(0f, 5f, 4f), default),
+				new ObjectData(array[1], new Vector3(0f, 0f, 4f), default),
 				new ObjectData(array[0], new Vector3(5f, 5f, 0f), Quaternion.Euler(0f, 90f, 0f))
 			]);
 
@@ -266,8 +267,12 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			]);
 		}
 
-		internal static List<EditorTool> markersToAdd, itemsToAdd, npcsToAdd;
-		internal static List<ItemObject> points = [];
+		static internal List<EditorTool> markersToAdd, itemsToAdd, npcsToAdd;
+
+		internal static void AddPoint(ItemObject point) =>
+			points.Add(point);
+
+		static List<ItemObject> points = [];
 		struct ObjectData(GameObject obj, Vector3 vec, Quaternion rot)
 		{
 			public GameObject Item1 = obj;

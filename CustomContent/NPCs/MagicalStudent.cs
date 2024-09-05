@@ -60,6 +60,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator Throw(Transform target)
 		{
+			audMan.maintainLoop = true;
 			audMan.SetLoop(true);
 			audMan.QueueAudio(audPrepare);
 			navigator.maxSpeed = 0f;

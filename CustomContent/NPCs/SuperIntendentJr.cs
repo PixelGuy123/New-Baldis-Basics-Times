@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using PixelInternalAPI.Extensions;
-using System.Linq;
+using BBTimes.Extensions;
 using BBTimes.Extensions;
 
 
@@ -133,8 +133,11 @@ namespace BBTimes.CustomContent.NPCs
 		void CallPrincipals()
 		{
 			foreach (var n in ec.Npcs)
-				if (n.Navigator.enabled && (n.Character == Character.Principal || (n.GetComponent<INPCPrefab>()?.ReplacementNpcs.Contains(Character.Principal) ?? false)))
+			{
+				var dat = n.GetComponent<INPCPrefab>();
+				if (n.Navigator.enabled && (n.Character == Character.Principal || (dat != null &&  dat.ReplacesCharacter(Character.Principal))))
 					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, ec.CellFromPosition(transform.position)));
+			}
 
 			Directions.ReverseList(navigator.currentDirs);
 			behaviorStateMachine.ChangeState(new SuperIntendentJr_Wander(this));

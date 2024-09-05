@@ -12,6 +12,7 @@ using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.IO;
+using System.Net.Security;
 using UnityEngine;
 
 namespace BBTimes.CompatibilityModule.BBPlusAnimations
@@ -99,5 +100,45 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 		[HarmonyPostfix]
 		private static void AnimatedWaterFountain(WaterFountain fountain, PlayerManager ___pm) =>
 				GenericAnimation.AnimateWaterFountain(fountain, ___pm);
+
+		[HarmonyPatch(typeof(TimedFountain), "Clicked")]
+		[HarmonyPrefix]
+		static void AnimateTimedFountain(TimedFountain __instance, bool ___disabled)
+		{
+			if (!___disabled)
+				__instance.StartCoroutine(Slurp(__instance.renderer.transform, __instance.Ec));
+		}
+		
+
+		static IEnumerator Slurp(Transform obj, EnvironmentController ec)
+		{
+			Vector3 vec = obj.localScale;
+			Vector3 ogVec = vec;
+			while (true)
+			{
+				vec.y += ec.EnvironmentTimeScale * Time.deltaTime * 8f;
+				if (vec.y >= 1.25f)
+				{
+					vec.y = 1.25f;
+					break;
+				}
+				obj.localScale = vec;
+				yield return null;
+			}
+
+			obj.localScale = vec;
+
+			while (true)
+			{
+				vec.y -= ec.EnvironmentTimeScale * Time.deltaTime * 8f;
+				if (vec.y <= ogVec.y)
+				{
+					obj.localScale = ogVec;
+					yield break;
+				}
+				obj.localScale = vec;
+				yield return null;
+			}
+		}
 	}
 }

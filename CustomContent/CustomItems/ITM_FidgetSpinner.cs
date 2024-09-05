@@ -1,5 +1,4 @@
-﻿using PixelInternalAPI.Classes;
-using PixelInternalAPI.Extensions;
+﻿using PixelInternalAPI.Extensions;
 using UnityEngine;
 using BBTimes.Extensions;
 using BBTimes.CustomComponents;
@@ -8,18 +7,19 @@ using BBTimes.Manager;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_FidgetSpinner : Item, IEntityTrigger, IItemPrefab
+	public class ITM_FidgetSpinner : Item, IItemPrefab
 	{
 
 		public void SetupPrefab() 
 		{ 
-			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(9f, "SpinnerPlaced.png"), false).AddSpriteHolder(-4.5f, 0);
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(9f, "SpinnerPlaced.png"), false).AddSpriteHolder(0.5f, 0);
 			var rendererBase = renderer.transform.parent;
 			rendererBase.SetParent(transform);
 			rendererBase.localPosition = Vector3.zero;
 
-			gameObject.layer = LayerStorage.standardEntities;
-			entity = gameObject.CreateEntity(1f, 2f, rendererBase);
+			var collider = gameObject.AddComponent<CapsuleCollider>();
+			collider.radius = 3.8f;
+			collider.isTrigger = true;
 
 			audMan = gameObject.CreatePropagatedAudioManager(65, 110);
 			audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
@@ -27,6 +27,10 @@ namespace BBTimes.CustomContent.CustomItems
 			this.renderer = renderer.transform;
 			renderer.gameObject.layer = 0;
 			renderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+
+			nav = gameObject.AddComponent<MomentumNavigator>();
+			nav.maxSpeed = 95f;
+			nav.accelerationAddend = 9f;
 		}
 
 		public void SetupPrefabPost() { }
@@ -50,17 +54,47 @@ namespace BBTimes.CustomContent.CustomItems
 			height = overrider.entity.BaseHeight;
 			overrider.SetHeight(height - 2f);
 			this.pm = pm;
-			entity.Initialize(pm.ec, pm.transform.position);
+			transform.position = pm.transform.position;
 			ec = pm.ec;
 			rotation = renderer.eulerAngles;
 
 			rooms.AddRange(ec.rooms);
 			rooms.RemoveAll(x => x.type == RoomType.Hall);
 
+			nav.Initialize(ec, true);
+			nav.OnMove += (pos, dir) =>
+			{
+				ray.origin = pos;
+				ray.direction = dir;
+				if (Physics.Raycast(ray, out var hit, 5f))
+					CheckForDoor(hit.transform);
+
+				pm.Teleport(pos);
+			};
+
 			return true;
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		void CheckForDoor(Transform t)
+		{
+			var door = t.GetComponent<StandardDoor>();
+			if (door)
+				door.OpenTimed(door.DefaultTime, false);
+			else
+			{
+				var swingDoor = t.GetComponent<SwingDoor>();
+				if (swingDoor)
+					swingDoor.OpenTimed(swingDoor.defaultTime, false);
+				else
+				{
+					var genDoor = t.GetComponent<GenericDoor>();
+					if (genDoor)
+						genDoor.Open(genDoor.DefaultOpenTimer, false);
+				}
+			}
+		}
+
+		void OnTriggerEnter(Collider other)
 		{
 			if (pm.gameObject == other.gameObject)
 				return;
@@ -71,20 +105,11 @@ namespace BBTimes.CustomContent.CustomItems
 				if (e)
 				{
 					audMan.PlaySingle(audHit);
-					e.AddForce(new((other.transform.position - transform.position).normalized, 35f, -20f));
-					return;
+					float push = 0.45f * nav.Acceleration;
+					e.AddForce(new((other.transform.position - transform.position).normalized, push, -push * 0.95f));
 				}
 			}
 			
-		}
-
-		public void EntityTriggerStay(Collider other)
-		{
-
-		}
-
-		public void EntityTriggerExit(Collider other)
-		{
 		}
 
 		void Update()
@@ -95,59 +120,21 @@ namespace BBTimes.CustomContent.CustomItems
 				return;
 			}
 			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
-			if (lifeTime <= 0f && targets.Count == 0)
+			if (lifeTime <= 0f && nav.Targets.Count == 0)
 			{
 				Destroy(gameObject);
 				return;
 			}
-
-			if (targets.Count == 0)
+			
+			if (nav.Targets.Count == 0)
 			{
-				while (targets.Count == 0)
-				{
-					ec.FindPath(ec.CellFromPosition(transform.position), rooms.Count == 0 ? ec.mainHall.TileAtIndex(Random.Range(0, ec.mainHall.TileCount)) : rooms[Random.Range(0, rooms.Count)].RandomEntitySafeCellNoGarbage(), PathType.Nav, out targets, out bool flag);
-					if (!flag)
-						targets.Clear();
-				}
+				ec.FindPath(ec.CellFromPosition(transform.position), rooms.Count == 0 ? ec.mainHall.TileAtIndex(Random.Range(0, ec.mainHall.TileCount)) : rooms[Random.Range(0, rooms.Count)].RandomEntitySafeCellNoGarbage(), PathType.Nav, out var cells, out bool flag);
+				if (flag)
+					nav.Targets.AddRange(cells.ConvertAll(x => x.FloorWorldPosition));
 			}
-			else
-			{
-				accel += ec.EnvironmentTimeScale * Time.deltaTime * 9f;
-				if (accel > maxFlySpeed)
-					accel = maxFlySpeed;
 
-				float speed = accel * Time.deltaTime * ec.EnvironmentTimeScale;
-				while (Time.timeScale != 0f && speed > 0f && targets.Count != 0) // Basically how a NPC move, but simplified
-				{
-					var dist = targets[0].CenterWorldPosition - transform.position;
-					var mag = dist.magnitude;
-					var dir = dist.normalized;
-
-					float move = mag >= speed ? speed : mag;
-					entity.Teleport(transform.position + move * dir);
-					speed -= move;
-
-					if (move == mag)
-						targets.RemoveAt(0);
-
-					ray.origin = transform.position;
-					ray.direction = dir;
-					if (Physics.Raycast(ray, out var hit, 5f))
-					{
-						var door = hit.transform.GetComponent<StandardDoor>();
-						if (door)
-							door.OpenTimed(door.DefaultTime, false);
-						else
-						{
-							var swingDoor = hit.transform.GetComponent<SwingDoor>();
-							if (swingDoor)
-								swingDoor.OpenTimed(swingDoor.defaultTime, false);
-						}
-					}
-				}
-			}
-			pm.Teleport(transform.position);
-			rotation.y += 35f * accel * Time.deltaTime * ec.EnvironmentTimeScale;
+			rotation.y += 35f * nav.Acceleration * ec.EnvironmentTimeScale * Time.deltaTime;
+			rotation.y %= 360f;
 			renderer.eulerAngles = rotation;
 
 			
@@ -155,21 +142,23 @@ namespace BBTimes.CustomContent.CustomItems
 
 		void OnDestroy()
 		{
-			overrider.SetFrozen(false);
-			overrider.SetInteractionState(true);
-			overrider.SetHeight(height);
-			overrider.Release();
+			if (overrider.entity)
+			{
+				overrider.SetFrozen(false);
+				overrider.SetInteractionState(true);
+				overrider.SetHeight(height);
+				overrider.Release();
+			}
 		}
 
 		Ray ray = new();
 		Vector3 rotation = default;
-		List<Cell> targets = [];
 		EnvironmentController ec;
-		float height = 5f, accel = 0f;
+		float height = 5f;
 		readonly List<RoomController> rooms = [];
 
 		[SerializeField]
-		internal float maxFlySpeed = 95f, lifeTime = 30f;
+		internal float lifeTime = 30f;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
@@ -181,7 +170,7 @@ namespace BBTimes.CustomContent.CustomItems
 		internal Transform renderer;
 
 		[SerializeField]
-		internal Entity entity;
+		internal MomentumNavigator nav;
 
 		readonly EntityOverrider overrider = new();
 	}

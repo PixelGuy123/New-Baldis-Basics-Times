@@ -6,8 +6,7 @@ using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches;
 using BBTimes.ModPatches.NpcPatches;
-using BBTimes.Plugin;
-using BepInEx;
+using BepInEx.Bootstrap;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
@@ -24,6 +23,7 @@ namespace BBTimes.Manager
 {
 	internal static partial class BBTimesManager // basically holds the logic to create everything to the game
 	{
+		public static bool EditorExists => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.leveleditor");
 		internal static BasePlugin plug;
 		internal static IEnumerator InitializeContentCreation()
 		{
@@ -97,6 +97,7 @@ namespace BBTimes.Manager
 			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
 			man.Add("audBuzz", GenericExtensions.FindResourceObjectByName<SoundObject>("Elv_Buzz"));
 			man.Add("audRing", GenericExtensions.FindResourceObjectByName<SoundObject>("CashBell"));
+			man.Add("audSlurp", GenericExtensions.FindResourceObjectByName<SoundObject>("WaterSlurp"));
 			man.Add("outsideSkybox", Resources.FindObjectsOfTypeAll<Skybox>()[0]);
 			man.Add("woodTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("wood 1").MakeReadableTexture()); // Wood from the tables
 			man.Add("plasticTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("PlasticTable").MakeReadableTexture());
