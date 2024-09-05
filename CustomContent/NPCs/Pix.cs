@@ -45,6 +45,7 @@ namespace BBTimes.CustomContent.NPCs
 				GenericExtensions.CreateRotationMap(4, storedSprites[15], storedSprites[17], storedSprites[5], storedSprites[19]) // Happy second frame of rotation map
 				);
 			normalSprites = [storedSprites[0], storedSprites[1]];
+			spriteRenderer[0].sprite = normalSprites[0];
 			angrySprites = [storedSprites[8], storedSprites[9]];
 			happySprites = [storedSprites[14], storedSprites[15]];
 			idleShootingSprites = [storedSprites[20], storedSprites[21]];

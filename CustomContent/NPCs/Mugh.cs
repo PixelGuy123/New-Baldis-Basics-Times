@@ -38,6 +38,7 @@ namespace BBTimes.CustomContent.NPCs
 			sadSprite = storedSprites[2];
 			holeSprite = storedSprites[3];
 			deadSprite = storedSprites[4];
+			renderer.sprite = storedSprites[0];
 
 			audFindPlayer = [.. soundObjects.Take(3)];
 			audLostPlayer = [.. soundObjects.Skip(3).Take(2)];

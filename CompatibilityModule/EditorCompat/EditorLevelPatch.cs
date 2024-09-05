@@ -200,20 +200,18 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 
 			static void AddNPCCopy<T>(string npcName) where T : MonoBehaviour
 			{
-				T val = null;
 				NPC npc = null;
 				foreach (var meta in NPCMetaStorage.Instance.All())
 				{
 					var p = meta.prefabs.FirstOrDefault(x => x.Value.GetComponent<T>());
 					if (p.Value)
 					{
-						val = p.Value.GetComponent<T>();
 						npc = p.Value;
 						break;
 					}
 				}
 
-				if (val == null || npc == null)
+				if (npc == null)
 				{
 					Debug.LogWarning("BBTimes: Failed to locate the NPC copy of type: " + typeof(T));
 					return;
