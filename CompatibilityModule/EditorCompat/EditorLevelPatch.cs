@@ -1,5 +1,6 @@
 ﻿using BaldiLevelEditor;
 using BBTimes.CustomContent.CustomItems;
+using BBTimes.CustomContent.NPCs;
 using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -9,6 +10,7 @@ using PlusLevelFormat;
 using PlusLevelLoader;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace BBTimes.CompatibilityModule.EditorCompat
@@ -121,6 +123,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("bubbly", "Bubbly");
 			AddNPC("Camerastand", "Camerastand");
 			AddNPC("crazyClock", "CrazyClock");
+			AddNPCCopy<ClassicGottaSweep>("oldsweep");
 			AddNPC("dribble", "Dribble");
 			AddNPC("faker", "Faker");
 			AddNPC("gluebotrony", "Glubotrony");
@@ -195,6 +198,36 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				npcsToAdd.Add(new TimesNPC(npcName));
 			}
 
+			static void AddNPCCopy<T>(string npcName) where T : MonoBehaviour
+			{
+				T val = null;
+				NPC npc = null;
+				foreach (var meta in NPCMetaStorage.Instance.All())
+				{
+					var p = meta.prefabs.FirstOrDefault(x => x.Value.GetComponent<T>());
+					if (p.Value)
+					{
+						val = p.Value.GetComponent<T>();
+						npc = p.Value;
+						break;
+					}
+				}
+
+				if (val == null || npc == null)
+				{
+					Debug.LogWarning("BBTimes: Failed to locate the NPC copy of type: " + typeof(T));
+					return;
+				}
+
+				BaldiLevelEditorPlugin.characterObjects.Add(npcName,
+					BaldiLevelEditorPlugin.StripAllScripts(npc.gameObject, true)
+					);
+
+				PlusLevelLoaderPlugin.Instance.npcAliases.Add(npcName, npc);
+
+				npcsToAdd.Add(new TimesNPC(npcName));
+			}
+
 		}
 
 		[HarmonyPatch(typeof(EditorLevel), "InitializeDefaultTextures")]
@@ -215,15 +248,9 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 		[HarmonyPostfix]
 		static void InitializeStuff(PlusLevelEditor __instance)
 		{
-			AddSpriteFolderToAssetMan("UI/", 40f, BasePlugin.ModPath, "EditorUI");
-
-
-			void AddSpriteFolderToAssetMan(string prefix = "", float pixelsPerUnit = 40f, params string[] path)
-			{
-				string[] files = Directory.GetFiles(Path.Combine(path));
-				for (int i = 0; i < files.Length; i++)
-					BaldiLevelEditorPlugin.Instance.assetMan.Add(prefix + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), pixelsPerUnit));
-			}
+			string[] files = Directory.GetFiles(Path.Combine(BasePlugin.ModPath, "EditorUI"));
+			for (int i = 0; i < files.Length; i++)
+				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
 
 			__instance.toolCats.Find(x => x.name == "items").tools.AddRange(itemsToAdd);
 			__instance.toolCats.Find(x => x.name == "characters").tools.AddRange(npcsToAdd);
