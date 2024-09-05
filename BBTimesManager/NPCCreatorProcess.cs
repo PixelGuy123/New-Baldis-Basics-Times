@@ -390,9 +390,11 @@ namespace BBTimes.Manager
 				.SetEnum("SerOran")
 				.SetMetaName("PST_Oran_Name")
 				.SetName("SerOran")
+				.AddLooker()
+				.SetMaxSightDistance(90)
 				.AddTrigger()
 				.Build()
-				.SetupNPCData("SerOran", "PST_Oran_Name", "PST_Oran_Desc", 0f);
+				.SetupNPCData("SerOran", "PST_Oran_Name", "PST_Oran_Desc", -0.196f);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 10 });

@@ -407,6 +407,8 @@ namespace BBTimes.CustomContent.NPCs
 			eatCooldown -= or.TimeScale * Time.deltaTime;
 			if (eatCooldown <= 0f)
 				or.TakePlayerOut();
+
+			pm.Teleport(or.transform.position + (or.Navigator.NextPoint - or.transform.position).normalized * 0.5f);
 		}
 
 		public override void Exit()
