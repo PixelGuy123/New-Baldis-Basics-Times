@@ -12,6 +12,7 @@ using MTM101BaldAPI;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomComponents;
 using System.Linq.Expressions;
+using BBTimes.CompatibilityModule.EditorCompat;
 
 namespace BBTimes.Manager
 {
@@ -432,6 +433,7 @@ namespace BBTimes.Manager
 			floorDatas[2].Items.Add(new() { selection = item, weight = 20 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].ForcedItems.Add(item);
+			EditorLevelPatch.points.Add(item);
 
 			// Cherry Bsoda
 			var normBsoda = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
@@ -513,6 +515,7 @@ namespace BBTimes.Manager
 			floorDatas[2].Items.Add(new() { selection = item, weight = 30 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].ForcedItems.Add(item);
+			EditorLevelPatch.points.Add(item);
 
 			// Blow Drier Item
 			item = new ItemBuilder(plug.Info)
