@@ -1,8 +1,10 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -11,12 +13,15 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
+			gameObject.layer = LayerMask.NameToLayer("ClickableEntities");
 			audMan = GetComponent<PropagatedAudioManager>();
+			angryAudMan = gameObject.CreatePropagatedAudioManager(audMan.minDistance + 25f, audMan.maxDistance + 25f);
+			audWhiteNoise = this.GetSound("whiteNoise.wav", "Vfx_Oran_Sucking", SoundType.Voice, new(0.79609375f, 0.39765625f, 0f));
 			audItemCall = new SoundObject[9];
 			for (int i = 0; i < audItemCall.Length; i++)
 				audItemCall[i] = this.GetSound($"{i + 1}item.wav", $"Vfx_Oran_Item{i + 1}", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
-			audAngryCall = [this.GetSound("angryCall1.wav", "Vfx_Oran_Angry1", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f)),
-			this.GetSound("angryCall2.wav", "Vfx_Oran_Angry2", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f))];
+			audAngryCall = [this.GetSound("angryCall1.wav", "Vfx_Oran_Angry1", SoundType.Voice, new(0.79609375f, 0.39765625f, 0f)),
+			this.GetSound("angryCall2.wav", "Vfx_Oran_Angry2", SoundType.Voice, new(0.79609375f, 0.39765625f, 0f))];
 			audCrunch = this.GetSound("crunch.wav", "Vfx_Oran_Crunch", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
 			audRefuseItem = this.GetSound("refuseItem.wav", "Vfx_Oran_DontWant", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
 			audRequireItem = this.GetSound("requireItem.wav", "Vfx_Oran_RequireItem", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
@@ -27,8 +32,6 @@ namespace BBTimes.CustomContent.NPCs
 			audNoticeChase = this.GetSound("noticeChase1.wav", "Vfx_Oran_Notice1", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
 			audLetPlayerOut = this.GetSound("letPlayerOut.wav", "Vfx_Oran_Dirt", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
 			audHeavyCrunch = this.GetSound("heavyCrunch.wav", "Sfx_Misc_ChipCrunch", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
-
-			renderer = spriteRenderer[0];
 
 			var sprites = this.GetSpriteSheet(8, 1, 25f, "orange.png");
 			happyTalk = [sprites[0], sprites[1]];
@@ -44,7 +47,8 @@ namespace BBTimes.CustomContent.NPCs
 			animComp = gameObject.AddComponent<AnimationComponent>();
 			animComp.Pause(true);
 			animComp.animation = happyTalk;
-			renderer.sprite = happyTalk[0];
+			animComp.renderer = spriteRenderer[0];
+			spriteRenderer[0].sprite = happyTalk[0];
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
@@ -62,13 +66,10 @@ namespace BBTimes.CustomContent.NPCs
 		internal SoundObject[] audWonder, audAngryCall, audItemCall;
 
 		[SerializeField]
-		internal SoundObject audThanks, audRequireItem, audRefuseItem, audCrunch, audNoticeChase, audLetPlayerOut, audHeavyCrunch;
+		internal SoundObject audThanks, audRequireItem, audRefuseItem, audCrunch, audNoticeChase, audLetPlayerOut, audHeavyCrunch, audWhiteNoise;
 
 		[SerializeField]
-		internal PropagatedAudioManager audMan;
-
-		[SerializeField]
-		internal SpriteRenderer renderer;
+		internal PropagatedAudioManager audMan, angryAudMan;
 
 		[SerializeField]
 		internal Sprite[] happyTalk, botheredTalk, eatYou;
@@ -87,6 +88,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Initialize()
 		{
 			base.Initialize();
+			animComp.Initialize(ec);
 			behaviorStateMachine.ChangeState(new Oran_Wondering(this));
 		}
 
@@ -99,8 +101,15 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void UpsetMe()
 		{
+			requiredSlot = -1;
+			animComp.speed = 10f;
 			audMan.FlushQueue(true);
 			audMan.QueueRandomAudio(audAngryCall);
+
+			angryAudMan.maintainLoop = true;
+			angryAudMan.SetLoop(true);
+			angryAudMan.QueueAudio(audWhiteNoise);
+
 			animComp.animation = eatYou;
 			animComp.StopLastFrameMode();
 			TalkingMood = false;
@@ -118,6 +127,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void EatPlayer(PlayerManager pm)
 		{
+			angryAudMan.FadeOut(1.3f);
 			audMan.PlaySingle(audHeavyCrunch);
 			canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 			canvas.gameObject.SetActive(true);
@@ -128,6 +138,8 @@ namespace BBTimes.CustomContent.NPCs
 			canvas.gameObject.SetActive(false);
 			TalkingMood = true;
 			behaviorStateMachine.ChangeState(new NpcState(this));
+			navigator.maxSpeed = 0f;
+			navigator.SetSpeed(0f);
 			StartCoroutine(TasteLikeDirt());
 		}
 
@@ -137,9 +149,9 @@ namespace BBTimes.CustomContent.NPCs
 			if (Singleton<CoreGameManager>.Instance.GetPlayer(player).itm.selectedItem == requiredSlot)
 			{
 				animComp.animation = happyTalk;
-				requiredSlot = -1;
 				Singleton<CoreGameManager>.Instance.GetPlayer(player).itm.RemoveItem(requiredSlot);
 				behaviorStateMachine.ChangeState(new NpcState(this)); // Doing nothing basically
+				requiredSlot = -1;
 				StartCoroutine(Eating());
 				return;
 			}
@@ -159,7 +171,7 @@ namespace BBTimes.CustomContent.NPCs
 			while (audMan.QueuedAudioIsPlaying) yield return null;
 
 			audMan.QueueAudio(audThanks);
-			behaviorStateMachine.ChangeState(new Oran_Wondering(this));
+			behaviorStateMachine.ChangeState(new Oran_Wondering(this, 20f));
 
 			yield break;
 		}
@@ -171,7 +183,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			while (audMan.AnyAudioIsPlaying) yield return null;
 
-			behaviorStateMachine.ChangeState(new Oran_Wondering(this, 45f));
+			behaviorStateMachine.ChangeState(new Oran_Wondering(this, 60f));
 			animComp.animation = happyTalk;
 
 			yield break;
@@ -189,7 +201,10 @@ namespace BBTimes.CustomContent.NPCs
 						animComp.Pause(false);
 				}
 				else if (!animComp.Paused)
+				{
 					animComp.Pause(true);
+					animComp.ResetFrame();
+				}
 			}
 		}
 		bool talkingMood = true;
@@ -202,6 +217,8 @@ namespace BBTimes.CustomContent.NPCs
 				animComp.ResetFrame();
 				while (animComp.Paused)
 					animComp.Pause(false);
+				if (talkingMood)
+					animComp.speed = 5;
 			}
 		}
 
@@ -228,7 +245,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			if (cooldown <= 0f && !player.Tagged && player.itm.HasItem())
+			if (cooldown <= 0f && !player.Tagged && player.itm.items.Any(x => x.GetMeta().tags.Any(x => { string n = x.ToLower(); return n == "food" || n == "drink"; }))) // player.itm.HasItem()
 				or.behaviorStateMachine.ChangeState(new Oran_ChasePlayer(or, player, this));
 		}
 
@@ -312,7 +329,7 @@ namespace BBTimes.CustomContent.NPCs
 			List<int> slots = [];
 			int max = Mathf.Min(SerOran.slotsItCanAccept, pm.itm.maxItem);
 			for (int i = 0; i <= max; i++)
-				if (!pm.itm.IsSlotLocked(i) && pm.itm.items[i].itemType != Items.None)
+				if (!pm.itm.IsSlotLocked(i) && pm.itm.items[i].itemType != Items.None && pm.itm.items[i].GetMeta().tags.Any(x => { string n = x.ToLower(); return n == "food" || n == "drink"; }))
 					slots.Add(i);
 
 			if (slots.Count == 0)
@@ -329,7 +346,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			if (pm.itm.items[chosenSlot].itemType != wantedItem || Vector3.Distance(or.transform.position, pm.transform.position) >= 10f)
+			if (pm.itm.items[chosenSlot].itemType != wantedItem || Vector3.Distance(or.transform.position, pm.transform.position) >= 22f)
 				or.behaviorStateMachine.ChangeState(new Oran_Angry(or, pm));
 		}
 	}
@@ -344,7 +361,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			or.UpsetMe();
 			or.Navigator.SetSpeed(0f);
-			or.Navigator.speed = 22f;
+			or.Navigator.maxSpeed = 36f;
 			tar = new NavigationState_TargetPlayer(or, 63, pm.transform.position);
 			ChangeNavigationState(tar);
 		}
@@ -384,6 +401,11 @@ namespace BBTimes.CustomContent.NPCs
 			if (other.gameObject == pm.gameObject && pm.plm.Entity.Override(or.Overrider))
 				or.behaviorStateMachine.ChangeState(new Oran_EatenPlayer(or, pm, 10f));
 		}
+		public override void Exit()
+		{
+			base.Exit();
+			tar.priority = 0;
+		}
 	}
 
 	internal class Oran_EatenPlayer(SerOran or, PlayerManager pm, float eatCooldown) : Oran_StateBase(or)
@@ -395,6 +417,10 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
+			ChangeNavigationState(new NavigationState_WanderRandom(or, 0));
+			or.Navigator.maxSpeed = 14;
+			or.Navigator.SetSpeed(14f);
+
 			or.EatPlayer(pm);
 			or.Overrider.SetHeight(baseHeight - 3f);
 			or.Overrider.SetInteractionState(false);
@@ -408,7 +434,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (eatCooldown <= 0f)
 				or.TakePlayerOut();
 
-			pm.Teleport(or.transform.position + (or.Navigator.NextPoint - or.transform.position).normalized * 0.5f);
+			pm.Teleport(or.transform.position + (or.Navigator.NextPoint - or.transform.position).normalized * 2f);
 		}
 
 		public override void Exit()

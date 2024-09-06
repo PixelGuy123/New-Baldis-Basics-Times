@@ -6,19 +6,22 @@ namespace BBTimes.CustomComponents
 	{
 		void Update()
 		{
-			if (ec && pause != 0)
+			if (ec)
 			{
-				frame += speed * ec.EnvironmentTimeScale * Time.deltaTime;
-				if (frame >= animation.Length)
+				if (!Paused)
 				{
-					if (lastFrameMode)
+					frame += speed * ec.EnvironmentTimeScale * Time.deltaTime;
+					if (frame >= animation.Length)
 					{
-						StopLastFrameMode();
-						Pause(true);
-						frame = animation.Length - 1;
+						if (lastFrameMode)
+						{
+							StopLastFrameMode();
+							Pause(true);
+							frame = animation.Length - 1;
+						}
+						else
+							frame %= animation.Length;
 					}
-					else
-						frame %= animation.Length;
 				}
 				renderer.sprite = animation[Mathf.FloorToInt(frame)];
 			}

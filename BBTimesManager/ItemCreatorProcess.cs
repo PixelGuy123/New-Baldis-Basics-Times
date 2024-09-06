@@ -70,7 +70,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(20)
 				.SetShopPrice(325)
 				.SetNameAndDescription("GUM_Name", "GUM_Desc")
-				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
+				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, ["Food"])
 				.Build("Gum");
 
 			//CreatorExtensions.CreateItem<ITM_Gum, GumCustomData>("Gum", "GUM_Name", "GUM_Desc", 225, 20).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
@@ -173,7 +173,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(20)
 				.SetShopPrice(450)
 				.SetNameAndDescription("BSED_Name", "BSED_Desc")
-				.SetMeta(ItemFlags.Persists, [])
+				.SetMeta(ItemFlags.Persists, ["Drink"])
 				.Build("BSED");
 			//CreatorExtensions.CreateItem<ITM_StaminaDrinkable, CustomItemData>("BSED", "BSED_Name", "BSED_Desc", 245, 20).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
@@ -195,7 +195,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(28)
 				.SetShopPrice(600)
 				.SetNameAndDescription("SPP_Name", "SPP_Desc")
-				.SetMeta(ItemFlags.Persists, [])
+				.SetMeta(ItemFlags.Persists, ["Drink"])
 				.Build("SpeedPotion");
 
 			//CreatorExtensions.CreateItem<ITM_SpeedPotion, SpeedPotionCustomData>("SpeedPotion", "SPP_Name", "SPP_Desc", 165, 28).AddMeta(plug, ItemFlags.Persists).value;
@@ -238,7 +238,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(20)
 				.SetShopPrice(350)
 				.SetNameAndDescription("WBottle_Name", "WBottle_Desc")
-				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, [])
+				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, ["Drink"])
 				.Build("WaterBottle");
 			//CreatorExtensions.CreateItem<ITM_WaterBottle, CustomItemData>("WaterBottle", "WBottle_Name", "WBottle_Desc", 155, 20).AddMeta(plug, ItemFlags.MultipleUse | ItemFlags.Persists).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
@@ -342,7 +342,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(24)
 				.SetShopPrice(250)
 				.SetNameAndDescription("HotChoc_Name", "HotChoc_Desc")
-				.SetMeta(ItemFlags.Persists, [])
+				.SetMeta(ItemFlags.Persists, ["Drink"])
 				.Build("HotChocolate");
 			//CreatorExtensions.CreateItem<ITM_StaminaDrinkable, CustomItemData>("HotChocolate", "HotChoc_Name", "HotChoc_Desc", 365, 24).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 35 });
@@ -608,7 +608,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(55)
 				.SetShopPrice(750)
 				.SetNameAndDescription("SugZestyBar_Name", "SugZestyBar_Desc")
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["Food"])
 				.Build("SugarFlavorZestyBar");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 12 });
