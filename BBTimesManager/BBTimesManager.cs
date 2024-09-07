@@ -1,4 +1,5 @@
 ﻿using BBTimes.CompatibilityModule;
+using BBTimes.CompatibilityModule.EditorCompat;
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
@@ -27,7 +28,7 @@ namespace BBTimes.Manager
 		internal static BasePlugin plug;
 		internal static IEnumerator InitializeContentCreation()
 		{
-			yield return 14;
+			yield return 14 + (EditorExists ? 1 : 0);
 
 			yield return "Loading assets...";
 			SetAssets();

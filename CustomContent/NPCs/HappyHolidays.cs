@@ -1,16 +1,22 @@
-﻿
-using BBTimes.CustomComponents;
+﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class HappyHolidays : NPC, INPCPrefab
+    public class HappyHolidays : NPC, INPCPrefab, IClickable<int>
 	{
 		public void SetupPrefab()
 		{
-			spriteRenderer[0].sprite = this.GetSprite(45f, "happyholidays.png");
+			audMan = GetComponent<AudioManager>();
+			gameObject.layer = LayerMask.NameToLayer("ClickableEntities");
+			var sprites = this.GetSpriteSheet(2, 2, 45f, "happyholidays.png");
+			spriteRenderer[0].sprite = sprites[0];
+			renderer = spriteRenderer[0];
+			unwrapSprites = sprites;
+
 			audHappyHolidays = this.GetSound("HappyHolidays.wav", "Vfx_HapH_MerryChristmas", SoundType.Voice, new(0.796875f, 0f, 0f));
+			audUnbox = this.GetSound("unbox.wav", "Vfx_HapH_Unwrap", SoundType.Voice, new(0.796875f, 0f, 0f));
 		}
 		public void SetupPrefabPost() =>
 			objects = [.. GameExtensions.GetAllShoppingItems()];
@@ -24,7 +30,6 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Initialize()
 		{
 			base.Initialize();
-			audMan = GetComponent<AudioManager>();
 			behaviorStateMachine.ChangeState(new HappyHolidays_Wondering(this));
 		}
 
@@ -35,18 +40,57 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.PlaySingle(audHappyHolidays);
 		}
 
+		public void Clicked(int player)
+		{
+			if (clickDelay > 0f) return;
+			audMan.PlaySingle(audUnbox);
+			if (++unwraps >= unwrapSprites.Length)
+			{
+				unwraps = 0;
+				GivePlayerItem(Singleton<CoreGameManager>.Instance.GetPlayer(player));
+				return;
+			}
+			renderer.sprite = unwrapSprites[unwraps];
+
+			behaviorStateMachine.ChangeState(
+				new HappyHolidays_FleeFromPlayer(this, (HappyHolidays_StateBase)behaviorStateMachine.CurrentState, Singleton<CoreGameManager>.Instance.GetPlayer(player).transform));
+
+		}
+		public void ClickableSighted(int player) { }
+		public void ClickableUnsighted(int player) { }
+		public bool ClickableHidden() => !navigator.Entity.enabled || clickDelay > 0f;
+		public bool ClickableRequiresNormalHeight() => true;
+
+		public void ResetSprite() => renderer.sprite = unwrapSprites[0];
+		public override void VirtualUpdate()
+		{
+			base.VirtualUpdate();
+			if (clickDelay > 0f)
+				clickDelay -= TimeScale * Time.deltaTime;
+		}
+
 		[SerializeField]
 		internal ItemObject[] objects = [];
 
 		[SerializeField]
-		internal SoundObject audHappyHolidays;
+		internal SoundObject audHappyHolidays, audUnbox;
 
 		[SerializeField]
-		internal float coalChance = 0.5f;
+		internal SpriteRenderer renderer;
 
-		private AudioManager audMan;
+		[SerializeField]
+		internal Sprite[] unwrapSprites;
+
+		[SerializeField]
+		internal float coalChance = 0.25f;
+
+		[SerializeField]
+		internal AudioManager audMan;
 
 		internal static ItemObject itmCoal;
+
+		int unwraps = 0;
+		float clickDelay = 2f;
 	}
 
 	internal class HappyHolidays_StateBase(HappyHolidays hh) : NpcState(hh) // A default npc state
@@ -64,15 +108,33 @@ namespace BBTimes.CustomContent.NPCs
 			hh.Navigator.SetSpeed(speed);
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		const float speed = 20f;
+	}
+
+	internal class HappyHolidays_FleeFromPlayer(HappyHolidays hh, HappyHolidays_StateBase prevState, params Transform[] runningFrom) : HappyHolidays_StateBase(hh)
+	{
+		float fleeCooldown = 15f;
+		readonly HappyHolidays_StateBase prevState = prevState;
+		readonly DijkstraMap map = new(hh.ec, PathType.Nav, runningFrom);
+		public override void Enter()
 		{
-			base.OnStateTriggerEnter(other);
-			if (other.CompareTag("Player"))
-				hh.GivePlayerItem(other.GetComponent<PlayerManager>());
-			
+			base.Enter();
+			hh.Navigator.maxSpeed = 30f;
+			hh.Navigator.SetSpeed(30f);
+			map.QueueUpdate();
+			map.Activate();
+			ChangeNavigationState(new NavigationState_WanderFlee(hh, 0, map));
 		}
 
-		const float speed = 20f;
+		public override void Update()
+		{
+			base.Update();
+			fleeCooldown -= hh.TimeScale * Time.deltaTime;
+			if (fleeCooldown <= 0f)
+			{
+				hh.behaviorStateMachine.ChangeState(prevState);
+			}
+		}
 	}
 
 	internal class HappyHolidays_WaitToRespawn(HappyHolidays hh) : HappyHolidays_StateBase(hh)
@@ -134,6 +196,12 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.InPlayerSight(player);
 			ableOfRespawning = 5f;
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			hh.ResetSprite();
 		}
 
 		readonly float prevHeight = height;

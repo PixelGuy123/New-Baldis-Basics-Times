@@ -17,21 +17,25 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 {
 	[HarmonyPatch]
 	[ConditionalPatchMod("mtm101.rulerp.baldiplus.leveleditor")]
-	internal static class EditorLevelPatch
+	internal class EditorLevelPatch
 	{
+		internal static EditorLevelPatch i;
+		internal EditorLevelPatch() => i = this;
 
 		[HarmonyPatch(typeof(BasePlugin), "PostSetup")]
 		[HarmonyPostfix]
 		private static void MakeEditorSeeAssets(AssetManager man)
 		{
-			markersToAdd = [];
-			itemsToAdd = [];
-			npcsToAdd = [];
+			var e = new EditorLevelPatch(); // Triggers the constructor
+			i.markersToAdd = [];
+			i.itemsToAdd = [];
+			i.npcsToAdd = [];
 
 			GameObject[] array = [
 				man.Get<GameObject>("editorPrefab_bathStall"),
 				man.Get<GameObject>("editorPrefab_bathDoor"),
-				man.Get<GameObject>("editorPrefab_sink")
+				man.Get<GameObject>("editorPrefab_sink"),
+				man.Get<GameObject>("editorPrefab_Toilet")
 			];
 			MarkRotatingObject(array[0], Vector3.up * array[0].transform.localScale.y / 2f);
 			MarkRotatingObject(array[1], Vector3.zero);
@@ -41,6 +45,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				new ObjectData(array[1], new Vector3(0f, 0f, 4f), default),
 				new ObjectData(array[0], new Vector3(5f, 5f, 0f), Quaternion.Euler(0f, 90f, 0f))
 			]);
+			MarkObject(array[3], Vector3.zero);
 
 			array = [
 				man.Get<GameObject>("editorPrefab_BasketHoop"),
@@ -148,13 +153,13 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 
 			static void MarkRotatingObject(GameObject obj, Vector3 offset)
 			{
-				markersToAdd.Add(new RotateAndPlacePrefab(obj.name));
+				i.markersToAdd.Add(new RotateAndPlacePrefab(obj.name));
 				BaldiLevelEditorPlugin.editorObjects.Add(EditorObjectType.CreateFromGameObject<EditorPrefab, PrefabLocation>(obj.name, obj, offset, false));
 			}
 
 			static void MarkObject(GameObject obj, Vector3 offset)
 			{
-				markersToAdd.Add(new ObjectTool(obj.name));
+				i.markersToAdd.Add(new ObjectTool(obj.name));
 				BaldiLevelEditorPlugin.editorObjects.Add(EditorObjectType.CreateFromGameObject<EditorPrefab, PrefabLocation>(obj.name, obj, offset, false));
 			}
 
@@ -165,7 +170,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				for (int i = 0; i < objs.Length; i++)
 					array[i] = new PrefabLocation(objs[i].Item1.name, PlusLevelLoader.Extensions.ToData(objs[i].Item2), PlusLevelLoader.Extensions.ToData(objs[i].Item3));
 
-				markersToAdd.Add(new PrebuiltStructureTool(prebuiltToolName, new EditorPrebuiltStucture(array)));
+				i.markersToAdd.Add(new PrebuiltStructureTool(prebuiltToolName, new EditorPrebuiltStucture(array)));
 			}
 
 			static void AddItem(string itemName, string itemEnum)
@@ -173,17 +178,15 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				var en = EnumExtensions.GetFromExtendedName<Items>(itemEnum);
 				var itm = ItemMetaStorage.Instance.FindByEnumFromMod(en, BBTimesManager.plug.Info).value;
 
-				BaldiLevelEditorPlugin.itemObjects.Add(itemName, itm);
-				PlusLevelLoaderPlugin.Instance.itemObjects.Add(itemName, itm);
-				itemsToAdd.Add(new TimesItem(itemName));
+				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemName, itm);
+				i.itemsToAdd.Add(new TimesItem(itemName));
 			}
 
 			static void AddPointItem<T>(string itemName) where T : Item
 			{
 				var itm = points.Find(x => x.item is T);
-				BaldiLevelEditorPlugin.itemObjects.Add(itemName, itm);
-				PlusLevelLoaderPlugin.Instance.itemObjects.Add(itemName, itm);
-				itemsToAdd.Add(new TimesItem(itemName));
+				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemName, itm);
+				i.itemsToAdd.Add(new TimesItem(itemName));
 			}
 
 			static void AddNPC(string npcName, string npcEnum)
@@ -191,13 +194,11 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				var en = EnumExtensions.GetFromExtendedName<Character>(npcEnum);
 				var val = NPCMetaStorage.Instance.Find(x => x.character == en && BBTimesManager.plug.Info == x.info).value;
 
-				BaldiLevelEditorPlugin.characterObjects.Add(npcName,
+				BaldiLevelEditorPlugin.characterObjects.Add("times_" + npcName,
 					BaldiLevelEditorPlugin.StripAllScripts(val.gameObject, true)
 					);
 
-				PlusLevelLoaderPlugin.Instance.npcAliases.Add(npcName, val);
-
-				npcsToAdd.Add(new TimesNPC(npcName));
+				i.npcsToAdd.Add(new TimesNPC(npcName));
 			}
 
 			static void AddNPCCopy<T>(string npcName) where T : MonoBehaviour
@@ -223,9 +224,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 					BaldiLevelEditorPlugin.StripAllScripts(npc.gameObject, true)
 					);
 
-				PlusLevelLoaderPlugin.Instance.npcAliases.Add(npcName, npc);
-
-				npcsToAdd.Add(new TimesNPC(npcName));
+				i.npcsToAdd.Add(new TimesNPC(npcName));
 			}
 
 		}
@@ -242,6 +241,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			__instance.defaultTextures.Add("Forest", new TextureContainer("Grass", "forestWall", "None"));
 			__instance.defaultTextures.Add("Kitchen", new TextureContainer("kitchenFloor", "Wall", "Ceiling"));
 			__instance.defaultTextures.Add("FocusRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
+			__instance.defaultTextures.Add("SuperMystery", new TextureContainer("redCeil", "redWall", "redFloor"));
 		}
 
 		[HarmonyPatch(typeof(PlusLevelEditor), "Initialize")]
@@ -252,9 +252,9 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			for (int i = 0; i < files.Length; i++)
 				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
 
-			__instance.toolCats.Find(x => x.name == "items").tools.AddRange(itemsToAdd);
-			__instance.toolCats.Find(x => x.name == "characters").tools.AddRange(npcsToAdd);
-			__instance.toolCats.Find(x => x.name == "objects").tools.AddRange(markersToAdd);
+			__instance.toolCats.Find(x => x.name == "items").tools.AddRange(i.itemsToAdd);
+			__instance.toolCats.Find(x => x.name == "characters").tools.AddRange(i.npcsToAdd);
+			__instance.toolCats.Find(x => x.name == "objects").tools.AddRange(i.markersToAdd);
 			__instance.toolCats.Find(x => x.name == "halls").tools.AddRange(
 			[
 				new TimesRoom("Bathroom"),
@@ -264,11 +264,12 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				new TimesRoom("DribbleRoom"),
 				new TimesRoom("Forest"),
 				new TimesRoom("Kitchen"),
-				new TimesRoom("FocusRoom")
+				new TimesRoom("FocusRoom"),
+				new TimesRoom("SuperMystery")
 			]);
 		}
 
-		static internal List<EditorTool> markersToAdd, itemsToAdd, npcsToAdd;
+		List<EditorTool> markersToAdd, itemsToAdd, npcsToAdd;
 
 		internal static void AddPoint(ItemObject point) =>
 			points.Add(point);
@@ -283,19 +284,22 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			public Quaternion Item3 = rot;
 		}
 
-		class TimesItem(string obj) : ItemTool(obj)
+		class TimesItem(string obj) : ItemTool("times_" + obj)
 		{
-			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/item_" + obj);
+			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.ContainsKey("UI/item_" + obj) ?
+				BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/item_" + obj) : BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/Item_" + obj);
 			readonly string obj = obj;
 		}
-		class TimesNPC(string obj) : NpcTool(obj)
+		class TimesNPC(string obj) : NpcTool("times_" + obj)
 		{
-			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/npc_" + obj);
+			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.ContainsKey("UI/npc_" + obj) ?
+				BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/npc_" + obj) : BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/Npc_" + obj);
 			readonly string obj = obj;
 		}
-		class TimesRoom(string obj) : FloorTool(obj)
+		class TimesRoom(string obj) : FloorTool("times_" + obj)
 		{
-			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/floor_" + obj);
+			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.ContainsKey("UI/floor_" + obj) ?
+				BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/floor_" + obj) : BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/Floor_" + obj);
 			readonly string obj = obj;
 		}
 	}

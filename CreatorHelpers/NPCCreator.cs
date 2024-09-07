@@ -9,6 +9,7 @@ using BBTimes.Manager;
 using BBTimes.Extensions;
 using MTM101BaldAPI.Registers;
 using BBTimes.CustomComponents;
+using PlusLevelLoader;
 
 namespace BBTimes.Helpers
 {
@@ -33,9 +34,9 @@ namespace BBTimes.Helpers
 			data.Name = name;
 			data.SetupPrefab();
 
-			// npc.spriteRenderer[0].sprite = data.storedSprites[0]; WILL be defined in the setup prefab by the npc, leave this comment as a reminder
-
 			BasePlugin._cstData.Add(data);
+
+			PlusLevelLoaderPlugin.Instance.npcAliases.Add("times_" + name, npc);
 
 			return npc;
 		}
@@ -86,6 +87,8 @@ namespace BBTimes.Helpers
 
 			data.SetupPrefab();
 			BasePlugin._cstData.Add(data);
+
+			PlusLevelLoaderPlugin.Instance.npcAliases.Add(name, npc);
 
 			return npc;
 		}

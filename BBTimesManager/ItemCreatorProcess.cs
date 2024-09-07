@@ -762,10 +762,11 @@ namespace BBTimes.Manager
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("ToiletPaper");
 
-			floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
-			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
-			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
-			floorDatas[3].Items.Add(new() { selection = item, weight = 40 });
+			// You should get toiler paper from a bathroom
+			//floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
+			//floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
+			//floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
+			//floorDatas[3].Items.Add(new() { selection = item, weight = 40 });
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 15 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });

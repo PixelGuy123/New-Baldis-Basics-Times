@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
+using BBTimes.CustomContent.Events;
 using BBTimes.CustomContent.Misc;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomContent.Objects;
@@ -15,6 +16,7 @@ using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
+using PlusLevelFormat;
 using PlusLevelLoader;
 using System.Collections.Generic;
 using System.IO;
@@ -41,6 +43,7 @@ namespace BBTimes.Manager
 			//*************Bathroom Creation*******************
 			//***************************************************
 			//***************************************************
+
 			var bathStall = ObjectCreationExtension.CreateCube(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "bathToiletWalls.png")), false);
 			bathStall.gameObject.AddNavObstacle(new(1f, 10f, 1f));
 			bathStall.name = "bathStall";
@@ -100,7 +103,14 @@ namespace BBTimes.Manager
 
 			bathSink.transform.parent.gameObject.AddObjectToEditor();
 
-			
+			var toilet = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "toilet.png")), 50f)).AddSpriteHolder(2.7f, LayerStorage.ignoreRaycast);
+			toilet.name = "toiletRenderer";
+			toilet.transform.parent.name = "Toilet";
+			toilet.transform.parent.gameObject.AddBoxCollider(Vector3.zero, new(0.8f, 10f, 0.8f), false);
+			toilet.transform.parent.gameObject.AddNavObstacle(new(1.2f, 10f, 1.2f));
+
+			toilet.transform.parent.gameObject.AddObjectToEditor();
+
 
 			var bathLightPre = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "long_hanginglamp.png")), 50f))
 				.AddSpriteHolder(8.98f).transform.parent;
@@ -120,7 +130,11 @@ namespace BBTimes.Manager
 			fun.targetPrefabName = "sink";
 			fun.posterPre = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "mirror.png"))]);
 
-			room.ForEach(x => { x.selection.posterChance = 0f; x.selection.lightPre = bathLightPre; });
+			room.ForEach(x =>
+			{
+				x.selection.posterChance = 0f;
+				x.selection.lightPre = bathLightPre;
+			});
 			sets.container = room[0].selection.roomFunctionContainer;
 
 			var group = new RoomGroup()
@@ -162,12 +176,13 @@ namespace BBTimes.Manager
 			{
 				stickToHallChance = 0.45f,
 				minRooms = 1,
-				maxRooms = 2,
+				maxRooms = 3,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(2)],
 				name = "Bathroom",
 				light = [new() { selection = bathLightPre }]
 			};
 			floorDatas[2].RoomAssets.Add(group);
+
 
 			// *******************************************************
 			// *******************************************************
@@ -518,6 +533,38 @@ namespace BBTimes.Manager
 
 			for (int i = 1; i < floorDatas.Count; i++)
 				floorDatas[i].RoomAssets.Add(group);
+
+			// ***********************************************
+			// ***********************************************
+			// ******************* Red Mystery Room **********
+			// ***********************************************
+			// ***********************************************
+
+			sets = RegisterRoom("SuperMystery", new(1f, 0.439f, 0f),
+				ObjectCreators.CreateDoorDataObject("SuperMysteryDoor",
+				AssetLoader.TextureFromFile(GetRoomAsset("SuperMystery", "FakeMysteryRoom_Open.png")),
+				AssetLoader.TextureFromFile(GetRoomAsset("SuperMystery", "FakeMysteryRoom.png"))));
+
+			Superintendent.AddAllowedRoom(sets.category);
+
+			room = GetAllAssets(GetRoomAsset("SuperMystery"), 75, 50, secretRoom: true);
+			room[0].selection.AddRoomFunctionToContainer<RuleFreeZone>();
+
+			var exclamations = TextureExtensions.LoadSpriteSheet(4, 2, 25f, GetRoomAsset("SuperMystery", "exclamations.png"));
+			var transforms = new Transform[exclamations.Length];
+			for (int i = 0; i < transforms.Length; i++)
+			{
+				transforms[i] = ObjectCreationExtensions.CreateSpriteBillboard(exclamations[i]).transform;
+				transforms[i].gameObject.ConvertToPrefab(true);
+			}
+
+			room[0].selection.AddRoomFunctionToContainer<EnvironmentObjectSpawner>().randomTransforms = transforms;
+
+			sets.container = room[0].selection.roomFunctionContainer;
+
+			room.ForEach(x => { x.selection.maxItemValue = 999; x.selection.posterChance = 0; });
+
+			AddAssetsToEvent<SuperMysteryRoom>(room);
 
 
 			// ================================================ Special Room Creation ====================================================
@@ -932,6 +979,21 @@ namespace BBTimes.Manager
 				});
 
 			}
+
+			static List<E> AddAssetsToEvent<E>(List<WeightedRoomAsset> assets) where E : RandomEvent
+			{
+				var l = new List<E>();
+				foreach (var x in RandomEventMetaStorage.Instance.All())
+				{
+					if (x.value is E e)
+					{
+						l.Add(e);
+						e.potentialRoomAssets = e.potentialRoomAssets.AddRangeToArray([.. assets]);
+					}
+				}
+				return l;
+			}
+
 		}
 
 		static string GetRoomAsset(string roomName, string asset = "") => Path.Combine(BasePlugin.ModPath, "rooms", roomName, asset);
@@ -985,7 +1047,22 @@ namespace BBTimes.Manager
 					if (!container)
 						container = asset[0].roomFunctionContainer;
 				}
-				catch {} 
+				catch (KeyNotFoundException e)
+				{
+					Debug.LogWarning("------------- Warning: actual exception found during room loading --------------");
+					Debug.LogWarning("Current path: " + file);
+					Debug.LogException(e);
+					//using (BinaryReader reader = new(File.OpenRead(file)))
+					//{
+					//	var asset = LevelExtensions.ReadLevel(reader);
+					//	Debug.Log("Prefabs:");
+					//	asset.rooms[1].prefabs.ForEach(x => Debug.Log(x.prefab));
+					//	Debug.Log("---");
+					//	Debug.Log(asset.rooms[1].type);
+					//	Debug.Log(asset.rooms[1].textures.floor + "," + asset.rooms[1].textures.wall + "," + asset.rooms[1].textures.ceiling);
+					//}
+				}
+				catch { }
 
 			}
 
