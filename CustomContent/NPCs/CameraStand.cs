@@ -1,6 +1,7 @@
-﻿using BBTimes.Extensions;
-using BBTimes.CustomComponents;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using BBTimes.Manager;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class CameraStand : NPC, INPCPrefab
+	public class CameraStand : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -28,10 +29,11 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
 		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
 		public NPC Npc { get; set; }
-		public Character[] ReplacementNpcs { get; set; }
+		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
 
 		// stuff above^^
@@ -43,7 +45,7 @@ namespace BBTimes.CustomContent.NPCs
 			behaviorStateMachine.ChangeState(new CameraStand_WaitToRespawn(this));
 		}
 
-		public void TakePicture(PlayerManager pm)
+		public void TakePictureOfPlayer(PlayerManager pm)
 		{
 			audMan.PlaySingle(audPic);
 			DisableLatestTimer();
@@ -51,10 +53,27 @@ namespace BBTimes.CustomContent.NPCs
 			stunCanvas.gameObject.SetActive(true);
 			stunCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 			affectedByCamStand.Add(new(this, pm));
-			
+
 
 			lastPlayer = pm;
 			picTimer = StartCoroutine(PictureTimer(pm));
+		}
+
+		public void TakePicture(Entity e) =>
+			StartCoroutine(NormalPictureStun(e));
+		
+
+		IEnumerator NormalPictureStun(Entity e)
+		{
+			e?.ExternalActivity.moveMods.Add(moveMod);
+			float cooldown = 20f;
+			while (cooldown > 0f)
+			{
+				cooldown -= TimeScale * Time.deltaTime;
+				yield return null;
+			}
+			e?.ExternalActivity.moveMods.Remove(moveMod);
+			yield return null;
 		}
 
 		IEnumerator PictureTimer(PlayerManager pm)
@@ -92,7 +111,7 @@ namespace BBTimes.CustomContent.NPCs
 				yield return null;
 			}
 
-			
+
 			while (true)
 			{
 				color.a -= 0.25f * TimeScale * Time.deltaTime;
@@ -122,7 +141,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (picTimer != null)
 			{
 				StopCoroutine(picTimer);
-				if (lastPlayer) 
+				if (lastPlayer)
 				{
 					lastPlayer.Am.moveMods.Remove(moveMod);
 					affectedByCamStand.RemoveAll(x => x.Key == this && x.Value == lastPlayer);
@@ -164,7 +183,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			ChangeNavigationState(new NavigationState_DoNothing(cs, 0));
 			cs.Navigator.Entity.Enable(false);
-			
+
 			prevHeight = cs.Navigator.Entity.InternalHeight;
 			cs.Navigator.Entity.SetHeight(-15);
 		}
@@ -185,7 +204,7 @@ namespace BBTimes.CustomContent.NPCs
 			foreach (var room in cs.ec.rooms)
 				if (room.category == RoomCategory.Class)
 					cells.AddRange(room.AllEntitySafeCellsNoGarbage());
-			
+
 			if (cells.Count > 0)
 				cs.transform.position = cells[Random.Range(0, cells.Count)].CenterWorldPosition;
 
@@ -249,7 +268,16 @@ namespace BBTimes.CustomContent.NPCs
 			sightDelay -= cs.TimeScale * Time.deltaTime;
 			if (sightDelay <= 0f)
 			{
-				cs.TakePicture(player);
+				cs.TakePictureOfPlayer(player);
+				foreach (var npc in cs.ec.Npcs)
+				{
+					if (npc != cs)
+					{
+						cs.looker.Raycast(npc.transform, cs.looker.distance, LayerStorage.principalLookerMask, out bool sighted);
+						 if (sighted)
+							cs.TakePicture(npc.Navigator.Entity);
+					}
+				}
 				cs.behaviorStateMachine.ChangeState(new CameraStand_WaitToRespawn(cs));
 			}
 		}

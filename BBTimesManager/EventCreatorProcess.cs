@@ -37,8 +37,6 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupEvent();
 
-
-			floorDatas[3].Events.Add(new() { selection = e, weight = 999999 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
 
 			// Freezing Event
@@ -156,7 +154,6 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[0].Events.Add(new() { selection = e, weight = 9999999 });
 			floorDatas[1].Events.Add(new() { selection = e, weight = 35 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 40 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 15 });

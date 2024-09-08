@@ -1,11 +1,11 @@
 ﻿using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
+using HarmonyLib;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Experimental.Rendering;
 
 namespace BBTimes.CustomContent.RoomFunctions
 {
@@ -40,12 +40,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			for (int i = 1; i <= ceilingHeight; i++)
 			{
-				var currentWall = customWallProximityToCeil[offset];
 				if (i > ceilingHeight - customWallProximityToCeil.Length)
-				{
-					fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, currentWall, ObjectCreationExtension.transparentTex);
-					offset++;
-				}
+					fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, customWallProximityToCeil[offset++], ObjectCreationExtension.transparentTex);
+				
 
 
 				foreach (var cell in ogCellBins)
@@ -59,11 +56,14 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 					room.ec.SwapCell(c.position, c.room, ogbin);
 					var tile = Instantiate(c.Tile);
+					tile.collider.Do(Destroy);
+
 					tile.transform.SetParent(planeHolder.transform);
 					tile.transform.position = c.FloorWorldPosition + (Vector3.up * (LayerStorage.TileBaseOffset * i));
-					tile.MeshRenderer.material = GraphicsFormatUtility.HasAlphaChannel(currentWall.graphicsFormat) ? room.defaultAlphaMat : room.defaultMat;
+					tile.MeshRenderer.material = room.defaultAlphaMat;
 					tile.MeshRenderer.material.mainTexture = fullTex;
 					c.AddRenderer(tile.MeshRenderer);
+					Destroy(tile);
 
 					room.ec.SwapCell(c.position, c.room, bin);
 
@@ -104,9 +104,13 @@ namespace BBTimes.CustomContent.RoomFunctions
 			foreach (var c in room.cells)
 			{
 				var tile = Instantiate(c.Tile, planeHolder.transform);
+				tile.collider.Do(Destroy);
+
 				tile.transform.position = c.FloorWorldPosition + (Vector3.up * (ceilingHeight * LayerStorage.TileBaseOffset));
+				tile.MeshRenderer.material = room.defaultAlphaMat;
 				tile.MeshRenderer.material.mainTexture = fullTex;
 				c.AddRenderer(tile.MeshRenderer);
+				Destroy(tile);
 			}
 
 		}

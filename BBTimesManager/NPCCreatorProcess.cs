@@ -343,8 +343,6 @@ namespace BBTimes.Manager
 				.SetEnum("Mugh")
 				.SetMetaName("PST_Mugh_Name")
 				.SetName("Mugh")
-				.AddLooker()
-				.SetMaxSightDistance(65f)
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("Mugh", "PST_Mugh_Name", "PST_Mugh_Desc", -1.36f);
@@ -398,6 +396,35 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 10 });
+
+			// Mopper
+			npc = new NPCBuilder<Mopper>(plug.Info)
+				.SetMinMaxAudioDistance(195f, 235f)
+				.SetEnum("Mopper")
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetMetaName("PST_MOP_Name")
+				.SetName("Mopper")
+				.IgnorePlayerOnSpawn()
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("Mopper", "PST_MOP_Name", "PST_MOP_Desc", -0.196f)
+				.MarkAsReplacement(35, Character.Sweep);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+
+			// Ink Artist
+			npc = new NPCBuilder<InkArtist>(plug.Info)
+				.SetMinMaxAudioDistance(155f, 175f)
+				.SetEnum("InkArtist")
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetMetaName("PST_InkArt_Name")
+				.SetName("InkArtist")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("InkArtist", "PST_InkArt_Name", "PST_InkArt_Desc", -0.196f);
+
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 20 });
 		}
 
 		

@@ -83,6 +83,10 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			MarkRotatingObject(man.Get<GameObject>("editorPrefab_JoeChef"), Vector3.up * 5f);
 			MarkObject(man.Get<GameObject>("editorPrefab_FocusedStudent"), Vector3.up * 5f);
 
+			// Decorations
+			MarkObject(man.Get<GameObject>("editorPrefab_SecretBread"), Vector3.zero);
+			MarkObject(man.Get<GameObject>("editorPrefab_SmallPottedPlant"), Vector3.zero);
+
 			// ************************ Items ****************************
 
 			AddItem("basketball", "Basketball");
@@ -93,9 +97,11 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("cherryBsoda", "CherryBsoda");
 			AddItem("chocolate", "HotChocolate");
 			AddItem("comicallyLargeTrumpet", "ComicallyLargeTrumpet");
-			AddPointItem<ITM_DivideYTP>("divisionPoint");
+			AddPointItem<ITM_DivideYTP>("DivisionPoint");
+			AddItem("eletricalGel", "EletricalGel");
 			AddItem("empty", "EmptyWaterBottle");
 			AddItem("fidgetSpinner", "FidgetSpinner");
+			AddItem("fryingPan", "FryingPan");
 			AddItem("gps", "Gps");
 			AddItem("gQuarter", "GoldenQuarter");
 			AddItem("gsoda", "GSoda");
@@ -133,8 +139,10 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("dribble", "Dribble");
 			AddNPC("faker", "Faker");
 			AddNPC("gluebotrony", "Glubotrony");
+			AddNPC("inkArtist", "InkArtist");
 			AddNPC("leapy", "Leapy");
 			AddNPC("MGS", "Magicalstudent");
+			AddNPC("mopper", "Mopper");
 			AddNPC("Mugh", "Mugh");
 			AddNPC("officeChair", "OfficeChair");
 			AddNPC("pencilBoy", "PencilBoy");
@@ -178,15 +186,15 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				var en = EnumExtensions.GetFromExtendedName<Items>(itemEnum);
 				var itm = ItemMetaStorage.Instance.FindByEnumFromMod(en, BBTimesManager.plug.Info).value;
 
-				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemName, itm);
-				i.itemsToAdd.Add(new TimesItem(itemName));
+				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemEnum, itm);
+				i.itemsToAdd.Add(new TimesItem(itemEnum, itemName));
 			}
 
 			static void AddPointItem<T>(string itemName) where T : Item
 			{
 				var itm = points.Find(x => x.item is T);
 				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemName, itm);
-				i.itemsToAdd.Add(new TimesItem(itemName));
+				i.itemsToAdd.Add(new TimesItem(itemName, itemName));
 			}
 
 			static void AddNPC(string npcName, string npcEnum)
@@ -194,11 +202,11 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				var en = EnumExtensions.GetFromExtendedName<Character>(npcEnum);
 				var val = NPCMetaStorage.Instance.Find(x => x.character == en && BBTimesManager.plug.Info == x.info).value;
 
-				BaldiLevelEditorPlugin.characterObjects.Add("times_" + npcName,
+				BaldiLevelEditorPlugin.characterObjects.Add("times_" + npcEnum,
 					BaldiLevelEditorPlugin.StripAllScripts(val.gameObject, true)
 					);
 
-				i.npcsToAdd.Add(new TimesNPC(npcName));
+				i.npcsToAdd.Add(new TimesNPC(npcEnum, npcName));
 			}
 
 			static void AddNPCCopy<T>(string npcName) where T : MonoBehaviour
@@ -224,7 +232,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 					BaldiLevelEditorPlugin.StripAllScripts(npc.gameObject, true)
 					);
 
-				i.npcsToAdd.Add(new TimesNPC(npcName));
+				i.npcsToAdd.Add(new TimesNPC(npcName, npcName));
 			}
 
 		}
@@ -284,19 +292,19 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			public Quaternion Item3 = rot;
 		}
 
-		class TimesItem(string obj) : ItemTool("times_" + obj)
+		class TimesItem(string obj, string objTex) : ItemTool("times_" + obj)
 		{
-			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.ContainsKey("UI/item_" + obj) ?
-				BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/item_" + obj) : BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/Item_" + obj);
-			readonly string obj = obj;
+			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.ContainsKey("UI/item_" + objTex) ?
+				BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/item_" + objTex) : BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/Item_" + objTex);
+			readonly string objTex = objTex;
 		}
-		class TimesNPC(string obj) : NpcTool("times_" + obj)
+		class TimesNPC(string obj, string objTex) : NpcTool("times_" + obj)
 		{
-			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.ContainsKey("UI/npc_" + obj) ?
-				BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/npc_" + obj) : BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/Npc_" + obj);
-			readonly string obj = obj;
+			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.ContainsKey("UI/npc_" + objTex) ?
+				BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/npc_" + objTex) : BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/Npc_" + objTex);
+			readonly string objTex = objTex;
 		}
-		class TimesRoom(string obj) : FloorTool("times_" + obj)
+		class TimesRoom(string obj) : FloorTool(obj)
 		{
 			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.ContainsKey("UI/floor_" + obj) ?
 				BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/floor_" + obj) : BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/Floor_" + obj);

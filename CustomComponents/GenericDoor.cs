@@ -7,12 +7,13 @@ namespace BBTimes.CustomComponents
 	{
 		public void Open(float timer, bool makeNoise)
 		{
+			if (makeNoise && !opened)
+				ec.MakeNoise(transform.position, 1);
+
 			if (openTimer != null)
 				StopCoroutine(openTimer);
 
 			openTimer = StartCoroutine(OpenTimer(timer));
-			if (makeNoise)
-				ec.MakeNoise(transform.position, 1);
 		}
 		public void Close()
 		{

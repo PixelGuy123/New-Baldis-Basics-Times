@@ -1,0 +1,94 @@
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBTimes.Manager;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
+using BBTimes.Extensions;
+using System.Collections;
+
+namespace BBTimes.CustomContent.CustomItems
+{
+    public class ITM_EletricalGel : Item, IItemPrefab
+	{
+		public void SetupPrefab()
+		{
+			gameObject.layer = LayerStorage.standardEntities;
+
+			var gelRRenderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "gel.png"));
+			gelRRenderer.transform.SetParent(transform);
+			gelRRenderer.transform.localPosition = Vector3.zero;
+			gelRRenderer.name = "GelRenderer";
+			renderer = gelRRenderer.transform;
+
+			entity = gameObject.CreateEntity(3f, rendererBase:gelRRenderer.transform);
+			audThrow = BBTimesManager.man.Get<SoundObject>("audGenericThrow");
+			elePre = BBTimesManager.man.Get<Eletricity>("EletricityPrefab");
+
+		}
+		public void SetupPrefabPost() { }
+
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("items", "Textures");
+		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public ItemObject ItmObj { get; set; }
+
+
+		public override bool Use(PlayerManager pm)
+		{
+			ec = pm.ec;
+			pm.RuleBreak("littering", 2f, 0.8f);
+			StartCoroutine(Fall());
+
+			entity.Initialize(pm.ec, pm.transform.position);
+
+			direction = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audThrow);
+			return true;
+		}
+
+		IEnumerator Fall()
+		{
+			renderer.localPosition = Vector3.zero;
+			float fallSpeed = 5f;
+			while (true)
+			{
+				fallSpeed -= ec.EnvironmentTimeScale * Time.deltaTime * 35f;
+				renderer.localPosition += Vector3.up * fallSpeed * Time.deltaTime * ec.EnvironmentTimeScale;
+				if (renderer.transform.localPosition.y <= fallLimit)
+				{
+					Destroy(gameObject);
+					var ele = Instantiate(elePre);
+					ele.Initialize(null, ec.CellFromPosition(transform.position).FloorWorldPosition, 0.3f, ec);
+					ele.StartCoroutine(GameExtensions.TimerToDestroy(ele.gameObject, ec, 15f));
+
+					yield break;
+				}
+
+				yield return null;
+			}
+		}
+
+		void Update() =>
+			entity.UpdateInternalMovement(direction * throwSpeed);
+
+
+		[SerializeField]
+		internal Transform renderer;
+
+		[SerializeField]
+		internal float throwSpeed = 55f, fallLimit = -4.5f;
+
+		[SerializeField]
+		internal Entity entity;
+
+		[SerializeField]
+		internal Eletricity elePre;
+
+		[SerializeField]
+		internal SoundObject audThrow;
+
+		Vector3 direction;
+		EnvironmentController ec;
+    }
+}

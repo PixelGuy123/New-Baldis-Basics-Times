@@ -61,7 +61,7 @@ namespace BBTimes.CustomContent.NPCs
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
 		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
 		public NPC Npc { get; set; }
-		public Character[] ReplacementNpcs { get; set; }
+		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
 		// --------------------------------------------------
 
@@ -225,62 +225,23 @@ namespace BBTimes.CustomContent.NPCs
 				mu.NormalState();
 		}
 
-		public override void PlayerInSight(PlayerManager player)
-		{
-			base.PlayerInSight(player);
-			if (cooldown <= 0f && !player.Tagged)
-				mu.behaviorStateMachine.ChangeState(new Mugh_FollowPlayer(mu, player));
-		}
-	}
-
-	internal class Mugh_FollowPlayer(Mugh mu, PlayerManager pm) : Mugh_StateBase(mu)
-	{
-		NavigationState_TargetPlayer state;
-		readonly PlayerManager pm = pm;
-		public override void Enter()
-		{
-			base.Enter();
-			mu.SeeYouNoise();
-			mu.Navigator.maxSpeed = 36f;
-			mu.Navigator.SetSpeed(36f);
-			state = new(mu, 63, pm.transform.position, true);
-			ChangeNavigationState(state);
-		}
-
-		public override void PlayerInSight(PlayerManager player)
-		{
-			base.PlayerInSight(player);
-			if (player == pm)
-				state.UpdatePosition(player.transform.position);
-			
-		}
-
 		public override void OnStateTriggerEnter(Collider other)
 		{
 			base.OnStateTriggerEnter(other);
-			if (other.gameObject == pm.gameObject)
-				mu.behaviorStateMachine.ChangeState(new Mugh_HugPlayer(mu, pm));
-		}
-
-		public override void DestinationEmpty()
-		{
-			base.DestinationEmpty();
-			state.priority = 0;
-			mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu));
-		}
-
-		public override void Exit()
-		{
-			base.Exit();
-			state.priority = 0;
+			if (cooldown <= 0f && other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
+			{
+				var e = other.GetComponent<Entity>();
+				if (e)
+					mu.behaviorStateMachine.ChangeState(new Mugh_HugPlayer(mu, e));
+			}
 		}
 	}
 
-	internal class Mugh_HugPlayer(Mugh mu, PlayerManager pm) : Mugh_StateBase(mu)
+	internal class Mugh_HugPlayer(Mugh mu, Entity pm) : Mugh_StateBase(mu)
 	{
-		readonly PlayerManager pm = pm;
+		readonly Entity pm = pm;
 		readonly MovementModifier hugMod = new(Vector3.zero, 0.72f);
-		float hugTolerance = 14f;
+		float hugTolerance = 14f, hugCooldown = 12f;
 		const float minHugTolerance = 3f;
 
 		public override void Enter()
@@ -289,20 +250,24 @@ namespace BBTimes.CustomContent.NPCs
 			mu.Navigator.maxSpeed = 0;
 			mu.Navigator.SetSpeed(0);
 			mu.HugState();
-			pm.Am.moveMods.Add(hugMod);
-			mu.HugPlayer(pm);
+			mu.SeeYouNoise();
+			this.pm.ExternalActivity.moveMods.Add(hugMod);
+			var pm = this.pm.GetComponent<PlayerManager>();
+			if (pm)
+				mu.HugPlayer(pm);
 		}
 
 		public override void Update()
 		{
 			base.Update();
-			if (!pm)
+			hugCooldown -= mu.TimeScale * Time.deltaTime;
+			if (!pm || hugCooldown < 0f)
 			{
-				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 30f));
+				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 5f));
 				return;
 			}
 			var dist = mu.transform.position - pm.transform.position;
-			hugMod.movementAddend = dist * 115f * Time.deltaTime * mu.TimeScale;
+			hugMod.movementAddend = dist * 135f * Time.deltaTime * mu.TimeScale;
 
 			if (dist.magnitude >= hugTolerance)
 				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 30f, true));
@@ -326,7 +291,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Exit()
 		{
 			base.Exit();
-			pm?.Am.moveMods.Remove(hugMod);
+			pm?.ExternalActivity.moveMods.Remove(hugMod);
 			mu.DisablePlayerHug();
 		}
 	}

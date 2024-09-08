@@ -15,7 +15,7 @@ namespace BBTimes.CustomComponents
 					{
 						if (lastFrameMode)
 						{
-							StopLastFrameMode();
+							lastFrameMode = false;
 							Pause(true);
 							frame = animation.Length - 1;
 						}

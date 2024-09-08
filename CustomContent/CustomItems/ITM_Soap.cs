@@ -17,6 +17,7 @@ namespace BBTimes.CustomContent.CustomItems
 			var soapRenderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "soap.png"));
 			soapRenderer.transform.SetParent(transform);
 			soapRenderer.transform.localPosition = Vector3.zero;
+			soapRenderer.name = "SoapRenderer";
 
 			entity = gameObject.CreateEntity(2.5f, 3.5f, soapRenderer.transform);
 			renderer = soapRenderer.transform;

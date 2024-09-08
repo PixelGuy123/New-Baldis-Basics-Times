@@ -35,6 +35,26 @@ namespace BBTimes.CompatibilityModule
 			}
 		}
 
+		[HarmonyPatch(typeof(Mopper), "Initialize")]
+		[HarmonyPrefix]
+		static void MopperQuantum(ref float ___slipDropCooldown, ref int ___slipsPerTile, ref float ___speed, ref float ___minActive, ref float ___maxActive, ref float ___minWait, ref float ___maxWait)
+		{
+			if (FunSettingsType.HardMode.IsActive())
+			{
+				___slipsPerTile = 8;
+				___slipDropCooldown = 0.5f;
+			}
+
+			if (FunSettingsType.QuantumSweep.IsActive())
+			{
+				___speed = 250f;
+				___minActive = int.MaxValue;
+				___maxActive = int.MaxValue;
+				___minWait = 1f;
+				___maxWait = 1f;
+			}
+		}
+
 		[HarmonyPatch(typeof(Kulak_Angry), "OnStateTriggerStay")]
 		[HarmonyPatch(typeof(Kulak_Wandering), "OnStateTriggerStay")]
 		[HarmonyTranspiler]

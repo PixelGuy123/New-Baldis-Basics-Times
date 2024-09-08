@@ -14,6 +14,8 @@ using BBTimes.CustomComponents;
 using System.Linq.Expressions;
 using BBTimes.CompatibilityModule.EditorCompat;
 using System.Linq;
+using PlusLevelLoader;
+using System.Xml.Linq;
 
 namespace BBTimes.Manager
 {
@@ -792,6 +794,46 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 16 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 20 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 20 });
+			ResourceManager.AddMysteryItem(new() { selection = item, weight = 20 });
+
+			// FryingPan
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_FryingPan>()
+				.SetGeneratorCost(48)
+				.SetShopPrice(750)
+				.SetNameAndDescription("FryingPan_Name", "FryingPan_Desc")
+				.SetMeta(ItemFlags.Persists, [])
+				.Build("FryingPan");
+
+			floorDatas[1].Items.Add(new() { selection = item, weight = 20 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 40 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 20 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 34 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 22 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 20 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 15 });
+
+			// Eletrical Gel
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_EletricalGel>()
+				.SetGeneratorCost(48)
+				.SetShopPrice(750)
+				.SetNameAndDescription("EletricalGel_Name", "EletricalGel_DEsc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build("EletricalGel");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 50 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 34 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 22 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 20 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 15 });
 
 		}
 	}

@@ -55,6 +55,19 @@ namespace BBTimes.Manager
 			// Hanging light for library
 			man.Add("prefab_libraryHangingLight", ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(GenericExtensions.FindResourceObjectByName<Texture2D>("StandardHangingLight"), 25f))
 				.AddSpriteHolder(18.1f).transform.parent.gameObject.SetAsPrefab(true));
+
+			// Misc Decorations
+			AddDecoration("SecretBread", "bread.png", 35f, Vector3.up * 1.3f);
+			AddDecoration("SmallPottedPlant", "plant.png", 25f, Vector3.up);
+
+			static void AddDecoration(string name, string fileName, float pixelsPerUnit, Vector3 offset)
+			{
+				var bred = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, fileName)), pixelsPerUnit)).AddSpriteHolder(offset);
+				bred.transform.parent.name = name;
+				bred.name = name;
+				bred.transform.parent.gameObject.AddObjectToEditor();
+				//"editorPrefab_"
+			}
 		}
 	}
 }

@@ -23,7 +23,6 @@ namespace BBTimes.Helpers
 			var en = itemsEnum == Items.None ? EnumExtensions.ExtendEnum<Items>(name) : itemsEnum; // Make enum
 			itmB.SetEnum(en);
 			var actualItem = itmB.Build();
-			PlusLevelLoaderPlugin.Instance.itemObjects.Add("times_" + name, actualItem);
 
 			actualItem.item.gameObject.GetComponent<IItemPrefab>().SetupItemData(name, actualItem);
 			
@@ -46,6 +45,8 @@ namespace BBTimes.Helpers
 
 				BasePlugin._cstData.Add(data);
 			}
+
+			PlusLevelLoaderPlugin.Instance.itemObjects.Add("times_" + name, itemObj);
 		}
 
 		public static ItemObject DuplicateItem(this ItemObject item, string nameKey)

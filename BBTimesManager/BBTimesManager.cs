@@ -103,6 +103,7 @@ namespace BBTimes.Manager
 			man.Add("woodTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("wood 1").MakeReadableTexture()); // Wood from the tables
 			man.Add("plasticTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("PlasticTable").MakeReadableTexture());
 			man.Add("teleportAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport"));
+			man.Add("slipAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Slip"));
 			man.Add("whiteScreen", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, Color.white), 1f));
 			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "throw.wav")), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
@@ -279,7 +280,7 @@ namespace BBTimes.Manager
 		internal static List<INPCPrefab> replacementNpcs = [];
 
 		internal static IEnumerable<Character> GetReplacementNPCs(params Character[] npcsReplaced) =>
-			replacementNpcs.Where(x => npcsReplaced.Any(z => x.ReplacementNpcs.Contains(z))).Select(x => x.Npc.Character);
+			replacementNpcs.Where(x => npcsReplaced.Any(z => x.GetReplacementNPCs().Contains(z))).Select(x => x.Npc.Character);
 
 
 

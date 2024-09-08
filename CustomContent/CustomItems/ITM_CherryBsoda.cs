@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace BBTimes.CustomContent.CustomItems
 			spriteRenderer = nbsoda.spriteRenderer;
 			sound = nbsoda.sound;
 			entity = nbsoda.entity;
+			entity.collisionLayerMask = LayerStorage.gumCollisionMask;
 			time = nbsoda.time;
 			moveMod = nbsoda.moveMod;
 			audMan = gameObject.CreatePropagatedAudioManager(65, 125);

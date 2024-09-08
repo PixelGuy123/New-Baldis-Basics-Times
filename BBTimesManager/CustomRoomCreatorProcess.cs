@@ -16,7 +16,6 @@ using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
-using PlusLevelFormat;
 using PlusLevelLoader;
 using System.Collections.Generic;
 using System.IO;
@@ -60,6 +59,7 @@ namespace BBTimes.Manager
 			bathDoorRenderer.transform.SetParent(bathDoor.transform);
 			bathDoorRenderer.transform.localPosition = Vector3.up * 5f;
 			bathDoorRenderer.name = "BathDoorVisual";
+			bathDoorRenderer.transform.localScale = new(0.976f, 1f, 1f);
 
 			var bathDoorCollider = new GameObject("BathdoorCollider");
 			bathDoorCollider.transform.SetParent(bathDoor.transform);
@@ -430,7 +430,8 @@ namespace BBTimes.Manager
 			});
 
 			AddAssetsToNpc<GottaSweep>(room);
-			AddAssetsToNpc<ZeroPrize>(room);
+			AddAssetsToNpc<ZeroPrize>([new() { selection = sweepCloset, weight = 100 }, ..room]);
+			AddAssetsToNpc<Mopper>([new() { selection = sweepCloset, weight = 100 }, ..room]);
 
 			// ************************************************************
 			// ************************************************************
@@ -516,6 +517,9 @@ namespace BBTimes.Manager
 
 
 			room = GetAllAssets(GetRoomAsset("Kitchen"), 75, 35, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "MapBG_Kitchen.png")));
+			room.ForEach(x => x.selection.basicSwaps.Add(
+				new() { chance = 0.1f, potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SecretBread").transform }], 
+					prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Lunch").transform }));
 
 			Object.Destroy(room[0].selection.roomFunctionContainer.gameObject); // It doesn't need one, it's empty
 
@@ -890,7 +894,12 @@ namespace BBTimes.Manager
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
 				x.selection.lightPre = classWeightPre.selection.lightPre;
+
 				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
+				x.selection.basicSwaps.Add(
+					new() { chance = 0.35f, 
+						potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SmallPottedPlant").transform }], 
+						prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Globe").transform });
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)

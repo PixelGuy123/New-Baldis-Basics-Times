@@ -265,7 +265,7 @@ namespace BBTimes
 				foreach(var npc in floordata.NPCs)
 				{
 					var dat = npc.selection.GetComponent<INPCPrefab>();
-					if (dat == null || dat.ReplacementNpcs == null || dat.ReplacementNpcs.Length == 0)
+					if (dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
 						ld.potentialNPCs.Add(npc); // Only non-replacement Npcs
 					else
 						ld.forcedNpcs = ld.forcedNpcs.AddToArray(npc.selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time

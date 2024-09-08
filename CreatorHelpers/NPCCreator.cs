@@ -36,7 +36,7 @@ namespace BBTimes.Helpers
 
 			BasePlugin._cstData.Add(data);
 
-			PlusLevelLoaderPlugin.Instance.npcAliases.Add("times_" + name, npc);
+			PlusLevelLoaderPlugin.Instance.npcAliases.Add("times_" + EnumExtensions.GetExtendedName<Character>((int)npc.Character), npc);
 
 			return npc;
 		}
@@ -98,7 +98,7 @@ namespace BBTimes.Helpers
 			var comp = npc.GetComponent<INPCPrefab>();
 			if (comp != null)
 			{
-				comp.ReplacementNpcs = targets;
+				comp.SetReplacementNPCs(targets);
 				comp.ReplacementWeight = weight;
 			}
 

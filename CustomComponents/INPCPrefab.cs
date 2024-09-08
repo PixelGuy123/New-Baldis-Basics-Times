@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿
 
 namespace BBTimes.CustomComponents
 {
 	public interface INPCPrefab : IObjectPrefab
 	{
-		public Character[] ReplacementNpcs { get; set; }
+		Character[] GetReplacementNPCs();
+		void SetReplacementNPCs(params Character[] chars); 
 		public int ReplacementWeight { get; set; }
 		public NPC Npc { get; set; }
 	}
