@@ -150,11 +150,13 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("penny", "Penny");
 			AddNPC("pix", "Pix");
 			AddNPC("pran", "Pran");
+			AddNPC("quiker", "Quiker");
 			AddNPC("rollBot", "Rollingbot");
 			AddNPC("serOran", "SerOran");
 			AddNPC("stunly", "Stunly");
 			AddNPC("superintendent", "Superintendent");
 			AddNPC("spj", "Superintendentjr");
+			AddNPC("tickTock", "TickTock");
 			AddNPC("watcher", "Watcher");
 
 			// ************* Local Methods ***************

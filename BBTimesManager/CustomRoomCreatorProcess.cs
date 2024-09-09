@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Assertions;
 
 namespace BBTimes.Manager
 {
@@ -213,6 +214,8 @@ namespace BBTimes.Manager
 				floorTexture = [carpet]
 			};
 			floorDatas[2].RoomAssets.Add(group);
+
+			AddCategoryForNPCToSpawn(sets.category, typeof(TickTock), typeof(Phawillow));
 
 			//***************************************************
 			//***************************************************
@@ -1003,6 +1006,18 @@ namespace BBTimes.Manager
 				return l;
 			}
 
+			static void AddCategoryForNPCToSpawn(RoomCategory cat, params System.Type[] npcs)
+			{
+				NPCMetaStorage.Instance.All().Do(x =>
+				{
+					if (!npcs.Contains(x.value.GetType()))
+						return;
+
+					foreach (var npc in x.prefabs)
+						npc.Value.spawnableRooms.Add(cat);
+				});
+			}
+
 		}
 
 		static string GetRoomAsset(string roomName, string asset = "") => Path.Combine(BasePlugin.ModPath, "rooms", roomName, asset);
@@ -1046,7 +1061,7 @@ namespace BBTimes.Manager
 			List<WeightedRoomAsset> assets = [];
 			RoomFunctionContainer container = cont;
 			foreach (var file in Directory.GetFiles(path))
-			{
+			{				
 				if (File.ReadAllBytes(file).Length == 0) continue; // if the cbld file is empty, it means it has been "removed". This is to make sure that anyone who extracts newer versions don't include these layouts.
 				try
 				{
@@ -1055,6 +1070,9 @@ namespace BBTimes.Manager
 					_moddedAssets.AddRange(asset);
 					if (!container)
 						container = asset[0].roomFunctionContainer;
+
+					for (int i = 0; i < asset.Count; i++)
+						RoomAssetMetaStorage.Instance.Add( new RoomAssetMeta(plug.Info, asset[i]));
 				}
 				catch (KeyNotFoundException e)
 				{

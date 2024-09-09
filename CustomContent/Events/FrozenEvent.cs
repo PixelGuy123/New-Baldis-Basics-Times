@@ -4,6 +4,9 @@ using BBTimes.CustomComponents;
 using UnityEngine.UI;
 using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
+using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBTimes.Manager;
+using System.Collections;
 
 
 namespace BBTimes.CustomContent.Events
@@ -31,6 +34,9 @@ namespace BBTimes.CustomContent.Events
 			canvas.gameObject.SetActive(false);
 
 			canvasPre = canvas;
+
+			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").DuplicatePrefab();
+			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(12f, "wat.png");
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("events", "Textures");
@@ -73,6 +79,39 @@ namespace BBTimes.CustomContent.Events
 			}
 
 			activeFrozenEvents++;
+			if (slipperGenerator != null)
+				StopCoroutine(slipperGenerator);
+			slipperGenerator = StartCoroutine(GenerateSlippers());
+		}
+
+		IEnumerator GenerateSlippers()
+		{
+			List<Cell> cells = ec.mainHall.AllTilesNoGarbage(false, false);
+			int max = ec.levelSize.x * ec.levelSize.z / (ec.levelSize.x + ec.levelSize.z);
+			int frameSkips = 0;
+
+			for (int i = 0; i < max; i++)
+			{
+				if (cells.Count == 0) yield break;
+				int x = Random.Range(0, cells.Count);
+				SpawnSlipper(cells[x]);
+				cells.RemoveAt(x);
+
+				if (++frameSkips >= 25)
+				{
+					yield return null;
+					frameSkips = 0;
+				}
+				
+			}
+		}
+
+		void SpawnSlipper(Cell cell)
+		{
+			var slip = Instantiate(slipMatPre);
+			slip.SetAnOwner(gameObject);
+			slip.transform.position = cell.FloorWorldPosition;
+			slips.Add(slip);
 		}
 
 		void Update()
@@ -87,7 +126,7 @@ namespace BBTimes.CustomContent.Events
 					continue;
 				}
 				moveMods[i].Value.movementMultiplier -= slowDownMultiplier * ec.EnvironmentTimeScale * Time.deltaTime;
-				moveMods[i].Value.movementMultiplier += moveMods[i].Key.Navigator.Velocity.magnitude * ec.EnvironmentTimeScale * Time.deltaTime / speedDivider;
+				moveMods[i].Value.movementMultiplier += moveMods[i].Key.Navigator.Velocity.magnitude * ec.EnvironmentTimeScale * Time.deltaTime / speedReduceFactor;
 				moveMods[i].Value.movementMultiplier = Mathf.Clamp(moveMods[i].Value.movementMultiplier, 0.35f, maxVel);
 			}
 
@@ -104,7 +143,7 @@ namespace BBTimes.CustomContent.Events
 				{
 					x.Value.movementMultiplier -= slowDownMultiplier * ec.EnvironmentTimeScale * Time.deltaTime;
 					if (!float.IsNaN(x.Key.Pm.plm.RealVelocity)) // why tf does it give NaN when pausing the game
-						x.Value.movementMultiplier += x.Key.Pm.plm.RealVelocity * ec.EnvironmentTimeScale * Time.deltaTime / speedDivider;
+						x.Value.movementMultiplier += x.Key.Pm.plm.RealVelocity * ec.EnvironmentTimeScale * Time.deltaTime / speedReduceFactor;
 					x.Value.movementMultiplier = Mathf.Clamp(x.Value.movementMultiplier, 0.1f, maxVel);
 				}
 
@@ -141,6 +180,14 @@ namespace BBTimes.CustomContent.Events
 			canvasToDespawn.Clear();
 
 			activeFrozenEvents--;
+
+			if (slipperGenerator != null)
+				StopCoroutine(slipperGenerator);
+			while (slips.Count != 0)
+			{
+				Destroy(slips[0].gameObject);
+				slips.RemoveAt(0);
+			}	
 		}
 		public override void Pause()
 		{
@@ -169,7 +216,12 @@ namespace BBTimes.CustomContent.Events
 		[SerializeField]
 		internal Canvas canvasPre;
 
+		[SerializeField]
+		internal SlippingMaterial slipMatPre;
+
+		readonly List<SlippingMaterial> slips = [];
 		bool isPaused = false;
+		Coroutine slipperGenerator;
 
 		readonly List<KeyValuePair<NPC, MovementModifier>> moveMods = []; // I forgot KeyValuePairs are structs
 
@@ -181,10 +233,7 @@ namespace BBTimes.CustomContent.Events
 
 		[SerializeField]
 		[Range(0f, 1f)]
-		internal float maxVel = 0.6f, slowDownMultiplier = 0.35f;
-
-		[SerializeField]
-		internal float speedDivider = 15f;
+		internal float maxVel = 0.6f, slowDownMultiplier = 0.35f, speedReduceFactor = 0.085f;
 
 		internal static int activeFrozenEvents = 0;
 	}

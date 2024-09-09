@@ -18,6 +18,20 @@ namespace BBTimes.CustomContent.CustomItems
 		public override bool Use(PlayerManager pm)
 		{
 			bool flag = false;
+
+			for (int i = 0; i < Quiker.affectedPlayers.Count; i++)
+			{
+				if (Quiker.affectedPlayers[i].Key.Key == pm)
+				{
+					Quiker.affectedPlayers[i].Key.Key.Am.moveMods.Remove(Quiker.affectedPlayers[i].Value.Key);
+					pm.ec.RemoveFog(Quiker.affectedPlayers[i].Value.Value.Key);
+					if (Quiker.affectedPlayers[i].Value.Value.Value != null)
+						Quiker.affectedPlayers[i].Key.Value.StopCoroutine(Quiker.affectedPlayers[i].Value.Value.Value);
+					Quiker.affectedPlayers.RemoveAt(i--);
+					flag = true;
+				}
+			}
+
 			for (int i = 0; i < Stunly.affectedByStunly.Count; i++)
 			{
 				if (Stunly.affectedByStunly[i].Value == pm)

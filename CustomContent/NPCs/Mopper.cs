@@ -2,7 +2,6 @@
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
-using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -17,15 +16,8 @@ namespace BBTimes.CustomContent.NPCs
 			audStartSweep = this.GetSound("startMop.wav", "Vfx_MOP_StartMop", SoundType.Voice, Color.white);
 			audSweep = this.GetSound("mop.wav", "Vfx_MOP_Mop", SoundType.Voice, Color.white);
 
-			var watRender = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(12f, "wat.png"), false).AddSpriteHolder(0.1f, 0);
-			watRender.transform.parent.name = "SlippingWater";
-			watRender.transform.parent.gameObject.ConvertToPrefab(true);
-			watRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			watRender.name = "SlippingWaterRender";
-			slipMatPre = watRender.transform.parent.gameObject.AddComponent<SlippingMaterial>();
-			slipMatPre.audMan = slipMatPre.gameObject.CreatePropagatedAudioManager(45f, 60f);
-			slipMatPre.audSlip = BBTimesManager.man.Get<SoundObject>("slipAud");
-			slipMatPre.gameObject.AddBoxCollider(Vector3.zero, new(9.9f, 10f, 9.9f), true);
+			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").DuplicatePrefab();
+			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(12f, "wat.png");
 		}
 
 		public void SetupPrefabPost() { }

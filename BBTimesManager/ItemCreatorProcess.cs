@@ -335,7 +335,6 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 44 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
-			ResourceManager.AddMysteryItem(new() { selection = item, weight = 25 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
 
 			// Hot Chocolate

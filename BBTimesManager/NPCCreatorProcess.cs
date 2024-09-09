@@ -425,6 +425,33 @@ namespace BBTimes.Manager
 				.SetupNPCData("InkArtist", "PST_InkArt_Name", "PST_InkArt_Desc", -0.196f);
 
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 20 });
+
+			// Tick Tock
+			npc = new NPCBuilder<TickTock>(plug.Info)
+				.SetMinMaxAudioDistance(155f, 175f)
+				.SetEnum("TickTock")
+				.AddSpawnableRoomCategories(RoomCategory.Faculty, RoomCategory.Office)
+				.SetMetaName("PST_TickTock_Name")
+				.SetName("TickTock")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("TickTock", "PST_TickTock_Name", "PST_TickTock_Desc", -1.12f);
+
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 20 });
+
+			// Quiker
+			npc = new NPCBuilder<Quiker>(plug.Info)
+				.SetMinMaxAudioDistance(155f, 165f)
+				.SetEnum("Quiker")
+				.SetMetaName("PST_Quiker_Name")
+				.SetName("Quiker")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("Quiker", "PST_Quiker_Name", "PST_Quiker_Desc", 0)
+				.MarkAsReplacement(55, Character.LookAt);
+
+			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
 		}
 
 		

@@ -94,47 +94,6 @@ namespace BBTimes.Manager
 			GameExtensions.detentionUiPre = GenericExtensions.FindResourceObject<DetentionUi>();
 			man.Add("buttonPre", GenericExtensions.FindResourceObject<RotoHallBuilder>().buttonPre);
 			man.AddFromResources<StandardDoorMats>();
-			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
-			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
-			man.Add("audBuzz", GenericExtensions.FindResourceObjectByName<SoundObject>("Elv_Buzz"));
-			man.Add("audRing", GenericExtensions.FindResourceObjectByName<SoundObject>("CashBell"));
-			man.Add("audSlurp", GenericExtensions.FindResourceObjectByName<SoundObject>("WaterSlurp"));
-			man.Add("outsideSkybox", Resources.FindObjectsOfTypeAll<Skybox>()[0]);
-			man.Add("woodTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("wood 1").MakeReadableTexture()); // Wood from the tables
-			man.Add("plasticTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("PlasticTable").MakeReadableTexture());
-			man.Add("teleportAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport"));
-			man.Add("slipAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Slip"));
-			man.Add("whiteScreen", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, Color.white), 1f));
-			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "throw.wav")), string.Empty, SoundType.Effect, Color.white);
-			sd.subtitle = false;
-			man.Add("audGenericThrow", sd);
-
-			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "mildGrab.wav")), string.Empty, SoundType.Effect, Color.white);
-			sd.subtitle = false;
-			man.Add("audGenericGrab", sd);
-
-			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, "shock.png");
-			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, 0);
-			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
-			eleRender.name = "Sprite";
-
-			var ele = eleRender.transform.parent.gameObject.AddComponent<Eletricity>();
-			ele.name = "Eletricity";
-			var ani = ele.gameObject.AddComponent<AnimationComponent>();
-			ani.animation = anim;
-			ani.renderer = eleRender;
-			ani.speed = 15f;
-
-			ele.ani = ani;
-
-			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "shock.wav")), string.Empty, SoundType.Effect, Color.white);
-			sd.subtitle = false;
-
-			ele.gameObject.CreatePropagatedAudioManager(10f, 30f).AddStartingAudiosToAudioManager(true, sd);
-
-			ele.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
-			man.Add("EletricityPrefab", ele);
 
 
 			// Make a transparent texture
@@ -253,6 +212,61 @@ namespace BBTimes.Manager
 			man.Add("Beartrap", TextureExtensions.LoadSpriteSheet(2, 1, 50f, GlobalAssetsPath, "trap.png"));
 			man.Add("BeartrapCatch",ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "trap_catch.wav")), "Vfx_BT_catch", SoundType.Voice, Color.white));
 			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "punch.wav")), "BB_Hit", SoundType.Voice, Color.white));
+			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
+			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
+			man.Add("audBuzz", GenericExtensions.FindResourceObjectByName<SoundObject>("Elv_Buzz"));
+			man.Add("audRing", GenericExtensions.FindResourceObjectByName<SoundObject>("CashBell"));
+			man.Add("audSlurp", GenericExtensions.FindResourceObjectByName<SoundObject>("WaterSlurp"));
+			man.Add("outsideSkybox", Resources.FindObjectsOfTypeAll<Skybox>()[0]);
+			man.Add("woodTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("wood 1").MakeReadableTexture()); // Wood from the tables
+			man.Add("plasticTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("PlasticTable").MakeReadableTexture());
+			man.Add("teleportAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport"));
+			man.Add("slipAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Slip"));
+			man.Add("whiteScreen", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, Color.white), 1f));
+			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "throw.wav")), string.Empty, SoundType.Effect, Color.white);
+			sd.subtitle = false;
+			man.Add("audGenericThrow", sd);
+
+			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "mildGrab.wav")), string.Empty, SoundType.Effect, Color.white);
+			sd.subtitle = false;
+			man.Add("audGenericGrab", sd);
+
+			// Eletricity Prefab
+			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, "shock.png");
+			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, 0);
+			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
+			eleRender.name = "Sprite";
+
+			var ele = eleRender.transform.parent.gameObject.AddComponent<Eletricity>();
+			ele.name = "Eletricity";
+			var ani = ele.gameObject.AddComponent<AnimationComponent>();
+			ani.animation = anim;
+			ani.renderer = eleRender;
+			ani.speed = 15f;
+
+			ele.ani = ani;
+
+			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "shock.wav")), string.Empty, SoundType.Effect, Color.white);
+			sd.subtitle = false;
+
+			ele.gameObject.CreatePropagatedAudioManager(10f, 30f).AddStartingAudiosToAudioManager(true, sd);
+
+			ele.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
+			man.Add("EletricityPrefab", ele);
+
+			// Slippery Water Prefab
+
+			var watRender = ObjectCreationExtensions.CreateSpriteBillboard(null, false).AddSpriteHolder(0.1f, 0);
+			watRender.transform.parent.name = "SlippingWater";
+			watRender.transform.parent.gameObject.ConvertToPrefab(true);
+			watRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			watRender.name = "SlippingWaterRender";
+			var slipMatPre = watRender.transform.parent.gameObject.AddComponent<SlippingMaterial>();
+			slipMatPre.audMan = slipMatPre.gameObject.CreatePropagatedAudioManager(45f, 60f);
+			slipMatPre.audSlip = man.Get<SoundObject>("slipAud");
+			slipMatPre.gameObject.AddBoxCollider(Vector3.zero, new(9.9f, 10f, 9.9f), true);
+			man.Add("SlipperyMatPrefab", slipMatPre);
 
 			static void AddRule(string name, string audioName, string vfx) =>
 				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", audioName)), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));

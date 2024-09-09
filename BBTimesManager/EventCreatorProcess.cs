@@ -42,7 +42,7 @@ namespace BBTimes.Manager
 			// Freezing Event
 			e = new RandomEventBuilder<FrozenEvent>(plug.Info)
 				.SetEnum("Frozenschool")
-				.SetMinMaxTime(45f, 60f)
+				.SetMinMaxTime(85f, 110f)
 				.SetName("FrozenEvent")
 				.Build()
 				.SetupEvent();
