@@ -10,7 +10,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			foreach (var poster in posters)
 			{
-				var cells = room.AllTilesNoGarbage(false, true);
+				var cells = room.AllTilesNoGarbage(false, false);
 				for (int i = 0; i < cells.Count; i++)
 					if (cells[i].shape != TileShape.Single && cells[i].shape != TileShape.Corner)
 						cells.RemoveAt(i--);
