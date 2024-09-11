@@ -9,7 +9,7 @@ namespace BBTimes.Manager
 {
     internal static partial class BBTimesManager
 	{
-		static void CreateNPCs(BaseUnityPlugin plug)
+		static void CreateNPCs()
 		{
 			// 0 - F1
 			// 1 - F2
@@ -49,7 +49,7 @@ namespace BBTimes.Manager
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
 
 			// Classic Gotta Sweep
-			npc = CreatorExtensions.CreateCustomNPCFromExistent<GottaSweep, ClassicGottaSweep>(Character.Sweep, "ClassicGottaSweep").MarkAsReplacement(45, Character.Sweep);
+			npc = CreatorExtensions.CreateCustomNPCFromExistent<GottaSweep, ClassicGottaSweep>(Character.Sweep, "oldsweep", "ClassicGottaSweep").MarkAsReplacement(45, Character.Sweep);
 			npc.AddMetaPrefab();
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 100 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 90 });

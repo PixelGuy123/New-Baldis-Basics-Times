@@ -31,33 +31,33 @@ namespace BBTimes.Manager
 			yield return 14 + (EditorExists ? 1 : 0);
 
 			yield return "Loading assets...";
-			SetAssets();
+			GameExtensions.TryRunMethod(SetAssets);
 			yield return "Adding extra component for some objects...";
-			AddExtraComponentsForSomeObjects();
+			GameExtensions.TryRunMethod(AddExtraComponentsForSomeObjects);
 			yield return "Creating sprite billboards...";
-			CreateSpriteBillboards();
+			GameExtensions.TryRunMethod(CreateSpriteBillboards);
 			yield return "Creating cube maps...";
-			CreateCubeMaps();
+			GameExtensions.TryRunMethod(CreateCubeMaps);
 			yield return "Creating musics...";
-			GetMusics();
+			GameExtensions.TryRunMethod(GetMusics);
 			yield return "Creating npcs...";
-			CreateNPCs(plug);
+			GameExtensions.TryRunMethod(CreateNPCs);
 			yield return "Creating items...";
-			CreateItems(plug);
+			GameExtensions.TryRunMethod(CreateItems);
 			yield return "Creating events...";
-			CreateEvents(plug);
+			GameExtensions.TryRunMethod(CreateEvents);
 			yield return "Creating object builders...";
-			CreateObjBuilders(plug);
+			GameExtensions.TryRunMethod(CreateObjBuilders);
 			yield return "Creating windows...";
 			CreateWindows();
 			yield return "Creating custom rooms...";
-			CreateCustomRooms(plug);
+			GameExtensions.TryRunMethod(CreateCustomRooms);
 			yield return "Creating room functions...";
-			CreateRoomFunctions();
+			GameExtensions.TryRunMethod(CreateRoomFunctions);
 			yield return "Creating school textures...";
-			CreateSchoolTextures();
+			GameExtensions.TryRunMethod(CreateSchoolTextures);
 			yield return "Creating map icons...";
-			GetIcons();
+			GameExtensions.TryRunMethod(GetIcons);
 
 			yield return "Calling GC Collect...";
 			GC.Collect(); // Get any garbage I guess

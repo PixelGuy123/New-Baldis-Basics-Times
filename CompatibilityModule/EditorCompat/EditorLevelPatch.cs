@@ -7,7 +7,6 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using PlusLevelFormat;
-using PlusLevelLoader;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,17 +18,14 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 	[ConditionalPatchMod("mtm101.rulerp.baldiplus.leveleditor")]
 	internal class EditorLevelPatch
 	{
-		internal static EditorLevelPatch i;
-		internal EditorLevelPatch() => i = this;
 
 		[HarmonyPatch(typeof(BasePlugin), "PostSetup")]
 		[HarmonyPostfix]
 		private static void MakeEditorSeeAssets(AssetManager man)
 		{
-			var e = new EditorLevelPatch(); // Triggers the constructor
-			i.markersToAdd = [];
-			i.itemsToAdd = [];
-			i.npcsToAdd = [];
+			markersToAdd = [];
+			itemsToAdd = [];
+			npcsToAdd = [];
 
 			GameObject[] array = [
 				man.Get<GameObject>("editorPrefab_bathStall"),
@@ -139,6 +135,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("dribble", "Dribble");
 			AddNPC("faker", "Faker");
 			AddNPC("gluebotrony", "Glubotrony");
+			AddNPC("happyholidays", "HappyHolidays");
 			AddNPC("inkArtist", "InkArtist");
 			AddNPC("leapy", "Leapy");
 			AddNPC("MGS", "Magicalstudent");
@@ -163,25 +160,18 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 
 			static void MarkRotatingObject(GameObject obj, Vector3 offset)
 			{
-				i.markersToAdd.Add(new RotateAndPlacePrefab(obj.name));
+				markersToAdd.Add(new(obj.name, new(false, null)));
 				BaldiLevelEditorPlugin.editorObjects.Add(EditorObjectType.CreateFromGameObject<EditorPrefab, PrefabLocation>(obj.name, obj, offset, false));
 			}
 
 			static void MarkObject(GameObject obj, Vector3 offset)
 			{
-				i.markersToAdd.Add(new ObjectTool(obj.name));
+				markersToAdd.Add(new(obj.name, new(true, null)));
 				BaldiLevelEditorPlugin.editorObjects.Add(EditorObjectType.CreateFromGameObject<EditorPrefab, PrefabLocation>(obj.name, obj, offset, false));
 			}
 
-			static void MarkObjectRow(string prebuiltToolName, ObjectData[] objs)
-			{
-				PrefabLocation[] array = new PrefabLocation[objs.Length];
-
-				for (int i = 0; i < objs.Length; i++)
-					array[i] = new PrefabLocation(objs[i].Item1.name, PlusLevelLoader.Extensions.ToData(objs[i].Item2), PlusLevelLoader.Extensions.ToData(objs[i].Item3));
-
-				i.markersToAdd.Add(new PrebuiltStructureTool(prebuiltToolName, new EditorPrebuiltStucture(array)));
-			}
+			static void MarkObjectRow(string prebuiltToolName, params ObjectData[] objs) =>
+				markersToAdd.Add(new(prebuiltToolName, new(false, objs)));
 
 			static void AddItem(string itemName, string itemEnum)
 			{
@@ -189,14 +179,14 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				var itm = ItemMetaStorage.Instance.FindByEnumFromMod(en, BBTimesManager.plug.Info).value;
 
 				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemEnum, itm);
-				i.itemsToAdd.Add(new TimesItem(itemEnum, itemName));
+				itemsToAdd.Add(new(itemEnum, itemName));
 			}
 
 			static void AddPointItem<T>(string itemName) where T : Item
 			{
 				var itm = points.Find(x => x.item is T);
 				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemName, itm);
-				i.itemsToAdd.Add(new TimesItem(itemName, itemName));
+				itemsToAdd.Add(new(itemName, itemName));
 			}
 
 			static void AddNPC(string npcName, string npcEnum)
@@ -208,7 +198,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 					BaldiLevelEditorPlugin.StripAllScripts(val.gameObject, true)
 					);
 
-				i.npcsToAdd.Add(new TimesNPC(npcEnum, npcName));
+				npcsToAdd.Add(new(npcEnum, npcName));
 			}
 
 			static void AddNPCCopy<T>(string npcName) where T : MonoBehaviour
@@ -230,11 +220,11 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 					return;
 				}
 
-				BaldiLevelEditorPlugin.characterObjects.Add(npcName,
+				BaldiLevelEditorPlugin.characterObjects.Add("times_" + npcName,
 					BaldiLevelEditorPlugin.StripAllScripts(npc.gameObject, true)
 					);
 
-				i.npcsToAdd.Add(new TimesNPC(npcName, npcName));
+				npcsToAdd.Add(new(npcName, npcName));
 			}
 
 		}
@@ -262,9 +252,27 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			for (int i = 0; i < files.Length; i++)
 				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
 
-			__instance.toolCats.Find(x => x.name == "items").tools.AddRange(i.itemsToAdd);
-			__instance.toolCats.Find(x => x.name == "characters").tools.AddRange(i.npcsToAdd);
-			__instance.toolCats.Find(x => x.name == "objects").tools.AddRange(i.markersToAdd);
+			__instance.toolCats.Find(x => x.name == "items").tools.AddRange(itemsToAdd.ConvertAll(x => new TimesItem(x.Key, x.Value)));
+			__instance.toolCats.Find(x => x.name == "characters").tools.AddRange(npcsToAdd.ConvertAll(x => new TimesNPC(x.Key, x.Value)));
+			var objectCats = __instance.toolCats.Find(x => x.name == "objects").tools;
+
+			foreach (var objMark in markersToAdd)
+			{
+				if (objMark.Value.Value == null)
+				{
+					objectCats.Add(objMark.Value.Key ? new ObjectTool(objMark.Key) : new RotateAndPlacePrefab(objMark.Key));
+					continue;
+				}
+				PrefabLocation[] array = new PrefabLocation[objMark.Value.Value.Length];
+
+				for (int i = 0; i < objMark.Value.Value.Length; i++)
+					array[i] = new PrefabLocation(objMark.Value.Value[i].Item1.name, PlusLevelLoader.Extensions.ToData(objMark.Value.Value[i].Item2), PlusLevelLoader.Extensions.ToData(objMark.Value.Value[i].Item3));
+
+				objectCats.Add(new PrebuiltStructureTool(objMark.Key, new EditorPrebuiltStucture(array)));
+
+			}
+
+
 			__instance.toolCats.Find(x => x.name == "halls").tools.AddRange(
 			[
 				new TimesRoom("Bathroom"),
@@ -279,7 +287,8 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			]);
 		}
 
-		List<EditorTool> markersToAdd, itemsToAdd, npcsToAdd;
+		static List<KeyValuePair<string, string>> npcsToAdd, itemsToAdd;
+		static List<KeyValuePair<string, KeyValuePair<bool, ObjectData[]>>> markersToAdd;
 
 		internal static void AddPoint(ItemObject point) =>
 			points.Add(point);

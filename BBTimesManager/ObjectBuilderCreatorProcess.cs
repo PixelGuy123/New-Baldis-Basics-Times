@@ -12,7 +12,7 @@ namespace BBTimes.Manager
 {
     internal static partial class BBTimesManager
 	{
-		static void CreateObjBuilders(BaseUnityPlugin plug)
+		static void CreateObjBuilders()
 		{
 			// 0 - F1
 			// 1 - F2

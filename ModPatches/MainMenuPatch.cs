@@ -13,16 +13,37 @@ namespace BBTimes.ModPatches
 			if (mainMenu != null)
 				__instance.transform.Find("Image").GetComponent<Image>().sprite = mainMenu;
 			if (aud_welcome != null)
-				__instance.StartCoroutine(WaitForAudioPlay(___audioSource));
+			{
+				var newSrc = __instance.gameObject.AddComponent<AudioSource>();
+				newSrc.bypassListenerEffects = ___audioSource.bypassListenerEffects; // ALL the priorities lol
+				newSrc.dopplerLevel = ___audioSource.dopplerLevel;
+				newSrc.ignoreListenerPause = ___audioSource.ignoreListenerPause;
+				newSrc.ignoreListenerVolume = ___audioSource.ignoreListenerVolume;
+				newSrc.loop = ___audioSource.loop;
+				newSrc.maxDistance = ___audioSource.maxDistance;
+				newSrc.minDistance = ___audioSource.minDistance;
+				newSrc.panStereo = ___audioSource.panStereo;
+				newSrc.pitch = ___audioSource.pitch;
+				newSrc.priority = ___audioSource.priority;
+				newSrc.reverbZoneMix = ___audioSource.reverbZoneMix;
+				newSrc.rolloffMode = ___audioSource.rolloffMode;
+				newSrc.spatialBlend = ___audioSource.spatialBlend;
+				newSrc.spread = ___audioSource.spread;
+				newSrc.spatialize = ___audioSource.spatialize;
+
+				__instance.StartCoroutine(WaitForAudioPlay(newSrc));
+			}
 			if (!string.IsNullOrEmpty(newMidi))
 				__instance.transform.GetComponentInChildren<MusicPlayer>().track = newMidi;
 		}
 
 		static IEnumerator WaitForAudioPlay(AudioSource source)
 		{
+			yield return null;
+			source.clip = aud_welcome;
 			yield return new WaitForSeconds(seconds); // Music manager makes this pain
 
-			source.PlayOneShot(aud_welcome);
+			source.Play();
 
 			yield break;
 		}

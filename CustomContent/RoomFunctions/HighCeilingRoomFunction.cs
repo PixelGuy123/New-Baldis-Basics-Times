@@ -11,14 +11,45 @@ namespace BBTimes.CustomContent.RoomFunctions
 {
 	internal class HighCeilingRoomFunction : RoomFunction
 	{
+
+	
 		public override void Build(LevelBuilder builder, System.Random rng)
 		{
 			base.Build(builder, rng);
-			if (ceilingHeight < 1)
+			proof = builder;
+
+			if (changed || ceilingHeight < 1 || rng.NextDouble() > chanceToHappen)
 				return;
 
-			if (rng.NextDouble() > chanceToHappen)
-				return;
+			AddAllWalls();
+		}
+
+		public override void Initialize(RoomController room)
+		{
+			base.Initialize(room);
+			originalCeilTex = room.ceilTex;
+
+			foreach (var c in room.cells)
+				ogCellBins.Add(c, c.ConstBin);
+
+		}
+
+		public override void OnGenerationFinished()
+		{
+			base.OnGenerationFinished();
+
+			if (!proof || proof is LevelLoader)
+				AddAllWalls(); // If proof isn't assigned, it means this must be LevelLoader
+
+			if (changed)
+				foreach (var c in room.cells)
+					c.SetBase(c.Tile.MeshRenderer.material.name.StartsWith(room.defaultPosterMat.name) ? room.posterMat : room.baseMat); // base mat should be alpha now
+		}
+
+
+
+		void AddAllWalls()
+		{
 			changed = true;
 
 			room.ceilTex = ObjectCreationExtension.transparentTex;
@@ -42,7 +73,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			{
 				if (i > ceilingHeight - customWallProximityToCeil.Length)
 					fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, customWallProximityToCeil[offset++], ObjectCreationExtension.transparentTex);
-				
+
 
 
 				foreach (var cell in ogCellBins)
@@ -112,28 +143,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 				c.AddRenderer(tile.MeshRenderer);
 				Destroy(tile);
 			}
-
 		}
 
-		public override void Initialize(RoomController room)
-		{
-			base.Initialize(room);
-			originalCeilTex = room.ceilTex;
-
-			foreach (var c in room.cells)
-				ogCellBins.Add(c, c.ConstBin);
-
-		}
-
-		public override void OnGenerationFinished()
-		{
-			base.OnGenerationFinished();
-			if (changed)
-				foreach (var c in room.cells)
-					c.SetBase(c.Tile.MeshRenderer.material.name.StartsWith(room.defaultPosterMat.name) ? room.posterMat : room.baseMat); // base mat should be alpha now
-
-		}
-
+		LevelBuilder proof;
 		Texture2D originalCeilTex;
 		bool changed = false;
 

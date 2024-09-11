@@ -58,7 +58,7 @@ namespace BBTimes.Helpers
 		/// <param name="name">The name (important for searching assets).</param>
 		/// <param name="spriteYOffset">Y offset</param>
 		/// <returns></returns>
-		public static T CreateCustomNPCFromExistent<T, N>(Character target, string name, float spriteYOffset = 0f) where T : NPC where N : MonoBehaviour
+		public static T CreateCustomNPCFromExistent<T, N>(Character target, string name, string assetsFolder, float spriteYOffset = 0f) where T : NPC where N : MonoBehaviour
 		{
 			var npc = (T)NPCMetaStorage.Instance.Get(target).value.SafeInstantiate();
 			npc.gameObject.name = name;
@@ -68,7 +68,7 @@ namespace BBTimes.Helpers
 			
 
 
-			var sprites = GetAllNpcSpritesFrom(name);
+			var sprites = GetAllNpcSpritesFrom(assetsFolder);
 			// Set some fields
 			npc.spriteBase.transform.position += Vector3.up * spriteYOffset;
 
@@ -83,15 +83,18 @@ namespace BBTimes.Helpers
 
 			var data = npc.gameObject.AddComponent<N>().GetComponent<INPCPrefab>();
 			data.Npc = npc;
-			data.Name = name;
+			data.Name = assetsFolder;
 
 			data.SetupPrefab();
 			BasePlugin._cstData.Add(data);
 
-			PlusLevelLoaderPlugin.Instance.npcAliases.Add(name, npc);
+			PlusLevelLoaderPlugin.Instance.npcAliases.Add("times_" + name, npc);
 
 			return npc;
 		}
+
+		public static T CreateCustomNPCFromExistent<T, N>(Character target, string name, float spriteYOffset = 0f) where T : NPC where N : MonoBehaviour =>
+			CreateCustomNPCFromExistent<T, N>(target, name, name, spriteYOffset);
 
 		public static T MarkAsReplacement<T>(this T npc, int weight, params Character[] targets) where T : NPC // I think that's what's called "Builder design"
 		{

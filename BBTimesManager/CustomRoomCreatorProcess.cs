@@ -28,7 +28,7 @@ namespace BBTimes.Manager
 {
 	internal static partial class BBTimesManager
 	{
-		static void CreateCustomRooms(BaseUnityPlugin plug)
+		static void CreateCustomRooms()
 		{
 			var lightPre = new WeightedTransform() { selection = GenericExtensions.FindResourceObjects<RoomAsset>().First(x => x.category == RoomCategory.Class).lightPre };
 			var carpet = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("Carpet") };
@@ -346,13 +346,13 @@ namespace BBTimes.Manager
 			//***************************************************
 			//***************************************************
 			var runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineStraight.png")), 12.5f), false).AddSpriteHolder(0.1f, 0);
-			runLine.gameObject.layer = 0; // default layer
+			//runLine.gameObject.layer = 0; // default layer
 			runLine.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			runLine.transform.parent.name = "StraightRunLine";
 			runLine.transform.parent.gameObject.AddObjectToEditor();
 
 			runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineCurve.png")), 12.5f), false).AddSpriteHolder(0.1f, 0);
-			runLine.gameObject.layer = 0; // default layer
+			//runLine.gameObject.layer = 0; // default layer
 			runLine.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			runLine.transform.parent.name = "CurvedRunLine";
 			runLine.transform.parent.gameObject.AddObjectToEditor();
@@ -655,7 +655,7 @@ namespace BBTimes.Manager
 
 			// Huge line
 			var line = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "bigLine.png")), 2f), false).AddSpriteHolder(0.1f, 0);
-			line.gameObject.layer = 0; // default layer
+			//line.gameObject.layer = 0; // default layer
 			line.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			line.transform.parent.name = "BasketBallBigLine";
 			line.transform.parent.gameObject.AddObjectToEditor();

@@ -41,7 +41,7 @@ namespace BBTimes
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.stackableitems", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.leveleditor", BepInDependency.DependencyFlags.SoftDependency)]
 
-	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, ModInfo.PLUGIN_VERSION)]
+	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class BasePlugin : BaseUnityPlugin
 	{ 
 		IEnumerator SetupPost()
@@ -53,7 +53,7 @@ namespace BBTimes
 			yield return "Setup the rest of the assets...";
 			BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
 			yield return "Creating post assets...";
-			SetupPostAssets();
+			GameExtensions.TryRunMethod(SetupPostAssets);
 			yield break;
 		}
 
@@ -368,8 +368,6 @@ namespace BBTimes
 
 		public static string ModPath => _modPath;
 
-		internal const string CharacterRadarGUID = "org.aestheticalz.baldi.characterradar";
-
 		internal static List<IObjectPrefab> _cstData = [];
 
 	}
@@ -380,8 +378,6 @@ namespace BBTimes
 		public const string PLUGIN_GUID = "pixelguy.pixelmodding.baldiplus.bbextracontent";
 
 		public const string PLUGIN_NAME = "Baldi\'s Basics Times";
-
-		public const string PLUGIN_VERSION = "1.1.6";
 	}
 
 	// Some cheats

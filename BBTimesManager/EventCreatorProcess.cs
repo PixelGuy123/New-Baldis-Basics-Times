@@ -7,7 +7,7 @@ namespace BBTimes.Manager
 {
     internal static partial class BBTimesManager
 	{
-		static void CreateEvents(BaseUnityPlugin plug)
+		static void CreateEvents()
 		{
 			// 0 - F1
 			// 1 - F2

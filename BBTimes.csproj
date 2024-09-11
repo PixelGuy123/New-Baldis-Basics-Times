@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net46</TargetFramework>
     <AssemblyName>BBTimes</AssemblyName>
-    <Description>My first plugin</Description>
-    <Version>1.0.0</Version>
+    <Description>Enjoy a grand experience with Baldi's Basics Times!</Description>
+    <Version>1.1.6.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;Cheat</Configurations>
-    <AssemblyVersion>1.1.6</AssemblyVersion>
+    <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
   </PropertyGroup>
 

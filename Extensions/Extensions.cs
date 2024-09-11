@@ -8,6 +8,7 @@ using HarmonyLib;
 // using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
+using BBTimes.Manager;
 
 namespace BBTimes.Extensions
 {
@@ -16,6 +17,21 @@ namespace BBTimes.Extensions
 		//static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
 		//static readonly FieldInfo funcContainer_funcs = AccessTools.Field(typeof(RoomFunctionContainer), "functions");
 
+		public static void TryRunMethod(System.Action actionToRun, bool causeCrashIfFail = true)
+		{
+			try
+			{
+				actionToRun();
+			}
+			catch (System.Exception e)
+			{
+				Debug.LogWarning("------ Error caught during an action ------");
+				Debug.LogException(e);
+
+				if (causeCrashIfFail)
+					MTM101BaldiDevAPI.CauseCrash(BBTimesManager.plug.Info, e);
+			}
+		}
 		public static Window ForceBuildWindow(this EnvironmentController ec, Cell tile, Direction dir, WindowObject wObject)
 		{
 			if (ec.ContainsCoordinates(tile.position + dir.ToIntVector2()))

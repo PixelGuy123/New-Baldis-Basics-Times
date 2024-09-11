@@ -58,9 +58,26 @@ namespace BBTimes.CustomContent.CustomItems
 				if (renderer.transform.localPosition.y <= fallLimit)
 				{
 					Destroy(gameObject);
-					var ele = Instantiate(elePre);
-					ele.Initialize(null, ec.CellFromPosition(transform.position).FloorWorldPosition, 0.3f, ec);
-					ele.StartCoroutine(GameExtensions.TimerToDestroy(ele.gameObject, ec, 15f));
+					IntVector2 pos = IntVector2.GetGridPosition(transform.position);
+					IntVector2 ogPos = pos;
+					IntVector2 max = new(pos.x + 1, pos.z + 1);
+					var room = ec.CellFromPosition(pos).room;
+
+					for (pos.x = ogPos.x - 1; pos.x <= max.x; pos.x++) // Fill up 3x3 area
+					{
+						for (pos.z = ogPos.z - 1; pos.z <= max.z; pos.z++)
+						{
+							var cell = ec.CellFromPosition(pos);
+							if (!cell.Null && cell.TileMatches(room)) 
+							{
+								var ele = Instantiate(elePre);
+								ele.Initialize(null, cell.FloorWorldPosition, 0.3f, ec);
+								ele.StartCoroutine(GameExtensions.TimerToDestroy(ele.gameObject, ec, 15f));
+							}
+						}
+					}
+
+					
 
 					yield break;
 				}

@@ -21,7 +21,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			
 			bool nextNull = nextGoldQuart != null;
-			if (!nextNull || pm.itm.InventoryFull())
+			if (!nextNull || !pm.itm.InventoryFull())
 			{
 				StartCoroutine(Delay(pm));
 				if (nextNull)

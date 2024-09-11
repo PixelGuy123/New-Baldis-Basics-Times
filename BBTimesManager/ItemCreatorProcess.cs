@@ -1,27 +1,22 @@
-﻿using BBTimes.CustomContent.CustomItems;
-using BepInEx.Bootstrap;
+﻿using BBTimes.CompatibilityModule.EditorCompat;
+using BBTimes.CustomComponents;
+using BBTimes.CustomContent.CustomItems;
+using BBTimes.CustomContent.Misc;
+using BBTimes.CustomContent.NPCs;
+using BBTimes.CustomContent.Objects;
 using BBTimes.Helpers;
 using BepInEx;
+using MTM101BaldAPI;
+using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI;
-using BBTimes.Plugin;
-using MTM101BaldAPI.ObjectCreation;
-using BBTimes.CustomContent.Objects;
-using BBTimes.CustomContent.Misc;
-using MTM101BaldAPI;
-using BBTimes.CustomContent.NPCs;
-using BBTimes.CustomComponents;
-using System.Linq.Expressions;
-using BBTimes.CompatibilityModule.EditorCompat;
 using System.Linq;
-using PlusLevelLoader;
-using System.Xml.Linq;
 
 namespace BBTimes.Manager
 {
-    internal static partial class BBTimesManager
+	internal static partial class BBTimesManager
 	{
-		static void CreateItems(BaseUnityPlugin plug)
+		static void CreateItems()
 		{
 			// ********** Items ************
 			// 0 - F1
@@ -30,7 +25,7 @@ namespace BBTimes.Manager
 			// 3 - END
 			ItemObject item;
 
-		
+
 			// Hammer
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Hammer>()
@@ -41,7 +36,7 @@ namespace BBTimes.Manager
 			//CreatorExtensions.CreateItem<ITM_Hammer, CustomItemData>("Hammer", "HAM_Name", "HAM_Desc", 125, 30).AddMeta(plug, ItemFlags.None).value;
 
 
-			floorDatas[0].Items.Add(new() { selection = item, weight = 45});
+			floorDatas[0].Items.Add(new() { selection = item, weight = 45 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 65 });
@@ -125,27 +120,25 @@ namespace BBTimes.Manager
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 15 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 75 });
 
-			if (!Chainloader.PluginInfos.ContainsKey(BasePlugin.CharacterRadarGUID)) // What's the point of the gps when there's already a gps
-			{
-				// GPS Item
-				item = new ItemBuilder(plug.Info)
-				.SetItemComponent<ITM_GPS>()
-				.SetGeneratorCost(30)
-				.SetShopPrice(500)
-				.SetNameAndDescription("GPS_Name", "GPS_Desc")
-				.SetMeta(ItemFlags.Persists, [])
-				.Build("Gps");
+			// GPS Item
+			item = new ItemBuilder(plug.Info)
+			.SetItemComponent<ITM_GPS>()
+			.SetGeneratorCost(30)
+			.SetShopPrice(500)
+			.SetNameAndDescription("GPS_Name", "GPS_Desc")
+			.SetMeta(ItemFlags.Persists, [])
+			.Build("Gps");
 
-				//CreatorExtensions.CreateItem<ITM_GPS, GpsCustomData>("Gps", "GPS_Name", "GPS_Desc", 185, 30).AddMeta(plug, ItemFlags.Persists).value;
-				floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
-				floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
-				floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
-				floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
-				floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
-				floorDatas[3].ShopItems.Add(new() { selection = item, weight = 75 });
-				floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
-				ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
-			}
+			//CreatorExtensions.CreateItem<ITM_GPS, GpsCustomData>("Gps", "GPS_Name", "GPS_Desc", 185, 30).AddMeta(plug, ItemFlags.Persists).value;
+			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 75 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
+
 			// Golden Quarter
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_GoldenQuarter>()
@@ -441,7 +434,8 @@ namespace BBTimes.Manager
 				EditorLevelPatch.AddPoint(item);
 
 			// Cherry Bsoda
-			var normBsoda = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda).value;
+			var bsodaMeta = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda);
+			var normBsoda = bsodaMeta.value;
 
 			var itemBs = normBsoda.DuplicateItem("CherryBsoda_Name");
 
@@ -452,12 +446,12 @@ namespace BBTimes.Manager
 			var ch = itemBs.item.gameObject.AddComponent<ITM_CherryBsoda>();
 			itemBs.item.gameObject.GetComponent<IItemPrefab>().SetupItemData("CherryBsoda", itemBs);
 			itemBs.item.name = "ITM_CherryBsoda";
-			
+
 			ch.time = 30f;
 
 			itemBs.item = ch;
 			itemBs.itemType = EnumExtensions.ExtendEnum<Items>("CherryBsoda");
-			itemBs.AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists);
+			itemBs.AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).tags.AddRange(bsodaMeta.tags);
 
 			item = itemBs;
 
@@ -682,7 +676,7 @@ namespace BBTimes.Manager
 
 			itemBs.item = gs;
 			itemBs.itemType = EnumExtensions.ExtendEnum<Items>("GSoda");
-			itemBs.AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists);
+			itemBs.AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).tags.AddRange(bsodaMeta.tags);
 
 			item = itemBs;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
@@ -819,7 +813,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_EletricalGel>()
 				.SetGeneratorCost(48)
 				.SetShopPrice(750)
-				.SetNameAndDescription("EletricalGel_Name", "EletricalGel_DEsc")
+				.SetNameAndDescription("EletricalGel_Name", "EletricalGel_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("EletricalGel");
 
