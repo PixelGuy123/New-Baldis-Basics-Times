@@ -7,7 +7,6 @@ using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
-using BepInEx;
 using EditorCustomRooms;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -22,7 +21,6 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Assertions;
 
 namespace BBTimes.Manager
 {
@@ -569,7 +567,7 @@ namespace BBTimes.Manager
 
 			sets.container = room[0].selection.roomFunctionContainer;
 
-			room.ForEach(x => { x.selection.maxItemValue = 999; x.selection.posterChance = 0; });
+			room.ForEach(x => { x.selection.maxItemValue = 999; x.selection.posterChance = 0; x.selection.MysteryRoomCover(); });
 
 			AddAssetsToEvent<SuperMysteryRoom>(room);
 

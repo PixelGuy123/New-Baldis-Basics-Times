@@ -309,7 +309,7 @@ namespace BBTimes.Manager
 		public readonly List<WeightedItemObject> Items = [];
 		public readonly List<ItemObject> ForcedItems = [];
 		public readonly List<WeightedItemObject> ShopItems = [];
-		public readonly List<WeightedItem> FieldTripItems = [];
+		public readonly List<WeightedItemObject> FieldTripItems = [];
 		public readonly List<WeightedRandomEvent> Events = [];
 		public readonly List<SchoolTextureHolder> SchoolTextures = [];
 

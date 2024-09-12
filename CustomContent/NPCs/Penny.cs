@@ -215,7 +215,7 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					audMan.FlushQueue(true);
 					audMan.PlayRandomAudio(audWinPrize);
-					Singleton<CoreGameManager>.Instance.AddPoints(guesses * 100, chosenPlayer.playerNumber, true);
+					Singleton<CoreGameManager>.Instance.AddPoints(guesses * 25, chosenPlayer.playerNumber, true);
 					SetAngry(false);
 					SetIdleOnMood(0);
 					behaviorStateMachine.ChangeState(new Penny_Wandering(this, 60f));
@@ -286,7 +286,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			EnableLetters(true);
 			ScrambleLetters(chosenWord[wordIndex]);
-			guesses = 3;
+			guesses = 5;
 		}
 
 		IEnumerator FadeAboveTextOut()

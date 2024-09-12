@@ -17,6 +17,16 @@ namespace BBTimes.Extensions
 		//static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
 		//static readonly FieldInfo funcContainer_funcs = AccessTools.Field(typeof(RoomFunctionContainer), "functions");
 
+		public static bool IsBitSet(this int flag, int position) // Thanks ChatGPT
+		{
+			// Check if the bit at the specified position is set (1)
+			return (flag & (1 << position)) != 0;
+		}
+		public static int ToggleBit(this int flag, int position) // Thanks ChatGPT
+		{
+			// Use XOR to flip the bit at the specified position
+			return flag ^ (1 << position);
+		}
 		public static void TryRunMethod(System.Action actionToRun, bool causeCrashIfFail = true)
 		{
 			try

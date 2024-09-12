@@ -27,7 +27,7 @@ namespace BBTimes.Helpers
 			npc.poster.textData[1].textKey = posterDesc;
 
 			npc.spriteBase.transform.Find("Sprite").localPosition = Vector3.up * spriteYoffset;
-			npc.GetComponent<PropagatedAudioManager>().overrideSubtitleColor = false; // Workaround for the overriding being active
+			//npc.GetComponent<PropagatedAudioManager>().overrideSubtitleColor = false; // Workaround for the overriding being active
 
 			var data = npc.GetComponent<INPCPrefab>();
 			data.Npc = npc;

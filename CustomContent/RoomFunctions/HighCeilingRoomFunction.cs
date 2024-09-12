@@ -1,6 +1,6 @@
-﻿using BBTimes.Extensions.ObjectCreationExtensions;
+﻿using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
-using HarmonyLib;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 	internal class HighCeilingRoomFunction : RoomFunction
 	{
 
-	
+
 		public override void Build(LevelBuilder builder, System.Random rng)
 		{
 			base.Build(builder, rng);
@@ -26,11 +26,14 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 		public override void Initialize(RoomController room)
 		{
+
 			base.Initialize(room);
 			originalCeilTex = room.ceilTex;
+			room.cells.ForEach(c => ogCellBins.Add(c, c.ConstBin));
 
-			foreach (var c in room.cells)
-				ogCellBins.Add(c, c.ConstBin);
+			tilePrefabRef = new GameObject("TileRef").AddComponent<MeshFilter>();
+			var renderer = tilePrefabRef.gameObject.AddComponent<MeshRenderer>();
+			renderer.materials = room.ec.tilePre.MeshRenderer.materials;
 
 		}
 
@@ -38,17 +41,17 @@ namespace BBTimes.CustomContent.RoomFunctions
 		{
 			base.OnGenerationFinished();
 
-			if (!proof || proof is LevelLoader)
-				AddAllWalls(); // If proof isn't assigned, it means this must be LevelLoader
+			if (!BBTimesManager.plug.disableHighCeilings.Value && (!proof || proof is LevelLoader))
+				AddAllWalls(true); // If proof isn't assigned, it means this must be LevelLoader
 
 			if (changed)
 				foreach (var c in room.cells)
 					c.SetBase(c.Tile.MeshRenderer.material.name.StartsWith(room.defaultPosterMat.name) ? room.posterMat : room.baseMat); // base mat should be alpha now
+
+			Destroy(tilePrefabRef.gameObject);
 		}
 
-
-
-		void AddAllWalls()
+		void AddAllWalls(bool levelLoader = false)
 		{
 			changed = true;
 
@@ -83,20 +86,23 @@ namespace BBTimes.CustomContent.RoomFunctions
 				{
 					if (ogbin == 0) return;
 
-					int bin = c.ConstBin; // Save it to reset it
+					var tile = Instantiate(tilePrefabRef, planeHolder.transform);
 
-					room.ec.SwapCell(c.position, c.room, ogbin);
-					var tile = Instantiate(c.Tile);
-					tile.collider.Do(Destroy);
+					if (levelLoader)
+					{
+						var dirs = Directions.All();
+						for (int i = 0; i < dirs.Count; i++)
+							if (!ogbin.IsBitSet(dirs[i].BitPosition()) && c.WallHardCovered(dirs[i])) // Should account for windows and doors
+								ogbin = ogbin.ToggleBit(dirs[i].BitPosition()); // For pre-loaded rooms, the tiles will always have a door placement that will open them, so it's better closing them by toggling their bit.
+					}
 
-					tile.transform.SetParent(planeHolder.transform);
+					tile.sharedMesh = room.ec.TileMesh(ogbin);
+
 					tile.transform.position = c.FloorWorldPosition + (Vector3.up * (LayerStorage.TileBaseOffset * i));
-					tile.MeshRenderer.material = room.defaultAlphaMat;
-					tile.MeshRenderer.material.mainTexture = fullTex;
-					c.AddRenderer(tile.MeshRenderer);
-					Destroy(tile);
-
-					room.ec.SwapCell(c.position, c.room, bin);
+					var render = tile.GetComponent<MeshRenderer>();
+					render.material = room.defaultAlphaMat;
+					render.material.mainTexture = fullTex;
+					c.AddRenderer(render);
 
 				}
 			}
@@ -134,19 +140,20 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			foreach (var c in room.cells)
 			{
-				var tile = Instantiate(c.Tile, planeHolder.transform);
-				tile.collider.Do(Destroy);
+				var tile = Instantiate(tilePrefabRef, planeHolder.transform);
+				tile.sharedMesh = room.ec.TileMesh(0); // open tile
 
 				tile.transform.position = c.FloorWorldPosition + (Vector3.up * (ceilingHeight * LayerStorage.TileBaseOffset));
-				tile.MeshRenderer.material = room.defaultAlphaMat;
-				tile.MeshRenderer.material.mainTexture = fullTex;
-				c.AddRenderer(tile.MeshRenderer);
-				Destroy(tile);
+				var rend = tile.GetComponent<MeshRenderer>();
+				rend.material = room.defaultAlphaMat;
+				rend.material.mainTexture = fullTex;
+				c.AddRenderer(rend);
 			}
 		}
 
 		LevelBuilder proof;
 		Texture2D originalCeilTex;
+		MeshFilter tilePrefabRef;
 		bool changed = false;
 
 		[SerializeField]

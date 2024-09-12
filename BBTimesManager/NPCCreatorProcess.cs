@@ -1,6 +1,5 @@
 ﻿using BBTimes.CustomContent.NPCs;
 using BBTimes.Helpers;
-using BepInEx;
 using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;

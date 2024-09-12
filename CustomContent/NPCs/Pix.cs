@@ -20,7 +20,7 @@ namespace BBTimes.CustomContent.NPCs
 				this.GetSound("Pix_Successful.wav", "Vfx_Pix_MisSuc", SoundType.Voice, new(0.6f, 0f, 0f)),
 				this.GetSound("Pix_Failed.wav", "Vfx_Pix_MisFail", SoundType.Voice, new(0.6f, 0f, 0f)),
 				this.GetSound("Pix_Grrr.wav", "Vfx_Pix_Grr", SoundType.Voice, new(0.6f, 0f, 0f)),
-				this.GetSound("Pix_NextTime.wav", "Vfx_Pix_this.GetYou", SoundType.Voice, new(0.6f, 0f, 0f)),
+				this.GetSound("Pix_NextTime.wav", "Vfx_Pix_GetYou", SoundType.Voice, new(0.6f, 0f, 0f)),
 				this.GetSound("Pix_Shoot.wav", "Vfx_Pix_Shoot", SoundType.Voice, new(0.6f, 0f, 0f)),
 				this.GetSoundNoSub("shock.wav", SoundType.Voice)
 				];

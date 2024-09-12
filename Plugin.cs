@@ -1,31 +1,31 @@
-﻿using BepInEx;
-using HarmonyLib;
-using MTM101BaldAPI.Registers;
-using BBTimes.Manager;
-using System.Linq;
-using UnityEngine;
-using MTM101BaldAPI.AssetTools;
-using BBTimes.Extensions;
-using PixelInternalAPI.Extensions;
-using MTM101BaldAPI;
+﻿using BBTimes.CompatibilityModule;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Events;
-using System.Collections;
-using System.Collections.Generic;
-using MTM101BaldAPI.SaveSystem;
-using BBTimes.ModPatches;
 using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.RoomFunctions;
-using PixelInternalAPI.Classes;
-using System.IO;
-using BBTimes.CompatibilityModule;
+using BBTimes.Extensions;
+using BBTimes.Manager;
+using BBTimes.ModPatches;
+using BepInEx;
 using BepInEx.Configuration;
-using BBTimes.CustomComponents;
+using HarmonyLib;
+using MTM101BaldAPI;
+using MTM101BaldAPI.AssetTools;
+using MTM101BaldAPI.Registers;
+using MTM101BaldAPI.SaveSystem;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
 
 
 namespace BBTimes
 {
-    [BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)] // let's not forget this
+	[BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)] // let's not forget this
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.pixelinternalapi", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.levelloader", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.editorcustomrooms", BepInDependency.DependencyFlags.HardDependency)]
@@ -42,8 +42,8 @@ namespace BBTimes
 	[BepInDependency("mtm101.rulerp.baldiplus.leveleditor", BepInDependency.DependencyFlags.SoftDependency)]
 
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-    public class BasePlugin : BaseUnityPlugin
-	{ 
+	public class BasePlugin : BaseUnityPlugin
+	{
 		IEnumerator SetupPost()
 		{
 			yield return 2;
@@ -77,7 +77,7 @@ namespace BBTimes
 			sw.audSwitch = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromMod(this, "objects", "LightSwitch", "LightSwitch_Toggle.wav"), string.Empty, SoundType.Effect, Color.white);
 			sw.audSwitch.subtitle = false;
 
-			
+
 
 			var rs = BBTimesManager.AddFunctionToEverythingExcept<LightSwitchSpawner>((x) => x.standardLightCells.Count != 0, RoomCategory.Special, RoomCategory.Test, RoomCategory.Buffer, RoomCategory.Hall, RoomCategory.Mystery, RoomCategory.Store, RoomCategory.FieldTrip, RoomCategory.Null);
 			rs.ForEach(x => x.lightPre = sw);
@@ -92,6 +92,11 @@ namespace BBTimes
 				Debug.LogException(e);
 				MTM101BaldiDevAPI.CauseCrash(Info, e);
 			}
+
+			var fieldTrip = GenericExtensions.FindResourceObject<FieldTripBaseRoomFunction>();
+			foreach (var floor in BBTimesManager.floorDatas)
+				fieldTrip.potentialItems = fieldTrip.potentialItems.AddRangeToArray([.. floor.FieldTripItems.Except(fieldTrip.potentialItems)]);
+			// No guaranteed items required to not mess with the good ones in
 		}
 
 
@@ -99,11 +104,13 @@ namespace BBTimes
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
-		internal ConfigEntry<bool> disableOutside;
+		internal ConfigEntry<bool> disableOutside, disableHighCeilings;
+		internal Dictionary<string, ConfigEntry<bool>> enabledCharacters = [], enabledItems = [], enabledStructures = [];
 
 		private void Awake()
 		{
 			disableOutside = Config.Bind("Environment Settings", "Disable the outside", false, "Setting this \"true\" will completely disable the outside seen in-game. This should increase performance BUT will also change the seed layouts in the game.");
+			disableHighCeilings = Config.Bind("Environment Settings", "Disable high ceilings", false, "Setting this \"true\" will completely disable the high ceilings from existing in pre-made levels (that includes the ones made with the Level Editor).");
 
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAllConditionals();
@@ -115,7 +122,7 @@ namespace BBTimes
 
 			CompatibilityInitializer.InitializeOnAwake();
 			MainMenuPatch.newMidi = AssetLoader.MidiFromMod("timeNewJingle", this, "misc", "Audios", "newJingle.mid");
-			
+
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), false);
 
@@ -250,7 +257,7 @@ namespace BBTimes
 					groups[0].maxRooms = 9;
 					return;
 				}
-				
+
 			});
 
 			GeneratorManagement.Register(this, GenerationModType.Addend, (floorName, floorNum, ld) =>
@@ -262,23 +269,72 @@ namespace BBTimes
 					return;
 				}
 
-				foreach(var npc in floordata.NPCs)
+				foreach (var npc in floordata.NPCs)
 				{
+					if (!Config.Bind("NPC Settings", $"Enable {npc.selection.name}", true, "If set to true, this character will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						continue;
+
 					var dat = npc.selection.GetComponent<INPCPrefab>();
 					if (dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
 						ld.potentialNPCs.Add(npc); // Only non-replacement Npcs
 					else
 						ld.forcedNpcs = ld.forcedNpcs.AddToArray(npc.selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
 				}
-				
-				ld.potentialItems = ld.potentialItems.AddRangeToArray([.. floordata.Items]);
-				ld.randomEvents.AddRange(floordata.Events);
-				ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddRangeToArray([.. floordata.ForcedObjectBuilders]);
-				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
-				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
-				//ld.fieldTripItems.AddRange(floordata.FieldTripItems);
-				ld.forcedItems.AddRange(floordata.ForcedItems);
+
+				List<WeightedItemObject> acceptableItems = new(floordata.Items);
+				for (int i = 0; i < acceptableItems.Count; i++)
+					if (!Config.Bind("Item Settings", $"Enable {(acceptableItems[i].selection.itemType == Items.Points ? acceptableItems[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)acceptableItems[i].selection.itemType))}",
+						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						acceptableItems.RemoveAt(i--);
+
+
+				ld.potentialItems = ld.potentialItems.AddRangeToArray([.. acceptableItems]);
+
+				List<ItemObject> items = new(floordata.ForcedItems);
+				for (int i = 0; i < items.Count; i++)
+					if (!Config.Bind("Item Settings", $"Enable {(items[i].itemType == Items.Points ? items[i].nameKey : EnumExtensions.GetExtendedName<Items>((int)items[i].itemType))}",
+						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						items.RemoveAt(i--);
+				ld.forcedItems.AddRange(items);
+
+				acceptableItems = new(floordata.ShopItems);
+				for (int i = 0; i < acceptableItems.Count; i++)
+					if (!Config.Bind("Item Settings", $"Enable {(acceptableItems[i].selection.itemType == Items.Points ? acceptableItems[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)acceptableItems[i].selection.itemType))}",
+						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						acceptableItems.RemoveAt(i--);
+
 				ld.shopItems = ld.shopItems.AddRangeToArray([.. floordata.ShopItems]);
+
+				List<WeightedRandomEvent> events = new(floordata.Events);
+				for (int i = 0; i < events.Count; i++)
+					if (!Config.Bind("Random Event Settings", $"Enable {events[i].selection.name}", true, "If set to true, this random event will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						events.RemoveAt(i--);
+
+				ld.randomEvents.AddRange(events);
+
+				List<ObjectBuilder> objBlds = new(floordata.ForcedObjectBuilders);
+				for (int i = 0; i < objBlds.Count; i++)
+					if (!Config.Bind("Structure Settings", $"Enable {(objBlds[i].obstacle != Obstacle.Null ?
+						EnumExtensions.GetExtendedName<Obstacle>((int)objBlds[i].obstacle) : objBlds[i].name)}", true, "If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						objBlds.RemoveAt(i--);
+
+				ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddRangeToArray([.. objBlds]);
+
+				List<WeightedObjectBuilder> rngObjBlds = new(floordata.WeightedObjectBuilders);
+				for (int i = 0; i < rngObjBlds.Count; i++)
+					if (!Config.Bind("Structure Settings", $"Enable {(rngObjBlds[i].selection.obstacle != Obstacle.Null ? 
+						EnumExtensions.GetExtendedName<Obstacle>((int)rngObjBlds[i].selection.obstacle) : rngObjBlds[i].selection.name)}", true, "If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						rngObjBlds.RemoveAt(i--);
+
+				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. rngObjBlds]);
+
+				List<RandomHallBuilder> hallObjBlds = new(floordata.HallBuilders);
+				for (int i = 0; i < hallObjBlds.Count; i++)
+					if (!Config.Bind("Structure Settings", $"Enable {hallObjBlds[i].selectable.name}", true, "If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						rngObjBlds.RemoveAt(i--);
+
+				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. hallObjBlds]);
+
 				ld.roomGroup = ld.roomGroup.AddRangeToArray([.. floordata.RoomAssets]);
 				ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. floordata.SpecialRooms]);
 
@@ -356,7 +412,7 @@ namespace BBTimes
 								default:
 									break;
 							}
-								
+
 							break;
 					}
 				}
