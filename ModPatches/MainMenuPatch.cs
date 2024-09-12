@@ -30,6 +30,7 @@ namespace BBTimes.ModPatches
 				newSrc.spatialBlend = ___audioSource.spatialBlend;
 				newSrc.spread = ___audioSource.spread;
 				newSrc.spatialize = ___audioSource.spatialize;
+				newSrc.playOnAwake = ___audioSource.playOnAwake;
 
 				__instance.StartCoroutine(WaitForAudioPlay(newSrc));
 			}
