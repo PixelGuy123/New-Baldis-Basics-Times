@@ -177,7 +177,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Hear(Vector3 position, int value)
 		{
 			base.Hear(position, value);
-			if (value >= 78 && value <= 126)
+			if (value >= 78 && value <= 120)
 				behaviorStateMachine.ChangeState(new SuperIntendentJr_RunForNoise(this, position, behaviorStateMachine.CurrentState));
 		}
 
