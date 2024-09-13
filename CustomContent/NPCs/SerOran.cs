@@ -304,7 +304,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.OnStateTriggerEnter(other);
 			if (other.gameObject == pm.gameObject && !pm.Tagged)
 {
-  if (player.itm.items.Any(x => x.GetMeta().tags.Any(x => { string n = x.ToLower(); return n == "food" || n == "drink"; })))
+  if (pm.itm.items.Any(x => x.GetMeta().tags.Any(x => { string n = x.ToLower(); return n == "food" || n == "drink"; })))
 				or.behaviorStateMachine.ChangeState(new Oran_AskForItem(or, pm));
 else
 or.behaviorStateMachine.ChangeState(new prevState);
