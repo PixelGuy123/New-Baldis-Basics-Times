@@ -84,9 +84,6 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 				void AddWalls(Cell c, int ogbin)
 				{
-					if (ogbin == 0) return;
-
-					var tile = Instantiate(tilePrefabRef, planeHolder.transform);
 
 					if (levelLoader)
 					{
@@ -95,6 +92,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 							if (!ogbin.IsBitSet(dirs[i].BitPosition()) && c.WallHardCovered(dirs[i])) // Should account for windows and doors
 								ogbin = ogbin.ToggleBit(dirs[i].BitPosition()); // For pre-loaded rooms, the tiles will always have a door placement that will open them, so it's better closing them by toggling their bit.
 					}
+if (ogbin == 0) return;
+
+					var tile = Instantiate(tilePrefabRef, planeHolder.transform);
 
 					tile.sharedMesh = room.ec.TileMesh(ogbin);
 
