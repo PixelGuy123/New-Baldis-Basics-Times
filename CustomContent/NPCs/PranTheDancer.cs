@@ -186,6 +186,12 @@ namespace BBTimes.CustomContent.NPCs
 			}
 			var dist = pran.transform.position - target.transform.position;
 			stayMod.movementAddend = dist * 185f * Time.deltaTime * pran.TimeScale;
+
+if (dist.magnitude > 100)
+  {
+   target?.ExternalActivity.moveMods.Remove(stayMod);
+pran.behaviorStateMachine.ChangeState(new Pran_Wondering(pran));
+  }
 		}
 	}
 }
