@@ -82,7 +82,7 @@ namespace BBTimes.CustomContent.Misc
 		internal SpriteRenderer itemRenderer;
 
 		[SerializeField]
-		internal int price = 250;
+		internal int price = 25;
 
 		readonly static List<WeightedItemObject> foods = [];
 
