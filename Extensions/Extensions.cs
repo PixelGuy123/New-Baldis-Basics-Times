@@ -4,11 +4,10 @@ using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using HarmonyLib;
-
-// using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
 using BBTimes.Manager;
+using System.Text;
 
 namespace BBTimes.Extensions
 {
@@ -16,7 +15,30 @@ namespace BBTimes.Extensions
 	{
 		//static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
 		//static readonly FieldInfo funcContainer_funcs = AccessTools.Field(typeof(RoomFunctionContainer), "functions");
+		public static float Magnitude(this IntVector2 vec) =>
+			Mathf.Sqrt((vec.x^2) + (vec.z^2));
+		public static IntVector2 GetRoomSize(this RoomAsset asset)
+		{
+			IntVector2 size = new(0, 0);
 
+			for (int i = 0; i < asset.cells.Count; i++)
+			{
+				if (asset.cells[i].pos.x > size.x)
+					size.x = asset.cells[i].pos.x;
+
+				if (asset.cells[i].pos.z > size.z)
+					size.z = asset.cells[i].pos.z;
+			}
+
+			return size;
+		}
+		public static string RepeatStr(this string toRepeat, int amount)
+		{
+			StringBuilder bld = new();
+			for (int i = 0; i < amount; i++)
+				bld.Append(toRepeat);
+			return bld.ToString();
+		}
 		public static bool IsBitSet(this int flag, int position) // Thanks ChatGPT
 		{
 			// Check if the bit at the specified position is set (1)

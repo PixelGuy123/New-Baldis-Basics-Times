@@ -431,8 +431,8 @@ namespace BBTimes.Manager
 			});
 
 			AddAssetsToNpc<GottaSweep>(room);
-			AddAssetsToNpc<ZeroPrize>([new() { selection = sweepCloset, weight = 100 }, ..room]);
-			AddAssetsToNpc<Mopper>([new() { selection = sweepCloset, weight = 100 }, ..room]);
+			AddAssetsToNpc<ZeroPrize>([new() { selection = sweepCloset, weight = 100 }, .. room]);
+			AddAssetsToNpc<Mopper>([new() { selection = sweepCloset, weight = 100 }, .. room]);
 
 			// ************************************************************
 			// ************************************************************
@@ -519,8 +519,12 @@ namespace BBTimes.Manager
 
 			room = GetAllAssets(GetRoomAsset("Kitchen"), 75, 35, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "MapBG_Kitchen.png")));
 			room.ForEach(x => x.selection.basicSwaps.Add(
-				new() { chance = 0.1f, potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SecretBread").transform }], 
-					prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Lunch").transform }));
+				new()
+				{
+					chance = 0.1f,
+					potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SecretBread").transform }],
+					prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Lunch").transform
+				}));
 
 			Object.Destroy(room[0].selection.roomFunctionContainer.gameObject); // It doesn't need one, it's empty
 
@@ -798,8 +802,11 @@ namespace BBTimes.Manager
 
 
 			//Classrooms
+
 			var classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialClassRooms.Length != 0).potentialClassRooms[0];
 			room = GetAllAssets(GetRoomAsset("Class"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+			if (!plug.enableBigRooms.Value)
+				RemoveBigRooms(room);
 
 			room.ForEach(x =>
 			{
@@ -816,6 +823,7 @@ namespace BBTimes.Manager
 			var activityRooms = room.Where(x => x.selection.activity.prefab.GetType() != typeof(NoActivity)).ToList().FilterRoomAssetsByFloor();
 			for (int i = 1; i < floorDatas.Count; i++)
 				floorDatas[i].Classrooms.AddRange(activityRooms);
+
 
 			// ****** Focus Room (A classroom variant, but with a new npc) ******
 			sets = RegisterRoom("FocusRoom", new(0f, 1f, 0.5f),
@@ -843,6 +851,8 @@ namespace BBTimes.Manager
 			focusedStudent.sprNormal = student.sprite;
 
 			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			if (!plug.enableBigRooms.Value)
+				RemoveBigRooms(room);
 
 			room.ForEach(x =>
 			{
@@ -887,6 +897,8 @@ namespace BBTimes.Manager
 			//Offices
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialOffices.Length != 0).potentialOffices[0];
 			room = GetAllAssets(GetRoomAsset("Office"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			if (!plug.enableBigRooms.Value)
+				RemoveBigRooms(room);
 
 			room.ForEach(x =>
 			{
@@ -898,9 +910,12 @@ namespace BBTimes.Manager
 
 				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 				x.selection.basicSwaps.Add(
-					new() { chance = 0.35f, 
-						potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SmallPottedPlant").transform }], 
-						prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Globe").transform });
+					new()
+					{
+						chance = 0.35f,
+						potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SmallPottedPlant").transform }],
+						prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Globe").transform
+					});
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)
@@ -1016,6 +1031,15 @@ namespace BBTimes.Manager
 				});
 			}
 
+			static void RemoveBigRooms(List<WeightedRoomAsset> assets)
+			{
+				for (int i = 0; i < assets.Count; i++)
+				{
+					if (assets[i].selection.GetRoomSize().Magnitude() >= 11f) // Near the same as 7x7 room
+						assets.RemoveAt(i--);
+				}
+			}
+
 		}
 
 		static string GetRoomAsset(string roomName, string asset = "") => Path.Combine(BasePlugin.ModPath, "rooms", roomName, asset);
@@ -1059,7 +1083,7 @@ namespace BBTimes.Manager
 			List<WeightedRoomAsset> assets = [];
 			RoomFunctionContainer container = cont;
 			foreach (var file in Directory.GetFiles(path))
-			{				
+			{
 				if (File.ReadAllBytes(file).Length == 0) continue; // if the cbld file is empty, it means it has been "removed". This is to make sure that anyone who extracts newer versions don't include these layouts.
 				try
 				{
@@ -1070,7 +1094,7 @@ namespace BBTimes.Manager
 						container = asset[0].roomFunctionContainer;
 
 					for (int i = 0; i < asset.Count; i++)
-						RoomAssetMetaStorage.Instance.Add( new RoomAssetMeta(plug.Info, asset[i]));
+						RoomAssetMetaStorage.Instance.Add(new RoomAssetMeta(plug.Info, asset[i]));
 				}
 				catch (KeyNotFoundException e)
 				{

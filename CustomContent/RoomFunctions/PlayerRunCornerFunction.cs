@@ -11,26 +11,36 @@ namespace BBTimes.CustomContent.RoomFunctions
 			base.Initialize(room);
 			IntVector2 pos = default;
 			Direction dirToFollow = Direction.Null;
-			int cornerCount = 0;
+
 			foreach (var cell in room.cells)
 			{
 				if (cell.shape == TileShape.Corner)
 				{
 					pos = cell.position;
 					dirToFollow = cell.AllWallDirections[0].GetOpposite();
-					cornerCount++;
+					break;
 				}
 			}
 			if (pos == default || dirToFollow == Direction.Null)
 				return;
+			int attempts = 0;
 
-			while (cornersToGo.Count < cornerCount)
+			while (true)
 			{
-				cornersToGo.Add(room.ec.CellFromPosition(pos).CenterWorldPosition);
+				var fPos = room.ec.CellFromPosition(pos).CenterWorldPosition;
+				if (!cornersToGo.Contains(fPos))
+				{
+					cornersToGo.Add(fPos);
+					attempts = 0;
+				}
+				else if (++attempts >= MakePlayerRunLineAttempts) return;
+
+				
 				for(;;)
 				{
 					pos += dirToFollow.ToIntVector2();
-					var nextCell = room.ec.CellFromPosition(pos + dirToFollow.ToIntVector2());
+					var nextPos = pos + dirToFollow.ToIntVector2();
+					var nextCell = room.ec.CellFromPosition(nextPos);
 					var curCell = room.ec.CellFromPosition(pos);
 					if (curCell.shape == TileShape.End) // There can't be dead ends
 					{
@@ -38,7 +48,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 						Debug.LogWarning("The PlayerRunCornerFunction has been used in a room with an invalid shape! Room: " + room.name);
 						return;
 					}
-					if (!nextCell.TileMatches(room) || curCell.shape == TileShape.Open)
+					if (nextCell.Null || !room.ec.ContainsCoordinates(nextPos) || !nextCell.TileMatches(room) || curCell.shape == TileShape.Open)
 					{
 						var prevDir = dirToFollow;
 						dirToFollow = dirToFollow.PerpendicularList()[0];
@@ -54,8 +64,11 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 		}
 
-		public void MakePlayerRunAround(PlayerManager player) =>
-			StartCoroutine(Runner(player));
+		public void MakePlayerRunAround(PlayerManager player)
+		{
+			if (cornersToGo.Count != 0)
+				StartCoroutine(Runner(player));
+		}
 
 		IEnumerator Runner(PlayerManager player)
 		{
@@ -123,5 +136,8 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public bool IsActive => activeRunners > 0;
 
 		readonly List<Vector3> cornersToGo = [];
+
+		[SerializeField]
+		internal int MakePlayerRunLineAttempts = 3;
 	}
 }

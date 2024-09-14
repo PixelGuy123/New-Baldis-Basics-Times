@@ -692,7 +692,7 @@ namespace BBTimes.CustomContent.NPCs
 			dr.Navigator.Am.moveMods.Add(dr.moveMod);
 			dr.Navigator.Entity.Teleport(dr.ec.RealRoomMid(dr.Home));
 			func = dr.Home.functionObject.GetComponent<PlayerRunCornerFunction>();
-			func.MakePlayerRunAround(pm);
+			func?.MakePlayerRunAround(pm);
 			dr.audMan.FlushQueue(true);
 			dr.audMan.QueueRandomAudio(dr.audAngryCaught);
 			dr.ec.MakeNoise(dr.transform.position, 39);
@@ -702,7 +702,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 
-			if (!func.IsActive)
+			if (!func || !func.IsActive)
 			{
 				dr.audMan.FlushQueue(true);
 				dr.audMan.PlaySingle(dr.audDismissed);

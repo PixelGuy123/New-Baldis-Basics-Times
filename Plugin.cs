@@ -95,7 +95,15 @@ namespace BBTimes
 
 			var fieldTrip = GenericExtensions.FindResourceObject<FieldTripBaseRoomFunction>();
 			foreach (var floor in BBTimesManager.floorDatas)
-				fieldTrip.potentialItems = fieldTrip.potentialItems.AddRangeToArray([.. floor.FieldTripItems.Except(fieldTrip.potentialItems)]);
+			{
+				List<WeightedItemObject> items = [];
+				for (int i = 0; i < items.Count; i++)
+					if (!Config.Bind("Item Settings", $"Enable {(items[i].selection.itemType == Items.Points ? items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)items[i].selection.itemType))}",
+						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value || fieldTrip.potentialItems.Any(x => x.selection == items[i].selection))
+						items.RemoveAt(i--);
+
+				fieldTrip.potentialItems = fieldTrip.potentialItems.AddRangeToArray([.. items]);
+			}
 			// No guaranteed items required to not mess with the good ones in
 		}
 
@@ -104,13 +112,14 @@ namespace BBTimes
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
-		internal ConfigEntry<bool> disableOutside, disableHighCeilings;
+		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms;
 		internal Dictionary<string, ConfigEntry<bool>> enabledCharacters = [], enabledItems = [], enabledStructures = [];
 
 		private void Awake()
 		{
 			disableOutside = Config.Bind("Environment Settings", "Disable the outside", false, "Setting this \"true\" will completely disable the outside seen in-game. This should increase performance BUT will also change the seed layouts in the game.");
 			disableHighCeilings = Config.Bind("Environment Settings", "Disable high ceilings", false, "Setting this \"true\" will completely disable the high ceilings from existing in pre-made levels (that includes the ones made with the Level Editor).");
+			enableBigRooms = Config.Bind("Environment Settings", "Enable big rooms", false, "Setting this \"true\" will add the rest of the layouts Times also comes with. WARNING: These layouts completely unbalance the game, making it a lot harder than the usual.");
 
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAllConditionals();

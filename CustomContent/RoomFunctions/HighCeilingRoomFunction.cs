@@ -89,10 +89,10 @@ namespace BBTimes.CustomContent.RoomFunctions
 					{
 						var dirs = Directions.All();
 						for (int i = 0; i < dirs.Count; i++)
-							if (!ogbin.IsBitSet(dirs[i].BitPosition()) && c.WallHardCovered(dirs[i])) // Should account for windows and doors
+							if (!ogbin.IsBitSet(dirs[i].BitPosition()) && (c.doorDirs.Contains(dirs[i]) || !c.NavNavigable(dirs[i]))) // Should account for windows and doors
 								ogbin = ogbin.ToggleBit(dirs[i].BitPosition()); // For pre-loaded rooms, the tiles will always have a door placement that will open them, so it's better closing them by toggling their bit.
 					}
-if (ogbin == 0) return;
+					if (ogbin == 0) return;
 
 					var tile = Instantiate(tilePrefabRef, planeHolder.transform);
 

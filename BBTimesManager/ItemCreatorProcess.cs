@@ -587,13 +587,13 @@ namespace BBTimes.Manager
 				.Build("ThrowableTeleporter");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
-			floorDatas[1].Items.Add(new() { selection = item, weight = 30 });
-			floorDatas[2].Items.Add(new() { selection = item, weight = 60 });
-			floorDatas[3].Items.Add(new() { selection = item, weight = 70 });
-			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 60 });
-			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 70 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 45 });
-			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 15 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 55 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
 

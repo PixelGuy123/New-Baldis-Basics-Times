@@ -76,49 +76,65 @@ namespace BBTimes.CustomContent.Builders
 		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
 		{
 			base.Build(ec, builder, room, cRng);
+			builtTraps = [];
+
+			map = new(ec, PathType.Const, []);
+
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
 
 			var t = room.AllTilesNoGarbage(false, false);
 			for (int i = 0; i < t.Count; i++)
 				if ((t[i].shape != TileShape.Corner && t[i].shape != TileShape.End) || t[i].open)
 					t.RemoveAt(i--);
-				
-			
-			
+
+
 			if (t.Count == 0)
 			{
-#if CHEAT
 				Debug.LogWarning("No initial spots found for the TrapdoorBuilder");
-#endif
 				return;
 			}
+
+			List<WeightedSelection<Cell>> intVectors = t.ConvertAll(x => new WeightedSelection<Cell>() { selection = x, weight = 100 });
 			int max = cRng.Next(minAmount, maxAmount + 1);
 
 			for (int i = 0; i < max; i++)
 			{
 				if (t.Count == 0)
 					break;
-				int idx = cRng.Next(t.Count);
-				var trap = CreateTrapDoor(t[idx], ec, ecData);
-				t.RemoveAt(idx);
+				int idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, cRng);
+				var trap = CreateTrapDoor(intVectors[idx].selection, ec, ecData);
+				t.Remove(intVectors[idx].selection);
+				intVectors.RemoveAt(idx);
 
 				if (t.Count > 0 && max - i > 1 && cRng.NextDouble() >= 0.55) // Linked trapdoor
 				{
-					idx = cRng.Next(t.Count);
-					var strap = CreateTrapDoor(t[idx], ec, ecData);
+					idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, cRng);
+					t.Remove(intVectors[idx].selection);
+
+					var strap = CreateTrapDoor(intVectors[idx].selection, ec, ecData);
 					trap.SetLinkedTrapDoor(strap);
 					strap.SetLinkedTrapDoor(trap);
-					t.RemoveAt(idx);
+
 
 					trap.renderer.sprite = openSprites[1];
 					strap.renderer.sprite = openSprites[1];
 					trap.sprites = [closedSprites[1], openSprites[1]];
 					strap.sprites = [closedSprites[1], openSprites[1]];
-					continue;
+				}
+				else
+				{
+					trap.renderer.sprite = openSprites[0]; // Random trapdoor
+					trap.sprites = [closedSprites[0], openSprites[0]];
 				}
 
-				trap.renderer.sprite = openSprites[0]; // Random trapdoor
-				trap.sprites = [closedSprites[0], openSprites[0]];
+				intVectors.Clear();
+				map.Calculate([.. builtTraps.ConvertAll(x => ec.CellFromPosition(x.transform.position).position)]);
+				for (int x = 0; x < t.Count; x++)
+				{
+					int val = map.Value(t[x].position);
+					if (val >= minimumDistanceFromATrapDoor)
+						intVectors.Add(new WeightedSelection<Cell>() { selection = t[x], weight = val });
+				}
 			}
 
 		}
@@ -171,6 +187,8 @@ namespace BBTimes.CustomContent.Builders
 
 			dat.Trapdoors.Add(trapdoor);
 
+			builtTraps?.Add(trapdoor);
+
 			return trapdoor;
 		}
 
@@ -178,7 +196,7 @@ namespace BBTimes.CustomContent.Builders
 		public Trapdoor trapDoorpre;
 
 		[SerializeField]
-		public int minAmount = 1, maxAmount = 2;
+		public int minAmount = 1, maxAmount = 2, minimumDistanceFromATrapDoor = 10;
 
 		[SerializeField]
 		public Sprite[] closedSprites;
@@ -186,6 +204,9 @@ namespace BBTimes.CustomContent.Builders
 		[SerializeField]
 		public Sprite[] openSprites;
 
+		List<Trapdoor> builtTraps;
+
 		internal static MapIcon icon;
+		DijkstraMap map;
 	}
 }

@@ -126,7 +126,7 @@ namespace BBTimes.CustomContent.Events
 					continue;
 				}
 				moveMods[i].Value.movementMultiplier -= slowDownMultiplier * ec.EnvironmentTimeScale * Time.deltaTime;
-				moveMods[i].Value.movementMultiplier += moveMods[i].Key.Navigator.Velocity.magnitude * ec.EnvironmentTimeScale * Time.deltaTime / speedReduceFactor;
+				moveMods[i].Value.movementMultiplier += moveMods[i].Key.Navigator.Velocity.magnitude * ec.EnvironmentTimeScale * Time.deltaTime * speedReduceFactor;
 				moveMods[i].Value.movementMultiplier = Mathf.Clamp(moveMods[i].Value.movementMultiplier, 0.35f, maxVel);
 			}
 
@@ -143,7 +143,7 @@ namespace BBTimes.CustomContent.Events
 				{
 					x.Value.movementMultiplier -= slowDownMultiplier * ec.EnvironmentTimeScale * Time.deltaTime;
 					if (!float.IsNaN(x.Key.Pm.plm.RealVelocity)) // why tf does it give NaN when pausing the game
-						x.Value.movementMultiplier += x.Key.Pm.plm.RealVelocity * ec.EnvironmentTimeScale * Time.deltaTime / speedReduceFactor;
+						x.Value.movementMultiplier += x.Key.Pm.plm.RealVelocity * ec.EnvironmentTimeScale * Time.deltaTime * speedReduceFactor;
 					x.Value.movementMultiplier = Mathf.Clamp(x.Value.movementMultiplier, 0.1f, maxVel);
 				}
 

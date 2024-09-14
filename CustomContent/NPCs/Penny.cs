@@ -79,12 +79,13 @@ namespace BBTimes.CustomContent.NPCs
 
 			SoundObject[] sds = new SoundObject[easyWords.Length];
 			for (int i = 0; i < sds.Length; i++)
-				sds[i] = this.GetSound($"{easyWords[i]}.wav", $"Vfx_Pen_{easyWords[i].Length}LetterWord", SoundType.Voice, new(1f, 0.15f, 0f));
+				sds[i] = this.GetSound($"{easyWords[i]}.wav", " _ ".RepeatStr(easyWords[i].Length), SoundType.Voice, new(1f, 0.15f, 0f));
+			
 			easyWordSoundPair = sds;
 
 			sds = new SoundObject[hardWords.Length];
 			for (int i = 0; i < sds.Length; i++)
-				sds[i] = this.GetSound($"{hardWords[i]}.wav", $"Vfx_Pen_{hardWords[i].Length}LetterWord", SoundType.Voice, new(1f, 0.15f, 0f));
+				sds[i] = this.GetSound($"{hardWords[i]}.wav", " _ ".RepeatStr(hardWords[i].Length), SoundType.Voice, new(1f, 0.15f, 0f));
 			hardWordSoundPair = sds;
 
 			// ----------------- Done with words -------------------

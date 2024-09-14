@@ -65,6 +65,8 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal float maxInkCooldown = 12f;
 
+		Coroutine uiInkCooldown;
+
 		public override void Initialize()
 		{
 			base.Initialize();
@@ -76,7 +78,11 @@ namespace BBTimes.CustomContent.NPCs
 		public void InkPlayer(PlayerManager pm)
 		{
 			audMan.PlaySingle(audSplash);
-			StartCoroutine(InkCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam));
+
+			if (uiInkCooldown != null)
+				StopCoroutine(uiInkCooldown);
+
+			uiInkCooldown = StartCoroutine(InkCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam));
 		}
 
 		public void InkEntity(NPC ent)

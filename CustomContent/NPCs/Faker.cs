@@ -89,6 +89,15 @@ namespace BBTimes.CustomContent.NPCs
 			behaviorStateMachine.ChangeState(new Faker_Spawn(this, rng == 0 ? new Faker_BlueVariant(this) : rng == 1 ? new Faker_RedVariant(this) : new Faker_GreenVariant_Idle(this)));
 		}
 
+		public void ApplyScale(bool add)
+		{
+			if (add)
+				ec.AddTimeScale(mod);
+			else
+				ec.RemoveTimeScale(mod);
+		}
+			 
+
 		internal bool IsActive { get; set; } = false;
 
 		[SerializeField]
@@ -102,6 +111,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
+
+		readonly TimeScaleModifier mod = new(0.25f, 1f, 1f);
 	}
 
 	internal class Faker_StateBase(Faker f) : NpcState(f)
@@ -217,6 +228,7 @@ namespace BBTimes.CustomContent.NPCs
 				players.Add(player, new(val, player.GetCustomCam().SlideFOVAnimation(val, -25f)));
 				player.Am.moveMods.Add(moveMod);
 				CanDespawn = false;
+				f.ApplyScale(true);
 			}
 		}
 
@@ -231,9 +243,16 @@ namespace BBTimes.CustomContent.NPCs
 				cam.StopCoroutine(k.Value);
 				cam.ResetSlideFOVAnimation(k.Key);
 				players.Remove(player);
+				f.ApplyScale(false);
 			}
 			if (players.Count == 0)
 				CanDespawn = true;
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			f.ApplyScale(false);
 		}
 
 		readonly Dictionary<PlayerManager, KeyValuePair<ValueModifier, Coroutine>> players = [];
@@ -256,6 +275,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerInSight(player);
 			player.transform.RotateSmoothlyToNextPoint(f.transform.position, 0.45f);
+			f.ApplyScale(true);
 		}
 		public override void PlayerSighted(PlayerManager player)
 		{
@@ -266,6 +286,11 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerLost(player);
 			CanDespawn = true;
+		}
+		public override void Exit()
+		{
+			base.Exit();
+			f.ApplyScale(false);
 		}
 	}
 
@@ -295,6 +320,7 @@ namespace BBTimes.CustomContent.NPCs
 			CanDespawn = false;
 			target = new(f, 64, pm.transform.position);
 			ChangeNavigationState(target);
+			f.ApplyScale(true);
 		}
 
 		public override void DestinationEmpty()
@@ -340,6 +366,11 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerLost(player);
 			f.behaviorStateMachine.ChangeState(prev);
+		}
+		public override void Exit()
+		{
+			base.Exit();
+			f.ApplyScale(false);
 		}
 	}
 }
