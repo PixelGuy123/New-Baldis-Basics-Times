@@ -173,6 +173,8 @@ namespace BBTimes.CustomContent.NPCs
 			behaviorStateMachine.ChangeState(new Penny_Wandering(this));
 			for (int i = 0; i < letters.Length; i++)
 				letters[i].Initialize(this, ec);
+
+			navigator.Entity.OnTeleport += Teleport;
 		}
 
 		public void NormalSpeed()
@@ -239,7 +241,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
-			if (Time.timeScale > 0f && Navigator.maxSpeed > 0f && Navigator.Velocity.magnitude > 0.1f * Time.deltaTime)
+			if (Time.timeScale > 0f && !stopStep && Navigator.maxSpeed > 0f && Navigator.Velocity.magnitude > 0.1f * Time.deltaTime)
 			{
 				stepDelay -= Navigator.Velocity.magnitude;
 				if (stepDelay <= 0f)
@@ -250,7 +252,13 @@ namespace BBTimes.CustomContent.NPCs
 					stepDelay += stepMax;
 				}
 			}
+			stopStep = false;
 		}
+
+		void Teleport(Vector3 v) =>
+			stopStep = true;
+
+		bool stopStep = false;
 
 		public void SetAngry(bool angry) =>
 			this.angry = angry;

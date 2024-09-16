@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using NewPlusDecorations;
 
 namespace BBTimes.Manager
 {
@@ -45,6 +46,7 @@ namespace BBTimes.Manager
 			var bathStall = ObjectCreationExtension.CreateCube(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "bathToiletWalls.png")), false);
 			bathStall.gameObject.AddNavObstacle(new(1f, 10f, 1f));
 			bathStall.name = "bathStall";
+			bathStall.AddContainer(bathStall.GetComponent<MeshRenderer>());
 
 			bathStall.transform.localScale = new(9.9f, 10f, 1f);
 			bathStall.AddObjectToEditor();
@@ -59,6 +61,8 @@ namespace BBTimes.Manager
 			bathDoorRenderer.transform.localPosition = Vector3.up * 5f;
 			bathDoorRenderer.name = "BathDoorVisual";
 			bathDoorRenderer.transform.localScale = new(0.976f, 1f, 1f);
+			bathDoor.AddContainer(bathDoorRenderer);
+			Object.Destroy(bathDoorRenderer.GetComponent<RendererContainer>());
 
 			var bathDoorCollider = new GameObject("BathdoorCollider");
 			bathDoorCollider.transform.SetParent(bathDoor.transform);
@@ -235,6 +239,8 @@ namespace BBTimes.Manager
 			tableHead.transform.localPosition = Vector3.up * 3f;
 			tableHead.transform.localScale = new(9.9f, 1f, 9.9f);
 
+			var renderer = table.AddContainer(tableHead.GetComponent<MeshRenderer>());
+
 			TableLegCreator(new(-4f, 1.25f, 4f));
 			TableLegCreator(new(4f, 1.25f, -4f));
 			TableLegCreator(new(4f, 1.25f, 4f));
@@ -247,7 +253,10 @@ namespace BBTimes.Manager
 				machineWheel.transform.localPosition = pos;
 				machineWheel.transform.localScale = new(1f, 2.5f, 1f);
 				Object.Destroy(machineWheel.GetComponent<Collider>());
+				renderer.renderers = renderer.renderers.AddToArray(machineWheel.GetComponent<MeshRenderer>());
 			}
+
+			
 
 			table.AddObjectToEditor();
 
@@ -384,37 +393,6 @@ namespace BBTimes.Manager
 
 			var sweepCloset = GenericExtensions.FindResourceObject<GottaSweep>().potentialRoomAssets[0].selection;
 
-			// Shelf creation
-			var darkWood = Object.Instantiate(man.Get<Texture2D>("woodTexture"));
-			darkWood.name = "Times_darkWood";
-			var shelf = new GameObject("ClosetShelf");
-			shelf.gameObject.AddBoxCollider(Vector3.zero, new(4f, 10f, 15f), false);
-			shelf.gameObject.AddNavObstacle(new(4.2f, 10f, 16.3f));
-			shelf.layer = LayerStorage.ignoreRaycast;
-
-			var shelfBody = ObjectCreationExtension.CreateCube(darkWood.ApplyLightLevel(-25f), false);
-			shelfBody.transform.SetParent(shelf.transform);
-			shelfBody.transform.localPosition = Vector3.up * 4f;
-			shelfBody.transform.localScale = new(4f, 0.7f, 15f);
-			Object.Destroy(shelfBody.GetComponent<Collider>());
-
-
-			ShelfLegCreator(new(-1.5f, 2.3f, 6.5f));
-			ShelfLegCreator(new(1.5f, 2.3f, -6.5f));
-			ShelfLegCreator(new(-1.5f, 2.3f, -6.5f));
-			ShelfLegCreator(new(1.5f, 2.3f, 6.5f));
-
-			void ShelfLegCreator(Vector3 pos)
-			{
-				var shelfLeg = ObjectCreationExtension.CreatePrimitiveObject(PrimitiveType.Cylinder, blackTexture);
-				shelfLeg.transform.SetParent(shelf.transform);
-				shelfLeg.transform.localPosition = pos;
-				shelfLeg.transform.localScale = new(0.8f, 2.3f, 0.8f);
-				Object.Destroy(shelfLeg.GetComponent<Collider>());
-			}
-
-			shelf.gameObject.AddObjectToEditor();
-
 			room = GetAllAssets(GetRoomAsset("Closet"), sweepCloset.maxItemValue, 100, sweepCloset.roomFunctionContainer);
 			room[0].selection.AddRoomFunctionToContainer<HighCeilingRoomFunction>().ceilingHeight = 1;
 
@@ -464,17 +442,18 @@ namespace BBTimes.Manager
 			// ***********************************************
 
 			// Kitchen "table"
-			shelf = new GameObject("KitchenCabinet");
+			var shelf = new GameObject("KitchenCabinet");
 			shelf.gameObject.AddBoxCollider(Vector3.zero, new(10f, 10f, 10f), false);
 			//shelf.gameObject.AddNavObstacle(new(10f, 10f, 10f)); Not required as the player can't go through anyways. This is for guarantee that wandering npcs just don't go through walls after going past these structures
 			shelf.layer = LayerStorage.ignoreRaycast;
+			var renderers = new Renderer[2];
 
-			shelfBody = ObjectCreationExtension.CreateCube(Object.Instantiate(man.Get<Texture2D>("plasticTexture")).ApplyLightLevel(-45f), false);
+			var shelfBody = ObjectCreationExtension.CreateCube(Object.Instantiate(man.Get<Texture2D>("plasticTexture")).ApplyLightLevel(-45f), false);
 			shelfBody.transform.SetParent(shelf.transform);
 			shelfBody.transform.localPosition = Vector3.up * 2.5f;
 			shelfBody.transform.localScale = new(9.9f, 1f, 9.9f);
 			Object.Destroy(shelfBody.GetComponent<Collider>());
-
+			renderers[0] = shelfBody.GetComponent<MeshRenderer>();
 
 
 			shelfBody = ObjectCreationExtension.CreateCube(man.Get<Texture2D>("plasticTexture"), false);
@@ -482,6 +461,9 @@ namespace BBTimes.Manager
 			shelfBody.transform.localPosition = Vector3.up * 0.7f;
 			shelfBody.transform.localScale = new(7.5f, 4f, 7.5f);
 			Object.Destroy(shelfBody.GetComponent<Collider>());
+			renderers[1] = shelfBody.GetComponent<MeshRenderer>();
+
+			shelf.AddContainer(renderers);
 
 			shelf.gameObject.AddObjectToEditor();
 
@@ -600,6 +582,7 @@ namespace BBTimes.Manager
 			grandStand.AddObjectToEditor();
 			grandStand.transform.localScale = new(8f, 8f, 45f);
 			grandStand.gameObject.AddNavObstacle(new(1f, 10f, 1f));
+			grandStand.AddContainer(grandStand.GetComponent<MeshRenderer>());
 
 			// Basket Machine
 
@@ -613,6 +596,15 @@ namespace BBTimes.Manager
 			machineBody.transform.localPosition = Vector3.up * 3.2f;
 			Object.Destroy(machineBody.GetComponent<Collider>());
 
+			// Cannon
+			var machineCannon = ObjectCreationExtension.CreateCube(AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "cannonTexture.png")));
+			machineCannon.transform.SetParent(basketMachine.transform);
+			machineCannon.transform.localScale = new(1f, 1f, 3f);
+			machineCannon.transform.localPosition = new(-0.5f, 4.13f, 0.55f);
+			Object.Destroy(machineCannon.GetComponent<Collider>());
+
+			renderer = basketMachine.AddContainer(machineBody.GetComponent<MeshRenderer>(), machineCannon.GetComponent<MeshRenderer>());
+
 			void WheelCreator(Vector3 pos)
 			{
 				var machineWheel = ObjectCreationExtension.CreatePrimitiveObject(PrimitiveType.Cylinder, blackTexture);
@@ -621,17 +613,11 @@ namespace BBTimes.Manager
 				machineWheel.transform.rotation = Quaternion.Euler(0f, 0f, 90f);
 				machineWheel.transform.localScale = new(1f, 0.4f, 1f);
 				Object.Destroy(machineWheel.GetComponent<Collider>());
+				renderer.renderers = renderer.renderers.AddToArray(machineWheel.GetComponent<MeshRenderer>());
 			}
 
 			WheelCreator(new(-2f, 0.5f, 0f));
 			WheelCreator(new(2f, 0.5f, 0f));
-
-			// Cannon
-			var machineCannon = ObjectCreationExtension.CreateCube(AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "cannonTexture.png")));
-			machineCannon.transform.SetParent(basketMachine.transform);
-			machineCannon.transform.localScale = new(1f, 1f, 3f);
-			machineCannon.transform.localPosition = new(-0.5f, 4.13f, 0.55f);
-			Object.Destroy(machineCannon.GetComponent<Collider>());
 
 			basketMachine.AddObjectToEditor();
 
@@ -799,7 +785,7 @@ namespace BBTimes.Manager
 
 			// ================================================ Base Game Room Variants ====================================================
 
-
+			
 
 			//Classrooms
 
@@ -877,6 +863,7 @@ namespace BBTimes.Manager
 
 
 			//Faculties
+
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialFacultyRooms.Length != 0).potentialFacultyRooms[0];
 			room = GetAllAssets(GetRoomAsset("Faculty"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
@@ -913,7 +900,7 @@ namespace BBTimes.Manager
 					new()
 					{
 						chance = 0.35f,
-						potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SmallPottedPlant").transform }],
+						potentialReplacements = [new() { selection = DecorsPlugin.man.Get<GameObject>("editorPrefab_SmallPottedPlant").transform }],
 						prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Globe").transform
 					});
 			});
@@ -1035,7 +1022,7 @@ namespace BBTimes.Manager
 			{
 				for (int i = 0; i < assets.Count; i++)
 				{
-					if (assets[i].selection.GetRoomSize().Magnitude() >= 11f) // Near the same as 7x7 room
+					if (assets[i].selection.GetRoomSize().Magnitude() >= 9.5f) // Between 6x6 and 7x7
 						assets.RemoveAt(i--);
 				}
 			}

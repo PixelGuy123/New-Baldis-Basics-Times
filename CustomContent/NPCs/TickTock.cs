@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +15,6 @@ namespace BBTimes.CustomContent.NPCs
 			anim.renderer = spriteRenderer[0];
 			anim.speed = 7;
 
-			gameObject.layer = LayerMask.NameToLayer("ClickableEntities");
 			var sprites = this.GetSpriteSheet(6, 1, 28f, "ticktocksprite.png");
 			spriteRenderer[0].sprite = sprites[0];
 			sprSleeping = [sprites[0]];
@@ -30,6 +30,12 @@ namespace BBTimes.CustomContent.NPCs
 
 			anim.animation = sprSleeping;
 
+			var myCol = (CapsuleCollider)baseTrigger[0];
+			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
+			col.isTrigger = true;
+			col.height = myCol.height;
+			col.direction = myCol.direction;
+			col.radius = myCol.radius;
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }

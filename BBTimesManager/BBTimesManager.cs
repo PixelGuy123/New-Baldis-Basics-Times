@@ -223,6 +223,7 @@ namespace BBTimes.Manager
 			man.Add("teleportAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport"));
 			man.Add("slipAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Slip"));
 			man.Add("whiteScreen", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, Color.white), 1f));
+			man.Add("whitePix", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(1, 1, Color.white), 1f));
 			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "throw.wav")), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
 			man.Add("audGenericThrow", sd);

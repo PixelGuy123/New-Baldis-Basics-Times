@@ -6,6 +6,7 @@ using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using Rewired.UI.ControlMapper;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -65,38 +66,42 @@ namespace BBTimes.CustomContent.Events
 			{
 				int num2 = crng.Next(0, list.Count);
 				for (int i = 0; i < list[num2].Count; i++)
-				{
 					if (list[num2][i].HasAnyHardCoverage || list[num2][i].shape != TileShape.Straight)
-					{
-						list[num2].RemoveAt(i);
-						i--;
-					}
-				}
+						list[num2].RemoveAt(i--);
+					
 				if (list[num2].Count > 0)
 				{
 					int num3 = crng.Next(0, list[num2].Count);
-					Direction direction = Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin)[this.crng.Next(0, Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin).Count)];
+					Direction direction = Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin)[crng.Next(0, Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin).Count)];
 					var curt = Instantiate(curtPre, list[num2][num3].TileTransform);
 					curt.transform.localPosition = direction.ToVector3() * 5f;
 					curt.transform.rotation = direction.ToRotation();
 					curt.AttachToCell(ec, list[num2][num3], direction);
 					this.curtains.Add(curt);
 
-					list[num2][num3].HardCoverEntirely();
+					list[num2][num3].HardCoverWall(direction, true);
+					ec.CellFromPosition(list[num2][num3].position + direction.ToIntVector2()).HardCoverWall(direction.GetOpposite(), true);
 					num++;
-					list.RemoveAt(num2);
 				}
-				else
-					list.RemoveAt(num2);
+				list.RemoveAt(num2);
 			}
 		}
 
 		public override void Begin()
 		{
 			base.Begin();
-			ec.FreezeNavigationUpdates(true);
-			curtains.ForEach(x => x.Close(true));
-			ec.FreezeNavigationUpdates(false);
+			StartCoroutine(ClosePerGroup());
+		}
+
+		IEnumerator ClosePerGroup()
+		{
+			yield return null;
+			for (int i = 0; i < curtains.Count; i++)
+			{
+				curtains[i].Close(true);
+				if (i % 3 == 0)
+					yield return null;
+			}
 		}
 
 		public override void End()

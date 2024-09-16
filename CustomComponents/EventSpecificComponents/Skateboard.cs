@@ -52,8 +52,13 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 				Destroy(gameObject);
 				return;
 			}
+			if (tar.Frozen != entity.Frozen)
+				entity.SetFrozen(tar.Frozen);
 
-			entity.UpdateInternalMovement(tar.ExternalActivity.Addend + (direction * speed) * ec.EnvironmentTimeScale);
+			if (tar.InteractionDisabled != entity.InteractionDisabled)
+				entity.SetInteractionState(!tar.InteractionDisabled);
+				
+			entity.UpdateInternalMovement(tar.ExternalActivity.Addend + (direction * speed * ec.EnvironmentTimeScale));
 
 			// Get all these velocities to 0
 			if (speed > 0f)

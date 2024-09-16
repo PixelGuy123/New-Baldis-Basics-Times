@@ -125,6 +125,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Initialize();
 			timeInSight = new float[players.Count];
+			navigator.Entity.OnTeleport += Teleport;
 			behaviorStateMachine.ChangeState(new SuperIntendentJr_Wander(this));
 		}
 
@@ -184,7 +185,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
-			if (Time.timeScale > 0f && navigator.Velocity.magnitude > 0.1f * Time.deltaTime)
+			if (Time.timeScale > 0f && !stopStep && navigator.Velocity.magnitude > 0.1f * Time.deltaTime)
 			{
 				stepDelay -= navigator.Velocity.magnitude;
 				if (stepDelay <= 0f)
@@ -195,6 +196,8 @@ namespace BBTimes.CustomContent.NPCs
 					UpdateStep();
 				}
 			}
+
+			stopStep = false;
 
 			if (noticeCooldown <= 0f)
 			{
@@ -244,6 +247,9 @@ namespace BBTimes.CustomContent.NPCs
 			timeInSight[player.playerNumber] = 0f;
 		}
 
+		void Teleport(Vector3 vec) =>
+			stopStep = true;
+
 		float[] timeInSight;
 		private float noticeCooldown = 0f;
 		private float wanderCool = 15f;
@@ -260,7 +266,7 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal Sprite[] anim;
 
-		bool callingOut = false, step = false, wonder = true;
+		bool callingOut = false, step = false, wonder = true, stopStep = false;
 
 		float stepDelay = stepMax;
 

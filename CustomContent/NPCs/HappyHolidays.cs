@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -9,7 +10,6 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefab()
 		{
 			audMan = GetComponent<AudioManager>();
-			gameObject.layer = LayerMask.NameToLayer("ClickableEntities");
 			var sprites = this.GetSpriteSheet(2, 2, 45f, "happyholidays.png");
 			spriteRenderer[0].sprite = sprites[0];
 			renderer = spriteRenderer[0];
@@ -17,6 +17,13 @@ namespace BBTimes.CustomContent.NPCs
 
 			audHappyHolidays = this.GetSound("HappyHolidays.wav", "Vfx_HapH_MerryChristmas", SoundType.Voice, new(0.796875f, 0f, 0f));
 			audUnbox = this.GetSound("unbox.wav", "Vfx_HapH_Unwrap", SoundType.Voice, new(0.796875f, 0f, 0f));
+
+			var myCol = (CapsuleCollider)baseTrigger[0];
+			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
+			col.isTrigger = true;
+			col.height = myCol.height;
+			col.direction = myCol.direction;
+			col.radius = myCol.radius;
 		}
 		public void SetupPrefabPost() =>
 			objects = [.. GameExtensions.GetAllShoppingItems()];

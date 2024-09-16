@@ -3,19 +3,18 @@ using BBTimes.Manager;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using UnityEngine;
 
 namespace BBTimes.ModPatches.GeneratorPatches
 {
 	[HarmonyPatch(typeof(LevelGenerator))]
 	public class PostRoomCreation
 	{
-		
+
 
 		[HarmonyPatch("StartGenerate")]
 		private static void Prefix(LevelGenerator __instance) =>
 			i = __instance;
-		
+
 
 		[HarmonyPatch("Generate", MethodType.Enumerator)]
 		private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) => // Basically make windows spawn facing outside the school (REMINDER IT MUST BE UNBREAKABLE FOR AN OBVIOUS REASON)
@@ -80,36 +79,32 @@ namespace BBTimes.ModPatches.GeneratorPatches
 			var ec = i.Ec;
 			Dictionary<Cell, Direction[]> tiles = [];
 			foreach (var t in ec.mainHall.GetNewTileList())
+			{
+				if (t.Hidden || t.offLimits || !t.HasFreeWall) // No elevator tiles or invalid tiles
+					continue;
+				// A quick fix for the walls
+
+
+				var dirs = Directions.All();
+				dirs.RemoveAll(x => !ec.CellFromPosition(t.position + x.ToIntVector2()).Null || t.WallSoftCovered(x));
+
+				if (dirs.Count > 0)
+					tiles.Add(t, [.. dirs]);
+				i.FrameShouldEnd(); // fail safe to not crash for no f reason
+			}
+
+			if (tiles.Count == 0)
+				return;
+
+			foreach (var tile in tiles)
+			{
+				if (i.controlledRNG.NextDouble() >= 0.95f)
 				{
-					if (t.Hidden || t.offLimits || !t.HasFreeWall) // No elevator tiles or invalid tiles
-						continue;
-					// A quick fix for the walls
-
-
-					var dirs = Directions.All();
-					dirs.RemoveAll(x => !ec.CellFromPosition(t.position + x.ToIntVector2()).Null || t.WallSoftCovered(x));
-
-					if (dirs.Count > 0)
-						tiles.Add(t, [.. dirs]);
-					i.FrameShouldEnd(); // fail safe to not crash for no f reason
+					var dir = tile.Value[i.controlledRNG.Next(tile.Value.Length)];
+					var w = ec.ForceBuildWindow(tile.Key, dir, window);
+					w?.aTile.AddRenderer(w.windows[0]); // A small optimization
 				}
-
-				if (tiles.Count == 0)
-					return;
-
-				foreach (var tile in tiles)
-				{
-					if (i.controlledRNG.NextDouble() >= 0.95f)
-					{
-						var dir = tile.Value[i.controlledRNG.Next(tile.Value.Length)];
-						var w = ec.ForceBuildWindow(tile.Key, dir, window);
-						if (w != null)
-						{
-							w.aTile.AddRenderer(w.transform.Find("Door_SideA").GetComponent<MeshRenderer>()); // A small optimization
-							w.aTile.AddRenderer(w.transform.Find("Door_SideB").GetComponent<MeshRenderer>());
-						}
-					}
-					i.FrameShouldEnd();
+				i.FrameShouldEnd();
 			}
 
 		}

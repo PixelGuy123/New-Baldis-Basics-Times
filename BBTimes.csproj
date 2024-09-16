@@ -70,6 +70,9 @@
     <Reference Include="netstandard">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\netstandard.dll</HintPath>
     </Reference>
+    <Reference Include="NewPlusDecorations">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\NewPlusDecorations.dll</HintPath>
+    </Reference>
     <Reference Include="PixelInternalAPI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\PixelInternalAPI.dll</HintPath>
     </Reference>

@@ -1,22 +1,26 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.Manager;
+using HarmonyLib;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
-using HarmonyLib;
+using System.Text;
 using UnityEngine;
 using UnityEngine.AI;
-using BBTimes.Manager;
-using System.Text;
 
 namespace BBTimes.Extensions
 {
-	public static class GameExtensions
+	public static class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
 	{
-		//static readonly FieldInfo ec_lightMap = AccessTools.Field(typeof(EnvironmentController), "lightMap");
-		//static readonly FieldInfo funcContainer_funcs = AccessTools.Field(typeof(RoomFunctionContainer), "functions");
+		public static RendererContainer AddContainer(this GameObject obj, params Renderer[] renderers)
+		{
+			var r = obj.AddComponent<RendererContainer>();
+			r.renderers = renderers;
+			return r;
+		}
 		public static float Magnitude(this IntVector2 vec) =>
-			Mathf.Sqrt((vec.x^2) + (vec.z^2));
+			Mathf.Sqrt((vec.x * vec.x) + (vec.z * vec.z));
 		public static IntVector2 GetRoomSize(this RoomAsset asset)
 		{
 			IntVector2 size = new(0, 0);
@@ -83,6 +87,12 @@ namespace BBTimes.Extensions
 				cell.HardCoverWall(dir.GetOpposite(), true);
 				window.transform.position = tile.FloorWorldPosition;
 				window.transform.rotation = dir.ToRotation();
+				if (window.aTile.Null)
+					window.windows[0].enabled = false;
+
+				if (window.bTile.Null)
+					window.windows[1].enabled = false;
+
 				return window;
 			}
 			return null;
@@ -137,7 +147,7 @@ namespace BBTimes.Extensions
 
 		public static void RemoveFunction(this RoomFunctionContainer container, RoomFunction function) =>
 			container.functions.Remove(function);
-		
+
 
 		public static BoxCollider AddBoxCollider(this GameObject g, Vector3 center, Vector3 size, bool isTrigger)
 		{
@@ -238,9 +248,9 @@ namespace BBTimes.Extensions
 		{
 			var pro = new MaterialPropertyBlock();
 			renderer.GetPropertyBlock(pro);
-		   float degrees = pro.GetFloat("_SpriteRotation") * Mathf.Deg2Rad; // darn radians
+			float degrees = pro.GetFloat("_SpriteRotation") * Mathf.Deg2Rad; // darn radians
 			return new((Mathf.Cos(degrees) * offset.x) + (-Mathf.Sin(degrees) * offset.y), (Mathf.Cos(degrees) * offset.y) + (Mathf.Sin(degrees) * offset.x));
-																																				  
+
 		}
 
 		public static void EndEarlier(this RandomEvent ev) =>

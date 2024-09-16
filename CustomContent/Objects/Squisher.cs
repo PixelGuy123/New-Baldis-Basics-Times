@@ -87,23 +87,20 @@ namespace BBTimes.CustomContent.Objects
 		IEnumerator SquishSequence()
 		{
 			active = true;
-			float cool;
-			if (forceSquish)
-			{
-				cool = Random.Range(2f, 3.5f);
-				audMan.QueueAudio(audPrepare);
-				audMan.SetLoop(true);
-
-				while (cool > 0f) // preparing to squish
-				{
-					if (Time.timeScale > 0f)
-						transform.position = new(ogPos.x + Random.Range(-0.2f, 0.2f), ogPos.y, ogPos.z + Random.Range(-0.2f, 0.2f));
-					cool -= ec.EnvironmentTimeScale * Time.deltaTime;
-					yield return null;
-				}
-			}
-
+			float cool = forceSquish ? Random.Range(0.5f, 1.5f) : Random.Range(3f, 5f);
 			forceSquish = false;
+
+			audMan.QueueAudio(audPrepare);
+			audMan.SetLoop(true);
+
+			while (cool > 0f) // preparing to squish
+			{
+				if (Time.timeScale > 0f)
+					transform.position = new(ogPos.x + Random.Range(-0.2f, 0.2f), ogPos.y, ogPos.z + Random.Range(-0.2f, 0.2f));
+				cool -= ec.EnvironmentTimeScale * Time.deltaTime;
+				yield return null;
+			}
+			
 
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audRun);

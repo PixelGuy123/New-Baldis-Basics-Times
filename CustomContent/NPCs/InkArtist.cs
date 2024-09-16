@@ -150,7 +150,7 @@ namespace BBTimes.CustomContent.NPCs
 				t += ec.EnvironmentTimeScale * Time.deltaTime * 12f;
 				if (t >= 1)
 				{
-					image.gameObject.SetActive(false);
+					stunCanvas.gameObject.SetActive(false);
 					break;
 				}
 				image.transform.localScale = Vector3.Lerp(ogSize, zero, t);

@@ -106,18 +106,16 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 				}
 			}
-
+			var objects = room.objectObject;
 			if (!string.IsNullOrEmpty(targetTransformNamePrefix) && targetTransformOffset > 0f)
 			{
-				var objects = room.transform.Find("RoomObjects");
-
-				foreach (var obj in objects.AllChilds())
+				foreach (var obj in objects.transform.AllChilds())
 				{
 					if (!obj.name.StartsWith(targetTransformNamePrefix))
 						continue;
 					for (int i = 1; i <= ceilingHeight; i++)
 					{
-						var clone = Instantiate(obj, objects);
+						var clone = Instantiate(obj, objects.transform);
 						clone.name = obj.name;
 						clone.transform.position = obj.transform.position + (Vector3.up * (i * targetTransformOffset));
 						clone.transform.rotation = obj.transform.rotation;
@@ -130,6 +128,27 @@ namespace BBTimes.CustomContent.RoomFunctions
 						if (nav != null)
 							Destroy(nav);
 					}
+				}
+			}
+
+			foreach (var obj in objects.transform.AllChilds()) // One specifically for columns
+			{
+				if (!obj.name.Contains("Column")) // A little hard coded for sure....
+					continue;
+				for (int i = 1; i <= ceilingHeight; i++)
+				{
+					var clone = Instantiate(obj, objects.transform);
+					clone.name = obj.name;
+					clone.transform.position = obj.transform.position + (Vector3.up * (i * LayerStorage.TileBaseOffset));
+					clone.transform.rotation = obj.transform.rotation;
+
+					var collider = clone.GetComponent<Collider>();
+					if (collider != null)
+						Destroy(collider);
+
+					var nav = clone.GetComponent<NavMeshObstacle>();
+					if (nav != null)
+						Destroy(nav);
 				}
 			}
 

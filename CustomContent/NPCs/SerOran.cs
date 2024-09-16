@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using System.Collections;
@@ -13,7 +14,6 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
-			gameObject.layer = LayerMask.NameToLayer("ClickableEntities");
 			audMan = GetComponent<PropagatedAudioManager>();
 			angryAudMan = gameObject.CreatePropagatedAudioManager(audMan.minDistance + 25f, audMan.maxDistance + 25f);
 			audWhiteNoise = this.GetSound("whiteNoise.wav", "Vfx_Oran_Sucking", SoundType.Voice, new(0.79609375f, 0.39765625f, 0f));
@@ -49,6 +49,13 @@ namespace BBTimes.CustomContent.NPCs
 			animComp.animation = happyTalk;
 			animComp.renderer = spriteRenderer[0];
 			spriteRenderer[0].sprite = happyTalk[0];
+
+			var myCol = (CapsuleCollider)baseTrigger[0];
+			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
+			col.isTrigger = true;
+			col.height = myCol.height;
+			col.direction = myCol.direction;
+			col.radius = myCol.radius;
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }

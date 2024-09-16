@@ -263,11 +263,21 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class DribbleWanderStateBase(Dribble dr) : DribbleStateBase(dr)
 	{
+		public override void Enter()
+		{
+			base.Enter();
+			dr.Navigator.Entity.OnTeleport += Teleport;
+		}
+		public override void Exit()
+		{
+			base.Exit();
+			dr.Navigator.Entity.OnTeleport -= Teleport;
+		}
 		public override void Update()
 		{
 			base.Update();
 			float mag = dr.Navigator.Velocity.magnitude;
-			if (Time.timeScale > 0f && mag > 0.1f * Time.deltaTime)
+			if (Time.timeScale > 0f && !skipStep && mag > 0.1f * Time.deltaTime)
 			{
 				stepDelay -= mag;
 				if (stepDelay <= 0f)
@@ -279,10 +289,15 @@ namespace BBTimes.CustomContent.NPCs
 					dr.renderer.sprite = dr.idleSprs[step ? 1 : 0];
 				}
 			}
+			skipStep = false;
 		}
+
+		void Teleport(Vector3 pos) =>
+			skipStep = true;
 
 		float stepDelay = 5f;
 		bool step = false;
+		bool skipStep = false;
 	}
 
 	internal class Dribble_Idle(Dribble dr, float cooldown = 0f) : DribbleWanderStateBase(dr)
@@ -598,12 +613,15 @@ namespace BBTimes.CustomContent.NPCs
 			state = new NavigationState_TargetPlayer(dr, 63, pm.transform.position);
 			ChangeNavigationState(state);
 			dr.Navigator.passableObstacles.Add(PassableObstacle.Bully);
+
+			dr.Navigator.Entity.OnTeleport += Teleport;
 		}
 
 		public override void Exit()
 		{
 			base.Exit();
 			dr.Navigator.passableObstacles.Remove(PassableObstacle.Bully);
+			dr.Navigator.Entity.OnTeleport -= Teleport;
 			ChangeNavigationState(new NavigationState_DoNothing(dr, 0));
 		}
 
@@ -666,7 +684,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 			float mag = dr.Navigator.Velocity.magnitude;
-			if (Time.timeScale > 0f && mag > 0.1f * Time.deltaTime)
+			if (Time.timeScale > 0f && !stopStep && mag > 0.1f * Time.deltaTime)
 			{
 				stepDelay -= mag;
 				if (stepDelay <= 0f)
@@ -677,7 +695,13 @@ namespace BBTimes.CustomContent.NPCs
 					dr.renderer.sprite = dr.chasingSprs[idx];
 				}
 			}
+			stopStep = false;
 		}
+
+		void Teleport(Vector3 v) =>
+			stopStep = true;
+
+		bool stopStep = false;
 	}
 
 	internal class Dribble_ForceRun(Dribble dr, PlayerManager pm) : Dribble_AngrySwingingBase(dr)

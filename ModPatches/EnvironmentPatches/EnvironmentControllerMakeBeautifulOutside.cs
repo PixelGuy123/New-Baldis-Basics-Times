@@ -4,6 +4,7 @@ using BBTimes.Manager;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.Object;
@@ -21,7 +22,6 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 			Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
 
-			
 			var plane = Instantiate(BBTimesManager.man.Get<GameObject>("PlaneTemplate"));
 			var renderer = plane.GetComponent<MeshRenderer>();
 			renderer.material.mainTexture = __instance.mainHall.wallTex;
@@ -54,18 +54,15 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					var pos = t.position + dirs[i].ToIntVector2();
 					var tile = __instance.CellFromPosition(pos);
 					if (tile.Null) // Does not check for windows anymore, to hide what's behind it
-					{
-						dirs.RemoveAt(i);
-						i--;
-					}
+						dirs.RemoveAt(i--);
 				}
 
-				Singleton<CoreGameManager>.Instance.UpdateLighting(Color.white, t.position);
 
 				if (dirs.Count == 0) continue;
 
 				int max = lastFloor ? 6 : 12;
 				int start = isFirstFloor ? 0 : -8;
+				Singleton<CoreGameManager>.Instance.UpdateLighting(Color.white, t.position);
 
 				foreach (var dir in dirs)
 				{
@@ -73,8 +70,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					{
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
-						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.01f)) + (Vector3.up * LayerStorage.TileBaseOffset * i);
-						// t.AddRenderer(p.GetComponent<MeshRenderer>()); // Should keep this on. Because the render is messed up outside school
+						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.001f)) + (Vector3.up * LayerStorage.TileBaseOffset * i);
+						t.AddRenderer(p.GetComponent<MeshRenderer>()); // Should keep this on. Because the render is messed up outside school
 					}
 				}
 

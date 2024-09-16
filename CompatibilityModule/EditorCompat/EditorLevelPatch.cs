@@ -66,22 +66,12 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			MarkObject(man.Get<GameObject>("editorPrefab_Campfire"), Vector3.zero);
 			MarkObject(man.Get<GameObject>("editorPrefab_Beartrap"), Vector3.zero);
 
-			array = [man.Get<GameObject>("editorPrefab_ClosetShelf")];
-			MarkRotatingObject(array[0], Vector3.zero);
-			MarkObjectRow("highShelf",
-			[
-				new ObjectData(array[0], Vector3.zero, default),
-				new ObjectData(array[0], Vector3.up * 4.5f, default),
-				new ObjectData(array[0], Vector3.up * 9f, default)
-			]);
-
 			MarkObject(man.Get<GameObject>("editorPrefab_KitchenCabinet"), Vector3.up);
 			MarkRotatingObject(man.Get<GameObject>("editorPrefab_JoeChef"), Vector3.up * 5f);
 			MarkObject(man.Get<GameObject>("editorPrefab_FocusedStudent"), Vector3.up * 5f);
 
 			// Decorations
 			MarkObject(man.Get<GameObject>("editorPrefab_SecretBread"), Vector3.zero);
-			MarkObject(man.Get<GameObject>("editorPrefab_SmallPottedPlant"), Vector3.zero);
 
 			// ************************ Items ****************************
 

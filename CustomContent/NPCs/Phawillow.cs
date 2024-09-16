@@ -1,6 +1,7 @@
 ﻿
 using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
@@ -17,7 +18,6 @@ namespace BBTimes.CustomContent.NPCs
 			audWander = this.GetSound("breathing.wav", "Vfx_Phawillow_Wandering", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
 			audLaugh = this.GetSound("Phawillow_Laughing.wav", "Vfx_Phawillow_Laught", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
 			audRestart = this.GetSound("Phawillow_Laughing.wav", "Vfx_Phawillow_Restart", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
-			gameObject.layer = LayerStorage.iClickableLayer;
 			floatingRenderer = spriteRenderer[0];
 
 			var itemHolder = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(new Vector3(3f, -0.8f, 0f), 0);
@@ -32,6 +32,13 @@ namespace BBTimes.CustomContent.NPCs
 			sprNormal = storedSprites[0];
 			sprSplashed = storedSprites[1];
 			sprActive = storedSprites[2];
+
+			var myCol = (CapsuleCollider)baseTrigger[0];
+			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
+			col.isTrigger = true;
+			col.height = myCol.height;
+			col.direction = myCol.direction;
+			col.radius = myCol.radius;
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
@@ -183,6 +190,8 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class Phawillow_FleeFromPlayer(Phawillow wi, NpcState prevState, PlayerManager pm) : Phawillow_StateBase(wi)
 	{
+		float escapeCooldown = 5f;
+		bool samePlayerInSight = false;
 
 		public override void Enter()
 		{
@@ -195,7 +204,29 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerLost(player);
 			if (player == pm)
-				wi.behaviorStateMachine.ChangeState(prevState);
+				samePlayerInSight = false;
+		}
+
+		public override void PlayerSighted(PlayerManager player)
+		{
+			base.PlayerSighted(player);
+			if (player == pm)
+			{
+				samePlayerInSight = true;
+				escapeCooldown = 5f;
+			}
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			if (!samePlayerInSight)
+			{
+				if (escapeCooldown > 0f)
+					escapeCooldown -= wi.TimeScale * Time.deltaTime;
+				else
+					wi.behaviorStateMachine.ChangeState(prevState);
+			}
 		}
 	}
 

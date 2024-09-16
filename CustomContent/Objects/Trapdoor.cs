@@ -39,7 +39,7 @@ namespace BBTimes.CustomContent.Objects
 				fake.transform.localScale = Vector3.one * scale;
 				yield return null;
 			}
-			fake.transform.localScale = Vector3.one;
+			fake.transform.localScale = Vector3.one * 0.98f;
 
 
 			yield break;
@@ -55,7 +55,7 @@ namespace BBTimes.CustomContent.Objects
 				yield return null;
 			}
 
-			float scale = 1f;
+			float scale = 0.98f;
 			while (true)
 			{
 				scale -= Time.deltaTime * ec.EnvironmentTimeScale * fakeSpawnSpeed;

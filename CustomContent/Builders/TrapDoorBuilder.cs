@@ -47,15 +47,18 @@ namespace BBTimes.CustomContent.Builders
 
 			var trapdoor = ObjectCreationExtensions.CreateSpriteBillboard(builder.closedSprites[0], false);
 			trapdoor.transform.SetParent(trapdoorholder.transform); // prefab stuf
+			trapdoor.transform.localScale = new(0.96f, 0.96f, 1f);
 
 
 			trapdoor.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			trapdoor.transform.localPosition = Vector3.up * 0.02f;
 			trapdoor.name = "TrapdoorVisual";
 			trapdoor.gameObject.layer = 0; // default layer
+			Destroy(trapdoor.GetComponent<RendererContainer>());
 
 			trapdoorholder.renderer = trapdoor;
 			trapdoorholder.audMan = trapdoorholder.gameObject.CreatePropagatedAudioManager(35f, 45f);
+			
 
 			// Fake trapdoor
 			var fake = trapdoor.SafeDuplicatePrefab(true);
