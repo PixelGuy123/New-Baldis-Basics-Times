@@ -753,7 +753,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_ToiletPaper>()
 				.SetGeneratorCost(45)
 				.SetShopPrice(700)
-				.SetNameAndDescription("Toilerpaper_Name", "Toilerpaper_Desc")
+				.SetNameAndDescription("Toiletpaper_Name", "Toiletpaper_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("ToiletPaper");
 
@@ -813,7 +813,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_ElectricalGel>()
 				.SetGeneratorCost(48)
 				.SetShopPrice(750)
-				.SetNameAndDescription("EletricalGel_Name", "EletricalGel_Desc")
+				.SetNameAndDescription("ElectricalGel_Name", "ElectricalGel_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("ElectricalGel");
 

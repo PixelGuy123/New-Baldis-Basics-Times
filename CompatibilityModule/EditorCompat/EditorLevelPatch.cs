@@ -84,7 +84,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("chocolate", "HotChocolate");
 			AddItem("comicallyLargeTrumpet", "ComicallyLargeTrumpet");
 			AddPointItem<ITM_DivideYTP>("DivisionPoint");
-			AddItem("eletricalGel", "EletricalGel");
+			AddItem("electricalGel", "ElectricalGel");
 			AddItem("empty", "EmptyWaterBottle");
 			AddItem("fidgetSpinner", "FidgetSpinner");
 			AddItem("fryingPan", "FryingPan");

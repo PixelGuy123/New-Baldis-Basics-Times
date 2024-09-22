@@ -8,6 +8,7 @@ using BBTimes.CustomComponents;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Components;
+using PixelInternalAPI.Classes;
 
 
 namespace BBTimes.CustomContent.Builders
@@ -17,23 +18,15 @@ namespace BBTimes.CustomContent.Builders
 		public void SetupPrefab()
 		{
 			// Making of the main vent
-			var vent = new GameObject("VentPrefab", typeof(Vent));
-			var box = vent.AddComponent<BoxCollider>();
-			box.size = new Vector3(9.99f, 10f, 9.99f);
-			box.enabled = false;
-			box.isTrigger = true;
-
-			var box3 = vent.AddComponent<BoxCollider>();
-			box3.size = new Vector3(8.9f, 10f, 8.9f);
-			box3.enabled = false;
+			var vent = new GameObject("VentPrefab", typeof(Vent)) { layer = LayerStorage.ignoreRaycast};
+			vent.AddBoxCollider(Vector3.zero, new(9.99f, 10f, 9.99f), true);
 
 			var blockObj = new GameObject("VentPrefab_RaycastBlock");
 			blockObj.transform.SetParent(vent.transform);
 			blockObj.transform.localPosition = Vector3.zero;
 			blockObj.transform.localScale = new(1.2f, 10f, 1.2f);
 
-			var box2 = blockObj.AddComponent<BoxCollider>();
-			box2.size = new Vector3(10f, 10f, 10f);
+			var box2 = blockObj.AddBoxCollider(Vector3.zero, Vector3.one * 10f, true);
 			box2.enabled = false;
 
 			blockObj.layer = LayerMask.NameToLayer("Block Raycast");
@@ -59,7 +52,7 @@ namespace BBTimes.CustomContent.Builders
 				this.GetSound("vent_gasleak_start.wav", "Vfx_VentGasLeak", SoundType.Voice, Color.white),
 				this.GetSound("vent_gasleak_loop.wav", "Vfx_VentGasLeak", SoundType.Voice, Color.white),
 				this.GetSound("vent_gasleak_end.wav", "Vfx_VentGasLeak", SoundType.Voice, Color.white)];
-			v.colliders = [box, box2, box3];
+			v.colliders = [box2];
 
 			visual.transform.SetParent(vent.transform);
 			visual.transform.localPosition = new Vector3(-4.95f, 9f, -4.95f);

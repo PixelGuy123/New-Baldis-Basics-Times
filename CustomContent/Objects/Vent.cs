@@ -107,11 +107,6 @@ namespace BBTimes.CustomContent.Objects
 
 			if (cooldown <= 0f)
 			{
-				while (touchedEntity.Count != 0)
-				{
-					touchedEntity[0].ExternalActivity.moveMods.Remove(moveMod);
-					touchedEntity.RemoveAt(0);
-				}
 				BlockAllDirections(false);
 				animation = StartCoroutine(UnBlockAnimation());
 			}
@@ -120,19 +115,18 @@ namespace BBTimes.CustomContent.Objects
 		private void OnTriggerEnter(Collider other)
 		{
 			var entity = other.GetComponent<Entity>();
-			if (entity == null) return;
+			if (entity == null || touchedEntity.Contains(entity)) return;
 
-			entity.AddForce(new((entity.transform.position - transform.position).normalized, 19f, -19f));
+			if (Enabled)
+				entity.AddForce(new((entity.transform.position - transform.position).normalized, 19f, -19f));
 			touchedEntity.Add(entity);
-			entity.ExternalActivity.moveMods.Add(moveMod);
 		}
 
 		private void OnTriggerExit(Collider other)
 		{
 			var entity = other.GetComponent<Entity>();
-			if (entity == null || !touchedEntity.Contains(entity)) return;
+			if (entity == null) return;
 			touchedEntity.Remove(entity);
-			entity.ExternalActivity.moveMods.Remove(moveMod);
 		}
 
 		public void DisableVent(bool disable)
@@ -164,7 +158,6 @@ namespace BBTimes.CustomContent.Objects
 		Coroutine animation;
 
 		readonly List<Entity> touchedEntity = [];
-		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
 
 		internal List<Vent> nextVents = [];
 
