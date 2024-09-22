@@ -2,7 +2,6 @@
 using BBPlusAnimations.Patches;
 using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
-using BBTimes.Plugin;
 using BepInEx.Bootstrap;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -12,7 +11,6 @@ using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.IO;
-using System.Net.Security;
 using UnityEngine;
 
 namespace BBTimes.CompatibilityModule.BBPlusAnimations
@@ -32,10 +30,11 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 
 			NPCMetaStorage.Instance.Get(Character.Sweep).prefabs.DoIf(x => x.Value.GetComponent<INPCPrefab>() != null, (x) =>
 			{
-				var comp = x.Value.gameObject.AddComponent<GenericAnimationExtraComponent>();
+				
+				var comp = x.Value.GetComponent<GenericAnimationExtraComponent>();
 				comp.sprites = [x.Value.spriteRenderer[0].sprite, .. sweepSprs];
 
-				var c = x.Value.gameObject.AddComponent<GottaSweepComponent>();
+				var c = x.Value.GetComponent<GottaSweepComponent>();
 				c.aud_sweep = aud;
 
 			});
