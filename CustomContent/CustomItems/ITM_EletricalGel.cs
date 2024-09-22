@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-    public class ITM_EletricalGel : Item, IItemPrefab
+    public class ITM_ElectricalGel : Item, IItemPrefab
 	{
 		public void SetupPrefab()
 		{
