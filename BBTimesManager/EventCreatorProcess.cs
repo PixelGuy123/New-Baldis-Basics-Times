@@ -117,7 +117,7 @@ namespace BBTimes.Manager
 
 			floorDatas[1].Events.Add(new() { selection = e, weight = 10 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 35 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 55 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 55 }); //55
 
 			// Super Fans
 			e = new RandomEventBuilder<SuperFans>(plug.Info)

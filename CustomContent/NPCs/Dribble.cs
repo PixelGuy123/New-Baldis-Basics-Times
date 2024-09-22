@@ -509,13 +509,13 @@ namespace BBTimes.CustomContent.NPCs
 			frame %= dr.clapSprs.Length;
 			if (!clapped)
 			{
-				if (frame < 1f)
+				if (frame > 1f)
 				{
 					dr.audMan.PlaySingle(dr.audClap);
 					clapped = true;
 				}
 			}
-			else if (frame > 1f)
+			else if (frame < 1f)
 				clapped = false;
 
 			dr.renderer.sprite = dr.clapSprs[Mathf.FloorToInt(frame)];

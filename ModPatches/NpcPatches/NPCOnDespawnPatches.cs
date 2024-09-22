@@ -97,7 +97,7 @@ namespace BBTimes.ModPatches.NpcPatches
 				if (___currentPlayer != null)
 				{
 					PlayerManager playerManager = ___currentPlayer;
-					playerManager.onPlayerTeleport = (PlayerManager.PlayerTeleportedFunction)Delegate.Remove(playerManager.onPlayerTeleport, new PlayerManager.PlayerTeleportedFunction(__instance.PlayerTeleported));
+					playerManager.onPlayerTeleport -= __instance.PlayerTeleported;
 					___currentPlayer = null;
 				}
 				return false;

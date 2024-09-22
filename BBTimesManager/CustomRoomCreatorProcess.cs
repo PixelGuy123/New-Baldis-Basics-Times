@@ -22,6 +22,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using NewPlusDecorations;
+using BBTimes.Plugin;
 
 namespace BBTimes.Manager
 {
@@ -53,7 +54,7 @@ namespace BBTimes.Manager
 
 			var bathSprites = TextureExtensions.LoadSpriteSheet(2, 1, 25f, GetRoomAsset("Bathroom", "BathDoor.png"));
 			var bathDoor = new GameObject("bathDoor");
-			bathDoor.gameObject.AddBoxCollider(Vector3.zero, new(9.9f, 10f, 1f), true);
+			bathDoor.gameObject.AddBoxCollider(Vector3.up * 5f, new(9.9f, 10f, 1f), true);
 			bathDoor.layer = LayerStorage.iClickableLayer;
 
 			var bathDoorRenderer = ObjectCreationExtensions.CreateSpriteBillboard(bathSprites[0], false);
@@ -650,7 +651,7 @@ namespace BBTimes.Manager
 
 			sets = RegisterSpecialRoom("BasketballArea", Color.cyan);
 
-			room = GetAllAssets(GetRoomAsset("BasketballArea"), 2, 55);
+			room = GetAllAssets(GetRoomAsset("BasketballArea"), 2, 55, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "mapIcon_basket.png")) : null, squaredShape: true);
 			var swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = baldiBall.transform, weight = 100 }], prefabToSwap = basketballPile.transform };
 			var floorTex = AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "dirtyGrayFloor.png"));
 			AddTextureToEditor("dirtyGrayFloor", floorTex);
@@ -712,12 +713,11 @@ namespace BBTimes.Manager
 			lgtSrc.colorStrength = 5;
 			lgtSrc.colorToLight = new(1f, 0.65f, 0f);
 
+			var campFireAud = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Forest", "fire.wav")), string.Empty, SoundType.Voice, Color.white);
+			campFireAud.subtitle = false;
 			campFire.gameObject.AddObjectToEditor();
-			var audSource = campFire.gameObject.CreateAudioSource(40, 85);
-			audSource.spatialBlend = 1f;
-			audSource.rolloffMode = AudioRolloffMode.Custom;
-			audSource.clip = AssetLoader.AudioClipFromFile(GetRoomAsset("Forest", "fire.wav"));
-			audSource.loop = true;
+			var audSource = campFire.gameObject.CreatePropagatedAudioManager(40f, 80f)
+				.AddStartingAudiosToAudioManager(true, campFireAud);
 
 			// BearTrap
 			var trapRender = ObjectCreationExtensions.CreateSpriteBillboard(man.Get<Sprite[]>("Beartrap")[1]).AddSpriteHolder(1f, 0);
@@ -736,7 +736,7 @@ namespace BBTimes.Manager
 
 			sets = RegisterSpecialRoom("Forest", Color.cyan);
 
-			room = GetAllAssets(GetRoomAsset("Forest"), 75, 1);
+			room = GetAllAssets(GetRoomAsset("Forest"), 75, 1, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("Forest", "mapIcon_trees.png")) : null, squaredShape: true);
 			//Swap for 99 trees
 			swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = treeEasterEgg.transform, weight = 100 }], prefabToSwap = tree.transform };
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("Forest", "treeWall.png"));
@@ -896,13 +896,19 @@ namespace BBTimes.Manager
 				x.selection.lightPre = classWeightPre.selection.lightPre;
 
 				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
-				x.selection.basicSwaps.Add(
+				x.selection.basicSwaps.AddRange([
 					new()
 					{
 						chance = 0.35f,
-						potentialReplacements = [new() { selection = DecorsPlugin.man.Get<GameObject>("editorPrefab_SmallPottedPlant").transform }],
+						potentialReplacements = [new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_SmallPottedPlant").transform }],
 						prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Globe").transform
-					});
+					},
+					new()
+					{
+						chance = 0.55f,
+						potentialReplacements = [new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_TableLightLamp").transform }],
+						prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Globe").transform
+					}]); 
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)

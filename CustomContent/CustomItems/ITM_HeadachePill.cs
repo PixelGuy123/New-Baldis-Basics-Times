@@ -38,7 +38,7 @@ namespace BBTimes.CustomContent.CustomItems
 				{
 					flag = true;
 					Stunly.affectedByStunly[i].Key.CancelStunEffect();
-					Stunly.affectedByStunly.RemoveAt(i--);
+					i--;
 				}
 			}
 

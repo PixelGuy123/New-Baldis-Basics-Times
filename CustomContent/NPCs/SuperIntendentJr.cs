@@ -58,6 +58,7 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class SuperIntendentJr_RunForNoise(NPC npc, Vector3 vec, NpcState prevState) : NpcState(npc)
 	{
+		readonly Cell tar = npc.ec.CellFromPosition(vec);
 		public override void Enter()
 		{
 			base.Enter();
@@ -68,7 +69,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void DestinationEmpty()
 		{
 			base.DestinationEmpty();
-			if (npc.transform.position == vec)
+			if (npc.ec.CellFromPosition(npc.transform.position) == tar)
 			{
 				npc.behaviorStateMachine.ChangeState(prevState);
 				return;

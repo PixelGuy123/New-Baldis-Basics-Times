@@ -11,6 +11,8 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 			targetRenderer = renderer;
 			this.ec = ec;
 			records = [];
+			records2 = [];
+			block = new();
 			started = true;
 
 			var color = this.renderer.color;
@@ -41,24 +43,33 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 
 			if (!targetRenderer)
 			{
-				if (records.Count == 0)
+				if (records.Count == 0 || records2.Count == 0)
 					Destroy(gameObject);
 			}
 			else
+			{
+				targetRenderer.GetPropertyBlock(block);
 				records.Enqueue(new(targetRenderer.transform.position, targetRenderer.sprite));
-
-			if (initialized && records.Count != 0)
+				records2.Enqueue(new(block.GetFloat("_SpriteRotation"), targetRenderer.transform.localScale));
+			}
+			if (initialized && records.Count != 0 && records2.Count != 0)
 			{
 				var k = records.Dequeue();
 				renderer.sprite = k.Value;
 				transform.position = k.Key;
+				var k2 = records2.Dequeue();
+				transform.localScale = k2.Value;
+				renderer.SetSpriteRotation(k2.Key);
 			}
 		}
 
 		Queue<KeyValuePair<Vector3, Sprite>> records;
+		Queue<KeyValuePair<float, Vector3>> records2;
+
 		bool initialized = false, started = false;
 		SpriteRenderer targetRenderer;
 		EnvironmentController ec;
+		MaterialPropertyBlock block;
 
 		[SerializeField]
 		internal SpriteRenderer renderer;

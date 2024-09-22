@@ -205,6 +205,12 @@ namespace BBTimes.ModPatches
 						v2.EndEarlier(); // End all events
 				}
 
+				foreach (var c in ___ec.AllExistentCells()) // To avoid events like Freezing event from overriding it wrong
+				{
+					c.lightColor = Color.red;
+					c.SetLight(true);
+				}
+
 				var gate = elevator.transform.Find("Gate");
 				gate.transform.Find("Gate (1)").GetComponent<MeshRenderer>().material.mainTexture = gateTextures[0];
 				gate.transform.Find("Gate (0)").GetComponent<MeshRenderer>().material.mainTexture = gateTextures[1];

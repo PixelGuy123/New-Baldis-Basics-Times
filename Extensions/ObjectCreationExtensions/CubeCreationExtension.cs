@@ -40,7 +40,7 @@ namespace BBTimes.Extensions.ObjectCreationExtensions
 		static readonly Vector3[] vertices = [
 				new (0, 1f, 0),
 			new (0, 0, 0),
-			new (1f, 1f, 0),
+			new (1.004f, 1f, 0),
 			new (1f, 0, 0),
 
 			new (0, 0, 1f),

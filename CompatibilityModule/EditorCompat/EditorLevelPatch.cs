@@ -223,7 +223,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 		[HarmonyPostfix]
 		private static void AddRoomTexs(EditorLevel __instance)
 		{
-			__instance.defaultTextures.Add("Bathroom", new TextureContainer("bathCeil", "bathWall", "bathFloor"));
+			__instance.defaultTextures.Add("Bathroom", new TextureContainer("bathFloor", "bathWall", "bathCeil"));
 			__instance.defaultTextures.Add("AbandonedRoom", new TextureContainer("BlueCarpet", "moldWall", "Ceiling"));
 			__instance.defaultTextures.Add("BasketballArea", new TextureContainer("dirtyGrayFloor", "SaloonWall", "Ceiling"));
 			__instance.defaultTextures.Add("ComputerRoom", new TextureContainer("computerRoomFloor", "computerRoomWall", "computerRoomCeiling"));

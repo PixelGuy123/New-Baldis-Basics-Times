@@ -106,6 +106,13 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.QueueAudio(audNoticeChase);
 		}
 
+		public override void Despawn()
+		{
+			base.Despawn();
+			if (behaviorStateMachine.CurrentState is Oran_EatenPlayer pl)
+				pl.Exit();
+		}
+
 		public void UpsetMe()
 		{
 			requiredSlot = -1;

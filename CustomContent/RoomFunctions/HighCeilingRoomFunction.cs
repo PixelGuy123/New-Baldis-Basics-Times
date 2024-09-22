@@ -1,6 +1,7 @@
 ﻿using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
+using NewPlusDecorations.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public override void OnGenerationFinished()
 		{
 			base.OnGenerationFinished();
-
+			
 			if (!BBTimesManager.plug.disableHighCeilings.Value && (!proof || proof is LevelLoader))
 				AddAllWalls(true); // If proof isn't assigned, it means this must be LevelLoader
 
@@ -108,49 +109,13 @@ namespace BBTimes.CustomContent.RoomFunctions
 			}
 			var objects = room.objectObject;
 			if (!string.IsNullOrEmpty(targetTransformNamePrefix) && targetTransformOffset > 0f)
+				SearchChildsBasedOnCriteria(objects.transform, obj => obj.name.StartsWith(targetTransformNamePrefix), null, targetTransformOffset);
+
+			SearchChildsBasedOnCriteria(objects.transform, obj => obj.GetComponent<Column>(), obj =>
 			{
-				foreach (var obj in objects.transform.AllChilds())
-				{
-					if (!obj.name.StartsWith(targetTransformNamePrefix))
-						continue;
-					for (int i = 1; i <= ceilingHeight; i++)
-					{
-						var clone = Instantiate(obj, objects.transform);
-						clone.name = obj.name;
-						clone.transform.position = obj.transform.position + (Vector3.up * (i * targetTransformOffset));
-						clone.transform.rotation = obj.transform.rotation;
-
-						var collider = clone.GetComponent<Collider>();
-						if (collider != null)
-							Destroy(collider);
-
-						var nav = clone.GetComponent<NavMeshObstacle>();
-						if (nav != null)
-							Destroy(nav);
-					}
-				}
-			}
-
-			foreach (var obj in objects.transform.AllChilds()) // One specifically for columns
-			{
-				if (!obj.name.Contains("Column")) // A little hard coded for sure....
-					continue;
-				for (int i = 1; i <= ceilingHeight; i++)
-				{
-					var clone = Instantiate(obj, objects.transform);
-					clone.name = obj.name;
-					clone.transform.position = obj.transform.position + (Vector3.up * (i * LayerStorage.TileBaseOffset));
-					clone.transform.rotation = obj.transform.rotation;
-
-					var collider = clone.GetComponent<Collider>();
-					if (collider != null)
-						Destroy(collider);
-
-					var nav = clone.GetComponent<NavMeshObstacle>();
-					if (nav != null)
-						Destroy(nav);
-				}
-			}
+				if (proof)
+					EnvironmentObject.GiveController(obj, room.ec, proof.environmentObjects);
+			}, LayerStorage.TileBaseOffset);
 
 			if (!hasCeiling)
 				return;
@@ -167,6 +132,31 @@ namespace BBTimes.CustomContent.RoomFunctions
 				rend.material = room.defaultAlphaMat;
 				rend.material.mainTexture = fullTex;
 				c.AddRenderer(rend);
+			}
+		}
+
+		void SearchChildsBasedOnCriteria(Transform objects, System.Predicate<Transform> predicate, System.Action<Transform> onInstantiate, float offset)
+		{
+			foreach (var obj in objects.AllChilds())
+			{
+				if (!predicate(obj))
+					continue;
+				for (int i = 1; i <= ceilingHeight; i++)
+				{
+					var clone = Instantiate(obj, objects);
+					clone.name = obj.name;
+					clone.position = obj.transform.position + (Vector3.up * (i * offset));
+					clone.rotation = obj.transform.rotation;
+					onInstantiate?.Invoke(clone);
+
+					var collider = clone.GetComponent<Collider>();
+					if (collider != null)
+						Destroy(collider);
+
+					var nav = clone.GetComponent<NavMeshObstacle>();
+					if (nav != null)
+						Destroy(nav);
+				}
 			}
 		}
 
