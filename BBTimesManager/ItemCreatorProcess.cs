@@ -1,4 +1,4 @@
-﻿using BBTimes.CompatibilityModule.EditorCompat;
+using BBTimes.CompatibilityModule.EditorCompat;
 using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
 using BBTimes.CustomContent.Misc;
@@ -808,14 +808,14 @@ namespace BBTimes.Manager
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 15 });
 
-			// Eletrical Gel
+			// Electrical Gel
 			item = new ItemBuilder(plug.Info)
-				.SetItemComponent<ITM_EletricalGel>()
+				.SetItemComponent<ITM_ElectricalGel>()
 				.SetGeneratorCost(48)
 				.SetShopPrice(750)
 				.SetNameAndDescription("EletricalGel_Name", "EletricalGel_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
-				.Build("EletricalGel");
+				.Build("ElectricalGel");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
