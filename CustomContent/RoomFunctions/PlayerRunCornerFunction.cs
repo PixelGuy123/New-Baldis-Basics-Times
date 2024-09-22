@@ -6,9 +6,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 {
 	public class PlayerRunCornerFunction : RoomFunction
 	{
-		public override void Initialize(RoomController room)
+		public override void OnGenerationFinished()
 		{
-			base.Initialize(room);
+			base.OnGenerationFinished();
 			IntVector2 pos = default;
 			Direction dirToFollow = Direction.Null;
 
@@ -48,12 +48,12 @@ namespace BBTimes.CustomContent.RoomFunctions
 						Debug.LogWarning("The PlayerRunCornerFunction has been used in a room with an invalid shape! Room: " + room.name);
 						return;
 					}
-					if (nextCell.Null || !room.ec.ContainsCoordinates(nextPos) || !nextCell.TileMatches(room) || curCell.shape == TileShape.Open)
+					if (nextCell.Null || !room.ec.ContainsCoordinates(nextPos) || !nextCell.TileMatches(room) || (!curCell.doorHere && curCell.shape == TileShape.Open))
 					{
 						var prevDir = dirToFollow;
 						dirToFollow = dirToFollow.PerpendicularList()[0];
 						nextCell = room.ec.CellFromPosition(pos + dirToFollow.ToIntVector2());
-						if (prevDir.GetOpposite() == dirToFollow || !nextCell.TileMatches(room) || nextCell.shape == TileShape.Open)
+						if (prevDir.GetOpposite() == dirToFollow || !nextCell.TileMatches(room) || (!nextCell.doorHere && nextCell.shape == TileShape.Open))
 							dirToFollow = prevDir.PerpendicularList()[1];
 						break;
 					}
