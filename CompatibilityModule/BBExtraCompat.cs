@@ -54,7 +54,12 @@ namespace BBTimes.CompatibilityModule
 				___maxWait = 1f;
 			}
 		}
+	}
 
+	[HarmonyPatch]
+	[ConditionalPatchModByVersion("rost.moment.baldiplus.extramod", "2.1.9.5", includePostVersions:true, invertCondition:true)]
+	internal static class BBExtraCompat_KulakOldFix
+	{
 		[HarmonyPatch(typeof(Kulak_Angry), "OnStateTriggerStay")]
 		[HarmonyPatch(typeof(Kulak_Wandering), "OnStateTriggerStay")]
 		[HarmonyTranspiler]
