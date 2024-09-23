@@ -70,7 +70,7 @@ namespace BBTimes.CustomContent.NPCs
 				"Detention",
 				"Education",
 				"Emergency",
-				"Gulbotrony",
+				"Glubotrony",
 				"Language",
 				"Mathematics",
 				"PhaWillow",
