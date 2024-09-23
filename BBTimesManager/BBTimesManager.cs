@@ -134,7 +134,6 @@ namespace BBTimes.Manager
 
 			// Principal's extra dialogues
 			AddRule("breakingproperty", "principal_nopropertybreak.wav", "Vfx_PRI_NoPropertyBreak");
-			AddRule("gumming", "principal_nospittinggums.wav", "Vfx_PRI_NoGumming");
 			AddRule("littering", "principal_noLittering.wav", "Vfx_PRI_NoLittering");
 			AddRule("ugliness", "principal_nouglystun.wav", "Vfx_PRI_NoUglyStun");
 			AddRule("stabbing", "principal_nostabbing.wav", "Vfx_PRI_NoStabbing");
