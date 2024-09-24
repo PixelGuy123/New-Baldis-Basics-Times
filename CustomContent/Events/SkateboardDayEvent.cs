@@ -23,6 +23,7 @@ namespace BBTimes.CustomContent.Events
 
 			var sk = skRender.transform.parent.gameObject.AddComponent<Skateboard>();
 			sk.entity = sk.gameObject.CreateEntity(2f, 1f, skRender.transform);
+			((CapsuleCollider)sk.entity.collider).height = 10f; // Should stop it from going below anything
 			sk.name = "Skateboard";
 			sk.audMan = sk.gameObject.CreatePropagatedAudioManager(45f, 65f);
 			sk.audRoll = this.GetSound("skateNoises.wav", "Vfx_Ska_Noise", SoundType.Voice, Color.white);

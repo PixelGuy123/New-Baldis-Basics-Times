@@ -61,6 +61,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator Throw(Transform target)
 		{
+			audMan.FlushQueue(true);
 			audMan.maintainLoop = true;
 			audMan.SetLoop(true);
 			audMan.QueueAudio(audPrepare);
