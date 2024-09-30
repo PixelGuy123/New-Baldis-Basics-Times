@@ -86,6 +86,7 @@ namespace BBTimes.CustomContent.Builders
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
 
 			var t = room.AllTilesNoGarbage(false, false);
+			int allTilesCount = t.Count;
 			for (int i = 0; i < t.Count; i++)
 				if ((t[i].shape != TileShape.Corner && t[i].shape != TileShape.End) || t[i].open)
 					t.RemoveAt(i--);
@@ -98,7 +99,7 @@ namespace BBTimes.CustomContent.Builders
 			}
 
 			List<WeightedSelection<Cell>> intVectors = t.ConvertAll(x => new WeightedSelection<Cell>() { selection = x, weight = 100 });
-			int max = cRng.Next(minAmount, maxAmount + 1);
+			int max = allTilesCount / intVectors.Count;
 
 			for (int i = 0; i < max; i++)
 			{
@@ -199,7 +200,7 @@ namespace BBTimes.CustomContent.Builders
 		public Trapdoor trapDoorpre;
 
 		[SerializeField]
-		public int minAmount = 1, maxAmount = 2, minimumDistanceFromATrapDoor = 10;
+		public int minimumDistanceFromATrapDoor = 10;
 
 		[SerializeField]
 		public Sprite[] closedSprites;

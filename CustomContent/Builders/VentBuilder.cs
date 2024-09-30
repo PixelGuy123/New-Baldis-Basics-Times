@@ -140,7 +140,7 @@ namespace BBTimes.CustomContent.Builders
 			List<Cell> halls = room.GetTilesOfShape([TileShape.Corner, TileShape.Single], false);
 			if (halls.Count == 0) return;
 
-			int ventAmount = cRng.Next(minAmount, maxAmount + 1);
+			int ventAmount = builder.levelSize.x * builder.levelSize.z / 4;
 
 			var selectedWebTile = halls[cRng.Next(halls.Count)];
 			var web = ec.FindNearbyTiles(selectedWebTile.position - new IntVector2(builder.levelSize.x / 5, builder.levelSize.z / 5),
@@ -303,8 +303,5 @@ namespace BBTimes.CustomContent.Builders
 
 		[SerializeField]
 		public GameObject ventConnectionPrefab;
-
-		[SerializeField]
-		public int minAmount = 6, maxAmount = 10;
 	}
 }

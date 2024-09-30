@@ -1,12 +1,10 @@
 ﻿using BBTimes.CustomContent.Builders;
 using BBTimes.Extensions;
 using BBTimes.Helpers;
-using BepInEx;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Registers;
 using System.IO;
-using PixelInternalAPI.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -21,17 +19,9 @@ namespace BBTimes.Manager
 
 			// Vent Builder
 			VentBuilder vent = CreatorExtensions.CreateObjectBuilder<VentBuilder>("VentBuilder", "Vent");
-			vent.AddMeta(plug);
-			vent.minAmount = 3;
-			vent.maxAmount = 5;
+			var meta = vent.AddMeta(plug);
 			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 65 });
-			vent = vent.DuplicatePrefab();
-			vent.minAmount = 4;
-			vent.maxAmount = 6;
 			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 105 });
-			vent = vent.DuplicatePrefab();
-			vent.minAmount = 4;
-			vent.maxAmount = 5;
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 45 });
 
 			// Wall Bell Builder
@@ -46,63 +36,30 @@ namespace BBTimes.Manager
 
 			// Trapdoor Builder
 			TrapDoorBuilder trapdoor = CreatorExtensions.CreateObjectBuilder<TrapDoorBuilder>("TrapdoorBuilder", "Trapdoor");
-			trapdoor.minAmount = 3;
-			trapdoor.maxAmount = 5;
 			trapdoor.AddMeta(plug);
 			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 35 });
-
-			trapdoor = trapdoor.DuplicatePrefab();
-			trapdoor.minAmount = 3;
-			trapdoor.maxAmount = 5;
-
 			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 55 });
-
-			trapdoor = trapdoor.DuplicatePrefab();
-			trapdoor.minAmount = 2;
-			trapdoor.maxAmount = 5;
-
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 75 });
 
 			// Camera Builder
 			CameraBuilder cams = CreatorExtensions.CreateObjectBuilder<CameraBuilder>("CameraBuilder", "SecurityCamera");
 			cams.AddMeta(plug);
-			cams.minAmount = 1;
-			cams.maxAmount = 3;
-
-			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = cams, weight = 35 });
-
-			cams = cams.DuplicatePrefab();
-			cams.minAmount = 3;
-			cams.maxAmount = 5;
-
-			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = cams, weight = 55 });
-
-			cams = cams.DuplicatePrefab();
-			cams.minAmount = 1;
-			cams.maxAmount = 4;
-
-			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = cams, weight = 25 });
+			AddBuilderAtIdx(cams, 35, 1, 3);
+			AddBuilderAtIdx(cams, 55, 2, 5);
+			AddBuilderAtIdx(cams, 25, 3, 4);
 
 			// Squisher builder
 			SquisherBuilder squish = CreatorExtensions.CreateObjectBuilder<SquisherBuilder>("SquisherBuilder", "Squisher");
 			squish.AddMeta(plug);
+			AddBuilderAtIdx(squish, 25, 1, 2);
+			AddBuilderAtIdx(squish, 45, 2, 6);
+			AddBuilderAtIdx(squish, 35, 3, 3);
 
-			squish.minAmount = 1;
-			squish.maxAmount = 2;
-
-			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = squish, weight = 25 });
-
-			squish = squish.DuplicatePrefab();
-			squish.minAmount = 2;
-			squish.maxAmount = 6;
-
-			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = squish, weight = 45 });
-
-			squish = squish.DuplicatePrefab();
-			squish.minAmount = 1;
-			squish.maxAmount = 3;
-
-			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = squish, weight = 35 });
+			static void AddBuilderAtIdx(ObjectBuilder bld, int weight, int index, int n)
+			{
+				for (int i = 0; i < n; i++)
+					floorDatas[index].WeightedObjectBuilders.Add(new() { selection = bld, weight = weight });
+			}
 
 		}
 

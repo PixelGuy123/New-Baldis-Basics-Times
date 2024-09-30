@@ -438,7 +438,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void OnStateTriggerEnter(Collider other)
 		{
 			base.OnStateTriggerEnter(other);
-			if (other.gameObject == pm.gameObject)
+			if (other.gameObject == pm.gameObject && !pm.Tagged)
 				pen.behaviorStateMachine.ChangeState(new Penny_ClassTime(pen, pm));
 		}
 	}

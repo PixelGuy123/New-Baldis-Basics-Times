@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
+using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
 using HarmonyLib;
@@ -7,11 +8,10 @@ using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
-using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.Builders
 {
-    public class SquisherBuilder : ObjectBuilder, IObjectPrefab
+	public class SquisherBuilder : ObjectBuilder, IObjectPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -57,7 +57,8 @@ namespace BBTimes.CustomContent.Builders
 
 		const float headSize = 6f, bodyHeight = 9f;
 
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("objects", "Textures");
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("objects", "Textures");
 		public string SoundPath => this.GenerateDataPath("objects", "Audios");
 
 
@@ -77,25 +78,23 @@ namespace BBTimes.CustomContent.Builders
 				Debug.LogWarning("SquisherBuilder has failed to find a good spot for the Squishers.");
 				return;
 			}
-			int am = cRng.Next(minAmount, maxAmount + 1);
-			for (int i = 0; i < am; i++)
-			{
-				if (spots.Count == 0)
-					break;
 
-				int idx = cRng.Next(spots.Count);
 
-				var squ = Instantiate(squisherPre, spots[idx].ObjectBase);
-				squ.transform.localPosition = Vector3.up * 8.5f;
-				squ.Ec = ec;
-				squ.Setup(cRng.Next(5, 9));
-				squ.GetComponentsInChildren<Renderer>().Do(spots[idx].AddRenderer);
-				ecData.Squishers.Add(squ);
-				if (cRng.NextDouble() > 0.7f)
-					GameButton.BuildInArea(ec, spots[idx].position, spots[idx].position, cRng.Next(4, 7), squ.gameObject, buttonPre, cRng);
-				spots[idx].HardCover(CellCoverage.Up);
-				spots.RemoveAt(idx);
-			}
+			int idx = cRng.Next(spots.Count);
+
+			var squ = Instantiate(squisherPre, spots[idx].ObjectBase);
+			squ.transform.localPosition = Vector3.up * 8.5f;
+			squ.Ec = ec;
+			squ.Setup(cRng.Next(5, 9));
+
+			squ.GetComponentsInChildren<Renderer>().Do(spots[idx].AddRenderer);
+			ecData.Squishers.Add(squ);
+
+			if (cRng.NextDouble() > 0.7f)
+				GameButton.BuildInArea(ec, spots[idx].position, spots[idx].position, cRng.Next(4, 7), squ.gameObject, buttonPre, cRng);
+
+			spots[idx].HardCover(CellCoverage.Up);
+
 		}
 
 		public override void Load(EnvironmentController ec, List<IntVector2> pos, List<Direction> dir)
@@ -113,9 +112,6 @@ namespace BBTimes.CustomContent.Builders
 				ecData.Squishers.Add(squ);
 			}
 		}
-
-		[SerializeField]
-		internal int minAmount = 2, maxAmount = 4;
 
 		[SerializeField]
 		internal Squisher squisherPre;

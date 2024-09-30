@@ -11,6 +11,7 @@ namespace BBTimes.CompatibilityModule
 		{
 			Items en = EnumExtensions.GetFromExtendedName<Items>("GrabGun");
 			StackableItemsPlugin.NonStackableItems.Add(ItemMetaStorage.Instance.Find(x => x.info == BBTimesManager.plug.Info && x.value.itemType == en).value);
+			StackableItemsPlugin.NonStackableItems.Add(ItemMetaStorage.Instance.FindByEnumFromMod(EnumExtensions.GetFromExtendedName<Items>("Present"), BBTimesManager.plug.Info).value);
 		}
 	}
 }

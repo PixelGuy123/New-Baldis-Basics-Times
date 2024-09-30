@@ -1,15 +1,15 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
+using BBTimes.Extensions;
 using HarmonyLib;
+using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
-using MTM101BaldAPI;
-using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.Builders
 {
-    public class CameraBuilder : ObjectBuilder, IObjectPrefab
+	public class CameraBuilder : ObjectBuilder, IObjectPrefab
 	{
 
 		public void SetupPrefab()
@@ -43,7 +43,8 @@ namespace BBTimes.CustomContent.Builders
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("objects", "Textures");
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("objects", "Textures");
 		public string SoundPath => this.GenerateDataPath("objects", "Audios");
 
 
@@ -63,21 +64,15 @@ namespace BBTimes.CustomContent.Builders
 				return;
 			}
 
-			int amount = cRng.Next(minAmount, maxAmount + 1);
-			for (int i = 0; i < amount; i++)
-			{
-				if (spots.Count == 0)
-					break;
-				int s = cRng.Next(spots.Count);
-				var cam = Instantiate(camPre, spots[s].ObjectBase).GetComponentInChildren<SecurityCamera>();
-				cam.Ec = ec;
-				cam.GetComponentsInChildren<SpriteRenderer>().Do(spots[s].AddRenderer);
-				cam.Setup(spots[s].AllOpenNavDirections, cRng.Next(7, 14));
-				ecData.Cameras.Add(cam);
+			int s = cRng.Next(spots.Count);
+			var cam = Instantiate(camPre, spots[s].ObjectBase).GetComponentInChildren<SecurityCamera>();
+			cam.Ec = ec;
+			cam.GetComponentsInChildren<SpriteRenderer>().Do(spots[s].AddRenderer);
+			cam.Setup(spots[s].AllOpenNavDirections, cRng.Next(7, 14));
+			ecData.Cameras.Add(cam);
 
-				spots[s].HardCover(CellCoverage.Up);
-				spots.RemoveAt(s);
-			}
+			spots[s].HardCover(CellCoverage.Up);
+
 
 		}
 
@@ -100,8 +95,5 @@ namespace BBTimes.CustomContent.Builders
 
 		[SerializeField]
 		internal Transform camPre;
-
-		[SerializeField]
-		internal int minAmount = 2, maxAmount = 4;
 	}
 }
