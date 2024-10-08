@@ -14,8 +14,9 @@ namespace BBTimes.CustomContent.Events
 			eventIntro = this.GetSound("baldi_ele.wav", "Event_BlackOut0", SoundType.Effect, Color.green);
 			eventIntro.additionalKeys = [
 				new() {time = 1.416f, key = "Event_BlackOut1"},
-				new() {time = 4.247f, key = "Event_BlackOut2"},
-				new() {time = 8.042f, key = "Event_BlackOut3"}
+				new() {time = 2.735f, key = "Event_BlackOut2"},
+				new() {time = 3.868f, key = "Event_BlackOut3"},
+				new() {time = 5.881f, key = "Event_BlackOut4"}
 				];
 
 			audMan = gameObject.CreateAudioManager(85, 105)

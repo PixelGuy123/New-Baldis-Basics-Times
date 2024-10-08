@@ -1,5 +1,4 @@
 ﻿using BBTimes.CompatibilityModule;
-using BBTimes.CompatibilityModule.EditorCompat;
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
@@ -140,15 +139,38 @@ namespace BBTimes.Manager
 
 			// Main Menu Stuff
 			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "mainMenu.png")), 1f);
-			MainMenuPatch.aud_welcome = AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav"));
+			var mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Effect, Color.green);
+			mainSpeech.additionalKeys = [
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 4.617f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_3", time = 10.564f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_4", time = 14.376f }
+				];
+			MainMenuPatch.aud_welcome = mainSpeech;
+
+			if (File.Exists(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")))
+			{
+				mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")), "Vfx_BAL_SecretSpecificForUserSpeech1", SoundType.Effect, Color.green);
+				mainSpeech.encrypted = true;
+				mainSpeech.additionalKeys = [
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech2", time = 1.618f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech3", time = 3.73f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech4", time = 6.723f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech5", time = 9.933f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech6", time = 15.377f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech7", time = 23.194f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech8", time = 26.766f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech9", time = 29.047f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech10", time = 32.540f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech11", time = 34.88f, encrypted = true },
+					];
+				MainMenuPatch.aud_superSecretOnlyReservedForThoseIselect = mainSpeech;
+			}
 
 			// Math Machine new Nums
-			//FieldInfo nums = AccessTools.Field(typeof(MathMachine), "numberPres");
-			//FieldInfo sprite = AccessTools.Field(typeof(MathMachineNumber), "sprite");
-			//FieldInfo value = AccessTools.Field(typeof(MathMachineNumber), "value"); // Setup fields
+
 			var machines = GenericExtensions.FindResourceObjects<MathMachine>();
 
-			var numList = machines[0].numberPres; //(MathMachineNumber[])nums.GetValue(machines[0]);
+			var numList = machines[0].numberPres; 
 			var numPrefab = numList[0];
 			var numTexs = TextureExtensions.LoadSpriteSheet(3, 3, 30f, BasePlugin.ModPath, "objects", "Math Machine", "numBalls.png");
 
@@ -157,20 +179,13 @@ namespace BBTimes.Manager
 			for (int i = 0; i < numTexs.Length; i++) // Fabricate them
 			{
 				var num = numPrefab.DuplicatePrefab();
-			//	num.GetComponent<Entity>().SetActive(false);
-				//num.gameObject.layer = LayerStorage.iClickableLayer;
+
 				num.sprite.GetComponent<SpriteRenderer>().sprite = numTexs[i];
 				num.value = i + 10;
-				num.name = "NumBall_" + num.value; // value.GetValue(num);
+				num.name = "NumBall_" + num.value;
 				numbers.Add(num);
 			}
 
-			//machines.Do((x) => // Now just put them to every machine
-			//{
-			//	var numList = (MathMachineNumber[])nums.GetValue(x);
-			//	numList = numList.AddRangeToArray([.. numbers]);
-			//	nums.SetValue(x, numList);
-			//});
 
 			machines.Do((x) => x.numberPres = x.numberPres.AddRangeToArray([.. numbers]));
 
@@ -209,7 +224,7 @@ namespace BBTimes.Manager
 			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "pc_stab.wav")), "Vfx_PC_stab", SoundType.Voice, Color.yellow));
 			man.Add("basketBall", TextureExtensions.LoadSpriteSheet(5, 1, 25f, GlobalAssetsPath, "basketball.png"));
 			man.Add("Beartrap", TextureExtensions.LoadSpriteSheet(2, 1, 50f, GlobalAssetsPath, "trap.png"));
-			man.Add("BeartrapCatch",ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "trap_catch.wav")), "Vfx_BT_catch", SoundType.Voice, Color.white));
+			man.Add("BeartrapCatch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "trap_catch.wav")), "Vfx_BT_catch", SoundType.Voice, Color.white));
 			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "punch.wav")), "BB_Hit", SoundType.Voice, Color.white));
 			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
 			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
@@ -272,9 +287,9 @@ namespace BBTimes.Manager
 				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", audioName)), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));
 		}
 
-		static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc"); static string GlobalAssetsPath => Path.Combine(BasePlugin.ModPath, "GlobalAssets");
+		internal static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc"); static string GlobalAssetsPath => Path.Combine(BasePlugin.ModPath, "GlobalAssets");
 
-		const string AudioFolder = "Audios", TextureFolder = "Textures";
+		internal const string AudioFolder = "Audios", TextureFolder = "Textures";
 
 		internal const int MaximumNumballs = 18;
 

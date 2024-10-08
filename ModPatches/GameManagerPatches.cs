@@ -27,7 +27,7 @@ namespace BBTimes.ModPatches
 				core.audMan.FlushQueue(true);
 				return;
 			}
-			if (BooleanStorage.endGameMusic && !__instance.name.StartsWith("Lvl3")) // Not F3
+			if (!__instance.name.StartsWith("Lvl3")) // Not F3
 				Singleton<MusicManager>.Instance.PlayMidi("Level_1_End", true); // Music
 		}
 
@@ -40,7 +40,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPrefix]
 		static bool PlayCutscene(MainGameManager __instance, bool ___allNotebooksFound)
 		{
-			if (!BooleanStorage.cutsceneEnd || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || Singleton<CoreGameManager>.Instance.sceneObject.levelTitle != "F3" || !___allNotebooksFound) return true;
+			if (Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || !__instance.name.StartsWith("Lvl3") || !___allNotebooksFound) return true;
 			var elevator = __instance.Ec.elevators.FirstOrDefault(x => x.IsOpen);
 			if (!elevator) // failsafe
 				return true;
@@ -167,7 +167,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPostfix]
 		private static void REDAnimation(Elevator elevator, BaseGameManager __instance, int ___elevatorsClosed, EnvironmentController ___ec)
 		{
-			if (!BooleanStorage.endGameAnimation || __instance is not MainGameManager || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || !"F1F2F3".Contains(Singleton<CoreGameManager>.Instance.sceneObject.levelTitle)) // MainGameManager expected
+			if (__instance is not MainGameManager || __instance.GetType().BaseType != typeof(BaseGameManager) || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free) // MainGameManager expected
 				return;
 
 			if (___elevatorsClosed == 1)

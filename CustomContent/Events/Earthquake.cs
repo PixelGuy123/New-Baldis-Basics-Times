@@ -14,8 +14,8 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("Earthquake.wav", "Event_Earthquake1", SoundType.Effect, Color.green);
-			eventIntro.additionalKeys = [new() { key = "Event_Earthquake2", time = 3.907f }, new() { key = "Event_Earthquake3", time = 7.896f }];
+			eventIntro = this.GetSound("Earthquake.wav", "Event_PastHolograms0", SoundType.Effect, Color.green);
+			eventIntro.additionalKeys = [new() { key = "Event_Earthquake1", time = 1.115f }, new() { key = "Event_Earthquake2", time = 3.165f }];
 
 			// Particles
 			var flipperParticle = new GameObject("Earthquake", typeof(ParticleSystem)); // Copypaste from BB+ Animations

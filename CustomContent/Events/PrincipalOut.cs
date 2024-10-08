@@ -15,11 +15,8 @@ namespace BBTimes.CustomContent.Events
 		{
 			eventIntro = this.GetSound("baldi_walking.wav", "Event_PriOut0", SoundType.Effect, Color.green);
 			eventIntro.additionalKeys = [
-				new() {time = 1.614f, key = "Event_PriOut1"},
-				new() {time = 6.079f, key = "Event_PriOut2"},
-				new() {time = 8.622f, key = "Event_PriOut3"},
-				new() {time = 10.051f, key = "Event_PriOut4"},
-				new() {time = 12.888f, key = "Event_PriOut5"}
+				new() {time = 1.034f, key = "Event_PriOut1"},
+				new() {time = 3.93f, key = "Event_PriOut2"}
 				];
 		}
 		public void SetupPrefabPost() { }

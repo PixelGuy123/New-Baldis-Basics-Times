@@ -284,8 +284,8 @@ namespace BBTimes.Manager
 				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "NoEv2.wav")), "Vfx_BAL_NoEvent1_0", SoundType.Effect, Color.green),
 				];
 
-			evMac.audBalAngry[0].additionalKeys = [new() { key = "Vfx_BAL_NoEvent0_1", time = 2.215f }];
-			evMac.audBalAngry[1].additionalKeys = [new() { key = "Vfx_BAL_NoEvent1_1", time = 2.016f }];
+			evMac.audBalAngry[0].additionalKeys = [new() { key = "Vfx_BAL_NoEvent0_1", time = 1.403f }, new() { key = "Vfx_BAL_NoEvent0_2", time = 3.584f }];
+			evMac.audBalAngry[1].additionalKeys = [new() { key = "Vfx_BAL_NoEvent1_1", time = 1.458f }, new() { key = "Vfx_BAL_NoEvent1_2", time = 4.841f }];
 
 			machine.gameObject.AddBoxCollider(Vector3.forward * -1.05f, new(6f, 10f, 1f), true);
 

@@ -14,10 +14,9 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("Lightning.wav", "Event_ShuffleChaos1", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("Lightning.wav", "Event_Lightning1", SoundType.Effect, Color.green);
 			eventIntro.additionalKeys = [
-				new() {time = 0.953f, key = "Event_Lightning1"},
-				new() {time = 4.332f, key = "Event_Lightning2"}
+				new() {time = 2.718f, key = "Event_Lightning2"}
 				];
 
 			audMan = gameObject.CreateAudioManager(85, 105)
