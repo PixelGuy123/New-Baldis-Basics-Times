@@ -110,6 +110,7 @@ namespace BBTimes.Manager
 			renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 			renderer.receiveShadows = false;
 			renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+			renderer.forceRenderingOff = false;
 			man.Add("PlaneTemplate", basePlane);
 
 			basePlane.gameObject.ConvertToPrefab(true);

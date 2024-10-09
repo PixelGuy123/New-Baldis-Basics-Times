@@ -4,7 +4,6 @@ using BBTimes.Manager;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using PixelInternalAPI.Classes;
-using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.Object;
@@ -17,14 +16,17 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		[HarmonyPostfix]
 		private static void CoverEmptyWallsFromOutside(EnvironmentController __instance)
 		{
+			
 			if ((bool)BBTimesManager.plug.disableOutside.BoxedValue || PostRoomCreation.i == null) // Make sure this only happens in generated maps
 				return;
 
-			Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
+			List<Renderer> availableMeshes = [];
+			// Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
 
 			var plane = Instantiate(BBTimesManager.man.Get<GameObject>("PlaneTemplate"));
 			var renderer = plane.GetComponent<MeshRenderer>();
 			renderer.material.mainTexture = __instance.mainHall.wallTex;
+			//renderer.enabled = false;
 			DestroyImmediate(plane.GetComponent<MeshCollider>()); // No collision needed
 
 			if (mats.Length == 0) // If Not initialized
@@ -71,7 +73,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
 						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.001f)) + (Vector3.up * LayerStorage.TileBaseOffset * i);
-						t.AddRenderer(p.GetComponent<MeshRenderer>()); // Should keep this on. Because the render is messed up outside school
+						availableMeshes.Add(p.GetComponent<MeshRenderer>());
 					}
 				}
 
@@ -101,12 +103,11 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					{
 						var d = Instantiate(decorations[rng.Next(decorations.Length)], planeCover.transform);
 						d.transform.localPosition = t.FloorWorldPosition + new Vector3(((float)rng.NextDouble() * 2f) - 1, 0f, ((float)rng.NextDouble() * 2f) - 1);
-						d.GetComponent<RendererContainer>().renderers.Do(t.AddRenderer); // I didn't know this was valid syntax, thanks compiler!
+						availableMeshes.AddRange(d.GetComponent<RendererContainer>().renderers);
 					}
 				}
 
-
-				t.AddRenderer(p.GetComponent<MeshRenderer>());
+				availableMeshes.Add(p.GetComponent<MeshRenderer>());
 			}
 			try
 			{
@@ -126,7 +127,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
 						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.01f));
-						t.AddRenderer(p.GetComponent<MeshRenderer>());
+						availableMeshes.Add(p.GetComponent<MeshRenderer>());
 						//p.SetActive(true);
 					}
 				}
@@ -140,7 +141,19 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		end:
 			Destroy(plane);
 
+			// Failed trying to add proper culling for outside
+			//Ray ray = new();
+			//foreach (var w in PostRoomCreation.spawnedWindows)
+			//{
+			//	foreach (var rend in availableMeshes)
+			//	{
+			//		ray.origin = rend.transform.position.ZeroOutY();
+			//		ray.direction = (w.transform.position - ray.origin).normalized;
 
+			//		if (Physics.Raycast(ray, out var hit) && hit.transform)
+			//			w.aTile.AddRenderer(rend);
+			//	}
+			//}
 		}
 
 		static Material[] mats = [];

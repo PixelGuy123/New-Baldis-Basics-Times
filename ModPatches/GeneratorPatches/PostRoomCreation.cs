@@ -1,8 +1,10 @@
 ﻿using BBTimes.Extensions;
 using BBTimes.Manager;
+using BBTimes.ModPatches.EnvironmentPatches;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using UnityEngine;
 
 namespace BBTimes.ModPatches.GeneratorPatches
 {
@@ -36,6 +38,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		{
 			if (i == null) return;
 
+			spawnedWindows.Clear();
 			if (!(bool)BBTimesManager.plug.disableOutside.BoxedValue)
 				WindowsPointingOutside();
 		}
@@ -62,13 +65,19 @@ namespace BBTimes.ModPatches.GeneratorPatches
 			if (tiles.Count == 0)
 				return;
 
+			
+
 			foreach (var tile in tiles)
 			{
 				if (i.controlledRNG.NextDouble() >= 0.95f)
 				{
 					var dir = tile.Value[i.controlledRNG.Next(tile.Value.Length)];
 					var w = ec.ForceBuildWindow(tile.Key, dir, window);
-					w?.aTile.AddRenderer(w.windows[0]); // A small optimization
+					if (w != null)
+					{
+						w.aTile.AddRenderer(w.windows[0]); // A small optimization
+						spawnedWindows.Add(w);
+					}
 				}
 				i.FrameShouldEnd();
 			}
@@ -76,6 +85,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		}
 
 		public static WindowObject window;
+		internal static List<Window> spawnedWindows = [];
 
 	}
 }
