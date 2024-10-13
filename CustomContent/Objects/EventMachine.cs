@@ -40,6 +40,7 @@ namespace BBTimes.CustomContent.Objects
 		internal SoundObject[] audBalAngry;
 
 		public MapIcon mapIcon;
+		public SpriteRenderer Renderer => spriteToChange;
 
 		bool _isDead = false;
 		public static void AddItemToTrigger(Items item) => _itemsToAccept.Add(item);

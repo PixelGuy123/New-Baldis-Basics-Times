@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using HarmonyLib;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.RoomFunctions
 {
@@ -15,6 +16,8 @@ namespace BBTimes.CustomContent.RoomFunctions
 				{
 					var ts = Instantiate(randomTransforms[rng.Next(randomTransforms.Length)], room.transform);
 					ts.transform.position = pos + new Vector3(-offset + (2f * offset * (float)rng.NextDouble()), -offset + (2f * offset * (float)rng.NextDouble()), -offset + (2f * offset * (float)rng.NextDouble()));
+					var cell = builder.ec.CellFromPosition(ts.transform.position);
+					ts.GetComponentsInChildren<Renderer>().Do(cell.AddRenderer);
 				}
 			}
 		}

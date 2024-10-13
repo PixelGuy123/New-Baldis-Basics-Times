@@ -10,6 +10,7 @@ using static UnityEngine.Object;
 using MTM101BaldAPI.ObjectCreation;
 using BBTimes.CustomComponents;
 using PlusLevelLoader;
+using BBTimes.Manager;
 
 namespace BBTimes.Helpers
 {
@@ -83,7 +84,7 @@ namespace BBTimes.Helpers
 			string[] repeatedOnes = new string[files.Length];
 
 			// Pre found ones
-			var text = files.First(x => Path.GetFileName(x).StartsWith(itemBigIconPrefix));
+			var text = files.First(x => Path.GetFileName(x).StartsWith(BBTimesManager.TimesAssetPrefix + itemBigIconPrefix));
 #if CHEAT
 			Debug.Log("Item: " + name);
 			Debug.Log("Path used for the item sprite selection: " + path);
@@ -91,15 +92,15 @@ namespace BBTimes.Helpers
 			Debug.Log("current file: " + Path.GetFileNameWithoutExtension(text));
 #endif
 			var tex = AssetLoader.TextureFromFile(text);
-			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, 50f);
+			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one * 0.5f, 50f);
 			repeatedOnes[0] = text;
 
-			text = files.First(x => Path.GetFileName(x).StartsWith(itemSmallIconPrefix));
+			text = files.First(x => Path.GetFileName(x).StartsWith(BBTimesManager.TimesAssetPrefix + itemSmallIconPrefix));
 #if CHEAT
 			Debug.Log("current file: " + Path.GetFileNameWithoutExtension(text));
 #endif
 			tex = AssetLoader.TextureFromFile(text);
-			sprs[0] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one / 2f, 1f);
+			sprs[0] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one * 0.5f, 1f);
 			repeatedOnes[1] = text;
 
 			return sprs;

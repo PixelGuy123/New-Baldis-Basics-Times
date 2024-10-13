@@ -30,7 +30,7 @@ namespace BBTimes.Manager
 			forcedPosterBuilder.allowedShapes = [TileShape.Single, TileShape.Corner];
 			forcedPosterBuilder.chance = 0.6f;
 			forcedPosterBuilder.posters = [
-				new WeightedPosterObject() {selection = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "wallbell.png"))]), weight = 100}
+				new WeightedPosterObject() {selection = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("wallbell.png")))]), weight = 100}
 				];
 			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(forcedPosterBuilder));
 

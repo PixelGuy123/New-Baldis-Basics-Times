@@ -1,4 +1,5 @@
-﻿using PixelInternalAPI.Classes;
+﻿using HarmonyLib;
+using PixelInternalAPI.Classes;
 using UnityEngine;
 
 
@@ -47,7 +48,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 				if (nonSafeEntityCell)
 					room.entitySafeCells.Remove(cell.position);
 
-				//transform.GetComponent<RendererContainer>().renderers.Do(cell.AddRenderer);
+				transform.GetComponent<RendererContainer>()?.renderers.Do(cell.AddRenderer);
 
 				if (lightPower >= 0)
 					builder.Ec.GenerateLight(cell, builder.ld.standardLightColor, lightPower == 0 ? builder.ld.standardLightStrength : lightPower);

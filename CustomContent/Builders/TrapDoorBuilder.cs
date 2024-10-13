@@ -99,7 +99,7 @@ namespace BBTimes.CustomContent.Builders
 			}
 
 			List<WeightedSelection<Cell>> intVectors = t.ConvertAll(x => new WeightedSelection<Cell>() { selection = x, weight = 100 });
-			int max = allTilesCount / intVectors.Count;
+			int max = allTilesCount / intVectors.Count / 2;
 
 			for (int i = 0; i < max; i++)
 			{

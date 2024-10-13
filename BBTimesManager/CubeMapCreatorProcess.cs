@@ -10,8 +10,8 @@ namespace BBTimes.Manager
 	{
 		static void CreateCubeMaps()
 		{
-			var F2Map = TextureExtensions.CubemapFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cubemap_twilight.png")));
-			var F3Map = TextureExtensions.CubemapFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cubemap_night.png")));
+			var F2Map = TextureExtensions.CubemapFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("cubemap_twilight.png"))));
+			var F3Map = TextureExtensions.CubemapFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("cubemap_night.png"))));
 
 
 

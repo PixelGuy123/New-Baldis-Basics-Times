@@ -71,6 +71,7 @@ namespace BBTimes.Manager
 			GenericExtensions.FindResourceObjects<MainGameManager>().Do(x => x.gameObject.AddComponent<MainGameManagerExtraComponent>()); // Adds extra component for every MainGameManager
 			GenericExtensions.FindResourceObjects<EnvironmentController>().Do(x => x.gameObject.AddComponent<EnvironmentControllerData>());
 			GenericExtensions.FindResourceObjects<PlayerManager>().Do(x => x.gameObject.AddComponent<PlayerAttributesComponent>());
+			GenericExtensions.FindResourceObjects<CullingManager>().Do(x => x.gameObject.AddComponent<NullCullingManager>().cullMan = x);
 		}
 
 		static void SetAssets()
@@ -139,12 +140,11 @@ namespace BBTimes.Manager
 			AddRule("stabbing", "principal_nostabbing.wav", "Vfx_PRI_NoStabbing");
 
 			// Main Menu Stuff
-			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "mainMenu.png")), 1f);
+			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("mainMenu.png"))), 1f);
 			var mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Effect, Color.green);
 			mainSpeech.additionalKeys = [
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 4.617f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_3", time = 10.564f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_4", time = 14.376f }
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 5.56f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_3", time = 11.718f }
 				];
 			MainMenuPatch.aud_welcome = mainSpeech;
 
@@ -153,16 +153,21 @@ namespace BBTimes.Manager
 				mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")), "Vfx_BAL_SecretSpecificForUserSpeech1", SoundType.Effect, Color.green);
 				mainSpeech.encrypted = true;
 				mainSpeech.additionalKeys = [
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech2", time = 1.618f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech3", time = 3.73f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech4", time = 6.723f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech5", time = 9.933f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech6", time = 15.377f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech7", time = 23.194f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech8", time = 26.766f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech9", time = 29.047f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech10", time = 32.540f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech11", time = 34.88f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech2", time = 1.093f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech3", time = 3.576f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech4", time = 12.087f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech5", time = 15.651f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech6", time = 20.931f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech7", time = 28.62f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech8", time = 32.523f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech9", time = 36.192f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech10", time = 40.598f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech11", time = 43.181f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech12", time = 44.377f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech13", time = 46.727f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech14", time = 50.45f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech15", time = 52.595f, encrypted = true },
+					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech16", time = 54.739f, encrypted = true }
 					];
 				MainMenuPatch.aud_superSecretOnlyReservedForThoseIselect = mainSpeech;
 			}
@@ -173,7 +178,7 @@ namespace BBTimes.Manager
 
 			var numList = machines[0].numberPres; 
 			var numPrefab = numList[0];
-			var numTexs = TextureExtensions.LoadSpriteSheet(3, 3, 30f, BasePlugin.ModPath, "objects", "Math Machine", "numBalls.png");
+			var numTexs = TextureExtensions.LoadSpriteSheet(3, 3, 30f, BasePlugin.ModPath, "objects", "Math Machine", GetAssetName("numBalls.png"));
 
 			List<MathMachineNumber> numbers = [];
 
@@ -210,10 +215,10 @@ namespace BBTimes.Manager
 			EmptyGameObject.ConvertToPrefab(false);
 
 			// Gates for RUN
-			MainGameManagerPatches.gateTextures = TextureExtensions.LoadTextureSheet(3, 1, MiscPath, TextureFolder, "RUN.png");
+			MainGameManagerPatches.gateTextures = TextureExtensions.LoadTextureSheet(3, 1, MiscPath, TextureFolder, GetAssetName("RUN.png"));
 
 			// Player Visual
-			var tex = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "player.png")), 225f);
+			var tex = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("player.png"))), 225f);
 			var playerVisual = ObjectCreationExtensions.CreateSpriteBillboard(tex).AddSpriteHolder(-1.6f);
 			playerVisual.gameObject.AddComponent<PlayerVisual>();
 
@@ -221,12 +226,12 @@ namespace BBTimes.Manager
 			playerVisual.transform.parent.gameObject.ConvertToPrefab(true);
 
 			// Global Assets
-			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "potion_drink.wav")), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
-			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "pc_stab.wav")), "Vfx_PC_stab", SoundType.Voice, Color.yellow));
-			man.Add("basketBall", TextureExtensions.LoadSpriteSheet(5, 1, 25f, GlobalAssetsPath, "basketball.png"));
-			man.Add("Beartrap", TextureExtensions.LoadSpriteSheet(2, 1, 50f, GlobalAssetsPath, "trap.png"));
-			man.Add("BeartrapCatch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "trap_catch.wav")), "Vfx_BT_catch", SoundType.Voice, Color.white));
-			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "punch.wav")), "BB_Hit", SoundType.Voice, Color.white));
+			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("potion_drink.wav"))), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
+			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("pc_stab.wav"))), "Vfx_PC_stab", SoundType.Voice, Color.yellow));
+			man.Add("basketBall", TextureExtensions.LoadSpriteSheet(5, 1, 25f, GlobalAssetsPath, GetAssetName("basketball.png")));
+			man.Add("Beartrap", TextureExtensions.LoadSpriteSheet(2, 1, 50f, GlobalAssetsPath, GetAssetName("trap.png")));
+			man.Add("BeartrapCatch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("trap_catch.wav"))), "Vfx_BT_catch", SoundType.Voice, Color.white));
+			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("punch.wav"))), "BB_Hit", SoundType.Voice, Color.white));
 			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
 			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
 			man.Add("audBuzz", GenericExtensions.FindResourceObjectByName<SoundObject>("Elv_Buzz"));
@@ -239,16 +244,16 @@ namespace BBTimes.Manager
 			man.Add("slipAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Slip"));
 			man.Add("whiteScreen", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, Color.white), 1f));
 			man.Add("whitePix", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(1, 1, Color.white), 1f));
-			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "throw.wav")), string.Empty, SoundType.Effect, Color.white);
+			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("throw.wav"))), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
 			man.Add("audGenericThrow", sd);
 
-			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "mildGrab.wav")), string.Empty, SoundType.Effect, Color.white);
+			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("mildGrab.wav"))), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
 			man.Add("audGenericGrab", sd);
 
 			// Eletricity Prefab
-			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, "shock.png");
+			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, GetAssetName("shock.png"));
 			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, 0);
 			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
@@ -263,7 +268,7 @@ namespace BBTimes.Manager
 
 			ele.ani = ani;
 
-			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, "shock.wav")), string.Empty, SoundType.Effect, Color.white);
+			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("shock.wav"))), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
 
 			ele.gameObject.CreatePropagatedAudioManager(10f, 30f).AddStartingAudiosToAudioManager(true, sd);
@@ -285,10 +290,14 @@ namespace BBTimes.Manager
 			man.Add("SlipperyMatPrefab", slipMatPre);
 
 			static void AddRule(string name, string audioName, string vfx) =>
-				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", audioName)), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));
+				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", GetAssetName(audioName))), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));
 		}
 
 		internal static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc"); static string GlobalAssetsPath => Path.Combine(BasePlugin.ModPath, "GlobalAssets");
+
+		internal static string GetAssetName(string name) => TimesAssetPrefix + name;
+
+		internal const string TimesAssetPrefix = "BBTimesAsset_";
 
 		internal const string AudioFolder = "Audios", TextureFolder = "Textures";
 

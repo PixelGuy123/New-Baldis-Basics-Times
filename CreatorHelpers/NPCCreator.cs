@@ -122,7 +122,7 @@ namespace BBTimes.Helpers
 			string[] repeatedOnes = new string[files.Length];
 
 			// Pre found ones
-			var text = files.First(x => Path.GetFileName(x).StartsWith(posterNamePrefix));
+			var text = files.First(x => Path.GetFileName(x).StartsWith(BBTimesManager.TimesAssetPrefix + posterNamePrefix));
 #if CHEAT
 			Debug.Log("Npc: " + name);
 			Debug.Log("Path used for the sprite selection: " + path);

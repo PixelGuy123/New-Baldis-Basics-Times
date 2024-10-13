@@ -2,6 +2,7 @@
 using BBPlusAnimations.Patches;
 using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
+using BBTimes.Manager;
 using BepInEx.Bootstrap;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -24,9 +25,9 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 		static void Preload() // Actually load the stuff
 		{
 			var animations = (global::BBPlusAnimations.BasePlugin)Chainloader.PluginInfos["pixelguy.pixelmodding.baldiplus.newanimations"].Instance;
-			var aud = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(AssetLoader.GetModPath(animations), "GS_Sweeping.wav")), "Vfx_GottaSweep", SoundType.Voice, new(0, 0.6226f, 0.0614f));
+			var aud = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(AssetLoader.GetModPath(animations), global::BBPlusAnimations.BasePlugin.GetAssetName("GS_Sweeping.wav"))), "Vfx_GottaSweep", SoundType.Voice, new(0, 0.6226f, 0.0614f));
 			var sweepSprs = TextureExtensions.LoadSpriteSheet(7, 1, 26f,
-					BasePlugin.ModPath, "npcs", "ClassicGottaSweep", "Textures", "anims", "oldSweepSweeping.png");
+					BasePlugin.ModPath, "npcs", "ClassicGottaSweep", "Textures", "anims", BBTimesManager.GetAssetName("oldSweepSweeping.png"));
 
 			NPCMetaStorage.Instance.Get(Character.Sweep).prefabs.DoIf(x => x.Value.GetComponent<INPCPrefab>() != null, (x) =>
 			{

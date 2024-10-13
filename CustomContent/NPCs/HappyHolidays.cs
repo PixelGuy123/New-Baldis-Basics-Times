@@ -49,8 +49,10 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void Clicked(int player)
 		{
-			if (clickDelay > 0f) return;
+			if (clickDelay > 0f || IsDisabled) return;
+			clickDelay += maxClickDelay;
 			audMan.PlaySingle(audUnbox);
+
 			if (++unwraps >= unwrapSprites.Length)
 			{
 				unwraps = 0;
@@ -65,7 +67,7 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public void ClickableSighted(int player) { }
 		public void ClickableUnsighted(int player) { }
-		public bool ClickableHidden() => !navigator.Entity.enabled || clickDelay > 0f;
+		public bool ClickableHidden() => IsDisabled || clickDelay > 0f;
 		public bool ClickableRequiresNormalHeight() => true;
 
 		public void ResetSprite() => renderer.sprite = unwrapSprites[0];
@@ -74,6 +76,15 @@ namespace BBTimes.CustomContent.NPCs
 			base.VirtualUpdate();
 			if (clickDelay > 0f)
 				clickDelay -= TimeScale * Time.deltaTime;
+		}
+		public void MarkAsDisabled(bool disable)
+		{
+			if (disable)
+				hhDisables++;
+			else
+				hhDisables--;
+			if (hhDisables < 0)
+				hhDisables = 0;
 		}
 
 		[SerializeField]
@@ -89,7 +100,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] unwrapSprites;
 
 		[SerializeField]
-		internal float coalChance = 0.25f;
+		internal float coalChance = 0.25f, maxClickDelay = 1.5f;
 
 		[SerializeField]
 		internal AudioManager audMan;
@@ -97,7 +108,9 @@ namespace BBTimes.CustomContent.NPCs
 		internal static ItemObject itmCoal;
 
 		int unwraps = 0;
-		float clickDelay = 2f;
+		float clickDelay = 0;
+		int hhDisables = 0;
+		bool IsDisabled => hhDisables > 0;
 	}
 
 	internal class HappyHolidays_StateBase(HappyHolidays hh) : NpcState(hh) // A default npc state
@@ -149,7 +162,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			hh.Navigator.Entity.Enable(false);
+			hh.MarkAsDisabled(true);
 			hh.Navigator.maxSpeed = 0;
 			hh.Navigator.SetSpeed(0);
 			ChangeNavigationState(new NavigationState_DoNothing(hh, 0));
@@ -187,7 +200,7 @@ namespace BBTimes.CustomContent.NPCs
 			ableOfRespawning -= hh.TimeScale * Time.deltaTime;
 			if (ableOfRespawning < 0f)
 			{
-				hh.Navigator.Entity.Enable(true);
+				hh.MarkAsDisabled(false);
 				hh.Navigator.Entity.SetHeight(prevHeight);
 				hh.behaviorStateMachine.ChangeState(new HappyHolidays_Wondering(hh));
 			}

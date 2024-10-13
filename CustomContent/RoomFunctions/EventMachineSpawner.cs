@@ -33,6 +33,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					machine.Ec = builder.Ec;
 					machine.transform.localPosition = dir.ToVector3() * 4.99f;
 					machine.transform.rotation = dir.ToRotation();
+					cells[idx].AddRenderer(machine.Renderer);
 					cells[idx].HardCover(dir.ToCoverage());
 
 					var icon = builder.Ec.map.AddIcon(iconPre, machineHolder.transform, Color.white);

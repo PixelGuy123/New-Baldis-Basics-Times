@@ -77,6 +77,7 @@ namespace BBTimes.CustomContent.Events
 					curt.transform.localPosition = direction.ToVector3() * 5f;
 					curt.transform.rotation = direction.ToRotation();
 					curt.AttachToCell(ec, list[num2][num3], direction);
+					list[num2][num3].AddRenderer(curt.renderer);
 					this.curtains.Add(curt);
 
 					list[num2][num3].HardCoverWall(direction, true);

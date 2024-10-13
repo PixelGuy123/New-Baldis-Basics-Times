@@ -17,7 +17,7 @@ namespace BBTimes.Manager
 		static void CreateSpriteBillboards() // Solo sprite bill boards btw, that isn't added to other categorized stuff like Room Function (that would be in RoomFunctionCreatorProcess)
 		{
 			// Decorations outside
-			var flowerSprites = TextureExtensions.LoadSpriteSheet(8, 1, 25f, MiscPath, TextureFolder, "flowers.png");
+			var flowerSprites = TextureExtensions.LoadSpriteSheet(8, 1, 25f, MiscPath, TextureFolder, GetAssetName("flowers.png"));
 
 			GameObject[] flowers = new GameObject[flowerSprites.Length];
 			for (int i = 0; i < flowers.Length; i++)
@@ -31,7 +31,7 @@ namespace BBTimes.Manager
 			fire.name = "Fire";
 			fire.material.SetTexture("_LightMap", null); // Don't get affected by reddish from schoolhouse
 			var fireAnim = fire.gameObject.AddComponent<SchoolFire>();
-			fireAnim.animation = TextureExtensions.LoadSpriteSheet(2, 1, 15f, MiscPath, TextureFolder, "schoolFire.png");
+			fireAnim.animation = TextureExtensions.LoadSpriteSheet(2, 1, 15f, MiscPath, TextureFolder, GetAssetName("schoolFire.png"));
 			fireAnim.speed = 2f;
 			fireAnim.renderer = fire;
 
@@ -46,7 +46,7 @@ namespace BBTimes.Manager
 			});
 
 			// Hanging ceiling light for cafeteria
-			var hangingLight = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "cafeHangingLight.png")), 25f)).AddSpriteHolder(40f);
+			var hangingLight = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("cafeHangingLight.png"))), 25f)).AddSpriteHolder(40f);
 
 			hangingLight.transform.localScale = Vector3.one * 1.4f;
 
@@ -57,11 +57,11 @@ namespace BBTimes.Manager
 				.AddSpriteHolder(18.1f).transform.parent.gameObject.SetAsPrefab(true));
 
 			// Misc Decorations
-			AddDecoration("SecretBread", "bread.png", 35f, Vector3.up * 1.3f);
+			AddDecoration("SecretBread","bread.png", 35f, Vector3.up * 1.3f);
 
 			static void AddDecoration(string name, string fileName, float pixelsPerUnit, Vector3 offset)
 			{
-				var bred = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, fileName)), pixelsPerUnit)).AddSpriteHolder(offset);
+				var bred = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName(fileName))), pixelsPerUnit)).AddSpriteHolder(offset);
 				bred.transform.parent.name = name;
 				bred.name = name;
 				bred.transform.parent.gameObject.AddObjectToEditor();

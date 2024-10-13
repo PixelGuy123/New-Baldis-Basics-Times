@@ -19,15 +19,15 @@ namespace BBTimes.Manager
 		static void CreateRoomFunctions() // This is specifically for base game rooms, custom rooms can add their room functions by other ways
 		{
 			var classicWindow = CreatorExtensions.CreateWindow("classicWindow",
-				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow.png")),
-				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow_Broken.png")),
-				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "ClassicWindow_Mask.png")));
+				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("ClassicWindow.png"))),
+				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("ClassicWindow_Broken.png"))),
+				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("ClassicWindow_Mask.png"))));
 			// Random Window Function for cafe
 			AddFunctionToEveryRoom<RandomWindowFunction>(CafeteriaPrefix).window = classicWindow; // Yeah, it creates a window here too. But the WindowCreationprocess is for those that are supposed to spawn naturally;
 			AddFunctionToEveryRoom<RandomWindowFunction>(PlaygroundPrefix).window = classicWindow;
 
 			// Random poster functon for class and office
-			PosterObject[] poster = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "wall_clock.png"))])];
+			PosterObject[] poster = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("wall_clock.png")))])];
 
 			AddFunctionToEveryRoom<RandomPosterFunction>(ClassPrefix).posters = poster;
 			AddFunctionToEveryRoom<RandomPosterFunction>(OfficePrefix).posters = poster;
@@ -46,34 +46,22 @@ namespace BBTimes.Manager
 			highCeil.targetTransformNamePrefix = "Bookshelf";
 			highCeil.targetTransformOffset = 9f;
 			highCeil.customLight = man.Get<GameObject>("prefab_libraryHangingLight").transform;
-			// highCeil.customWallProximityToCeil = [Resources.FindObjectsOfTypeAll<RoomAsset>().First(x => x.name.StartsWith("Library")).wallTex];
-			var libraryTex = GenericExtensions.FindResourceObjectByName<Texture2D>("Wall"); // Any instance id > 0 is a prefab (I checked that!)
-			RoomFunctionContainer cont = null;
-			Resources.FindObjectsOfTypeAll<RoomAsset>().DoIf(x => x.name.StartsWith(LibraryPrefix), x => {
-				x.wallTex = libraryTex;
-				if (cont == null)
-					cont = x.roomFunctionContainer;
-				});
+			highCeil.customWallProximityToCeil = TextureExtensions.LoadTextureSheet(2, 1, GetRoomAsset("Library", GetAssetName("libraryWallSheet.png")));
 
-			floorDatas.ForEach(x => x.SpecialRooms.ForEach(x => // Workaround for my modded libraries
-			{
-				if (x.selection.roomFunctionContainer == cont)
-					x.selection.wallTex = libraryTex;
-			}));
 
 			// Random Corner Object
 			WeightedTransform[] transforms = [
-				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lamp.png")), 25f))
+				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lamp.png"))), 25f))
 				.AddSpriteHolder(2.9f, LayerStorage.ignoreRaycast)
 				.transform.parent.gameObject.SetAsPrefab(true)
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 75 },
 
-				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lightBulb.png")), 65f))
+				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lightBulb.png"))), 65f))
 				.AddSpriteHolder(5.1f, LayerStorage.ignoreRaycast)
 				.transform.parent.gameObject.SetAsPrefab(true)
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 35 },
 
-				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "lampShaped.png")), 25f))
+				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lampShaped.png"))), 25f))
 				.AddSpriteHolder(3.1f, LayerStorage.ignoreRaycast)
 				.transform.parent.gameObject.SetAsPrefab(true)
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 55 },

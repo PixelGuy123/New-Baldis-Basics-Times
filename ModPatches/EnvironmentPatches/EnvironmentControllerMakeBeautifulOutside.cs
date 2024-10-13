@@ -4,7 +4,11 @@ using BBTimes.Manager;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using Rewired.UI.ControlMapper;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -16,11 +20,11 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		[HarmonyPostfix]
 		private static void CoverEmptyWallsFromOutside(EnvironmentController __instance)
 		{
-			
+
 			if ((bool)BBTimesManager.plug.disableOutside.BoxedValue || PostRoomCreation.i == null) // Make sure this only happens in generated maps
 				return;
 
-			List<Renderer> availableMeshes = [];
+			List<KeyValuePair<IntVector2, Renderer>> availableMeshes = [];
 			// Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
 
 			var plane = Instantiate(BBTimesManager.man.Get<GameObject>("PlaneTemplate"));
@@ -73,7 +77,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
 						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.001f)) + (Vector3.up * LayerStorage.TileBaseOffset * i);
-						availableMeshes.Add(p.GetComponent<MeshRenderer>());
+						availableMeshes.Add(new(t.position, p.GetComponent<MeshRenderer>()));
 					}
 				}
 
@@ -103,34 +107,48 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					{
 						var d = Instantiate(decorations[rng.Next(decorations.Length)], planeCover.transform);
 						d.transform.localPosition = t.FloorWorldPosition + new Vector3(((float)rng.NextDouble() * 2f) - 1, 0f, ((float)rng.NextDouble() * 2f) - 1);
-						availableMeshes.AddRange(d.GetComponent<RendererContainer>().renderers);
+						availableMeshes.AddRange(d.GetComponent<RendererContainer>().renderers.ConvertAll(x => new KeyValuePair<IntVector2, Renderer>(t.position, x)));
 					}
 				}
 
-				availableMeshes.Add(p.GetComponent<MeshRenderer>());
+				availableMeshes.Add(new(t.position, p.GetComponent<MeshRenderer>()));
 			}
+
+			renderer.material = mats[1];
+			plane.name = "FencePlane";
+			plane.transform.localRotation = Quaternion.identity;
+
+			foreach (var t in __instance.AllExistentCells())
+			{
+				if (!t.Null) continue;
+
+				foreach (var dir in Directions.All())
+				{
+					if (__instance.ContainsCoordinates(t.position + dir.ToIntVector2())) continue;
+
+					var p = Instantiate(plane, planeCover.transform);
+					p.transform.localRotation = dir.ToRotation();
+					p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.01f));
+					availableMeshes.Add(new(t.position, p.GetComponent<MeshRenderer>()));
+				}
+			}
+
+
+
+		end:
+			Destroy(plane);
+
+
+			List<KeyValuePair<Cell, Renderer>> visibleRenderers = [];
+			var nullCull = __instance.CullingManager.GetComponent<NullCullingManager>(); // Get the NullCullingManager
 			try
 			{
-
-				renderer.material = mats[1];
-				plane.name = "FencePlane";
-				plane.transform.localRotation = Quaternion.identity;
-
-				foreach (var t in __instance.AllExistentCells())
-				{
-					if (!t.Null) continue;
-
-					foreach (var dir in Directions.All())
-					{
-						if (__instance.ContainsCoordinates(t.position + dir.ToIntVector2())) continue;
-
-						var p = Instantiate(plane, planeCover.transform);
-						p.transform.localRotation = dir.ToRotation();
-						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.01f));
-						availableMeshes.Add(p.GetComponent<MeshRenderer>());
-						//p.SetActive(true);
-					}
-				}
+				PostRoomCreation.spawnedWindows.ForEach(window =>
+					BreastFirstSearch(window.aTile, window.bTile.position, window.direction.GetOpposite(),
+					window.bTile,
+					__instance.CellFromPosition(window.bTile.position + window.direction.PerpendicularList()[0].ToIntVector2()),
+					__instance.CellFromPosition(window.bTile.position + window.direction.PerpendicularList()[1].ToIntVector2())
+					));
 			}
 			catch (System.Exception e)
 			{
@@ -138,22 +156,74 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			}
 
 
-		end:
-			Destroy(plane);
+			for (int i = 0; i < availableMeshes.Count; i++)
+			{
+				bool hasBeenAdded = false;
+				for (int z = 0; z < visibleRenderers.Count; z++)
+				{
+					if (visibleRenderers[z].Value == availableMeshes[i].Value)
+					{
+						nullCull.AddRendererToCell(visibleRenderers[i].Key, visibleRenderers[i].Value); // Add all the available renders to the corresponding chunks to be properly culled by a secondary Culling Manager
+						hasBeenAdded = true;
+					}
+				}
+				if (!hasBeenAdded)
+				{
+					Destroy(availableMeshes[i].Value);
+					availableMeshes.RemoveAt(i--);
+				}
+			}
 
-			// Failed trying to add proper culling for outside
-			//Ray ray = new();
-			//foreach (var w in PostRoomCreation.spawnedWindows)
-			//{
-			//	foreach (var rend in availableMeshes)
-			//	{
-			//		ray.origin = rend.transform.position.ZeroOutY();
-			//		ray.direction = (w.transform.position - ray.origin).normalized;
 
-			//		if (Physics.Raycast(ray, out var hit) && hit.transform)
-			//			w.aTile.AddRenderer(rend);
-			//	}
-			//}
+			void BreastFirstSearch(Cell ogCell, IntVector2 pos, Direction forbiddenDirection, params Cell[] cellReferences)
+			{
+				HashSet<IntVector2> accessedTiles = [];
+				Queue<IntVector2> tilesToAccess = [];
+				tilesToAccess.Enqueue(pos);
+				var dirsToFollow = Directions.All();
+				dirsToFollow.Remove(forbiddenDirection);
+
+				if (!__instance.CellFromPosition(pos).Null)
+					return;
+
+				while (tilesToAccess.Count != 0) // Until the queue is empty
+				{
+					var curPos = tilesToAccess.Dequeue();
+					for (int i = 0; i < dirsToFollow.Count; i++)
+					{
+						var nextPos = curPos + dirsToFollow[i].ToIntVector2();
+						var cell = __instance.CellFromPosition(nextPos);
+						var prevCell = __instance.CellFromPosition(curPos);
+
+						if (cell.Null &&
+							__instance.ContainsCoordinates(nextPos) &&
+							!accessedTiles.Contains(nextPos) &&
+							cellReferences.Any(x => Raycast(x, prevCell))) // If cell is null, add the renderers from it
+						{
+							accessedTiles.Add(nextPos);
+							tilesToAccess.Enqueue(nextPos);
+						}
+					}
+					visibleRenderers.AddRange(availableMeshes.Where(x => x.Key == curPos).Select(x => new KeyValuePair<Cell, Renderer>(ogCell, x.Value)));
+					accessedTiles.Add(curPos); // Accessed that tile then
+				}
+			}
+
+			bool Raycast(Cell startCell, Cell targetCell) // Not using Physics.Raycast because collision isn't really trustful
+			{
+				Vector3 posToFollow = startCell.FloorWorldPosition;
+				Vector3 dir = (targetCell.FloorWorldPosition - posToFollow).normalized * 10f;
+				Cell cell = startCell;
+
+				while (cell != targetCell)
+				{
+					posToFollow += dir;
+					cell = __instance.CellFromPosition(posToFollow);
+					if (!cell.Null)
+						return false;
+				} 
+				return true;
+			}
 		}
 
 		static Material[] mats = [];

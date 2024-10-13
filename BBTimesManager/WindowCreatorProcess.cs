@@ -11,7 +11,7 @@ namespace BBTimes.Manager
 		static void CreateWindows()
 		{
 			// Metal Window
-			var brokenTex = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "MetalWindow.png"));
+			var brokenTex = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("MetalWindow.png")));
 			var tex = brokenTex;
 			var window = CreatorExtensions.CreateWindow("MetalWindow", tex, brokenTex, unbreakable:true);
 			var windowSel = new WindowObjectHolder(window, 75, [RoomCategory.Office]);
@@ -20,9 +20,9 @@ namespace BBTimes.Manager
 			floorDatas[3].WindowObjects.Add(windowSel);
 
 			// Round Window
-			brokenTex = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "roundWindow.png"));
+			brokenTex = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("roundWindow.png")));
 			tex = brokenTex;
-			window = CreatorExtensions.CreateWindow("RoundWindow", tex, brokenTex, AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "roundWindowMask.png")), true);
+			window = CreatorExtensions.CreateWindow("RoundWindow", tex, brokenTex, AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("roundWindowMask.png"))), true);
 
 			PostRoomCreation.window = window; // Set the metal window, as it is unbreakable
 

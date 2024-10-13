@@ -118,7 +118,7 @@ namespace BBTimes.CustomContent.Objects
 			if (entity == null || touchedEntity.Contains(entity)) return;
 
 			if (Enabled)
-				entity.AddForce(new((entity.transform.position - transform.position).normalized, 19f, -19f));
+				entity.AddForce(new((entity.transform.position - transform.position).normalized, leakPushForce, leakAccelerationForce));
 			touchedEntity.Add(entity);
 		}
 
@@ -180,6 +180,9 @@ namespace BBTimes.CustomContent.Objects
 
 		[SerializeField]
 		internal PropagatedAudioManager normalVentAudioMan, gasLeakVentAudioMan;
+
+		[SerializeField]
+		internal float leakPushForce = 31f, leakAccelerationForce = -21.5f;
 
 		const float minCooldown = 10f, maxCooldown = 25f, emissionRate = 75f;
 	}
