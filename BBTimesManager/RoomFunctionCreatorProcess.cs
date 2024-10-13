@@ -41,12 +41,13 @@ namespace BBTimes.Manager
 			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "wallFadeInBlack.png"))];
 			highCeil.chanceToHappen = 0.8f;
 			highCeil.customLight = man.Get<GameObject>("prefab_cafeHangingLight").transform;
+
 			highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(LibraryPrefix);
-			highCeil.ceilingHeight = 1;
 			highCeil.targetTransformNamePrefix = "Bookshelf";
 			highCeil.targetTransformOffset = 9f;
 			highCeil.customLight = man.Get<GameObject>("prefab_libraryHangingLight").transform;
-			highCeil.customWallProximityToCeil = TextureExtensions.LoadTextureSheet(2, 1, GetRoomAsset("Library", GetAssetName("libraryWallSheet.png")));
+			highCeil.usesSingleCustomWall = true;
+			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(GetRoomAsset("Library", GetAssetName("libraryWallSheet.png")))];
 
 
 			// Random Corner Object
