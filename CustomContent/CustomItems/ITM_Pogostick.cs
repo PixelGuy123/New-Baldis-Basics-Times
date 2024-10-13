@@ -17,7 +17,8 @@ namespace BBTimes.CustomContent.CustomItems
 			falseRenderer.transform.localPosition = Vector3.zero;
 
 
-			entity = gameObject.CreateEntity(2f, rendererBase: falseRenderer.transform);
+			entity = gameObject.CreateEntity(3.5f, rendererBase: falseRenderer.transform);
+			((CapsuleCollider)entity.collider).height = 10f;
 			gameObject.layer = LayerStorage.ignoreRaycast;
 
 			rendererBase = falseRenderer.transform;

@@ -5,8 +5,6 @@ using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using Rewired.UI.ControlMapper;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -141,19 +139,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 			List<KeyValuePair<Cell, Renderer>> visibleRenderers = [];
 			var nullCull = __instance.CullingManager.GetComponent<NullCullingManager>(); // Get the NullCullingManager
-			try
-			{
-				PostRoomCreation.spawnedWindows.ForEach(window =>
-					BreastFirstSearch(window.aTile, window.bTile.position, window.direction.GetOpposite(),
-					window.bTile,
-					__instance.CellFromPosition(window.bTile.position + window.direction.PerpendicularList()[0].ToIntVector2()),
-					__instance.CellFromPosition(window.bTile.position + window.direction.PerpendicularList()[1].ToIntVector2())
-					));
-			}
-			catch (System.Exception e)
-			{
-				Debug.LogException(e);
-			}
+
+			PostRoomCreation.spawnedWindows.ForEach(window =>
+				BreastFirstSearch(window.aTile, window.bTile.position, window.direction.GetOpposite(),
+				window.bTile,
+				__instance.CellFromPosition(window.bTile.position + window.direction.PerpendicularList()[0].ToIntVector2()),
+				__instance.CellFromPosition(window.bTile.position + window.direction.PerpendicularList()[1].ToIntVector2())
+				));
+
 
 
 			for (int i = 0; i < availableMeshes.Count; i++)
@@ -221,7 +214,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					cell = __instance.CellFromPosition(posToFollow);
 					if (!cell.Null)
 						return false;
-				} 
+				}
 				return true;
 			}
 		}

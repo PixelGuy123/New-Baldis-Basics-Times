@@ -91,7 +91,7 @@ namespace BBTimes.CustomContent.CustomItems
 					transform.SetParent(other.transform);
 					transform.localPosition = Vector3.zero;
 
-					pm.RuleBreak("gumming", 2f);
+					pm.RuleBreak("Bullying", 2f);
 
 					StartCoroutine(Timer(e));
 
