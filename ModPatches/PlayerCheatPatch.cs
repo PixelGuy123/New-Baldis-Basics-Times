@@ -28,21 +28,21 @@ namespace BBTimes.ModPatches
 	//	}
 	//}
 
-	[HarmonyPatch]
-	internal class CrashDebugging
-	{
-		[HarmonyPatch(typeof(ObjectBuilder), "Build")]
-		[HarmonyPatch(typeof(RoomFunctionContainer), "Build")]
-		[HarmonyFinalizer]
-		static System.Exception DebugLogFinalizer(System.Exception __exception)
-		{
-			if (__exception != null)
-				Debug.LogException(__exception);
+	//[HarmonyPatch]
+	//internal class CrashDebugging
+	//{
+	//	[HarmonyPatch(typeof(ObjectBuilder), "Build")]
+	//	[HarmonyPatch(typeof(RoomFunctionContainer), "Build")]
+	//	[HarmonyFinalizer]
+	//	static System.Exception DebugLogFinalizer(System.Exception __exception)
+	//	{
+	//		if (__exception != null)
+	//			Debug.LogException(__exception);
 
-			return null;
-		}
+	//		return null;
+	//	}
 
 		
 
-	}
+	//}
 }

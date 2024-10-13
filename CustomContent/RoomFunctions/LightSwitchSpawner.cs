@@ -43,6 +43,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 					machine.Initialize(this);
 					machine.transform.localPosition = dir.ToVector3() * 4.99f;
 					machine.transform.rotation = dir.ToRotation();
+					cells[idx].AddRenderer(machine.renderer);
 					ecData.LightSwitches.Add(machine);
 					break;
 				}

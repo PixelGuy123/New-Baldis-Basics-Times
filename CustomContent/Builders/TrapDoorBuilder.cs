@@ -103,14 +103,14 @@ namespace BBTimes.CustomContent.Builders
 
 			for (int i = 0; i < max; i++)
 			{
-				if (t.Count == 0)
+				if (t.Count == 0 || intVectors.Count == 0)
 					break;
 				int idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, cRng);
 				var trap = CreateTrapDoor(intVectors[idx].selection, ec, ecData);
 				t.Remove(intVectors[idx].selection);
 				intVectors.RemoveAt(idx);
 
-				if (t.Count > 0 && max - i > 1 && cRng.NextDouble() >= 0.55) // Linked trapdoor
+				if (t.Count != 0 && max - i > 1 && cRng.NextDouble() >= 0.55) // Linked trapdoor
 				{
 					idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, cRng);
 					t.Remove(intVectors[idx].selection);
