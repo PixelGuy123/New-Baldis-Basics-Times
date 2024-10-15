@@ -25,6 +25,9 @@
   
   <ItemGroup>
     <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
+    <Reference Include="BaldiEndless">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\Arcade Renovations.dll</HintPath>
+    </Reference>
     <Reference Include="BaldiLevelEditor">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\BaldiLevelEditor.dll</HintPath>
     </Reference>

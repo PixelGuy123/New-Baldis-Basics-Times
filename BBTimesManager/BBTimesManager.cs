@@ -126,8 +126,10 @@ namespace BBTimes.Manager
 			// Fence texture
 			man.Add("Tex_Fence", GenericExtensions.FindResourceObjectByName<Texture2D>("fence"));
 
-			// Canvas renderer instance
-			//man.Add("CanvasPrefab", GenericExtensions.FindResourceObjectByName<Canvas>("GumOverlay")); // <----- change this
+			// Baldi Super Duper Rare Placeholder
+			MainGameManagerPatches.placeholderBaldi = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("baldiCutOut.png")), Vector2.one * 0.5f, 15f)).gameObject;
+			MainGameManagerPatches.placeholderBaldi.ConvertToPrefab(true);
+			MainGameManagerPatches.placeholderBaldi.name = "PlaceholderBaldi";
 
 			// Setup Window hit audio
 
@@ -139,6 +141,7 @@ namespace BBTimes.Manager
 			AddRule("ugliness", "principal_nouglystun.wav", "Vfx_PRI_NoUglyStun");
 			AddRule("stabbing", "principal_nostabbing.wav", "Vfx_PRI_NoStabbing");
 
+
 			// Main Menu Stuff
 			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("mainMenu.png"))), 1f);
 			var mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Effect, Color.green);
@@ -147,6 +150,16 @@ namespace BBTimes.Manager
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_3", time = 11.718f }
 				];
 			MainMenuPatch.aud_welcome = mainSpeech;
+
+			MainMenuPatch.mainMenuEndless = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("endlessFloors.png"))), 1f);
+			mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_InfFloorSpeech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Effect, Color.green);
+			mainSpeech.additionalKeys = [
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_1", time = 5.961f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_2", time = 9.988f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_3", time = 13.014f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_4", time = 18.108f }
+				];
+			MainMenuPatch.aud_welcome_endless = mainSpeech;
 
 			if (File.Exists(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")))
 			{
@@ -176,7 +189,7 @@ namespace BBTimes.Manager
 
 			var machines = GenericExtensions.FindResourceObjects<MathMachine>();
 
-			var numList = machines[0].numberPres; 
+			var numList = machines[0].numberPres;
 			var numPrefab = numList[0];
 			var numTexs = TextureExtensions.LoadSpriteSheet(3, 3, 30f, BasePlugin.ModPath, "objects", "Math Machine", GetAssetName("numBalls.png"));
 
@@ -202,12 +215,12 @@ namespace BBTimes.Manager
 			//F3
 			floorDatas[2].MinNumberBallAmount = 12;
 			floorDatas[2].MaxNumberBallAmount = MaximumNumballs;
-			floorDatas[2].ConveyorSpeedOffset = 4;
+			//floorDatas[2].ConveyorSpeedOffset = 4;
 			floorDatas[2].LockdownDoorSpeedOffset = 4;
 			//END
 			floorDatas[3].MinNumberBallAmount = 9;
 			floorDatas[3].MaxNumberBallAmount = 14;
-			floorDatas[3].ConveyorSpeedOffset = 3;
+			//floorDatas[3].ConveyorSpeedOffset = 3;
 			floorDatas[3].LockdownDoorSpeedOffset = 2;
 
 			// LITERALLY an empty object. Can be used for stuff like hiding those lightPre for example
@@ -309,7 +322,21 @@ namespace BBTimes.Manager
 
 		public static string CurrentFloor => Singleton<CoreGameManager>.Instance?.sceneObject.levelTitle ?? "None";
 
-		public static FloorData CurrentFloorData => floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
+		public static FloorData CurrentFloorData { get
+			{
+				var data = floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
+				if (data != null || !Singleton<CoreGameManager>.Instance)
+					return data;
+
+				if (Singleton<CoreGameManager>.Instance.sceneObject.levelNo >= 35) // If Infinite Floors. This levelNo should be like this
+					return floorDatas[2];
+
+				if (Singleton<CoreGameManager>.Instance.sceneObject.levelNo >= 15)
+					return floorDatas[1];
+
+				return floorDatas[0];
+			}
+		}
 
 		public static GameObject EmptyGameObject;
 
@@ -361,7 +388,7 @@ namespace BBTimes.Manager
 		public int MaxNumberBallAmount = 9; // Default
 		public int MinNumberBallAmount = 9; // Default
 
-		public int ConveyorSpeedOffset = 2;
+	//	public int ConveyorSpeedOffset = 2;
 		public int LockdownDoorSpeedOffset = 2;
 	}
 }

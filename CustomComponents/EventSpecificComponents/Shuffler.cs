@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using BBTimes.CustomContent.Objects;
+using MTM101BaldAPI.Registers;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents
 {
@@ -33,12 +36,15 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 			audMan.FlushQueue(true);
 			audMan.PlaySingle(audTel);
 			if (shuffleTars.Count != 0)
-				ShuffleCall(shuffleTars[Random.Range(0, shuffleTars.Count)]);
+			{
+				next = shuffleTars[Random.Range(0, shuffleTars.Count)];
+				ShuffleCall(next);
+			}
 			parts.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 
 			while (audMan.AnyAudioIsPlaying) yield return null;
 
-			Destroy(gameObject);
+			PostTeleportProcedure();
 
 			yield break;
 		}
@@ -46,8 +52,10 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 		public abstract void ShuffleCall(T next);
 
 		protected abstract bool ShuffleCheckCondition(T obj);
-			
-		
+
+		protected virtual void PostTeleportProcedure() => Destroy(gameObject);
+
+
 
 		void Update()
 		{
@@ -71,6 +79,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 		bool initialized = false;
 		protected EnvironmentController ec;
 		protected T target;
+		protected T next;
 	}
 
 	public class EntityShuffler : Shuffler<Entity>
@@ -92,7 +101,49 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 			yield break;
 		}
 
-		protected override bool ShuffleCheckCondition(Entity obj) => false;
+		protected override void PostTeleportProcedure() =>
+			StartCoroutine(ImmunityTimer());
+
+		IEnumerator ImmunityTimer()
+		{
+			target.ExternalActivity.moveMods.Add(slowMod);
+			next.ExternalActivity.moveMods.Add(slowMod);
+			PushEveryoneAround(next);
+			PushEveryoneAround(target);
+
+			ec.Npcs.ForEach(x => x.Navigator.Entity?.IgnoreEntity(target, true));
+
+			float timer = 5f;
+			while (timer > 0f)
+			{
+				timer -= ec.EnvironmentTimeScale * Time.deltaTime;
+				yield return null;
+			}
+
+			target.ExternalActivity.moveMods.Remove(slowMod);
+			next.ExternalActivity.moveMods.Remove(slowMod);
+
+			ec.Npcs.ForEach(x => x.Navigator.Entity?.IgnoreEntity(target, false));
+
+			base.PostTeleportProcedure();
+		}
+
+		void PushEveryoneAround(Entity ent)
+		{
+			foreach (var npc in ec.Npcs)
+			{
+				if (npc.Navigator.enabled && npc.Navigator.Entity != ent && npc.GetMeta().flags.HasFlag(NPCFlags.Standard))
+				{
+					float force = 45f - (Vector3.Distance(npc.transform.position, ent.transform.position) * 0.25f);
+					if (force > 0f)
+						npc.Navigator.Entity.AddForce(new((npc.transform.position - ent.transform.position).normalized, force, -force * 0.75f));
+				}
+			}
+		}
+
+		protected override bool ShuffleCheckCondition(Entity obj) => ec.CellFromPosition(obj.transform.position).Null;
+
+		readonly MovementModifier slowMod = new(Vector3.zero, 0.85f);
 	}
 
 	public class PickupShuffler : Shuffler<Pickup>
@@ -101,9 +152,9 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 		{
 			Vector3 pos = next.transform.position;
 			next.transform.position = target.transform.position;
-			next.icon.UpdatePosition(ec.map);
+			next.icon?.UpdatePosition(ec.map);
 			target.transform.position = pos;
-			target.icon.UpdatePosition(ec.map);
+			target.icon?.UpdatePosition(ec.map);
 		}
 
 		protected override bool ShuffleCheckCondition(Pickup obj) =>

@@ -42,6 +42,8 @@ namespace BBTimes
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.stackableitems", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.leveleditor", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.infinitefloors", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("mtm101.rulerp.baldiplus.endlessfloors", BepInDependency.DependencyFlags.SoftDependency)]
+
 
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 	public class BasePlugin : BaseUnityPlugin
@@ -280,71 +282,76 @@ namespace BBTimes
 					return;
 				}
 
-				foreach (var npc in floordata.NPCs)
+				for (int i = 0; i < floordata.NPCs.Count; i++)
 				{
-					if (!Config.Bind("NPC Settings", $"Enable {npc.selection.name}", true, "If set to true, this character will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					if (!Config.Bind("NPC Settings", $"Enable {floordata.NPCs[i].selection.name}", true, "If set to true, this character will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					{
+						floordata.NPCs.RemoveAt(i--);
 						continue;
+					}
 
-					var dat = npc.selection.GetComponent<INPCPrefab>();
+					var dat = floordata.NPCs[i].selection.GetComponent<INPCPrefab>();
 					if (dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
-						ld.potentialNPCs.Add(npc); // Only non-replacement Npcs
+						ld.potentialNPCs.Add(floordata.NPCs[i]); // Only non-replacement Npcs
 					else
-						ld.forcedNpcs = ld.forcedNpcs.AddToArray(npc.selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
+						ld.forcedNpcs = ld.forcedNpcs.AddToArray(floordata.NPCs[i].selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
 				}
 
-				List<WeightedItemObject> acceptableItems = new(floordata.Items);
-				for (int i = 0; i < acceptableItems.Count; i++)
-					if (!Config.Bind("Item Settings", $"Enable {(acceptableItems[i].selection.itemType == Items.Points ? acceptableItems[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)acceptableItems[i].selection.itemType))}",
+				//List<WeightedItemObject> acceptableItems = floordata.Items;
+				for (int i = 0; i < floordata.Items.Count; i++)
+					if (!Config.Bind("Item Settings", $"Enable {(floordata.Items[i].selection.itemType == Items.Points ? floordata.Items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.Items[i].selection.itemType))}",
 						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-						acceptableItems.RemoveAt(i--);
+						floordata.Items.RemoveAt(i--);
 
 
-				ld.potentialItems = ld.potentialItems.AddRangeToArray([.. acceptableItems]);
+				ld.potentialItems = ld.potentialItems.AddRangeToArray([.. floordata.Items]);
 
-				List<ItemObject> items = new(floordata.ForcedItems);
-				for (int i = 0; i < items.Count; i++)
-					if (!Config.Bind("Item Settings", $"Enable {(items[i].itemType == Items.Points ? items[i].nameKey : EnumExtensions.GetExtendedName<Items>((int)items[i].itemType))}",
+				//List<ItemObject> items = floordata.ForcedItems;
+				for (int i = 0; i < floordata.ForcedItems.Count; i++)
+					if (!Config.Bind("Item Settings", $"Enable {(floordata.ForcedItems[i].itemType == Items.Points ? floordata.ForcedItems[i].nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.ForcedItems[i].itemType))}",
 						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-						items.RemoveAt(i--);
-				ld.forcedItems.AddRange(items);
+						floordata.ForcedItems.RemoveAt(i--);
+				ld.forcedItems.AddRange(floordata.ForcedItems);
 
-				acceptableItems = new(floordata.ShopItems);
-				for (int i = 0; i < acceptableItems.Count; i++)
-					if (!Config.Bind("Item Settings", $"Enable {(acceptableItems[i].selection.itemType == Items.Points ? acceptableItems[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)acceptableItems[i].selection.itemType))}",
+				//acceptableItems = new(floordata.ShopItems);
+				for (int i = 0; i < floordata.ShopItems.Count; i++)
+					if (!Config.Bind("Item Settings", $"Enable {(floordata.ShopItems[i].selection.itemType == Items.Points ? floordata.ShopItems[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.ShopItems[i].selection.itemType))}",
 						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-						acceptableItems.RemoveAt(i--);
+						floordata.ShopItems.RemoveAt(i--);
 
 				ld.shopItems = ld.shopItems.AddRangeToArray([.. floordata.ShopItems]);
 
-				List<WeightedRandomEvent> events = new(floordata.Events);
-				for (int i = 0; i < events.Count; i++)
-					if (!Config.Bind("Random Event Settings", $"Enable {events[i].selection.name}", true, "If set to true, this random event will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-						events.RemoveAt(i--);
+				//List<WeightedRandomEvent> events = new(floordata.Events);
+				for (int i = 0; i < floordata.Events.Count; i++)
+					if (!Config.Bind("Random Event Settings", $"Enable {floordata.Events[i].selection.name}", true, "If set to true, this random event will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						floordata.Events.RemoveAt(i--);
 
-				ld.randomEvents.AddRange(events);
+				ld.randomEvents.AddRange(floordata.Events);
 
-				List<ObjectBuilder> objBlds = new(floordata.ForcedObjectBuilders);
-				for (int i = 0; i < objBlds.Count; i++)
-					if (!Config.Bind("Structure Settings", $"Enable {(objBlds[i].obstacle != Obstacle.Null ?
-						EnumExtensions.GetExtendedName<Obstacle>((int)objBlds[i].obstacle) : objBlds[i].name)}", true, "If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-						objBlds.RemoveAt(i--);
+				//List<ObjectBuilder> objBlds = new(floordata.ForcedObjectBuilders);
+				for (int i = 0; i < floordata.ForcedObjectBuilders.Count; i++)
+					if (!Config.Bind("Structure Settings", $"Enable {(floordata.ForcedObjectBuilders[i].obstacle != Obstacle.Null ?
+						EnumExtensions.GetExtendedName<Obstacle>((int)floordata.ForcedObjectBuilders[i].obstacle) : floordata.ForcedObjectBuilders[i].name)}", true,
+						"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						floordata.ForcedObjectBuilders.RemoveAt(i--);
 
-				ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddRangeToArray([.. objBlds]);
+				ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddRangeToArray([.. floordata.ForcedObjectBuilders]);
 
-				List<WeightedObjectBuilder> rngObjBlds = new(floordata.WeightedObjectBuilders);
-				for (int i = 0; i < rngObjBlds.Count; i++)
-					if (!Config.Bind("Structure Settings", $"Enable {(rngObjBlds[i].selection.obstacle != Obstacle.Null ? 
-						EnumExtensions.GetExtendedName<Obstacle>((int)rngObjBlds[i].selection.obstacle) : rngObjBlds[i].selection.name)}", true, "If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-						rngObjBlds.RemoveAt(i--);
+				//List<WeightedObjectBuilder> rngObjBlds = new(floordata.WeightedObjectBuilders);
+				for (int i = 0; i < floordata.WeightedObjectBuilders.Count; i++)
+					if (!Config.Bind("Structure Settings", $"Enable {(floordata.WeightedObjectBuilders[i].selection.obstacle != Obstacle.Null ? 
+						EnumExtensions.GetExtendedName<Obstacle>((int)floordata.WeightedObjectBuilders[i].selection.obstacle) : floordata.WeightedObjectBuilders[i].selection.name)}", true, 
+						"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						floordata.WeightedObjectBuilders.RemoveAt(i--);
 
-				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. rngObjBlds]);
+				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
 
-				List<RandomHallBuilder> hallObjBlds = new(floordata.HallBuilders);
-				for (int i = 0; i < hallObjBlds.Count; i++)
-					if (!Config.Bind("Structure Settings", $"Enable {hallObjBlds[i].selectable.name}", true, "If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-						rngObjBlds.RemoveAt(i--);
+				//List<RandomHallBuilder> hallObjBlds = new(floordata.HallBuilders);
+				for (int i = 0; i < floordata.HallBuilders.Count; i++)
+					if (!Config.Bind("Structure Settings", $"Enable {floordata.HallBuilders[i].selectable.name}", true, "If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						floordata.HallBuilders.RemoveAt(i--);
 
-				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. hallObjBlds]);
+				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
 
 				ld.roomGroup = ld.roomGroup.AddRangeToArray([.. floordata.RoomAssets]);
 				ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. floordata.SpecialRooms]);

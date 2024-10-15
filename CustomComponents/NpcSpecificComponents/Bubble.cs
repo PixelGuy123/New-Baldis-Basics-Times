@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MTM101BaldAPI.Registers;
+using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
@@ -67,7 +68,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			if (other.isTrigger)
 			{
 				var e = other.GetComponent<Entity>();
-				if (e && e.Override(overrider))
+				if (e && e.Override(overrider) && (!other.CompareTag("NPC") || (e.GetComponent<NPC>()?.GetMeta().flags.HasFlag(NPCFlags.Standard) ?? false)))
 				{
 					target = e;
 					height = e.InternalHeight;

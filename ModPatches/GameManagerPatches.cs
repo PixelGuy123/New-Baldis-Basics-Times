@@ -1,18 +1,19 @@
-﻿using BBTimes.CustomContent.Misc;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomContent.Misc;
 using BBTimes.Extensions;
-using BBTimes.Plugin;
 using HarmonyLib;
+using MTM101BaldAPI.Components;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using PixelInternalAPI.Extensions;
-using MTM101BaldAPI.Components;
 using System.Linq;
-using BBTimes.CustomComponents;
+using UnityEngine;
+using MTM101BaldAPI;
 
 namespace BBTimes.ModPatches
 {
 
+	[ConditionalPatchNoMod("mtm101.rulerp.baldiplus.endlessfloors")]
 	[HarmonyPatch(typeof(MainGameManager))]
 	internal class MainGameManagerPatches
 	{
@@ -60,12 +61,24 @@ namespace BBTimes.ModPatches
 			Singleton<CoreGameManager>.Instance.disablePause = true;
 
 			var baldi = __instance.Ec.GetBaldi();
-			baldi.enabled = false;
-			baldi.Navigator.Entity.Unsquish();
-			baldi.Navigator.enabled = false;
-			baldi.transform.position = __instance.Ec.CellFromPosition(__instance.Ec.CellFromPosition(player.transform.position).position + elevator.Door.direction.GetOpposite().ToIntVector2() * 2).CenterWorldPosition;
+			GameObject placeHolderBaldi;
+			Vector3 elvPos = __instance.Ec.CellFromPosition(__instance.Ec.CellFromPosition(player.transform.position).position + (elevator.Door.direction.GetOpposite().ToIntVector2() * 2)).CenterWorldPosition;
 
-			var cell = __instance.Ec.CellFromPosition(__instance.Ec.GetBaldi().transform.position);
+			if (baldi != null)
+			{
+				baldi.enabled = false;
+				baldi.Navigator.Entity.Unsquish();
+				baldi.Navigator.enabled = false;
+				baldi.transform.position = elvPos;
+				placeHolderBaldi = baldi.gameObject;
+			}
+			else
+			{
+				placeHolderBaldi = Object.Instantiate(placeholderBaldi);
+				placeHolderBaldi.transform.position = elvPos;
+			}
+
+			var cell = __instance.Ec.CellFromPosition(elvPos);
 
 			__instance.StartCoroutine(Animation(cam, __instance, elevator, [cell, .. __instance.Ec.GetCellNeighbors(cell.position)]));
 
@@ -74,14 +87,14 @@ namespace BBTimes.ModPatches
 				bool subs = Singleton<PlayerFileManager>.Instance.subtitles;
 				Singleton<PlayerFileManager>.Instance.subtitles = false;
 
-				Vector3 target = cam.transform.position + el.Door.direction.GetOpposite().ToVector3() * 13f;
+				Vector3 target = cam.transform.position + (el.Door.direction.GetOpposite().ToVector3() * 13f);
 				target.y = 5f;
 				Vector3 src = cam.transform.position;
 
 				float t = 0f;
 				while (true)
 				{
-					
+
 					t += (1.05f - t) * 3f * Time.deltaTime;
 					if (t >= 1f)
 						break;
@@ -131,7 +144,7 @@ namespace BBTimes.ModPatches
 				while (cool <= 17f)
 				{
 					cool += Time.deltaTime * 3f;
-					cam.transform.position = ogPos + new Vector3(Random.Range(-cool, cool), Random.Range(-cool, cool), Random.Range(-cool, cool)) * 0.05f;
+					cam.transform.position = ogPos + (new Vector3(Random.Range(-cool, cool), Random.Range(-cool, cool), Random.Range(-cool, cool)) * 0.05f);
 					if (cool <= 8f)
 						AddFire(cellsForFire[Random.Range(0, cellsForFire.Count)], __instance.Ec);
 					yield return null;
@@ -205,6 +218,7 @@ namespace BBTimes.ModPatches
 						v2.EndEarlier(); // End all events
 				}
 
+
 				foreach (var c in ___ec.AllExistentCells()) // To avoid events like Freezing event from overriding it wrong
 				{
 					c.lightColor = Color.red;
@@ -234,13 +248,23 @@ namespace BBTimes.ModPatches
 
 				for (int i = 0; i < ___ec.Npcs.Count; i++)
 				{
-					if (___ec.Npcs[i].Character != Character.Baldi)
+					var npc = ___ec.Npcs[i];
+					try
 					{
-						___ec.Npcs[i].Despawn();
-						i--;
+						if (npc.Character != Character.Baldi)
+						{
+							npc.Despawn();
+							i--;
+						}
+
+						else if (npc.GetType() == typeof(Baldi))
+							npc.StartCoroutine(GameExtensions.InfiniteAnger((Baldi)npc, 0.6f));
 					}
-					else if (___ec.Npcs[i].GetType() == typeof(Baldi))
-						___ec.Npcs[i].StartCoroutine(GameExtensions.InfiniteAnger((Baldi)___ec.Npcs[i], 0.6f));
+					catch (System.Exception e)
+					{
+						Debug.LogWarning($"-------- The NPC {npc.name} failed to be despawned or is not Baldi --------");
+						Debug.LogException(e);
+					}
 				}
 
 				___ec.StartCoroutine(SpawnFires());
@@ -297,5 +321,6 @@ namespace BBTimes.ModPatches
 		internal static SoundObject angryBal;
 		internal static GameObject fire;
 		internal static Texture2D[] gateTextures = new Texture2D[3];
+		internal static GameObject placeholderBaldi;
 	}
 }

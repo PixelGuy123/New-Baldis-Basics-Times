@@ -13,6 +13,8 @@ namespace BBTimes.CompatibilityModule
 		{
 			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.stackableitems"))
 				StackableItemsCompat.Loadup();
+			if (Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors"))
+				ArcadeRenovationsCompat.Loadup();
 		}
 		internal static void InitializeOnAwake()
 		{
