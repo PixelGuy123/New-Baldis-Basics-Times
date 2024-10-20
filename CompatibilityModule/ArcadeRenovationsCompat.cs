@@ -2,6 +2,7 @@
 using BBTimes.CustomComponents;
 using BBTimes.Manager;
 using HarmonyLib;
+using System.Collections.Generic;
 
 namespace BBTimes.CompatibilityModule
 {
@@ -44,6 +45,13 @@ namespace BBTimes.CompatibilityModule
 						for (int z = 0; z < room.potentialRooms.Length; z++)
 							assets.Add(room.potentialRooms[z]);
 					});
+					List<RoomCategory> invalidCats = [];
+
+					foreach (var cat in data.roomAssets)
+						if (cat.Value.Count == 0)
+							invalidCats.Add(cat.Key);
+
+					invalidCats.ForEach(cat => data.roomAssets.Remove(cat));
 
 					BBTimesManager.floorDatas[i].Classrooms.ForEach(data.classRoomAssets.Add);
 					BBTimesManager.floorDatas[i].Faculties.ForEach(data.FieldTripRoomAssets.Add); // Apparently that's the new Faculty implementation??
@@ -53,7 +61,7 @@ namespace BBTimes.CompatibilityModule
 					BBTimesManager.floorDatas[i].NPCs.ForEach(npc =>
 					{
 						var dat = npc.selection.GetComponent<INPCPrefab>();
-						if (dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
+						if (BBTimesManager.plug.enableReplacementNPCsAsNormalOnes.Value || dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
 							data.npcs.Add(npc);
 						else
 							data.forcedNpcs.Add(npc.selection);
@@ -67,3 +75,5 @@ namespace BBTimes.CompatibilityModule
 		}
 	}
 }
+
+

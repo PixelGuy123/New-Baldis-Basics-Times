@@ -85,7 +85,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void ChangeRandomState()
 		{
-			int rng = Random.Range(0, 3);
+			//int rng = Random.Range(0, 3);
+			int rng = 0;
 			behaviorStateMachine.ChangeState(new Faker_Spawn(this, rng == 0 ? new Faker_BlueVariant(this) : rng == 1 ? new Faker_RedVariant(this) : new Faker_GreenVariant_Idle(this)));
 		}
 

@@ -127,7 +127,7 @@ namespace BBTimes.Manager
 			man.Add("Tex_Fence", GenericExtensions.FindResourceObjectByName<Texture2D>("fence"));
 
 			// Baldi Super Duper Rare Placeholder
-			MainGameManagerPatches.placeholderBaldi = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("baldiCutOut.png")), Vector2.one * 0.5f, 15f)).gameObject;
+			MainGameManagerPatches.placeholderBaldi = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("baldiCutOut.png")), Vector2.one * 0.5f, 32f)).gameObject;
 			MainGameManagerPatches.placeholderBaldi.ConvertToPrefab(true);
 			MainGameManagerPatches.placeholderBaldi.name = "PlaceholderBaldi";
 
@@ -254,6 +254,9 @@ namespace BBTimes.Manager
 			man.Add("woodTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("wood 1").MakeReadableTexture()); // Wood from the tables
 			man.Add("plasticTexture", GenericExtensions.FindResourceObjectByName<Texture2D>("PlasticTable").MakeReadableTexture());
 			man.Add("teleportAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Teleport"));
+			man.Add("tierOnePickup", GenericExtensions.FindResourceObjectByName<SoundObject>("YTPPickup_0"));
+			man.Add("tierTwoPickup", GenericExtensions.FindResourceObjectByName<SoundObject>("YTPPickup_1"));
+			man.Add("tierThreePickup", GenericExtensions.FindResourceObjectByName<SoundObject>("YTPPickup_2"));
 			man.Add("slipAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Slip"));
 			man.Add("whiteScreen", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, Color.white), 1f));
 			man.Add("whitePix", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(1, 1, Color.white), 1f));

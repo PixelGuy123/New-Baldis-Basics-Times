@@ -332,6 +332,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("CameraStand", "PST_CamSt_Name", "PST_CamSt_Desc", -0.75f);
 
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 999999 });
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 66 });
 

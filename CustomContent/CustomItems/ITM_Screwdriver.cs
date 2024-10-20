@@ -29,6 +29,7 @@ namespace BBTimes.CustomContent.CustomItems
 				{
 					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audScrew);
 					math.Completed(pm.playerNumber, true, math);
+					math.NumberDropped(pm.playerNumber);
 					return true;
 				}
 				var machine = hit.transform.GetComponent<IItemAcceptor>();

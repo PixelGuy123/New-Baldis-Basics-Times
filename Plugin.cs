@@ -7,6 +7,7 @@ using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.ModPatches;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -43,6 +44,7 @@ namespace BBTimes
 	[BepInDependency("mtm101.rulerp.baldiplus.leveleditor", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.infinitefloors", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.endlessfloors", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("rad.rulerp.baldiplus.arcaderenovations", BepInDependency.DependencyFlags.SoftDependency)]
 
 
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
@@ -116,14 +118,17 @@ namespace BBTimes
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
-		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms;
+		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes;
 		internal Dictionary<string, ConfigEntry<bool>> enabledCharacters = [], enabledItems = [], enabledStructures = [];
+		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") || 
+			Chainloader.PluginInfos.ContainsKey("rad.rulerp.baldiplus.arcaderenovations");
 
 		private void Awake()
 		{
 			disableOutside = Config.Bind("Environment Settings", "Disable the outside", false, "Setting this \"true\" will completely disable the outside seen in-game. This should increase performance BUT will also change the seed layouts in the game.");
 			disableHighCeilings = Config.Bind("Environment Settings", "Disable high ceilings", false, "Setting this \"true\" will completely disable the high ceilings from existing in pre-made levels (that includes the ones made with the Level Editor).");
 			enableBigRooms = Config.Bind("Environment Settings", "Enable big rooms", false, "Setting this \"true\" will add the rest of the layouts Times also comes with. WARNING: These layouts completely unbalance the game, making it a lot harder than the usual.");
+			enableReplacementNPCsAsNormalOnes = Config.Bind("NPC Settings", "Disable replacement feature", false, "Setting this \"true\" will allow replacement npcs to spawn as normal npcs instead, making the game considerably more harder in some ways.");
 
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAllConditionals();
@@ -291,7 +296,7 @@ namespace BBTimes
 					}
 
 					var dat = floordata.NPCs[i].selection.GetComponent<INPCPrefab>();
-					if (dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
+					if (enableReplacementNPCsAsNormalOnes.Value || dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
 						ld.potentialNPCs.Add(floordata.NPCs[i]); // Only non-replacement Npcs
 					else
 						ld.forcedNpcs = ld.forcedNpcs.AddToArray(floordata.NPCs[i].selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time

@@ -157,6 +157,20 @@ namespace BBTimes.Manager
 			floorDatas[1].Events.Add(new() { selection = e, weight = 35 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 40 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 15 });
+
+			//Nature Event
+			e = new RandomEventBuilder<NatureEvent>(plug.Info)
+				.SetEnum("NatureEvent")
+				.SetMinMaxTime(60f, 90f)
+				.SetName("NatureEvent")
+				.Build()
+				.SetupEvent();
+
+
+			floorDatas[0].Events.Add(new() { selection = e, weight = 999999 });
+			floorDatas[1].Events.Add(new() { selection = e, weight = 15 });
+			floorDatas[2].Events.Add(new() { selection = e, weight = 55 });
+			floorDatas[3].Events.Add(new() { selection = e, weight = 25 });
 		}
 
 		

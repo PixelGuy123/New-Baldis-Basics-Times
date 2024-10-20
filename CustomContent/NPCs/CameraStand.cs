@@ -13,7 +13,12 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
-			spriteRenderer[0].sprite = this.GetSprite(70f, "camStand.png");
+			var storedSprites = this.GetSpriteSheet(4, 4, 25f, "camStand.png");
+
+			spriteRenderer[0].CreateAnimatedSpriteRotator(
+				GenericExtensions.CreateRotationMap(16, storedSprites) // Normal first frame of rotation map
+				);
+
 			audMan = GetComponent<PropagatedAudioManager>();
 			audPic = this.GetSoundNoSub("photo.wav", SoundType.Voice);
 
@@ -265,6 +270,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void InPlayerSight(PlayerManager player)
 		{
 			base.InPlayerSight(player);
+			cs.transform.RotateSmoothlyToNextPoint(player.transform.position, 0.95f);
 			sightDelay -= cs.TimeScale * Time.deltaTime;
 			if (sightDelay <= 0f)
 			{

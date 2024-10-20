@@ -14,7 +14,7 @@ namespace BBTimes.ModPatches
 	{
 		private static void Postfix(MainMenu __instance)
 		{
-			bool hasInfiniteFloors = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors");
+			bool hasInfiniteFloors = BBTimesManager.plug.HasInfiniteFloors;
 
 			__instance.transform.Find("Image").GetComponent<Image>().sprite = hasInfiniteFloors ? mainMenuEndless : mainMenu;
 

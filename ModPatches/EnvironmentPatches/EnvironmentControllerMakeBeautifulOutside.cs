@@ -22,11 +22,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			if ((bool)BBTimesManager.plug.disableOutside.BoxedValue || PostRoomCreation.i == null) // Make sure this only happens in generated maps
 				return;
 
+			Debug.Log("TIMES: Creating outside...");
+
 			List<KeyValuePair<IntVector2, Renderer>> availableMeshes = [];
 			// Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
 
 			var plane = Instantiate(BBTimesManager.man.Get<GameObject>("PlaneTemplate"));
 			var renderer = plane.GetComponent<MeshRenderer>();
+			renderer.enabled = false;
 			renderer.material.mainTexture = __instance.mainHall.wallTex;
 			//renderer.enabled = false;
 			DestroyImmediate(plane.GetComponent<MeshCollider>()); // No collision needed
@@ -75,7 +78,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
 						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.001f)) + (Vector3.up * LayerStorage.TileBaseOffset * i);
-						availableMeshes.Add(new(t.position, p.GetComponent<MeshRenderer>()));
+						availableMeshes.Add(new(t.position, p.GetComponentInChildren<Renderer>()));
 					}
 				}
 
@@ -97,6 +100,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				var p = Instantiate(plane, planeCover.transform);
 				p.transform.localPosition = t.FloorWorldPosition;
 				Singleton<CoreGameManager>.Instance.UpdateLighting(Color.white, t.position);
+				availableMeshes.Add(new(t.position, p.GetComponentInChildren<Renderer>()));
 
 				if (decorations.Length > 0 && rng.NextDouble() > 0.75d)
 				{
@@ -105,11 +109,11 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					{
 						var d = Instantiate(decorations[rng.Next(decorations.Length)], planeCover.transform);
 						d.transform.localPosition = t.FloorWorldPosition + new Vector3(((float)rng.NextDouble() * 2f) - 1, 0f, ((float)rng.NextDouble() * 2f) - 1);
-						availableMeshes.AddRange(d.GetComponent<RendererContainer>().renderers.ConvertAll(x => new KeyValuePair<IntVector2, Renderer>(t.position, x)));
+						availableMeshes.Add(new(t.position, d.GetComponentInChildren<Renderer>()));
 					}
 				}
 
-				availableMeshes.Add(new(t.position, p.GetComponent<MeshRenderer>()));
+				
 			}
 
 			renderer.material = mats[1];
@@ -127,7 +131,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					var p = Instantiate(plane, planeCover.transform);
 					p.transform.localRotation = dir.ToRotation();
 					p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.01f));
-					availableMeshes.Add(new(t.position, p.GetComponent<MeshRenderer>()));
+					availableMeshes.Add(new(t.position, p.GetComponentInChildren<Renderer>()));
 				}
 			}
 
@@ -140,12 +144,17 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			List<KeyValuePair<Cell, Renderer>> visibleRenderers = [];
 			var nullCull = __instance.CullingManager.GetComponent<NullCullingManager>(); // Get the NullCullingManager
 
-			PostRoomCreation.spawnedWindows.ForEach(window =>
-				BreastFirstSearch(window.aTile, window.bTile.position, window.direction.GetOpposite(),
-				window.bTile,
-				__instance.CellFromPosition(window.bTile.position + window.direction.PerpendicularList()[0].ToIntVector2()),
-				__instance.CellFromPosition(window.bTile.position + window.direction.PerpendicularList()[1].ToIntVector2())
-				));
+			PostRoomCreation.spawnedWindows.ForEach(window => {
+				Cell normCell = window.aTile.Null ? window.bTile : window.aTile;
+				Cell oppoCell = !window.aTile.Null ? window.bTile : window.aTile;
+
+				BreastFirstSearch(normCell, oppoCell.position, window.direction.GetOpposite(),
+				oppoCell,
+				__instance.CellFromPosition(oppoCell.position + window.direction.PerpendicularList()[0].ToIntVector2()),
+				__instance.CellFromPosition(oppoCell.position + window.direction.PerpendicularList()[1].ToIntVector2())
+
+				);
+				});
 
 
 
@@ -156,7 +165,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				{
 					if (visibleRenderers[z].Value == availableMeshes[i].Value)
 					{
-						nullCull.AddRendererToCell(visibleRenderers[i].Key, visibleRenderers[i].Value); // Add all the available renders to the corresponding chunks to be properly culled by a secondary Culling Manager
+						Debug.Log("Added renderer from pos: " + visibleRenderers[z].Key.position);
+						nullCull.AddRendererToCell(visibleRenderers[z].Key, visibleRenderers[z].Value); // Add all the available renders to the corresponding chunks to be properly culled by a secondary Culling Manager
 						hasBeenAdded = true;
 					}
 				}
@@ -166,6 +176,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					availableMeshes.RemoveAt(i--);
 				}
 			}
+
+			Debug.Log("TIMES: Outside created successfully!");
 
 
 			void BreastFirstSearch(Cell ogCell, IntVector2 pos, Direction forbiddenDirection, params Cell[] cellReferences)

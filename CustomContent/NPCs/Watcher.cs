@@ -43,7 +43,7 @@ namespace BBTimes.CustomContent.NPCs
 			hallRender.gameObject.ConvertToPrefab(true);
 
 			var hall = hallRender.gameObject.AddComponent<Hallucinations>();
-			hall.audMan = hall.gameObject.CreateAudioManager(45f, 65f);
+			hall.audMan = hall.gameObject.CreateAudioManager(15f, 25f);
 			hall.audSpawn = soundObjects[4];
 			hall.audLoop = soundObjects[5];
 			hall.renderer = hallRender;
@@ -120,7 +120,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			pm.GetCustomCam().ReverseSlideFOVAnimation(new ValueModifier(), 115f, 4f);
 			List<NPC> npcs = new(ec.Npcs);
-			npcs.RemoveAll(x => x == this || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.Entity);
+			npcs.RemoveAll(x => x == this || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.Entity || ec.CellFromPosition(x.transform.position).Null);
 
 			if (npcs.Count != 0)
 				StartCoroutine(TeleportDelay(pm, npcs[Random.Range(0, npcs.Count)]));

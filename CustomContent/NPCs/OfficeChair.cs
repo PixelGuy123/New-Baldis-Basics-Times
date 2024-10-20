@@ -191,7 +191,20 @@ namespace BBTimes.CustomContent.NPCs
 			if (rooms.Count == 0) // Just for pre-caution.... even though this might not even happen
 				return [];
 
-			return allTiles ? rooms[Random.Range(0, rooms.Count)].AllEntitySafeCellsNoGarbage() : rooms[Random.Range(0, rooms.Count)].GetTilesOfShape([TileShape.Single], true);
+			if (!allTiles)
+			{
+				List<List<Cell>> cellsToChoose = [];
+
+				rooms.ForEach(x =>
+				{
+					var cells = x.AllEntitySafeCellsNoGarbage();
+					if (cells.Count != 0)
+						cellsToChoose.Add(cells);
+				});
+
+				return cellsToChoose[Random.Range(0, cellsToChoose.Count)];
+			}
+			return rooms[Random.Range(0, rooms.Count)].GetTilesOfShape([TileShape.Single], true);
 		}
 
 		void SetTarget(bool active)
