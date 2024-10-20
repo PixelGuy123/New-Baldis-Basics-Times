@@ -4,9 +4,9 @@ using BBTimes.Manager;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using PixelInternalAPI.Classes;
-using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -24,14 +24,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 			Debug.Log("TIMES: Creating outside...");
 
-			List<KeyValuePair<IntVector2, Renderer>> availableMeshes = [];
+			List<KeyValuePair<IntVector2, KeyValuePair<Direction, Renderer>>> availableMeshes = []; // Has direction as well to avoid renderers that are adjacent to a visible window, which still makes them impossible to be seen
 			// Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
 
 			var plane = Instantiate(BBTimesManager.man.Get<GameObject>("PlaneTemplate"));
 			var renderer = plane.GetComponent<MeshRenderer>();
 			renderer.enabled = false;
 			renderer.material.mainTexture = __instance.mainHall.wallTex;
-			//renderer.enabled = false;
+
 			DestroyImmediate(plane.GetComponent<MeshCollider>()); // No collision needed
 
 			if (mats.Length == 0) // If Not initialized
@@ -78,7 +78,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						var p = Instantiate(plane, planeCover.transform);
 						p.transform.localRotation = dir.ToRotation();
 						p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.001f)) + (Vector3.up * LayerStorage.TileBaseOffset * i);
-						availableMeshes.Add(new(t.position, p.GetComponentInChildren<Renderer>()));
+						availableMeshes.Add(new(t.position, new(dir, p.GetComponentInChildren<Renderer>())));
 					}
 				}
 
@@ -100,7 +100,9 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				var p = Instantiate(plane, planeCover.transform);
 				p.transform.localPosition = t.FloorWorldPosition;
 				Singleton<CoreGameManager>.Instance.UpdateLighting(Color.white, t.position);
-				availableMeshes.Add(new(t.position, p.GetComponentInChildren<Renderer>()));
+				//AddDebugPosText(t, p.transform);
+
+				availableMeshes.Add(new(t.position, new(Direction.Null, p.GetComponentInChildren<Renderer>())));
 
 				if (decorations.Length > 0 && rng.NextDouble() > 0.75d)
 				{
@@ -109,7 +111,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					{
 						var d = Instantiate(decorations[rng.Next(decorations.Length)], planeCover.transform);
 						d.transform.localPosition = t.FloorWorldPosition + new Vector3(((float)rng.NextDouble() * 2f) - 1, 0f, ((float)rng.NextDouble() * 2f) - 1);
-						availableMeshes.Add(new(t.position, d.GetComponentInChildren<Renderer>()));
+						availableMeshes.Add(new(t.position, new(Direction.Null, d.GetComponentInChildren<Renderer>())));
 					}
 				}
 
@@ -131,7 +133,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					var p = Instantiate(plane, planeCover.transform);
 					p.transform.localRotation = dir.ToRotation();
 					p.transform.localPosition = t.CenterWorldPosition + (dir.ToVector3() * ((LayerStorage.TileBaseOffset / 2f) - 0.01f));
-					availableMeshes.Add(new(t.position, p.GetComponentInChildren<Renderer>()));
+					availableMeshes.Add(new(t.position, new(dir, p.GetComponentInChildren<Renderer>())));
 				}
 			}
 
@@ -145,8 +147,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			var nullCull = __instance.CullingManager.GetComponent<NullCullingManager>(); // Get the NullCullingManager
 
 			PostRoomCreation.spawnedWindows.ForEach(window => {
-				Cell normCell = window.aTile.Null ? window.bTile : window.aTile;
-				Cell oppoCell = !window.aTile.Null ? window.bTile : window.aTile;
+				Cell normCell = window.aTile; // window.aTile.Null ? window.bTile : ;
+				Cell oppoCell = window.bTile; //!window.aTile.Null ? window.bTile : window.aTile;
 
 				BreastFirstSearch(normCell, oppoCell.position, window.direction.GetOpposite(),
 				oppoCell,
@@ -163,16 +165,15 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				bool hasBeenAdded = false;
 				for (int z = 0; z < visibleRenderers.Count; z++)
 				{
-					if (visibleRenderers[z].Value == availableMeshes[i].Value)
+					if (visibleRenderers[z].Value == availableMeshes[i].Value.Value)
 					{
-						Debug.Log("Added renderer from pos: " + visibleRenderers[z].Key.position);
 						nullCull.AddRendererToCell(visibleRenderers[z].Key, visibleRenderers[z].Value); // Add all the available renders to the corresponding chunks to be properly culled by a secondary Culling Manager
 						hasBeenAdded = true;
 					}
 				}
 				if (!hasBeenAdded)
 				{
-					Destroy(availableMeshes[i].Value);
+					Destroy(availableMeshes[i].Value.Value);
 					availableMeshes.RemoveAt(i--);
 				}
 			}
@@ -209,7 +210,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 							tilesToAccess.Enqueue(nextPos);
 						}
 					}
-					visibleRenderers.AddRange(availableMeshes.Where(x => x.Key == curPos).Select(x => new KeyValuePair<Cell, Renderer>(ogCell, x.Value)));
+					visibleRenderers.AddRange(availableMeshes.Where(x => x.Key == curPos && x.Value.Key != forbiddenDirection).Select(x => new KeyValuePair<Cell, Renderer>(ogCell, x.Value.Value)));
 					accessedTiles.Add(curPos); // Accessed that tile then
 				}
 			}
@@ -217,7 +218,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			bool Raycast(Cell startCell, Cell targetCell) // Not using Physics.Raycast because collision isn't really trustful
 			{
 				Vector3 posToFollow = startCell.FloorWorldPosition;
-				Vector3 dir = (targetCell.FloorWorldPosition - posToFollow).normalized * 10f;
+				Vector3 dir = (targetCell.FloorWorldPosition - posToFollow).normalized * rayCastDistance;
 				Cell cell = startCell;
 
 				while (cell != targetCell)
@@ -229,7 +230,23 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				}
 				return true;
 			}
+
+			//void AddDebugPosText(Cell t, Transform reference)
+			//{
+			//	var text = new GameObject("DebugPositionText_(" + t.position.ToString() + ')').AddComponent<TextMeshPro>();
+			//	text.gameObject.layer = LayerStorage.billboardLayer;
+
+			//	text.transform.SetParent(reference);
+			//	text.transform.localPosition = Vector3.up * 0.1f;
+			//	text.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			//	text.alignment = TextAlignmentOptions.Center;
+			//	text.rectTransform.offsetMin = new(-4f, -3.99f);
+			//	text.rectTransform.offsetMax = new(4f, 4.01f);
+			//	text.text = t.position.ToString();
+			//}
 		}
+
+		const float rayCastDistance = LayerStorage.TileBaseOffset;
 
 		static Material[] mats = [];
 

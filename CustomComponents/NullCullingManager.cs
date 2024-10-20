@@ -3,28 +3,23 @@ using UnityEngine;
 
 namespace BBTimes.CustomComponents
 {
-	internal class NullCullingManager : MonoBehaviour
+	public class NullCullingManager : MonoBehaviour
 	{
-		public void CheckAllChunks(Chunk chunkToCull)
-		{
-			for (int i = 0; i < chunkToCull.visibleChunks.Length; i++)
-			{
-				int idx = rendererPairs.FindIndex(x => x.HasChunk(cullMan.allChunks[i]));
-				if (idx == -1) continue;
-
-				rendererPairs[idx].DisableChunk(!chunkToCull.visibleChunks[i]);
-			}
-		}
-
+		public void CheckAllChunks() =>
+			rendererPairs.ForEach(x => x.UpdateChunk());
+		
 		public void AddRendererToCell(Cell cell, Renderer newRend)
 		{
 			int idx = rendererPairs.FindIndex(x => x.cells.Contains(cell) || x.Renderers.Contains(newRend));
 			if (idx == -1)
+			{
 				rendererPairs.Add(new([cell], [newRend]));
+			}
 			else
 			{
 				rendererPairs[idx].Renderers.Add(newRend);
-				rendererPairs[idx].cells.Add(cell);
+				if (!rendererPairs[idx].cells.Contains(cell))
+					rendererPairs[idx].cells.Add(cell);
 			}
 		}
 
@@ -33,27 +28,19 @@ namespace BBTimes.CustomComponents
 		[SerializeField]
 		internal CullingManager cullMan;
 
-		internal struct ChunkGroup(List<Cell> cells,  List<Renderer> renderers)
+		public readonly struct ChunkGroup(List<Cell> cells,  List<Renderer> renderers)
 		{
-			internal readonly bool HasChunk(Chunk chunk) => cells.Exists(x => x.Chunk == chunk);
 			internal readonly List<Cell> cells = cells;
 			internal readonly List<Renderer> Renderers = renderers;
 
-			int disables = 0;
-			internal void DisableChunk(bool disable)
+			internal readonly void UpdateChunk()
 			{
-				if (disable)
-					disables++;
-				else
-					disables--;
-				if (disables < 0)
-					disables = 0;
-
+				bool isEnabled = IsEnabled;
 				for (int i = 0; i < Renderers.Count; i++)
-					Renderers[i].enabled = !IsDisabled;
+					Renderers[i].enabled = isEnabled;
 			}
 
-			internal readonly bool IsDisabled => disables > 0;
+			public readonly bool IsEnabled => cells.Exists(x => x.Chunk?.Rendering ?? false);
 
 		}
 	}

@@ -41,7 +41,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPrefix]
 		static bool PlayCutscene(MainGameManager __instance, bool ___allNotebooksFound)
 		{
-			//if (Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || !__instance.name.StartsWith("Lvl3") || !___allNotebooksFound) return true;
+			if (Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || !__instance.name.StartsWith("Lvl3") || !___allNotebooksFound) return true;
 			var elevator = __instance.Ec.elevators.FirstOrDefault(x => x.IsOpen);
 			if (!elevator) // failsafe
 				return true;

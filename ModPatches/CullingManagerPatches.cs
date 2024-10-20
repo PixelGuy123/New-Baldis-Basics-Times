@@ -8,7 +8,7 @@ namespace BBTimes.ModPatches
 	{
 		[HarmonyPatch("CullChunk")]
 		[HarmonyPostfix]
-		static void CullNullChunks(CullingManager __instance, int chunkId) =>
-			__instance.GetComponent<NullCullingManager>().CheckAllChunks(__instance.allChunks[chunkId]);
+		static void CullNullChunks(CullingManager __instance) =>
+			__instance.GetComponent<NullCullingManager>().CheckAllChunks();
 	}
 }

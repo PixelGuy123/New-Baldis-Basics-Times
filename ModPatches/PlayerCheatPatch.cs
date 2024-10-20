@@ -1,17 +1,17 @@
-﻿using BBTimes.CustomComponents;
-using BepInEx.Bootstrap;
-using HarmonyLib;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
+﻿//using BBTimes.CustomComponents;
+//using BepInEx.Bootstrap;
+//using HarmonyLib;
+//using System.Collections.Generic;
+//using System.Reflection;
+//using UnityEngine;
 
-namespace BBTimes.ModPatches
-{
-	[HarmonyPatch(typeof(PlayerMovement), "PlayerMove")]
-	internal class PlayerCheatPatch
-	{
-		static void Prefix(PlayerMovement __instance)
-		{
+//namespace BBTimes.ModPatches
+//{
+	//[HarmonyPatch(typeof(PlayerMovement), "PlayerMove")]
+	//internal class PlayerCheatPatch
+	//{
+	//static void Prefix(PlayerMovement __instance)
+		//{
 			//if (Input.GetKeyDown(KeyCode.T))
 			//{
 			//	var dat = __instance.pm.ec.GetComponent<EnvironmentControllerData>();
@@ -28,11 +28,8 @@ namespace BBTimes.ModPatches
 			//	__instance.pm.ec.StartCoroutine(__instance.pm.ec.EventTimer(__instance.pm.ec.events[0], 5f));
 			//	__instance.pm.ec.events.RemoveAt(0);
 			//}
-
-			if (Input.GetKey(KeyCode.C))
-				Debug.Log("Player is positioned at: " + IntVector2.GetGridPosition(__instance.transform.position));
-		}
-	}
+		//}
+	//}
 
 //	[HarmonyPatch]
 //	internal class CrashDebugging
@@ -65,4 +62,4 @@ namespace BBTimes.ModPatches
 
 
 //	}
-}
+//}
