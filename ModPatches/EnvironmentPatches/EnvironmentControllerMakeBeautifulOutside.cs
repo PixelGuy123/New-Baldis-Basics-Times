@@ -150,7 +150,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				Cell oppoCell = window.bTile; //!window.aTile.Null ? window.bTile : window.aTile;
 
 				BreastFirstSearch(normCell, oppoCell.position, window.direction.GetOpposite(),
-				oppoCell.FloorWorldPosition);
+				oppoCell);
 				});
 
 
@@ -205,7 +205,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 							tilesToAccess.Enqueue(nextPos);
 						}
 					}
-					visibleRenderers.AddRange(availableMeshes.Where(x => x.Key == cellReference || (x.Key == curPos &&
+					visibleRenderers.AddRange(availableMeshes.Where(x => x.Key == cellReference.position || (x.Key == curPos &&
 					x.Value.Key != forbiddenDirection))
 						.Select(x => new KeyValuePair<Cell, Renderer>(ogCell, x.Value.Value)));
 
