@@ -237,23 +237,31 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerLost(player);
 			if (players.ContainsKey(player))
-			{
-				player.Am.moveMods.Remove(moveMod);
-				var cam = player.GetCustomCam();
-				var k = players[player];
-				cam.StopCoroutine(k.Value);
-				cam.ResetSlideFOVAnimation(k.Key);
-				players.Remove(player);
-				f.ApplyScale(false);
-			}
+				TakeFovOut(player);
 			if (players.Count == 0)
 				CanDespawn = true;
+		}
+
+		void TakeFovOut(PlayerManager player, bool removeFromDic = true)
+		{
+			player.Am.moveMods.Remove(moveMod);
+			var cam = player.GetCustomCam();
+			var k = players[player];
+			if (k.Value != null)
+				cam.StopCoroutine(k.Value);
+			cam.ResetSlideFOVAnimation(k.Key);
+			if (removeFromDic)
+				players.Remove(player);
+			f.ApplyScale(false);
 		}
 
 		public override void Exit()
 		{
 			base.Exit();
 			f.ApplyScale(false);
+
+			foreach (var player in players.Keys)
+				TakeFovOut(player, false);
 		}
 
 		readonly Dictionary<PlayerManager, KeyValuePair<ValueModifier, Coroutine>> players = [];

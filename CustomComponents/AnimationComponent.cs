@@ -49,7 +49,7 @@ namespace BBTimes.CustomComponents
 		protected EnvironmentController ec;
 
 		[SerializeField]
-		[Range(0.1f, float.MaxValue)]
+		[Range(0.1f, 50f)]
 		internal float speed = 5;
 
 		[SerializeField]

@@ -305,6 +305,9 @@ namespace BBTimes.Extensions
 			return rigid;
 		}
 
+		public static Vector3 ToVector3(this IntVector2 vec) =>
+			new(vec.x * 10f + 5f, 0f, vec.z * 10f + 5f);
+
 		internal static DetentionUi detentionUiPre;
 
 		const int defaultDetentionNoise = 95;

@@ -6,7 +6,6 @@ using HarmonyLib;
 using PixelInternalAPI.Classes;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -151,13 +150,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				Cell oppoCell = window.bTile; //!window.aTile.Null ? window.bTile : window.aTile;
 
 				BreastFirstSearch(normCell, oppoCell.position, window.direction.GetOpposite(),
-				oppoCell,
-				__instance.CellFromPosition(oppoCell.position + window.direction.PerpendicularList()[0].ToIntVector2()),
-				__instance.CellFromPosition(oppoCell.position + window.direction.PerpendicularList()[1].ToIntVector2())
-
-				);
+				oppoCell.FloorWorldPosition);
 				});
-
 
 
 			for (int i = 0; i < availableMeshes.Count; i++)
@@ -181,7 +175,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			Debug.Log("TIMES: Outside created successfully!");
 
 
-			void BreastFirstSearch(Cell ogCell, IntVector2 pos, Direction forbiddenDirection, params Cell[] cellReferences)
+			void BreastFirstSearch(Cell ogCell, IntVector2 pos, Direction forbiddenDirection, Cell cellReference)
 			{
 				HashSet<IntVector2> accessedTiles = [];
 				Queue<IntVector2> tilesToAccess = [];
@@ -195,6 +189,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				while (tilesToAccess.Count != 0) // Until the queue is empty
 				{
 					var curPos = tilesToAccess.Dequeue();
+
 					for (int i = 0; i < dirsToFollow.Count; i++)
 					{
 						var nextPos = curPos + dirsToFollow[i].ToIntVector2();
@@ -204,24 +199,30 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						if (cell.Null &&
 							__instance.ContainsCoordinates(nextPos) &&
 							!accessedTiles.Contains(nextPos) &&
-							cellReferences.Any(x => Raycast(x, prevCell))) // If cell is null, add the renderers from it
+							Raycast(cellReference.FloorWorldPosition, prevCell.FloorWorldPosition)) // If cell is null, add the renderers from it
 						{
 							accessedTiles.Add(nextPos);
 							tilesToAccess.Enqueue(nextPos);
 						}
 					}
-					visibleRenderers.AddRange(availableMeshes.Where(x => x.Key == curPos && x.Value.Key != forbiddenDirection).Select(x => new KeyValuePair<Cell, Renderer>(ogCell, x.Value.Value)));
+					visibleRenderers.AddRange(availableMeshes.Where(x => x.Key == cellReference || (x.Key == curPos &&
+					x.Value.Key != forbiddenDirection))
+						.Select(x => new KeyValuePair<Cell, Renderer>(ogCell, x.Value.Value)));
+
 					accessedTiles.Add(curPos); // Accessed that tile then
 				}
+				
 			}
 
-			bool Raycast(Cell startCell, Cell targetCell) // Not using Physics.Raycast because collision isn't really trustful
+			bool Raycast(Vector3 startCell, Vector3 targetCell) // Not using Physics.Raycast because collision isn't really trustful
 			{
-				Vector3 posToFollow = startCell.FloorWorldPosition;
-				Vector3 dir = (targetCell.FloorWorldPosition - posToFollow).normalized * rayCastDistance;
-				Cell cell = startCell;
+				Vector3 posToFollow = startCell;
+				Vector3 dir = (targetCell - posToFollow).normalized * rayCastDistance;
 
-				while (cell != targetCell)
+				Cell cell = __instance.CellFromPosition(startCell);
+				var tarCell = __instance.CellFromPosition(targetCell);
+
+				while (cell != tarCell)
 				{
 					posToFollow += dir;
 					cell = __instance.CellFromPosition(posToFollow);

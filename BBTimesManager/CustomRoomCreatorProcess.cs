@@ -263,12 +263,12 @@ namespace BBTimes.Manager
 
 			// Computer
 
-			var computer = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", "computer.png")), 25f));
+			var computer = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", GetAssetName("computer.png"))), 25f));
 			computer.name = "ComputerBillboard";
 			computer.gameObject.AddObjectToEditor();
 
 			// Event machine
-			Sprite[] sprs = TextureExtensions.LoadSpriteSheet(3, 1, 26f, GetRoomAsset("ComputerRoom", "eventMachine.png"));
+			Sprite[] sprs = TextureExtensions.LoadSpriteSheet(3, 1, 26f, GetRoomAsset("ComputerRoom", GetAssetName("eventMachine.png")));
 			var machine = ObjectCreationExtensions.CreateSpriteBillboard(sprs[1], false);
 			machine.gameObject.layer = 0;
 			machine.name = "EventMachine";
@@ -289,6 +289,28 @@ namespace BBTimes.Manager
 
 			machine.gameObject.AddBoxCollider(Vector3.forward * -1.05f, new(6f, 10f, 1f), true);
 
+			// ComputerTeleporter
+			sprs = TextureExtensions.LoadSpriteSheet(3, 2, 12.5f, GetRoomAsset("ComputerRoom", GetAssetName("ComputerTeleporter.png")));
+			machine = ObjectCreationExtensions.CreateSpriteBillboard(sprs[5]).AddSpriteHolder(5f, LayerStorage.ignoreRaycast);
+			machine.name = "Sprite";
+
+			var teleporter = machine.transform.parent.gameObject.AddComponent<ComputerTeleporter>();
+			teleporter.name = "ComputerTeleporter";
+
+			teleporter.gameObject.AddObjectToEditor();
+			teleporter.gameObject.AddBoxCollider(Vector3.up * 5f, new(5f, 10f, 5f), true);
+			teleporter.sprDisabled = machine.sprite;
+
+			teleporter.audMan = teleporter.gameObject.CreatePropagatedAudioManager(maxDistance: 40f);
+			teleporter.loopingAudMan = teleporter.gameObject.CreatePropagatedAudioManager(maxDistance: 40f);
+			teleporter.audTeleport = man.Get<SoundObject>("teleportAud");
+			teleporter.audLoop = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", GetAssetName("teleportationNoises.wav"))), "Vfx_CompTel_Working", SoundType.Voice, Color.white);
+
+			teleporter.animComp = teleporter.gameObject.AddComponent<AnimationComponent>();
+			teleporter.animComp.renderer = machine;
+			teleporter.animComp.animation = [.. sprs.Take(5)];
+			teleporter.animComp.speed = 11.5f;
+
 			sets = RegisterRoom("ComputerRoom", new(0f, 0f, 0.35f),
 				ObjectCreators.CreateDoorDataObject("ComputerDoor",
 				AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", "computerDoorOpened.png")),
@@ -304,7 +326,7 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 1,
+				minRooms = 0,
 				maxRooms = 1,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(0)],
 				light = [lightPre],
@@ -316,8 +338,8 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 0,
-				maxRooms = 1,
+				minRooms = 1,
+				maxRooms = 2,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(1)],
 				name = "ComputerRoom",
 				light = [lightPre],
@@ -327,7 +349,7 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 1,
+				minRooms = 2,
 				maxRooms = 2,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(3)],
 				name = "ComputerRoom",
@@ -339,8 +361,8 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 0,
-				maxRooms = 1,
+				minRooms = 2,
+				maxRooms = 4,
 				potentialRooms = [.. room.FilterRoomAssetsByFloor(2)],
 				name = "ComputerRoom",
 				light = [lightPre]
