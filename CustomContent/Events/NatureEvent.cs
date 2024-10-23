@@ -25,7 +25,7 @@ namespace BBTimes.CustomContent.Events
 
 			List<WeightedSelection<Plant>> flowers = [];
 
-			var sprites = this.GetSpriteSheet(2, 2, plantsPixPerUnit, "timesFlowersPack.png");
+			var sprites = this.GetSpriteSheet(5, 1, plantsPixPerUnit, "timesFlowersPack.png");
 
 			// Normal flowers
 			var speedChanging = CreatePlant<SpeedChangingFlower>(sprites[0], 75);

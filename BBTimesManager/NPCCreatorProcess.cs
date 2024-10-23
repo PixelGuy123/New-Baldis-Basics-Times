@@ -136,7 +136,7 @@ namespace BBTimes.Manager
 				.SetupNPCData("0thPrize", "PST_0TH_Name", "PST_0TH_Desc", -0.4f)
 				.MarkAsReplacement(75, Character.Sweep); // 25
 
-			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 25 });
 
 			// Pencil Boy
 			npc = new NPCBuilder<PencilBoy>(plug.Info)
@@ -199,8 +199,8 @@ namespace BBTimes.Manager
 				.MarkAsReplacement(35, Character.Principal); //35
 			
 			npc.Navigator.SetRoomAvoidance(false);
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 
 			// Superintendent Jr.
 			npc = new NPCBuilder<SuperIntendentJr>(plug.Info)
@@ -269,8 +269,8 @@ namespace BBTimes.Manager
 
 			npc.Navigator.SetRoomAvoidance(false);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 50 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 33 });
 
 			// Bubbly
 			npc = new NPCBuilder<Bubbly>(plug.Info)
@@ -284,8 +284,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("Bubbly", "PST_Bubbly_Name", "PST_Bubbly_Desc", -1.03f)
 				.MarkAsReplacement(55, Character.Cumulo);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 
 			// Phawillow
 			npc = new NPCBuilder<Phawillow>(plug.Info)
@@ -317,8 +317,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("Faker", "PST_Faker_Name", "PST_Faker_Desc", -1.36f)
 				.MarkAsReplacement(45, Character.LookAt); // 45
 
-			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 23 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 44 });
 
 			// Camera Stand
 			npc = new NPCBuilder<CameraStand>(plug.Info)
@@ -332,7 +332,6 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("CameraStand", "PST_CamSt_Name", "PST_CamSt_Desc", -0.75f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 999999 });
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 66 });
 
@@ -364,8 +363,8 @@ namespace BBTimes.Manager
 				.MarkAsReplacement(30, Character.DrReflex);
 
 			npc.Navigator.SetRoomAvoidance(false);
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 21 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 
 			// Pran the Dancer
 			npc = new NPCBuilder<PranTheDancer>(plug.Info)
@@ -410,8 +409,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("Mopper", "PST_MOP_Name", "PST_MOP_Desc", -0.196f)
 				.MarkAsReplacement(35, Character.Sweep);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 1 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 55 });
 
 			// Ink Artist
 			npc = new NPCBuilder<InkArtist>(plug.Info)
@@ -451,7 +450,21 @@ namespace BBTimes.Manager
 				.SetupNPCData("Quiker", "PST_Quiker_Name", "PST_Quiker_Desc", 0)
 				.MarkAsReplacement(55, Character.LookAt);
 
-			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 1 });
+			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 20 });
+
+			// Jerry The Air Conditioner
+			npc = new NPCBuilder<JerryTheAC>(plug.Info)
+				.SetMinMaxAudioDistance(145f, 200f)
+				.SetEnum("JerryTheAC")
+				.SetMetaName("PST_JerryAc_Name")
+				.SetName("JerryTheAirConditioner")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("JerryTheAirConditioner", "PST_JerryAc_Name", "PST_JerryAc_Desc", 0);
+				//.MarkAsReplacement(35, Character.Cumulo);
+
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 999999 }); //25
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
 		}
 
 		

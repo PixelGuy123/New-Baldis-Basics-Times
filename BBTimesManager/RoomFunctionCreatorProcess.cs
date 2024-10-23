@@ -51,7 +51,7 @@ namespace BBTimes.Manager
 
 
 			// Random Corner Object
-			WeightedTransform[] transforms = [
+			List<WeightedTransform> transformsList = [
 				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lamp.png"))), 25f))
 				.AddSpriteHolder(2.9f, LayerStorage.ignoreRaycast)
 				.transform.parent.gameObject.SetAsPrefab(true)
@@ -67,6 +67,20 @@ namespace BBTimes.Manager
 				.transform.parent.gameObject.SetAsPrefab(true)
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 55 },
 				];
+
+			TextureExtensions.LoadSpriteSheet(3, 1, 40f, MiscPath, TextureFolder, GetAssetName("SugaLamps.png")).Do(x =>
+			{
+				transformsList.Add(new()
+				{
+					selection = ObjectCreationExtensions.CreateSpriteBillboard(x)
+				.AddSpriteHolder(3.1f, LayerStorage.ignoreRaycast)
+				.transform.parent.gameObject.SetAsPrefab(true)
+				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform,
+					weight = 38
+				});
+			});
+
+			WeightedTransform[] transforms = [.. transformsList];
 
 			var cos = AddFunctionToEveryRoom<CornerObjectSpawner>(FacultyPrefix);
 			cos.lightPower = 0;

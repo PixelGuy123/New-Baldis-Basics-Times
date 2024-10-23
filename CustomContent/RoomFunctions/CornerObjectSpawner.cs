@@ -44,7 +44,11 @@ namespace BBTimes.CustomContent.RoomFunctions
 					}
 					transform.transform.position += dir.ToVector3() * (LayerStorage.TileBaseOffset / 2);
 					transform.transform.rotation = dir.ToRotation();
+					cell.HardCover(dir.ToCoverage());
 				}
+				else
+					cell.HardCover(CellCoverage.Down);
+
 				if (nonSafeEntityCell)
 					room.entitySafeCells.Remove(cell.position);
 

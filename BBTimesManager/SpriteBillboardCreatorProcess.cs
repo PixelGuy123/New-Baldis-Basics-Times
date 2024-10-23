@@ -58,6 +58,7 @@ namespace BBTimes.Manager
 
 			// Misc Decorations
 			AddDecoration("SecretBread","bread.png", 35f, Vector3.up * 1.3f);
+			AddDecoration("TimesKitchenSteak", "Steak.png", 30f, Vector3.up);
 
 			static void AddDecoration(string name, string fileName, float pixelsPerUnit, Vector3 offset)
 			{

@@ -527,7 +527,7 @@ namespace BBTimes.Manager
 				new()
 				{
 					chance = 0.1f,
-					potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SecretBread").transform }],
+					potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SecretBread").transform, weight = 25 }, new() { selection = man.Get<GameObject>("editorPrefab_TimesKitchenSteak").transform, weight = 100 }],
 					prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Lunch").transform
 				}));
 
