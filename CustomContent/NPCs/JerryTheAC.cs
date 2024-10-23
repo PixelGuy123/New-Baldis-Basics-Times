@@ -89,8 +89,8 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Initialize();
 			foreach (var room in ec.rooms)
-				if (room.type == RoomType.Room)
-					cells.AddRange(room.AllEntitySafeCellsNoGarbage().Where(x => !x.HasAnyHardCoverage && x.shape == TileShape.Corner));
+				if (room.type == RoomType.Room && room.category != RoomCategory.Special)
+					cells.AddRange(room.AllEntitySafeCellsNoGarbage().Where(x => x.open && !x.HasAnyHardCoverage && x.shape == TileShape.Corner));
 
 			behaviorStateMachine.ChangeState(new JerryTheAC_GoToRoom(this));
 		}
