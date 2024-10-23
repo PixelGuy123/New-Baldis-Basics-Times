@@ -50,7 +50,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			var an = system.textureSheetAnimation;
 			an.enabled = true;
-			an.numTilesX = 4;
+			an.numTilesX = 2;
 			an.numTilesY = 2;
 			an.animation = ParticleSystemAnimationType.WholeSheet;
 			an.fps = 0f;
