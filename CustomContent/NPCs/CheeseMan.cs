@@ -1,0 +1,294 @@
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Manager;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace BBTimes.CustomContent.NPCs
+{
+	public class CheeseMan : NPC, INPCPrefab, IClickable<int>
+	{
+		public void SetupPrefab()
+		{
+			audMan = GetComponent<AudioManager>();
+			this.CreateClickableLink().CopyColliderAttributes((CapsuleCollider)baseTrigger[0]);
+
+			animComp = gameObject.AddComponent<AnimationComponent>();
+			var sprs = this.GetSpriteSheet(2, 5, 55f, "cheeseMan.png");
+			sprsWalking = [sprs[0], sprs[1]];
+			sprsWalkHumming = [sprs[2], sprs[3]];
+			sprHit = [sprs[4]];
+			sprStunned = [sprs[5]];
+			sprsOfferYTP = [sprs[7], sprs[6]]; // Reversed, to end at the mouth closed, not open
+			sprBlankFace = [sprs[8]];
+			sprAngryTalk = [sprs[9]];
+
+			animComp.renderers = [spriteRenderer[0]];
+			animComp.animation = sprsWalking;
+			animComp.speed = 7f;
+			spriteRenderer[0].sprite = sprsWalking[0];
+
+			Color subColor = new(0.796875f, 0.796875f, 0f);
+
+			audHitted = [this.GetSound("CMS_Heck.wav", "Vfx_CheeseMan_Hit1", SoundType.Voice, subColor), this.GetSound("CMS_Oh.wav", "Vfx_CheeseMan_Hit2", SoundType.Voice, subColor)];
+			audHumming = this.GetSound("CMS_Hum.wav", "Vfx_CheeseMan_Hum", SoundType.Voice, subColor);
+			audYTPOffer = this.GetSound("CMS_YTPs.wav", "Vfx_CheeseMan_YTPs", SoundType.Voice, subColor);
+			audStunned = this.GetSound("CMS_Head.wav", "Vfx_CheeseMan_AfterHit", SoundType.Voice, subColor);
+			audSorry = this.GetSound("CMS_Sorry.wav", "Vfx_CheeseMan_Sorry", SoundType.Voice, subColor);
+			audAngry = this.GetSound("CMS_Watch.wav", "Vfx_CheeseMan_Watch", SoundType.Voice, subColor);
+			audBumpNoise = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
+		}
+		public void SetupPrefabPost() { }
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public NPC Npc { get; set; }
+		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
+		public int ReplacementWeight { get; set; }
+		// --------------------------------------------------
+
+		[SerializeField]
+		internal AudioManager audMan;
+
+		[SerializeField]
+		internal SoundObject[] audHitted;
+
+		[SerializeField]
+		internal SoundObject audHumming, audSorry, audStunned, audYTPOffer, audBumpNoise, audAngry;
+
+		[SerializeField]
+		internal int minYTPGain = 15, maxYTPGain = 30;
+
+		[SerializeField]
+		internal float minWaitForHummingCooldown = 30f, maxWaitForHummingCooldown = 40f, minStunDelay = 11f, maxStunDelay = 14f, offerToleranceBuffer = 25f,
+			bumpForce = 17.8f, bumpAcceleration = -14.6f;
+
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float stunSlownessFactor = 0.45f;
+
+		[SerializeField]
+		internal AnimationComponent animComp;
+
+		[SerializeField]
+		internal Sprite[] sprsWalking, sprsWalkHumming, sprHit, sprStunned, sprsOfferYTP, sprBlankFace, sprAngryTalk;
+
+		readonly MovementModifier moveMod = new(Vector3.zero, 1f);
+
+
+		public override void Initialize()
+		{
+			base.Initialize();
+			moveMod.movementMultiplier = stunSlownessFactor;
+			animComp.Initialize(ec);
+			behaviorStateMachine.ChangeState(new CheeseMan_Walking(this));
+		}
+
+		public void Clicked(int player)
+		{
+			if (!offeringYTP) return;
+			Singleton<CoreGameManager>.Instance.AddPoints(Random.Range(minYTPGain, maxYTPGain + 1), player, true);
+			behaviorStateMachine.ChangeState(new CheeseMan_Walking(this));
+			offeringYTP = false;
+		}
+		public bool ClickableHidden() => !offeringYTP;
+		public bool ClickableRequiresNormalHeight() => false;
+		public void ClickableSighted(int player) { }
+		public void ClickableUnsighted(int player) { }
+		public void Walk(bool humming)
+		{
+			navigator.maxSpeed = 17.5f;
+			navigator.SetSpeed(17.5f);
+
+			animComp.animation = humming ? sprsWalkHumming : sprsWalking;
+			
+			if (humming)
+			{
+				audMan.FlushQueue(true);
+				audMan.maintainLoop = true;
+				audMan.SetLoop(true);
+				audMan.QueueAudio(audHumming);
+			}
+		}
+		public void Bump(Entity e, bool wasPlayer)
+		{
+			navigator.maxSpeed = 0f;
+			navigator.SetSpeed(0f);
+			behaviorStateMachine.ChangeState(new NpcState(this));
+			behaviorStateMachine.ChangeNavigationState(new NavigationState_DoNothing(this, 0));
+
+			navigator.Entity.AddForce(new((transform.position - e.transform.position).normalized, bumpForce, bumpAcceleration));
+			e.AddForce(new((e.transform.position - transform.position).normalized, bumpForce, bumpAcceleration));
+
+			audMan.FlushQueue(true);
+			audMan.PlaySingle(audBumpNoise);
+			audMan.PlayRandomAudio(audHitted);
+
+			animComp.animation = sprHit;
+			if (sorrySequ != null)
+				StopCoroutine(sorrySequ);
+			sorrySequ = StartCoroutine(SorrySequence(wasPlayer ? e : null));
+
+			StartCoroutine(StunEntity(e));
+		}
+		IEnumerator SorrySequence(Entity playerToOffer)
+		{
+			float delay = 1f;
+			while (delay > 0f)
+			{
+				delay -= TimeScale * Time.deltaTime;
+				yield return null;
+			}
+			while (audMan.QueuedAudioIsPlaying) yield return null;
+			audMan.QueueAudio(audStunned);
+			animComp.animation = sprStunned;
+			while (audMan.QueuedAudioIsPlaying) yield return null;
+			if (playerToOffer)
+			{
+				animComp.animation = sprsOfferYTP;
+				audMan.QueueAudio(audSorry);
+				audMan.QueueAudio(audYTPOffer);
+				offeringYTP = true;
+				bool speaking = true;
+				bool angry = false;
+				while (offeringYTP)
+				{
+					if (speaking && !audMan.QueuedAudioIsPlaying)
+					{
+						animComp.StopLastFrameMode();
+						speaking = false;
+					}
+					if (Vector3.Distance(playerToOffer.transform.position, transform.position) > offerToleranceBuffer)
+					{
+						offeringYTP = false;
+						angry = true;
+						break;
+					}
+					yield return null;
+				}
+				animComp.ResetFrame(true);
+				audMan.FlushQueue(true);
+				if (!angry)
+					yield break;
+				
+				animComp.animation = sprBlankFace;
+
+				delay = 0.35f;
+				while (delay > 0f)
+				{
+					delay -= TimeScale * Time.deltaTime;
+					yield return null;
+				}
+
+				animComp.animation = sprAngryTalk;
+				audMan.QueueAudio(audAngry);
+
+				while (audMan.QueuedAudioIsPlaying) yield return null;
+
+				behaviorStateMachine.ChangeState(new CheeseMan_Walking(this));
+
+				yield break;
+			}
+
+			audMan.QueueAudio(audSorry);
+			behaviorStateMachine.ChangeState(new CheeseMan_Walking(this));
+
+			yield break;
+		}
+		IEnumerator StunEntity(Entity e)
+		{
+			affectedActMods.Add(e.ExternalActivity);
+			e.ExternalActivity.moveMods.Add(moveMod);
+			float time = Random.Range(minStunDelay, maxStunDelay);
+			while (time > 0f)
+			{
+				time -= TimeScale * Time.deltaTime;
+				yield return null;
+			}
+			if (e && e.ExternalActivity)
+			{
+				e.ExternalActivity.moveMods.Remove(moveMod);
+				affectedActMods.Remove(e.ExternalActivity);
+			}
+		}
+		public override void Despawn()
+		{
+			base.Despawn();
+			while (affectedActMods.Count != 0)
+			{
+				affectedActMods[0]?.moveMods.Remove(moveMod);
+				affectedActMods.RemoveAt(0);
+			}
+		}
+
+		readonly List<ActivityModifier> affectedActMods = [];
+		bool offeringYTP = false;
+		public float WaitForHummingCooldown => Random.Range(minWaitForHummingCooldown, maxWaitForHummingCooldown);
+		Coroutine sorrySequ;
+	}
+
+	internal class CheeseMan_StateBase(CheeseMan chm) : NpcState(chm)
+	{
+		protected CheeseMan chm = chm;
+	}
+
+	internal class CheeseMan_Walking(CheeseMan chm) : CheeseMan_StateBase(chm)
+	{
+		float humCool = chm.WaitForHummingCooldown;
+		public override void Enter()
+		{
+			base.Enter();
+			chm.Walk(false);
+			ChangeNavigationState(new NavigationState_WanderRandom(chm, 0));
+		}
+		public override void Update()
+		{
+			base.Update();
+			humCool -= chm.TimeScale * Time.deltaTime;
+			if (humCool <= 0f)
+				chm.behaviorStateMachine.ChangeState(new CheeseMan_WalkingHumming(chm));
+			
+		}
+	}
+
+	internal class CheeseMan_WalkingHumming(CheeseMan chm) : CheeseMan_StateBase(chm)
+	{
+		public override void Enter()
+		{
+			base.Enter();
+			chm.Walk(true);
+		}
+
+		public override void OnStateTriggerEnter(Collider other)
+		{
+			base.OnStateTriggerEnter(other);
+			if (other.isTrigger)
+			{
+				var isPlayer = other.CompareTag("Player");
+				if (other.CompareTag("NPC") || isPlayer)
+				{
+					var e = other.GetComponent<Entity>();
+					if (e)
+					{
+						if (isPlayer)
+						{
+							var pm = other.GetComponent<PlayerManager>();
+							if (pm)
+							{
+								bool wasRunning = pm.plm.running && pm.plm.stamina > 0f;
+								if (wasRunning)
+									pm.itm.RemoveRandomItem();
+								chm.Bump(e, wasRunning);
+							}
+							return;
+						}
+						chm.Bump(e, false);
+					}
+				}
+			}
+		}
+	}
+
+}

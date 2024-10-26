@@ -418,7 +418,7 @@ namespace BBTimes
 							var group = ld.roomGroup.FirstOrDefault(x => x.potentialRooms.Any(z => z.selection.category == holder.SelectionLimiters[0]));
 							if (group == null)
 							{
-								Debug.LogWarning("BBTimes: Failed to load texture for room category: " + name);
+								//Debug.LogWarning("BBTimes: Failed to load texture for room category: " + name);
 								break;
 							}
 							switch (holder.TextureType)

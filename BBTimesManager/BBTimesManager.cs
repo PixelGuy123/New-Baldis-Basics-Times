@@ -270,7 +270,7 @@ namespace BBTimes.Manager
 
 			// Eletricity Prefab
 			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, GetAssetName("shock.png"));
-			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, 0);
+			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, LayerStorage.ignoreRaycast);
 			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
 			eleRender.name = "Sprite";
@@ -279,7 +279,7 @@ namespace BBTimes.Manager
 			ele.name = "Eletricity";
 			var ani = ele.gameObject.AddComponent<AnimationComponent>();
 			ani.animation = anim;
-			ani.renderer = eleRender;
+			ani.renderers = [eleRender];
 			ani.speed = 15f;
 
 			ele.ani = ani;
@@ -289,8 +289,22 @@ namespace BBTimes.Manager
 
 			ele.gameObject.CreatePropagatedAudioManager(10f, 30f).AddStartingAudiosToAudioManager(true, sd);
 
-			ele.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
+			ele.collider = ele.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
 			man.Add("EletricityPrefab", ele);
+
+			ele = UnityEngine.Object.Instantiate(ele);
+			ele.gameObject.ConvertToPrefab(true);
+			ele.collider.size = new(ele.collider.size.x, 1.5f, ele.collider.size.z);
+
+			eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false);
+			eleRender.transform.SetParent(ele.transform);
+			eleRender.transform.localPosition = new(0f, -0.1f, 0f);
+			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			eleRender.name = "SpriteBackwards";
+
+			ele.ani.renderers = ele.GetComponentsInChildren<SpriteRenderer>();
+			ele.name = "DoorEletricity";
+			man.Add("DoorEletricityPrefab", ele);
 
 			// Slippery Water Prefab
 

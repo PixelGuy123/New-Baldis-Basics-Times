@@ -37,7 +37,7 @@ namespace BBTimes.CustomContent.NPCs
 			dancing2 = [.. sprites.Skip(8).Take(8)];
 
 			animComp = gameObject.AddComponent<AnimationComponent>();
-			animComp.renderer = spriteRenderer[0];
+			animComp.renderers = [spriteRenderer[0]];
 			animComp.speed = 16f;
 			animComp.animation = dancing1;
 		}

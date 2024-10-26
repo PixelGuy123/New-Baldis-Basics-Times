@@ -15,7 +15,7 @@ namespace BBTimes.CustomContent.Objects
 			if (adjacentTeleporters.Count == 0)
 			{
 				animComp.enabled = false;
-				animComp.renderer.sprite = sprDisabled;
+				animComp.ChangeRendererSpritesTo(sprDisabled);
 				return;
 			}
 			loopingAudMan.maintainLoop = true;

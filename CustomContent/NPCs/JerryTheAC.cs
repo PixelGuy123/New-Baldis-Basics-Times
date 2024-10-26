@@ -56,11 +56,12 @@ namespace BBTimes.CustomContent.NPCs
 			an.fps = 0f;
 			an.timeMode = ParticleSystemAnimationTimeMode.FPS;
 			an.cycleCount = 1;
-			an.rowMode = ParticleSystemAnimationRowMode.Random;
+			an.startFrame = new(0, 3); // 2x2
 
 			var col = system.collision;
 			col.enabled = true;
 			col.type = ParticleSystemCollisionType.World;
+			col.enableDynamicColliders = false;
 
 			parts = system;
 		}
@@ -92,6 +93,13 @@ namespace BBTimes.CustomContent.NPCs
 				if (room.type == RoomType.Room && room.category != RoomCategory.Special)
 					cells.AddRange(room.AllEntitySafeCellsNoGarbage().Where(x => x.open && !x.HasAnyHardCoverage && x.shape == TileShape.Corner));
 
+			if (cells.Count == 0)
+			{
+				Debug.LogWarning("JERRY HAS FAILED TO FIND ANY GOOD SPOT, NOOOOOOOO!!!");
+				behaviorStateMachine.ChangeState(new NpcState(this));
+				return;
+			}
+
 			behaviorStateMachine.ChangeState(new JerryTheAC_GoToRoom(this));
 		}
 
@@ -108,8 +116,8 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.SetLoop(true);
 			audMan.QueueAudio(audRolling);
 
-			navigator.maxSpeed = 5f;
-			navigator.SetSpeed(5f);
+			navigator.maxSpeed = 17f;
+			navigator.SetSpeed(17f);
 			nextPos = zero;
 
 			var em = parts.emission;
@@ -181,13 +189,13 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class JerryTheAC_GoToRoom(JerryTheAC jr) : JerryTheAC_StateBase(jr)
 	{
-		NavigationState_FollowToSpot spotGo;
+		NavigationState_TargetPosition spotGo;
 		readonly Cell spot = jr.GetRandomSpotToGo;
 		public override void Enter()
 		{
 			base.Enter();
 			jr.RollingOn();
-			spotGo = new(jr, spot);
+			spotGo = new(jr, 64, spot.FloorWorldPosition);
 			ChangeNavigationState(spotGo);
 		}
 
@@ -198,6 +206,11 @@ namespace BBTimes.CustomContent.NPCs
 				ChangeNavigationState(spotGo);
 			else
 				jr.behaviorStateMachine.ChangeState(new JerryTheAC_Activate(jr, spot.room));
+		}
+		public override void Exit()
+		{
+			base.Exit();
+			spotGo.priority = 0;
 		}
 	}
 

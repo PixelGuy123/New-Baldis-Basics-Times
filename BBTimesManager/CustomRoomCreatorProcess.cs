@@ -307,7 +307,7 @@ namespace BBTimes.Manager
 			teleporter.audLoop = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", GetAssetName("teleportationNoises.wav"))), "Vfx_CompTel_Working", SoundType.Voice, Color.white);
 
 			teleporter.animComp = teleporter.gameObject.AddComponent<AnimationComponent>();
-			teleporter.animComp.renderer = machine;
+			teleporter.animComp.renderers = [machine];
 			teleporter.animComp.animation = [.. sprs.Take(5)];
 			teleporter.animComp.speed = 11.5f;
 

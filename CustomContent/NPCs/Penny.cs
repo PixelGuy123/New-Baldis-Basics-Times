@@ -6,7 +6,6 @@ using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
-using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -367,6 +366,17 @@ namespace BBTimes.CustomContent.NPCs
 	internal class Penny_StateBase(Penny pen) : NpcState(pen)
 	{
 		protected Penny pen = pen;
+
+		public override void DoorHit(StandardDoor door)
+		{
+			if (door.locked)
+			{
+				door.Unlock();
+				door.OpenTimed(5f, false);
+				return;
+			}
+			base.DoorHit(door);
+		}
 	}
 
 	internal class Penny_Wandering(Penny pen, float cooldown = 0f, float calmDownCooldown = 0f, PlayerManager target = null) : Penny_StateBase(pen)

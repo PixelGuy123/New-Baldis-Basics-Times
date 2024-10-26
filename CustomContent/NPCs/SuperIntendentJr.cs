@@ -132,12 +132,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		void CallPrincipals()
 		{
-			foreach (var n in ec.Npcs)
-			{
-				var dat = n.GetComponent<INPCPrefab>();
-				if (n.Navigator.enabled && (n.Character == Character.Principal || (dat != null &&  dat.ReplacesCharacter(Character.Principal))))
-					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, ec.CellFromPosition(transform.position)));
-			}
+			ec.CallOutPrincipals(transform.position);
 
 			Directions.ReverseList(navigator.currentDirs);
 			behaviorStateMachine.ChangeState(new SuperIntendentJr_Wander(this));

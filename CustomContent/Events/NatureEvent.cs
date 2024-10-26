@@ -25,6 +25,7 @@ namespace BBTimes.CustomContent.Events
 
 			List<WeightedSelection<Plant>> flowers = [];
 
+			var vineSound = this.GetSoundNoSub("vines.wav", SoundType.Voice);
 			var sprites = this.GetSpriteSheet(5, 1, plantsPixPerUnit, "timesFlowersPack.png");
 
 			// Normal flowers
@@ -37,6 +38,21 @@ namespace BBTimes.CustomContent.Events
 			speedChanging = CreatePlant<SpeedChangingFlower>(sprites[3], 100);
 			speedChanging.audAffect = this.GetSoundNoSub("RedPlantSlowDown.wav", SoundType.Voice);
 			speedChanging.moveMultiplier = 0.75f;
+
+			var sunFlower = CreatePlant<SunFlower>(sprites[4], 45);
+
+			var attVisual = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "SunFlowerCover.png")).AddSpriteHolder(0f);
+			sunFlower.attPre = attVisual.transform.parent.gameObject.AddComponent<VisualAttacher>();
+			sunFlower.attPre.gameObject.AddComponent<BillboardRotator>();
+			sunFlower.attPre.name = "SunFlowerVisual";
+			sunFlower.attPre.gameObject.ConvertToPrefab(false);
+
+			var sunFlowCanvas = ObjectCreationExtensions.CreateCanvas();
+			ObjectCreationExtensions.CreateImage(sunFlowCanvas, this.GetSprite(1f, "sunFlowerLeaves.png"));
+			sunFlowCanvas.transform.SetParent(sunFlower.transform);
+
+			sunFlower.blindCanvas = sunFlowCanvas;
+			sunFlower.audTouch = vineSound;
 
 			sprites = this.GetSpriteSheet(3, 1, plantsPixPerUnit, "YTPFlowers.png");
 
@@ -52,13 +68,14 @@ namespace BBTimes.CustomContent.Events
 			ytpFlower.value = 75;
 			ytpFlower.audPickup = BBTimesManager.man.Get<SoundObject>("tierThreePickup");
 
-			CreatePlant<Vines>(this.GetSprite(plantsPixPerUnit, "Vines.png"), 65).audCatch = this.GetSoundNoSub("vines.wav", SoundType.Voice);
+			
+			CreatePlant<Vines>(this.GetSprite(plantsPixPerUnit, "Vines.png"), 65).audCatch = vineSound;
 			sprites = this.GetSpriteSheet(2, 1, plantsPixPerUnit, "carnivorousPlants.png");
 
 			var catchPlant = CreatePlant<TrapPlant>(sprites[0], 50);
 			catchPlant.sprCatch = sprites[1];
 			catchPlant.audCatch = this.GetSoundNoSub("plantTrapCatch.wav", SoundType.Voice);
-			
+
 
 			flowerPres = [..flowers];
 

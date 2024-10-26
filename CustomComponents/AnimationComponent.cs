@@ -23,7 +23,7 @@ namespace BBTimes.CustomComponents
 							frame %= animation.Length;
 					}
 				}
-				renderer.sprite = animation[Mathf.FloorToInt(frame)];
+				ChangeRendererSpritesTo(animation[Mathf.FloorToInt(frame)]);
 			}
 		}
 
@@ -38,10 +38,23 @@ namespace BBTimes.CustomComponents
 				this.pause = Mathf.Max(0, this.pause - 1);
 		}
 
+		public void ChangeRendererSpritesTo(Sprite sprite)
+		{
+			for (int i = 0; i < renderers.Length; i++)
+				renderers[i].sprite = sprite;
+		}
+
 		public void StopLastFrameMode() =>
 			lastFrameMode = true;
-		
-		public void ResetFrame() => frame = 0f;
+
+		public void ResetFrame() =>
+			ResetFrame(false);
+		public void ResetFrame(bool resetPause)
+		{
+			frame = 0f;
+			if (resetPause)
+				pause = 0;
+		}
 
 		public bool Paused => pause != 0;
 		public bool LastFrameMode => lastFrameMode;
@@ -56,7 +69,7 @@ namespace BBTimes.CustomComponents
 		public Sprite[] animation;
 
 		[SerializeField]
-		internal SpriteRenderer renderer;
+		internal SpriteRenderer[] renderers;
 
 		int pause = 0;
 

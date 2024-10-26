@@ -21,7 +21,7 @@ namespace BBTimes.CustomContent.NPCs
 			flyingAudMan = gameObject.CreatePropagatedAudioManager(175f, 255f);
 
 			anim = gameObject.AddComponent<AnimationComponent>();
-			anim.renderer = spriteRenderer[0];
+			anim.renderers = [spriteRenderer[0]];
 			anim.speed = 12;
 			anim.animation = this.GetSpriteSheet(2, 2, 25f, "quirker.png");
 			renderer = spriteRenderer[0].transform;

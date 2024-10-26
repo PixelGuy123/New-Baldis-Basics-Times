@@ -47,15 +47,10 @@ namespace BBTimes.CustomContent.NPCs
 			animComp = gameObject.AddComponent<AnimationComponent>();
 			animComp.Pause(true);
 			animComp.animation = happyTalk;
-			animComp.renderer = spriteRenderer[0];
+			animComp.renderers = [spriteRenderer[0]];
 			spriteRenderer[0].sprite = happyTalk[0];
 
-			var myCol = (CapsuleCollider)baseTrigger[0];
-			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
-			col.isTrigger = true;
-			col.height = myCol.height;
-			col.direction = myCol.direction;
-			col.radius = myCol.radius;
+			this.CreateClickableLink().CopyColliderAttributes((CapsuleCollider)baseTrigger[0]);
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }

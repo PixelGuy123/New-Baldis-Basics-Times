@@ -6,6 +6,7 @@ using HarmonyLib;
 using PixelInternalAPI.Classes;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -146,8 +147,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			var nullCull = __instance.CullingManager.GetComponent<NullCullingManager>(); // Get the NullCullingManager
 
 			PostRoomCreation.spawnedWindows.ForEach(window => {
-				Cell normCell = window.aTile; // window.aTile.Null ? window.bTile : ;
-				Cell oppoCell = window.bTile; //!window.aTile.Null ? window.bTile : window.aTile;
+				Cell normCell = window.aTile.Null ? window.bTile : window.aTile;
+				Cell oppoCell = !window.aTile.Null ? window.bTile : window.aTile;
 
 				BreastFirstSearch(normCell, oppoCell.position, window.direction.GetOpposite(),
 				oppoCell);

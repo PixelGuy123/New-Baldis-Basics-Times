@@ -1,4 +1,5 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.CustomContent.NPCs;
 using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -307,6 +308,24 @@ namespace BBTimes.Extensions
 
 		public static Vector3 ToVector3(this IntVector2 vec) =>
 			new(vec.x * 10f + 5f, 0f, vec.z * 10f + 5f);
+		public static void CallOutPrincipals(this EnvironmentController ec, Vector3 pos) =>
+			ec.CallOutPrincipals(ec.CellFromPosition(pos));
+		public static void CallOutPrincipals(this EnvironmentController ec, Cell spot)
+		{
+			foreach (var n in ec.Npcs)
+			{
+				var dat = n.GetComponent<INPCPrefab>();
+				if (n.Navigator.enabled && (n.Character == Character.Principal || (dat != null && dat.ReplacesCharacter(Character.Principal))))
+				{
+					if (n is Principal pr)
+					{
+						pr.audMan.FlushQueue(true);
+						pr.audMan.PlaySingle(pr.audComing);
+					}
+					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, spot));
+				}
+			}
+		}
 
 		internal static DetentionUi detentionUiPre;
 

@@ -5,9 +5,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 {
 	public class FreezingRoomFunction : RoomFunction
 	{
-		public override void OnEntityEnter(Entity entity)
+		public override void OnEntityStay(Entity entity)
 		{
-			base.OnEntityEnter(entity);
+			base.OnEntityStay(entity);
 			if (!actMods.Contains(entity.ExternalActivity))
 			{
 				entity.ExternalActivity.moveMods.Add(moveMod);

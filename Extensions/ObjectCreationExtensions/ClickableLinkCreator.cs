@@ -24,5 +24,14 @@ namespace BBTimes.Extensions.ObjectCreationExtensions
 		}
 		public static ClickableLink CreateClickableLink(this MonoBehaviour clickable) =>
 			clickable.CreateClickableLink(Vector3.zero);
+		public static ClickableLink CopyColliderAttributes(this ClickableLink link, CapsuleCollider myCol)
+		{
+			var col = link.gameObject.AddComponent<CapsuleCollider>();
+			col.isTrigger = true;
+			col.height = myCol.height;
+			col.direction = myCol.direction;
+			col.radius = myCol.radius;
+			return link;
+		}
 	}
 }

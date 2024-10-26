@@ -87,6 +87,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("chocolate", "HotChocolate");
 			AddItem("comicallyLargeTrumpet", "ComicallyLargeTrumpet");
 			AddPointItem<ITM_DivideYTP>("DivisionPoint");
+			AddItem("DoorStopper", "DoorStopper");
 			AddItem("electricalGel", "ElectricalGel");
 			AddItem("empty", "EmptyWaterBottle");
 			AddItem("fidgetSpinner", "FidgetSpinner");
@@ -123,6 +124,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("0thprize", "ZeroPrize");
 			AddNPC("bubbly", "Bubbly");
 			AddNPC("Camerastand", "Camerastand");
+			AddNPC("cheeseMan", "CheeseMan");
 			AddNPC("crazyClock", "CrazyClock");
 			AddNPCCopy<ClassicGottaSweep>("oldsweep");
 			AddNPC("dribble", "Dribble");
@@ -130,6 +132,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("gluebotrony", "Glubotrony");
 			AddNPC("happyholidays", "HappyHolidays");
 			AddNPC("inkArtist", "InkArtist");
+			AddNPC("JerryTheAC", "JerryTheAC");
 			AddNPC("leapy", "Leapy");
 			AddNPC("MGS", "Magicalstudent");
 			AddNPC("mopper", "Mopper");
@@ -148,6 +151,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("spj", "Superintendentjr");
 			AddNPC("tickTock", "TickTock");
 			AddNPC("watcher", "Watcher");
+			AddNPC("ZapZap", "ZapZap");
 
 			// ************* Local Methods ***************
 

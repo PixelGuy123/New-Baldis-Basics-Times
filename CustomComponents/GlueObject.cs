@@ -111,5 +111,8 @@ namespace BBTimes.CustomComponents
 
 		[SerializeField]
 		internal bool affectOwnerAfterExit = false, ignoreBootsAttribute = false;
+
+		[SerializeField]
+		internal BoxCollider collider;
 	}
 }

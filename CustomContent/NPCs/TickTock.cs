@@ -12,7 +12,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			audMan = GetComponent<AudioManager>();
 			anim = gameObject.AddComponent<AnimationComponent>();
-			anim.renderer = spriteRenderer[0];
+			anim.renderers = [spriteRenderer[0]];
 			anim.speed = 7;
 
 			var sprites = this.GetSpriteSheet(6, 1, 28f, "ticktocksprite.png");

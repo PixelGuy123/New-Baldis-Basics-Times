@@ -35,9 +35,7 @@ namespace BBTimes.CustomContent.Misc
 				FullyRelax();
 				player.RuleBreak("Running", 5f, 0.2f);
 				audMan.QueueAudio(audDisturbed);
-				foreach (var n in ec.Npcs)
-					if (n.Navigator.enabled && (n.Character == Character.Principal || (n.GetComponent<INPCPrefab>()?.ReplacesCharacter(Character.Principal) ?? false)))
-						n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, ec.CellFromPosition(player.transform.position)));
+				ec.CallOutPrincipals(transform.position);
 				return true;
 			}
 			audMan.QueueAudio(disturbedCount == 1 ? audAskSilence : audAskSilence2);

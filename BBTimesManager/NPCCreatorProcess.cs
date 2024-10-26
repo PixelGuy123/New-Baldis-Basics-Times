@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomContent.NPCs;
 using BBTimes.Helpers;
+using MTM101BaldAPI;
 using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
@@ -146,6 +147,7 @@ namespace BBTimes.Manager
 				.SetName("Pencil Boy")
 				.SetMetaName("PST_PB_Name")
 				.AddLooker()
+				.IgnoreBelts()
 				.SetMaxSightDistance(45f)
 				.AddTrigger()
 				.Build()
@@ -243,6 +245,7 @@ namespace BBTimes.Manager
 				.SetName("Glubotrony")
 				.SetMetaName("PST_Gboy_Name")
 				.AddLooker()
+				.IgnoreBelts()
 				.SetMaxSightDistance(45)
 				.SetFOV(110f)
 				.AddTrigger()
@@ -339,6 +342,7 @@ namespace BBTimes.Manager
 			npc = new NPCBuilder<Mugh>(plug.Info)
 				.SetMinMaxAudioDistance(165f, 175f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.IgnoreBelts()
 				.SetEnum("Mugh")
 				.SetMetaName("PST_Mugh_Name")
 				.SetName("Mugh")
@@ -430,7 +434,7 @@ namespace BBTimes.Manager
 				.SetMinMaxAudioDistance(155f, 175f)
 				.SetEnum("TickTock")
 				.AddSpawnableRoomCategories(RoomCategory.Faculty, RoomCategory.Office)
-				.SetMetaName("PST_TickTock_Name")
+				.SetMetaName("PST_TickTock_Name")  
 				.SetName("TickTock")
 				.AddTrigger()
 				.Build()
@@ -445,6 +449,7 @@ namespace BBTimes.Manager
 				.SetEnum("Quiker")
 				.SetMetaName("PST_Quiker_Name")
 				.SetName("Quiker")
+				.SetAirborne()
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("Quiker", "PST_Quiker_Name", "PST_Quiker_Desc", 0)
@@ -460,11 +465,41 @@ namespace BBTimes.Manager
 				.SetName("JerryTheAirConditioner")
 				.AddTrigger()
 				.Build()
-				.SetupNPCData("JerryTheAirConditioner", "PST_JerryAc_Name", "PST_JerryAc_Desc", 0);
-				//.MarkAsReplacement(35, Character.Cumulo);
+				.SetupNPCData("JerryTheAirConditioner", "PST_JerryAc_Name", "PST_JerryAc_Desc", 0)
+				.MarkAsReplacement(35, Character.Cumulo);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 999999 }); //25
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+
+			// Zap Zap
+			npc = new NPCBuilder<ZapZap>(plug.Info)
+				.SetMinMaxAudioDistance(100f, 125f)
+				.AddSpawnableRoomCategories(RoomCategory.Office, RoomCategory.Faculty)
+				.SetEnum("ZapZap")
+				.SetMetaName("PST_ZapZap_Name")
+				.SetName("ZapZap")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("ZapZap", "PST_ZapZap_Name", "PST_ZapZap_Desc", -1.0018f)
+				.MarkAsReplacement(40, EnumExtensions.GetFromExtendedName<Character>("Rollingbot"));
+
+			npc.Navigator.SetRoomAvoidance(false);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+
+			// Cheese McSwiss
+			npc = new NPCBuilder<CheeseMan>(plug.Info)
+				.SetMinMaxAudioDistance(125f, 155f)
+				.SetEnum("CheeseMan")
+				.SetMetaName("PST_CheeseMan_Name")
+				.SetName("CheeseMan")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("CheeseMan", "PST_CheeseMan_Name", "PST_CheeseMan_Desc", -1.86f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 50 });
 		}
 
 		

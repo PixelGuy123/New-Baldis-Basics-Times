@@ -396,6 +396,7 @@ namespace BBTimes.Manager
 			EventMachine.AddItemToTrigger(item.itemType);
 			OfficeChair.AddFixableItem(item.itemType);
 			RollingBot.AddFixableItem(item.itemType);
+			ZapZap.AddDeactivator(item.itemType);
 
 			// Hardhat
 			item = new ItemBuilder(plug.Info)

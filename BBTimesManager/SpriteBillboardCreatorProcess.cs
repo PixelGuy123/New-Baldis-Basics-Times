@@ -33,7 +33,7 @@ namespace BBTimes.Manager
 			var fireAnim = fire.gameObject.AddComponent<SchoolFire>();
 			fireAnim.animation = TextureExtensions.LoadSpriteSheet(2, 1, 15f, MiscPath, TextureFolder, GetAssetName("schoolFire.png"));
 			fireAnim.speed = 2f;
-			fireAnim.renderer = fire;
+			fireAnim.renderers = [fire];
 
 			MainGameManagerPatches.fire = fire.gameObject;
 
