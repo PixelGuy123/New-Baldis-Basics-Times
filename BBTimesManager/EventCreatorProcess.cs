@@ -167,7 +167,6 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[0].Events.Add(new() { selection = e, weight = 999999 });
 			floorDatas[1].Events.Add(new() { selection = e, weight = 15 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 55 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 25 });

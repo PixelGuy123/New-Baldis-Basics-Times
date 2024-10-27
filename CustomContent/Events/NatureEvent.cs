@@ -45,11 +45,12 @@ namespace BBTimes.CustomContent.Events
 			sunFlower.attPre = attVisual.transform.parent.gameObject.AddComponent<VisualAttacher>();
 			sunFlower.attPre.gameObject.AddComponent<BillboardRotator>();
 			sunFlower.attPre.name = "SunFlowerVisual";
-			sunFlower.attPre.gameObject.ConvertToPrefab(false);
+			sunFlower.attPre.gameObject.ConvertToPrefab(true);
 
 			var sunFlowCanvas = ObjectCreationExtensions.CreateCanvas();
 			ObjectCreationExtensions.CreateImage(sunFlowCanvas, this.GetSprite(1f, "sunFlowerLeaves.png"));
 			sunFlowCanvas.transform.SetParent(sunFlower.transform);
+			sunFlowCanvas.gameObject.SetActive(false);
 
 			sunFlower.blindCanvas = sunFlowCanvas;
 			sunFlower.audTouch = vineSound;
@@ -92,7 +93,9 @@ namespace BBTimes.CustomContent.Events
 			T CreatePlant<T>(Sprite sprite, int weight) where T : Plant
 			{
 				var flowerRend = ObjectCreationExtensions.CreateSpriteBillboard(sprite).AddSpriteHolder(0f, 0);
+				flowerRend.name = typeof(T).Name + "Sprite";
 				var flower = flowerRend.transform.parent.gameObject.AddComponent<T>();
+				flower.name = typeof(T).Name;
 
 				flower.gameObject.ConvertToPrefab(true);
 
