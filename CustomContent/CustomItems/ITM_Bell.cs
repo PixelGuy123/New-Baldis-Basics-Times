@@ -13,18 +13,18 @@ namespace BBTimes.CustomContent.CustomItems
 		public void SetupPrefab()
 		{
 			var storedSprites = this.GetSpriteSheet(2, 1, 25f, "bellWorld.png");
-			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]).AddSpriteHolder(-4f);
-			var rendererBase = renderer.transform.parent;
-			rendererBase.SetParent(transform);
-			rendererBase.localPosition = Vector3.zero;
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]).AddSpriteHolder(out var rendererBell, -4f);
+
+			renderer.transform.SetParent(transform);
+			renderer.transform.localPosition = Vector3.zero;
 
 			gameObject.layer = LayerStorage.standardEntities;
-			entity = gameObject.CreateEntity(1.5f, 2.5f, rendererBase);
+			entity = gameObject.CreateEntity(1.5f, 2.5f, renderer.transform);
 
 			audMan = gameObject.CreatePropagatedAudioManager(165, 200);
 			audBell = this.GetSound("bell_bellnoise.wav", "Vfx_BEL_Ring", SoundType.Voice, Color.white);
 
-			this.renderer = renderer;
+			this.renderer = rendererBell;
 			deactiveSprite = storedSprites[1];
 		}
 

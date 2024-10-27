@@ -28,14 +28,14 @@ namespace BBTimes.CustomContent.NPCs
 			stunCanvas = canvas;
 			stunCanvas.gameObject.SetActive(false);
 
-			var attVisual = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "inkWall.png")).AddSpriteHolder(0f);
-			attPre = attVisual.transform.parent.gameObject.AddComponent<VisualAttacher>();
+			var attVisual = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "inkWall.png")).AddSpriteHolder(out var inkWallRenderer, 0f);
+			attPre = attVisual.gameObject.AddComponent<VisualAttacher>();
 			attPre.gameObject.AddComponent<BillboardRotator>();
 			attPre.name = "InkVisual";
 			attPre.gameObject.ConvertToPrefab(true);
 
-			attVisual.transform.localScale = new(2f, 1f, 1f);
-			attVisual.transform.localPosition = Vector3.forward * -0.5f;
+			inkWallRenderer.transform.localScale = new(2f, 1f, 1f);
+			inkWallRenderer.transform.localPosition = Vector3.forward * -0.5f;
 		}
 
 		public void SetupPrefabPost() { }

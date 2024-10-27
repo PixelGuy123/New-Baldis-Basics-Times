@@ -17,15 +17,14 @@ namespace BBTimes.CustomContent.NPCs
 		{
 
 			// magic prefab
-			var mos = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "MGS_Magic.png")).AddSpriteHolder(0f, LayerStorage.standardEntities);
-			var moHolder = mos.transform.parent;
-			mos.name = "MagicRenderer";
-			moHolder.name = "Magic";
+			var mos = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "MGS_Magic.png")).AddSpriteHolder(out var magicRenderer, 0f, LayerStorage.standardEntities);
+			magicRenderer.name = "MagicRenderer";
+			mos.name = "Magic";
 
-			moHolder.gameObject.ConvertToPrefab(true);
+			mos.gameObject.ConvertToPrefab(true);
 
-			var mo = moHolder.gameObject.AddComponent<MagicObject>();
-			mo.entity = moHolder.gameObject.CreateEntity(4f, 4f, mos.transform).SetEntityCollisionLayerMask(0);
+			var mo = mos.gameObject.AddComponent<MagicObject>();
+			mo.entity = mos.gameObject.CreateEntity(4f, 4f, mos.transform).SetEntityCollisionLayerMask(0);
 
 			// MGS Setup
 			magicPre = mo;

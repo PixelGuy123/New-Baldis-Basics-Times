@@ -279,7 +279,12 @@ namespace BBTimes.CustomContent.NPCs
 							{
 								bool wasRunning = pm.plm.running && pm.plm.stamina > 0f;
 								if (wasRunning)
-									pm.itm.RemoveRandomItem();
+								{
+									if (pm.itm.HasItem())
+										pm.itm.RemoveRandomItem();
+									else
+										wasRunning = false;
+								}
 								chm.Bump(e, wasRunning);
 							}
 							return;

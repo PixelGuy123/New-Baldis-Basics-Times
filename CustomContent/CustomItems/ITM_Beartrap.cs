@@ -16,13 +16,12 @@ namespace BBTimes.CustomContent.CustomItems
 			var trapSprs = BBTimesManager.man.Get<Sprite[]>("Beartrap");
 			closedTrap = trapSprs[0];
 
-			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(trapSprs[1]).AddSpriteHolder(-4f);
-			var rendererBase = renderer.transform.parent;
-			rendererBase.SetParent(transform);
-			rendererBase.localPosition = Vector3.zero;
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(trapSprs[1]).AddSpriteHolder(out var trapRenderer, -4f);
+			renderer.transform.SetParent(transform);
+			renderer.transform.localPosition = Vector3.zero;
 
-			this.renderer = renderer;
-			entity = gameObject.CreateEntity(1f, 1f, rendererBase);
+			this.renderer = trapRenderer;
+			entity = gameObject.CreateEntity(1f, 1f, renderer.transform);
 		}
 		public void SetupPrefabPost() { }
 

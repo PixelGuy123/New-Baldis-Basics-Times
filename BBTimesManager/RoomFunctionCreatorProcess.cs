@@ -53,18 +53,18 @@ namespace BBTimes.Manager
 			// Random Corner Object
 			List<WeightedTransform> transformsList = [
 				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lamp.png"))), 25f))
-				.AddSpriteHolder(2.9f, LayerStorage.ignoreRaycast)
-				.transform.parent.gameObject.SetAsPrefab(true)
+				.AddSpriteHolder(out _, 2.9f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 75 },
 
 				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lightBulb.png"))), 65f))
-				.AddSpriteHolder(5.1f, LayerStorage.ignoreRaycast)
-				.transform.parent.gameObject.SetAsPrefab(true)
+				.AddSpriteHolder(out _, 5.1f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 35 },
 
 				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lampShaped.png"))), 25f))
-				.AddSpriteHolder(3.1f, LayerStorage.ignoreRaycast)
-				.transform.parent.gameObject.SetAsPrefab(true)
+				.AddSpriteHolder(out _, 3.1f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 55 },
 				];
 
@@ -73,8 +73,8 @@ namespace BBTimes.Manager
 				transformsList.Add(new()
 				{
 					selection = ObjectCreationExtensions.CreateSpriteBillboard(x)
-				.AddSpriteHolder(3.1f, LayerStorage.ignoreRaycast)
-				.transform.parent.gameObject.SetAsPrefab(true)
+				.AddSpriteHolder(out _, 3.1f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform,
 					weight = 38
 				});

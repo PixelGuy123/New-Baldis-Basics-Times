@@ -12,10 +12,10 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void SetupPrefab() 
 		{ 
-			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(9f, "SpinnerPlaced.png"), false).AddSpriteHolder(0.5f, 0);
-			var rendererBase = renderer.transform.parent;
-			rendererBase.SetParent(transform);
-			rendererBase.localPosition = Vector3.zero;
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(9f, "SpinnerPlaced.png"), false).AddSpriteHolder(out var fidgetRenderer, 0.5f, 0);
+
+			renderer.transform.SetParent(transform);
+			renderer.transform.localPosition = Vector3.zero;
 
 			var collider = gameObject.AddComponent<CapsuleCollider>();
 			collider.radius = 3.8f;
@@ -24,9 +24,9 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan = gameObject.CreatePropagatedAudioManager(65, 110);
 			audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
 
-			this.renderer = renderer.transform;
-			renderer.gameObject.layer = 0;
-			renderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			this.renderer = fidgetRenderer.transform;
+			fidgetRenderer.gameObject.layer = 0;
+			fidgetRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 
 			nav = gameObject.AddComponent<MomentumNavigator>();
 			nav.maxSpeed = 95f;

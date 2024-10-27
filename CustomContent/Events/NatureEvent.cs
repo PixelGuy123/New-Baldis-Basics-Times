@@ -41,8 +41,8 @@ namespace BBTimes.CustomContent.Events
 
 			var sunFlower = CreatePlant<SunFlower>(sprites[4], 45);
 
-			var attVisual = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "SunFlowerCover.png")).AddSpriteHolder(0f);
-			sunFlower.attPre = attVisual.transform.parent.gameObject.AddComponent<VisualAttacher>();
+			var attVisual = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "SunFlowerCover.png")).AddSpriteHolder(out _, 0f);
+			sunFlower.attPre = attVisual.gameObject.AddComponent<VisualAttacher>();
 			sunFlower.attPre.gameObject.AddComponent<BillboardRotator>();
 			sunFlower.attPre.name = "SunFlowerVisual";
 			sunFlower.attPre.gameObject.ConvertToPrefab(true);
@@ -80,11 +80,11 @@ namespace BBTimes.CustomContent.Events
 
 			flowerPres = [..flowers];
 
-			var grassPreRenderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(plantsPixPerUnit, "Grass.png")).AddSpriteHolder(0f);
-			grassPreRenderer.transform.localPosition = Vector3.forward * 0.1f;
-			grassPreRenderer.name = "GrassSprite";
+			var grassPreRenderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(plantsPixPerUnit, "Grass.png")).AddSpriteHolder(out var grassRenderer, 0f);
+			grassRenderer.transform.localPosition = Vector3.forward * 0.1f;
+			grassRenderer.name = "GrassSprite";
 
-			grassPre = grassPreRenderer.transform.parent;
+			grassPre = grassPreRenderer.transform;
 			grassPre.name = "Grass";
 			grassPre.gameObject.ConvertToPrefab(true);
 
@@ -92,15 +92,13 @@ namespace BBTimes.CustomContent.Events
 
 			T CreatePlant<T>(Sprite sprite, int weight) where T : Plant
 			{
-				var flowerRend = ObjectCreationExtensions.CreateSpriteBillboard(sprite).AddSpriteHolder(0f, 0);
-				flowerRend.name = typeof(T).Name + "Sprite";
-				var flower = flowerRend.transform.parent.gameObject.AddComponent<T>();
+				var flowerRend = ObjectCreationExtensions.CreateSpriteBillboard(sprite).AddSpriteHolder(out var flowerRenderer, 0f, 0);
+
+				flowerRenderer.name = typeof(T).Name + "Sprite";
+				var flower = flowerRend.gameObject.AddComponent<T>();
 				flower.name = typeof(T).Name;
 
 				flower.gameObject.ConvertToPrefab(true);
-
-				flower.name = "Flower_" + sprite.name;
-				flowerRend.name = flower.name + "_Renderer";
 
 				flower.audMan = flower.gameObject.CreatePropagatedAudioManager(30f, 50f);
 				flower.audSpawn = this.GetSound("plantGrow.wav", "Vfx_Plant_Grow", SoundType.Voice, Color.white);
@@ -108,7 +106,7 @@ namespace BBTimes.CustomContent.Events
 
 				flower.collider = flower.gameObject.AddBoxCollider(Vector3.up * 5f, Vector3.one * 9f, true);
 
-				flower.renderer = flowerRend;
+				flower.renderer = flowerRenderer;
 
 				flower.PrefabSetup(this);
 

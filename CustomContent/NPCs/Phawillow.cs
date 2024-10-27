@@ -1,8 +1,6 @@
-﻿
-using BBTimes.CustomComponents;
+﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
-using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
@@ -20,13 +18,13 @@ namespace BBTimes.CustomContent.NPCs
 			audRestart = this.GetSound("Phawillow_Laughing.wav", "Vfx_Phawillow_Restart", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
 			floatingRenderer = spriteRenderer[0];
 
-			var itemHolder = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(new Vector3(3f, -0.8f, 0f), 0);
-			itemHolder.transform.parent.SetParent(transform);
-			itemHolder.transform.parent.localPosition = Vector3.zero;
-			itemHolder.transform.parent.gameObject.AddComponent<BillboardRotator>();
+			var itemHolder = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(out var itmRenderer, new Vector3(3f, -0.8f, 0f), 0);
+			itemHolder.transform.SetParent(transform);
+			itemHolder.transform.localPosition = Vector3.zero;
+			itemHolder.gameObject.AddComponent<BillboardRotator>();
 
-			itemRender = itemHolder;
-			itemRenderHolder = itemHolder.transform.parent;
+			itemRender = itmRenderer;
+			itemRenderHolder = itemHolder.transform;
 			var storedSprites = this.GetSpriteSheet(3, 1, 22f, "phawillowSpritesheet.png");
 			spriteRenderer[0].sprite = storedSprites[0];
 			sprNormal = storedSprites[0];

@@ -232,16 +232,17 @@ namespace BBTimes.Manager
 
 			// Player Visual
 			var tex = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("player.png"))), 225f);
-			var playerVisual = ObjectCreationExtensions.CreateSpriteBillboard(tex).AddSpriteHolder(-1.6f);
+			var playerVisual = ObjectCreationExtensions.CreateSpriteBillboard(tex).AddSpriteHolder(out _, -1.6f);
 			playerVisual.gameObject.AddComponent<PlayerVisual>();
 
-			GameCameraPatch.playerVisual = playerVisual.transform.parent;
-			playerVisual.transform.parent.gameObject.ConvertToPrefab(true);
+			GameCameraPatch.playerVisual = playerVisual.transform;
+			playerVisual.gameObject.ConvertToPrefab(true);
 
 			// Global Assets
 			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("potion_drink.wav"))), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
 			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("pc_stab.wav"))), "Vfx_PC_stab", SoundType.Voice, Color.yellow));
 			man.Add("basketBall", TextureExtensions.LoadSpriteSheet(5, 1, 25f, GlobalAssetsPath, GetAssetName("basketball.png")));
+			man.Add("bounceNoise", TextureExtensions.LoadSpriteSheet(5, 1, 25f, GlobalAssetsPath, GetAssetName("basketball.png")));
 			man.Add("Beartrap", TextureExtensions.LoadSpriteSheet(2, 1, 50f, GlobalAssetsPath, GetAssetName("trap.png")));
 			man.Add("BeartrapCatch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("trap_catch.wav"))), "Vfx_BT_catch", SoundType.Voice, Color.white));
 			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("punch.wav"))), "BB_Hit", SoundType.Voice, Color.white));
@@ -270,16 +271,16 @@ namespace BBTimes.Manager
 
 			// Eletricity Prefab
 			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, GetAssetName("shock.png"));
-			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(0.1f, LayerStorage.ignoreRaycast);
-			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			eleRender.transform.parent.gameObject.ConvertToPrefab(true);
-			eleRender.name = "Sprite";
+			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(out var eleRenderer, 0.1f, LayerStorage.ignoreRaycast);
+			eleRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			eleRender.gameObject.ConvertToPrefab(true);
+			eleRenderer.name = "Sprite";
 
-			var ele = eleRender.transform.parent.gameObject.AddComponent<Eletricity>();
+			var ele = eleRender.gameObject.AddComponent<Eletricity>();
 			ele.name = "Eletricity";
 			var ani = ele.gameObject.AddComponent<AnimationComponent>();
 			ani.animation = anim;
-			ani.renderers = [eleRender];
+			ani.renderers = [eleRenderer];
 			ani.speed = 15f;
 
 			ele.ani = ani;
@@ -292,15 +293,14 @@ namespace BBTimes.Manager
 			ele.collider = ele.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
 			man.Add("EletricityPrefab", ele);
 
-			ele = UnityEngine.Object.Instantiate(ele);
-			ele.gameObject.ConvertToPrefab(true);
+			ele = ele.SafeDuplicatePrefab(true);
 			ele.collider.size = new(ele.collider.size.x, 1.5f, ele.collider.size.z);
 
-			eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false);
-			eleRender.transform.SetParent(ele.transform);
-			eleRender.transform.localPosition = new(0f, -0.1f, 0f);
-			eleRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			eleRender.name = "SpriteBackwards";
+			eleRenderer = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false);
+			eleRenderer.transform.SetParent(ele.transform);
+			eleRenderer.transform.localPosition = new(0f, -0.1f, 0f);
+			eleRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			eleRenderer.name = "SpriteBackwards";
 
 			ele.ani.renderers = ele.GetComponentsInChildren<SpriteRenderer>();
 			ele.name = "DoorEletricity";
@@ -308,12 +308,14 @@ namespace BBTimes.Manager
 
 			// Slippery Water Prefab
 
-			var watRender = ObjectCreationExtensions.CreateSpriteBillboard(null, false).AddSpriteHolder(0.1f, 0);
-			watRender.transform.parent.name = "SlippingWater";
-			watRender.transform.parent.gameObject.ConvertToPrefab(true);
-			watRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			watRender.name = "SlippingWaterRender";
-			var slipMatPre = watRender.transform.parent.gameObject.AddComponent<SlippingMaterial>();
+			var watRender = ObjectCreationExtensions.CreateSpriteBillboard(null, false).AddSpriteHolder(out var waterRenderer, 0.1f, 0);
+			watRender.name = "SlippingWater";
+			watRender.gameObject.ConvertToPrefab(true);
+
+			waterRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			waterRenderer.name = "SlippingWaterRender";
+
+			var slipMatPre = watRender.gameObject.AddComponent<SlippingMaterial>();
 			slipMatPre.audMan = slipMatPre.gameObject.CreatePropagatedAudioManager(45f, 60f);
 			slipMatPre.audSlip = man.Get<SoundObject>("slipAud");
 			slipMatPre.gameObject.AddBoxCollider(Vector3.zero, new(9.9f, 10f, 9.9f), true);

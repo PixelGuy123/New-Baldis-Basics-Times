@@ -47,13 +47,13 @@ namespace BBTimes.CustomContent.NPCs
 			sprStep2 = storedSprites[16];
 
 			// Glue setup
-			var glueRender = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "glue.png"), false).AddSpriteHolder(-4.9f, 0);
-			glueRender.gameObject.layer = 0;
-			glueRender.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			glueRender.transform.parent.gameObject.ConvertToPrefab(true);
+			var glueRender = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "glue.png"), false).AddSpriteHolder(out var glueRenderer, -4.9f, 0);
+			glueRenderer.gameObject.layer = 0;
+			glueRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			glueRender.gameObject.ConvertToPrefab(true);
 
-			var glue = glueRender.transform.parent.gameObject.AddComponent<Glue>();
-			glue.render = glueRender.transform;
+			var glue = glueRender.gameObject.AddComponent<Glue>();
+			glue.render = glueRenderer.transform;
 
 			glue.audMan = glue.gameObject.CreatePropagatedAudioManager(45f, 65f).AddStartingAudiosToAudioManager(false, soundObjects[7]);
 			glue.audSteppedOn = soundObjects[8];

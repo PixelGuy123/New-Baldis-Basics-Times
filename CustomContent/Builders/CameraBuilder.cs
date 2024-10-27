@@ -14,14 +14,13 @@ namespace BBTimes.CustomContent.Builders
 
 		public void SetupPrefab()
 		{
-			var cam = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "SecurityCamera.png")).AddSpriteHolder(9f, 0);
-			cam.name = "Sprite";
-			var camHolder = cam.transform.parent;
-			camHolder.name = "SecurityCamera";
-			camHolder.gameObject.ConvertToPrefab(true);
+			var cam = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "SecurityCamera.png")).AddSpriteHolder(out var renderer, 9f, 0);
+			renderer.name = "Sprite";
+			cam.name = "SecurityCamera";
+			cam.gameObject.ConvertToPrefab(true);
 
-			var camComp = camHolder.gameObject.AddComponent<SecurityCamera>();
-			camComp.collider = camHolder.gameObject.AddBoxCollider(new(0f, 1f, 5f), new(3f, 10f, 3f), true);
+			var camComp = cam.gameObject.AddComponent<SecurityCamera>();
+			camComp.collider = cam.gameObject.AddBoxCollider(new(0f, 1f, 5f), new(3f, 10f, 3f), true);
 
 			var visionIndicator = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(15f, "tiledGrid.png"), false);
 			visionIndicator.gameObject.layer = 0;
@@ -34,12 +33,12 @@ namespace BBTimes.CustomContent.Builders
 
 			camComp.visionIndicatorPre = visionIndicator;
 
-			camComp.audMan = camHolder.gameObject.CreatePropagatedAudioManager(55f, 90f);
+			camComp.audMan = cam.gameObject.CreatePropagatedAudioManager(55f, 90f);
 			camComp.audAlarm = this.GetSound("alarm.wav", "Vfx_Camera_Alarm", SoundType.Voice, Color.white);
 			camComp.audTurn = this.GetSound("camSwitch.wav", "Vfx_Camera_Switch", SoundType.Voice, Color.white);
 			camComp.audDetect = this.GetSound("spot.wav", "Vfx_Camera_Spot", SoundType.Voice, Color.white);
 
-			GetComponent<CameraBuilder>().camPre = camHolder;
+			GetComponent<CameraBuilder>().camPre = cam.transform;
 		}
 		public void SetupPrefabPost() { }
 

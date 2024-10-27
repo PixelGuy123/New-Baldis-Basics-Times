@@ -267,7 +267,7 @@ namespace BBTimes.Manager
 				.IgnoreBelts()
 				.AddTrigger()
 				.Build()
-				.SetupNPCData("Dribble", "PST_Dribble_Name", "PST_Dribble_Desc", -0.7f)
+				.SetupNPCData("Dribble", "PST_Dribble_Name", "PST_Dribble_Desc", 0.3f)
 				.MarkAsReplacement(45, Character.DrReflex);
 
 			npc.Navigator.SetRoomAvoidance(false);

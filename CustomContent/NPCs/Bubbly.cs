@@ -31,14 +31,14 @@ namespace BBTimes.CustomContent.NPCs
 			bubble.audPop = BBTimesManager.man.Get<SoundObject>("audPop");
 			bubble.audMan = bubble.gameObject.CreatePropagatedAudioManager(85, 105);
 
-			var visual = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(16f, "bubble.png")).AddSpriteHolder(0f, 0);
-			visual.transform.parent.SetParent(bubble.transform);
-			visual.transform.parent.localPosition = Vector3.zero;
-			visual.transform.parent.gameObject.AddComponent<BillboardRotator>().invertFace = true;
+			var visual = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(16f, "bubble.png")).AddSpriteHolder(out var bubbleVisual, 0f, 0);
+			visual.transform.SetParent(bubble.transform);
+			visual.transform.localPosition = Vector3.zero;
+			visual.gameObject.AddComponent<BillboardRotator>().invertFace = true;
 
 			visual.transform.localPosition = Vector3.forward * 0.5f;
 
-			bubble.renderer = visual;
+			bubble.renderer = bubbleVisual;
 			bubble.gameObject.layer = LayerStorage.standardEntities;
 			bubble.entity = bubble.gameObject.CreateEntity(1f, 4f, visual.transform);
 			var canvas = ObjectCreationExtensions.CreateCanvas();

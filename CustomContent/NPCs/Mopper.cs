@@ -2,7 +2,6 @@
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
-using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -16,7 +15,7 @@ namespace BBTimes.CustomContent.NPCs
 			audStartSweep = this.GetSound("startMop.wav", "Vfx_MOP_StartMop", SoundType.Voice, Color.white);
 			audSweep = this.GetSound("mop.wav", "Vfx_MOP_Mop", SoundType.Voice, Color.white);
 
-			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").DuplicatePrefab();
+			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
 			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(12f, "wat.png");
 		}
 

@@ -51,19 +51,18 @@ namespace BBTimes.CustomContent.NPCs
 			idleShootingSprites = [storedSprites[20], storedSprites[21]];
 
 			// laser (16, 17)
-			var laserRend = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[23]).AddSpriteHolder(0f, LayerStorage.standardEntities);
-			var laserHolder = laserRend.transform.parent;
-			laserHolder.gameObject.SetAsPrefab(true);
-			laserRend.name = "PixLaserBeamRenderer";
-			laserHolder.name = "PixLaserBeam";
+			var laserRend = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[23]).AddSpriteHolder(out var laserRenderer, 0f, LayerStorage.standardEntities);
+			laserRend.gameObject.SetAsPrefab(true);
+			laserRenderer.name = "PixLaserBeamRenderer";
+			laserRend.name = "PixLaserBeam";
 
-			var laser = laserHolder.gameObject.AddComponent<PixLaserBeam>();
+			var laser = laserRend.gameObject.AddComponent<PixLaserBeam>();
 			laser.flyingSprites = [storedSprites[22], storedSprites[23]];
 			laser.shockSprites = [storedSprites[24], storedSprites[25], storedSprites[26], storedSprites[27]];
-			laser.renderer = laserRend;
+			laser.renderer = laserRenderer;
 
-			laser.entity = laserHolder.gameObject.CreateEntity(2f, 2f, laserHolder.transform).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
-			laser.audMan = laserHolder.gameObject.CreatePropagatedAudioManager(15, 45);
+			laser.entity = laserRend.gameObject.CreateEntity(2f, 2f, laserRend.transform).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
+			laser.audMan = laserRend.gameObject.CreatePropagatedAudioManager(15, 45);
 			laser.audShock = soundObjects[9];
 			laserPre = laser;
 		}

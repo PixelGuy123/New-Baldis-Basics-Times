@@ -67,18 +67,18 @@ namespace BBTimes
 		{
 			Sprite[] sprs = TextureExtensions.LoadSpriteSheet(2, 1, 55f, Path.Combine(ModPath, "objects", "LightSwitch", BBTimesManager.GetAssetName("lightSwitchSheet.png")));
 			var lightSwitch = ObjectCreationExtensions.CreateSpriteBillboard(sprs[1], false)
-				.AddSpriteHolder(0, LayerStorage.iClickableLayer);
-			lightSwitch.gameObject.layer = 0;
-			lightSwitch.name = "sprite";
+				.AddSpriteHolder(out var lightSwitchRenderer, 0, LayerStorage.iClickableLayer);
+			lightSwitchRenderer.gameObject.layer = 0;
+			lightSwitchRenderer.name = "sprite";
 
-			var sw = lightSwitch.transform.parent.gameObject.AddComponent<LightSwitch>();
+			var sw = lightSwitch.gameObject.AddComponent<LightSwitch>();
 			sw.name = "LightSwitch";
 			sw.gameObject.ConvertToPrefab(true);
 
 			sw.gameObject.AddBoxCollider(Vector3.forward * -1.05f, new(2f, 10f, 1f), true);
 			sw.sprOff = sprs[0];
 			sw.sprOn = sprs[1];
-			sw.renderer = lightSwitch;
+			sw.renderer = lightSwitchRenderer;
 			sw.audMan = sw.gameObject.CreatePropagatedAudioManager();
 			sw.audSwitch = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromMod(this, "objects", "LightSwitch", BBTimesManager.GetAssetName("LightSwitch_Toggle.wav")), string.Empty, SoundType.Effect, Color.white);
 			sw.audSwitch.subtitle = false;

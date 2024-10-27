@@ -49,6 +49,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			audMan = GetComponent<PropagatedAudioManager>();
 			bounceAudMan = gameObject.CreatePropagatedAudioManager(85f, 125f);
+			clapAudMan = gameObject.CreatePropagatedAudioManager(85f, 125f);
 			audBounceBall = soundObjects[0];
 			audThrow = soundObjects[1];
 			audIdle = [soundObjects[2], soundObjects[3]];
@@ -79,6 +80,14 @@ namespace BBTimes.CustomContent.NPCs
 			crazySprs = [storedSprites[9], storedSprites[10]];
 			chasingSprs = [storedSprites[11], storedSprites[12]];
 
+			storedSprites = this.GetSpriteSheet(13, 1, pixelsPerUnit, "dribbleSpriteSheet_2.png");
+			idleSprsTalking = [storedSprites[0], storedSprites[1]];
+			clapSprsTalking = [storedSprites[5], storedSprites[6]];
+			classSprsTalking = [storedSprites[2], storedSprites[3], storedSprites[4]];
+			disappointedSprsTalking = [storedSprites[7], storedSprites[8]];
+			crazySprsTalking = [storedSprites[9], storedSprites[10]];
+			chasingSprsTalking = [storedSprites[11], storedSprites[12]];
+
 			var basket = new GameObject("DribbleBasketBall");
 
 			var rendererBase = ObjectCreationExtensions.CreateSpriteBillboard(BBTimesManager.man.Get<Sprite[]>("basketBall")[0]);
@@ -98,7 +107,7 @@ namespace BBTimes.CustomContent.NPCs
 			basketPre = comp;
 		}
 
-		const float pixelsPerUnit = 87f;
+		const float pixelsPerUnit = 48f;
 		public void SetupPrefabPost() { }
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
 		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
@@ -137,7 +146,7 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.PlayRandomAudio(chasing ? audChaseAngry : audAngry);
 
 		internal void Clap() =>
-			audMan.PlaySingle(audClap);
+			clapAudMan.PlaySingle(audClap);
 
 		internal void TeleportToClass(PlayerManager pm)
 		{
@@ -210,9 +219,40 @@ namespace BBTimes.CustomContent.NPCs
 			Destroy(basketball);
 		}
 
+		public override void VirtualUpdate()
+		{
+			base.VirtualUpdate(); // YES, A CHAIN OF ELSE IFs, IN ALL OF ITS GLORY
+			if (currentArrayInUsage == idleSprs)
+				ChangeToTalkingVariantOrNot(idleSprsTalking);
+			else if (currentArrayInUsage == clapSprs)
+				ChangeToTalkingVariantOrNot(clapSprsTalking);
+			else if (currentArrayInUsage == classSprs)
+				ChangeToTalkingVariantOrNot(classSprsTalking);
+			else if (currentArrayInUsage == disappointedSprs)
+				ChangeToTalkingVariantOrNot(disappointedSprsTalking);
+			else if (currentArrayInUsage == crazySprs)
+				ChangeToTalkingVariantOrNot(crazySprsTalking);
+			else if (currentArrayInUsage == chasingSprs)
+				ChangeToTalkingVariantOrNot(chasingSprsTalking);
+		}
+
+		void ChangeToTalkingVariantOrNot(Sprite[] talkingArray) =>
+			renderer.sprite = audMan.AnyAudioIsPlaying ? talkingArray[idxInCurrentArray] : currentArrayInUsage[idxInCurrentArray];
+		
+
+		internal void ApplyArray(Sprite[] arrayToUse, int idx)
+		{
+			currentArrayInUsage = arrayToUse;
+			renderer.sprite = arrayToUse[idx];
+			idxInCurrentArray = idx;
+		}
+
 
 		[SerializeField]
 		internal Sprite[] idleSprs, clapSprs, classSprs, disappointedSprs, crazySprs, chasingSprs;
+
+		[SerializeField]
+		internal Sprite[] idleSprsTalking, clapSprsTalking, classSprsTalking, disappointedSprsTalking, crazySprsTalking, chasingSprsTalking;
 
 		[SerializeField]
 		internal SoundObject[] audIdle, audNotice, audPraise, audDisappointed, audAngry, audChaseAngry, audCaught, audStep, audAngryCaught, audPunchResponse;
@@ -221,7 +261,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal SoundObject audCatch, audClap, audDismissed, audInstructions, audReady, audBounceBall, audThrow, audPunch;
 
 		[SerializeField]
-		internal PropagatedAudioManager audMan, bounceAudMan;
+		internal PropagatedAudioManager audMan, bounceAudMan, clapAudMan;
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
@@ -231,6 +271,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		PickableBasketball basketball;
 		bool _step = false;
+		Sprite[] currentArrayInUsage;
+		int idxInCurrentArray;
 
 
 		readonly internal TimeScaleModifier introMod = new(0f, 0f, 0f);
@@ -286,7 +328,7 @@ namespace BBTimes.CustomContent.NPCs
 					step = !step;
 					if (step)
 						dr.Bounce();
-					dr.renderer.sprite = dr.idleSprs[step ? 1 : 0];
+					dr.ApplyArray(dr.idleSprs, step ? 1 : 0);
 				}
 			}
 			skipStep = false;
@@ -393,7 +435,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator WaitForInform()
 		{
-			dr.renderer.sprite = dr.clapSprs[0];
+			dr.ApplyArray(dr.clapSprs, 0);
 			dr.Navigator.Am.moveMods.Add(dr.moveMod);
 			player.plm.am.moveMods.Add(dr.moveMod);
 			while (dr.audMan.QueuedAudioIsPlaying)
@@ -409,7 +451,7 @@ namespace BBTimes.CustomContent.NPCs
 				cool -= Time.deltaTime;
 				yield return null;
 			}
-			dr.renderer.sprite = dr.clapSprs[1];
+			dr.ApplyArray(dr.clapSprs, 1);
 			dr.Clap();
 			dr.TeleportToClass(player);
 			dr.ec.RemoveTimeScale(dr.introMod);
@@ -417,7 +459,7 @@ namespace BBTimes.CustomContent.NPCs
 			for (int i = 0; i < 3; i++) // Frame delay
 				yield return null;
 
-			dr.renderer.sprite = dr.clapSprs[0];
+			dr.ApplyArray(dr.clapSprs, 0);
 			dr.behaviorStateMachine.ChangeState(new Dribble_ClassTime(dr, player));
 
 			yield break;
@@ -458,7 +500,7 @@ namespace BBTimes.CustomContent.NPCs
 				cool -= Time.deltaTime;
 				yield return null;
 			}
-			dr.renderer.sprite = dr.classSprs[0];
+			dr.ApplyArray(dr.classSprs, 0);
 			dr.audMan.QueueAudio(dr.audInstructions);
 			while (dr.audMan.QueuedAudioIsPlaying)
 				yield return null;
@@ -470,7 +512,7 @@ namespace BBTimes.CustomContent.NPCs
 			}
 
 			dr.audMan.QueueAudio(dr.audReady);
-			dr.renderer.sprite = dr.classSprs[1];
+			dr.ApplyArray(dr.classSprs, 1);
 
 			while (dr.audMan.QueuedAudioIsPlaying)
 				yield return null;
@@ -484,7 +526,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			dr.bounceAudMan.PlaySingle(dr.audThrow);
 			dr.audMan.QueueAudio(dr.audCatch);
-			dr.renderer.sprite = dr.classSprs[2];
+			dr.ApplyArray(dr.classSprs, 2);
 			dr.ThrowBasketball(player);
 
 			yield break;
@@ -499,8 +541,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			dr.bounceAudMan.FlushQueue(true);
-			dr.bounceAudMan.QueueRandomAudio(dr.audPraise);
+			dr.audMan.FlushQueue(true);
+			dr.audMan.QueueRandomAudio(dr.audPraise);
 		}
 		public override void Update()
 		{
@@ -511,21 +553,21 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				if (frame > 1f)
 				{
-					dr.audMan.PlaySingle(dr.audClap);
+					dr.Clap();
 					clapped = true;
 				}
 			}
 			else if (frame < 1f)
 				clapped = false;
 
-			dr.renderer.sprite = dr.clapSprs[Mathf.FloorToInt(frame)];
+			dr.ApplyArray(dr.clapSprs, Mathf.FloorToInt(frame));
 
 			cooldown -= Time.deltaTime * dr.TimeScale;
 			if (cooldown < 0f)
 			{
 				dr.audMan.FlushQueue(true);
 				dr.audMan.PlaySingle(dr.audDismissed);
-				dr.renderer.sprite = dr.idleSprs[0];
+				dr.ApplyArray(dr.idleSprs, 0);
 				dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(60f, 90f)));
 			}
 		}
@@ -547,7 +589,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Update();
 			frame += Time.deltaTime * dr.TimeScale * 6f;
 			frame %= dr.disappointedSprs.Length;
-			dr.renderer.sprite = dr.disappointedSprs[Mathf.FloorToInt(frame)];
+			dr.ApplyArray(dr.disappointedSprs, Mathf.FloorToInt(frame));
 			if (!dr.audMan.QueuedAudioIsPlaying)
 			{
 				cooldown -= Time.deltaTime * dr.TimeScale;
@@ -555,7 +597,7 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					dr.audMan.FlushQueue(true);
 					dr.audMan.PlaySingle(dr.audDismissed);
-					dr.renderer.sprite = dr.idleSprs[0];
+					dr.ApplyArray(dr.idleSprs, 0);
 					dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(60f, 90f)));
 				}
 			}
@@ -572,7 +614,7 @@ namespace BBTimes.CustomContent.NPCs
 			frame += Time.deltaTime * dr.TimeScale * 11f;
 			frame %= dr.crazySprs.Length;
 
-			dr.renderer.sprite = dr.crazySprs[Mathf.FloorToInt(frame)];
+			dr.ApplyArray(dr.crazySprs, Mathf.FloorToInt(frame));
 		}
 	}
 
@@ -605,7 +647,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			dr.renderer.sprite = dr.chasingSprs[0];
+			dr.ApplyArray(dr.chasingSprs, 0);
 			dr.Navigator.Am.moveMods.Remove(dr.moveMod);
 			dr.Navigator.maxSpeed = dr.angryChaseSpeed;
 			dr.Navigator.SetSpeed(dr.angryChaseSpeed);
@@ -692,7 +734,7 @@ namespace BBTimes.CustomContent.NPCs
 					stepDelay += 5.6f;
 					dr.Step();
 					idx = 1 - idx;
-					dr.renderer.sprite = dr.chasingSprs[idx];
+					dr.ApplyArray(dr.chasingSprs, idx);
 				}
 			}
 			stopStep = false;
@@ -730,7 +772,7 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				dr.audMan.FlushQueue(true);
 				dr.audMan.PlaySingle(dr.audDismissed);
-				dr.renderer.sprite = dr.idleSprs[0];
+				dr.ApplyArray(dr.idleSprs, 0);
 				dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, Random.Range(60f, 90f)));
 			}
 		}

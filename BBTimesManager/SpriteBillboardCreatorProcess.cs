@@ -21,7 +21,7 @@ namespace BBTimes.Manager
 
 			GameObject[] flowers = new GameObject[flowerSprites.Length];
 			for (int i = 0; i < flowers.Length; i++)
-				flowers[i] = ObjectCreationExtensions.CreateSpriteBillboard(flowerSprites[i]).AddSpriteHolder(2.6f).transform.parent.gameObject.SetAsPrefab(true);
+				flowers[i] = ObjectCreationExtensions.CreateSpriteBillboard(flowerSprites[i]).AddSpriteHolder(out _, 2.6f).gameObject.SetAsPrefab(true);
 
 			EnvironmentControllerMakeBeautifulOutside.decorations = flowers;
 			// Fire Object
@@ -46,15 +46,15 @@ namespace BBTimes.Manager
 			});
 
 			// Hanging ceiling light for cafeteria
-			var hangingLight = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("cafeHangingLight.png"))), 25f)).AddSpriteHolder(40f);
+			var hangingLight = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("cafeHangingLight.png"))), 25f)).AddSpriteHolder(out _, 40f);
 
 			hangingLight.transform.localScale = Vector3.one * 1.4f;
 
-			man.Add("prefab_cafeHangingLight", hangingLight.transform.parent.gameObject.SetAsPrefab(true));
+			man.Add("prefab_cafeHangingLight", hangingLight.gameObject.SetAsPrefab(true));
 
 			// Hanging light for library
 			man.Add("prefab_libraryHangingLight", ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(GenericExtensions.FindResourceObjectByName<Texture2D>("StandardHangingLight"), 25f))
-				.AddSpriteHolder(18.1f).transform.parent.gameObject.SetAsPrefab(true));
+				.AddSpriteHolder(out _, 18.1f).gameObject.SetAsPrefab(true));
 
 			// Misc Decorations
 			AddDecoration("SecretBread","bread.png", 35f, Vector3.up * 1.3f);
@@ -62,10 +62,10 @@ namespace BBTimes.Manager
 
 			static void AddDecoration(string name, string fileName, float pixelsPerUnit, Vector3 offset)
 			{
-				var bred = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName(fileName))), pixelsPerUnit)).AddSpriteHolder(offset);
-				bred.transform.parent.name = name;
+				var bred = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName(fileName))), pixelsPerUnit)).AddSpriteHolder(out var renderer, offset);
 				bred.name = name;
-				bred.transform.parent.gameObject.AddObjectToEditor();
+				renderer.name = name;
+				bred.gameObject.AddObjectToEditor();
 				//"editorPrefab_"
 			}
 		}

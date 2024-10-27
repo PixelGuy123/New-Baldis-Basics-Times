@@ -151,6 +151,13 @@ namespace BBTimes.CustomContent.NPCs
 	internal class ZapZap_StateBase(ZapZap zap) : NpcState(zap)
 	{
 		protected ZapZap zap = zap;
+
+		public override void DoorHit(StandardDoor door)
+		{
+			base.DoorHit(door);
+			if (zap.IsActivated)
+				zap.SpawnEletricity(door);
+		}
 	}
 
 	internal class ZapZap_WaitDeactivated(ZapZap zap, bool hacked) : ZapZap_StateBase(zap)
@@ -182,11 +189,6 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			zap.Activate();
 			ChangeNavigationState(new NavigationState_WanderRandom(zap, 0));
-		}
-		public override void DoorHit(StandardDoor door)
-		{
-			base.DoorHit(door);
-			zap.SpawnEletricity(door);
 		}
 		public override void Update()
 		{

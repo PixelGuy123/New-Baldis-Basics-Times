@@ -84,12 +84,13 @@ namespace BBTimes.Manager
 
 			bathSprites = TextureExtensions.LoadSpriteSheet(2, 1, 50f, GetRoomAsset("Bathroom", "sink.png"));
 			var bathSink = ObjectCreationExtensions.CreateSpriteBillboard(bathSprites[0])
-				.AddSpriteHolder(2f, LayerStorage.iClickableLayer);
+				.AddSpriteHolder(out var bathSinkRenderer, 2f, LayerStorage.iClickableLayer);
+			bathSinkRenderer.name = "sink";
 			bathSink.name = "sink";
-			bathSink.transform.parent.name = "sink";
+			bathSink.gameObject.AddObjectToEditor();
 
-			var bathSinkFunction = bathSink.transform.parent.gameObject.AddComponent<TimedFountain>();
-			bathSinkFunction.renderer = bathSink;
+			var bathSinkFunction = bathSink.gameObject.AddComponent<TimedFountain>();
+			bathSinkFunction.renderer = bathSinkRenderer;
 			bathSinkFunction.sprEnabled = bathSprites[0];
 			bathSinkFunction.sprDisabled = bathSprites[1];
 			bathSinkFunction.refillValue = 7.5f;
@@ -102,22 +103,22 @@ namespace BBTimes.Manager
 			collider = new GameObject("sinkCollider").AddBoxCollider(Vector3.zero, new(0.6f, 10f, 0.6f), false);
 			collider.gameObject.AddNavObstacle(new(1f, 10f, 1f));
 			collider.gameObject.layer = LayerStorage.ignoreRaycast;
-			collider.transform.SetParent(bathSink.transform.parent);
+			collider.transform.SetParent(bathSink.transform);
 			collider.transform.localPosition = Vector3.zero;
 
-			bathSink.transform.parent.gameObject.AddObjectToEditor();
+			
 
-			var toilet = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "toilet.png")), 50f)).AddSpriteHolder(2.7f, LayerStorage.ignoreRaycast);
-			toilet.name = "toiletRenderer";
-			toilet.transform.parent.name = "Toilet";
-			toilet.transform.parent.gameObject.AddBoxCollider(Vector3.zero, new(0.8f, 10f, 0.8f), false);
-			toilet.transform.parent.gameObject.AddNavObstacle(new(1.2f, 10f, 1.2f));
+			var toilet = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "toilet.png")), 50f)).AddSpriteHolder(out var toiletRenderer, 2.7f, LayerStorage.ignoreRaycast);
+			toiletRenderer.name = "toiletRenderer";
+			toilet.name = "Toilet";
+			toilet.gameObject.AddBoxCollider(Vector3.zero, new(0.8f, 10f, 0.8f), false);
+			toilet.gameObject.AddNavObstacle(new(1.2f, 10f, 1.2f));
 
-			toilet.transform.parent.gameObject.AddObjectToEditor();
+			toilet.gameObject.AddObjectToEditor();
 
 
 			var bathLightPre = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "long_hanginglamp.png")), 50f))
-				.AddSpriteHolder(8.98f).transform.parent;
+				.AddSpriteHolder(out _, 8.98f).transform;
 			bathLightPre.name = "hangingLongLight";
 			bathLightPre.gameObject.ConvertToPrefab(true);
 
@@ -291,10 +292,10 @@ namespace BBTimes.Manager
 
 			// ComputerTeleporter
 			sprs = TextureExtensions.LoadSpriteSheet(3, 2, 12.5f, GetRoomAsset("ComputerRoom", GetAssetName("ComputerTeleporter.png")));
-			machine = ObjectCreationExtensions.CreateSpriteBillboard(sprs[5]).AddSpriteHolder(5f, LayerStorage.ignoreRaycast);
+			var machineComputer = ObjectCreationExtensions.CreateSpriteBillboard(sprs[5]).AddSpriteHolder(out machine, 5f, LayerStorage.ignoreRaycast);
 			machine.name = "Sprite";
 
-			var teleporter = machine.transform.parent.gameObject.AddComponent<ComputerTeleporter>();
+			var teleporter = machineComputer.gameObject.AddComponent<ComputerTeleporter>();
 			teleporter.name = "ComputerTeleporter";
 
 			teleporter.gameObject.AddObjectToEditor();
@@ -375,17 +376,17 @@ namespace BBTimes.Manager
 			//************* Dribble's Room **********************
 			//***************************************************
 			//***************************************************
-			var runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineStraight.png")), 12.5f), false).AddSpriteHolder(0.1f, 0);
+			var runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineStraight.png")), 12.5f), false).AddSpriteHolder(out var runLineRenderer, 0.1f, 0);
 			//runLine.gameObject.layer = 0; // default layer
-			runLine.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			runLine.transform.parent.name = "StraightRunLine";
-			runLine.transform.parent.gameObject.AddObjectToEditor();
+			runLineRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			runLine.name = "StraightRunLine";
+			runLine.gameObject.AddObjectToEditor();
 
-			runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineCurve.png")), 12.5f), false).AddSpriteHolder(0.1f, 0);
+			runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineCurve.png")), 12.5f), false).AddSpriteHolder(out runLineRenderer, 0.1f, 0);
 			//runLine.gameObject.layer = 0; // default layer
-			runLine.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			runLine.transform.parent.name = "CurvedRunLine";
-			runLine.transform.parent.gameObject.AddObjectToEditor();
+			runLineRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			runLine.name = "CurvedRunLine";
+			runLine.gameObject.AddObjectToEditor();
 
 			sets = RegisterRoom("DribbleRoom", new(1f, 0.439f, 0f),
 				ObjectCreators.CreateDoorDataObject("DribbleRoomDoor",
@@ -492,7 +493,7 @@ namespace BBTimes.Manager
 
 			// Joe
 
-			var joe = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "JoeChef.png")), 29f)).AddSpriteHolder(0f, LayerStorage.iClickableLayer).transform.parent;
+			var joe = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "JoeChef.png")), 29f)).AddSpriteHolder(out _, 0f, LayerStorage.iClickableLayer);
 			joe.name = "JoeChef";
 			joe.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * 10f, true);
 			joe.gameObject.AddObjectToEditor();
@@ -505,8 +506,7 @@ namespace BBTimes.Manager
 			joeChef.audKitchen = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Kitchen", "KitchenThing.wav")), string.Empty, SoundType.Voice, Color.white);
 			joeChef.audKitchen.subtitle = false;
 
-			var joeHolderRenderer = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(new Vector3(-3.3f, 2f, 0f), 0);
-			var joeHolder = joeHolderRenderer.transform.parent;
+			var joeHolder = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(out var joeHolderRenderer, new Vector3(-3.3f, 2f, 0f), 0);
 			joeHolder.transform.SetParent(joe.transform);
 			joeHolder.transform.localPosition = Vector3.zero;
 			joeHolder.gameObject.AddComponent<BillboardRotator>();
@@ -665,11 +665,11 @@ namespace BBTimes.Manager
 			baldiBall.gameObject.ConvertToPrefab(true);
 
 			// Huge line
-			var line = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "bigLine.png")), 2f), false).AddSpriteHolder(0.1f, 0);
+			var line = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "bigLine.png")), 2f), false).AddSpriteHolder(out runLineRenderer, 0.1f, 0);
 			//line.gameObject.layer = 0; // default layer
-			line.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			line.transform.parent.name = "BasketBallBigLine";
-			line.transform.parent.gameObject.AddObjectToEditor();
+			runLineRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			line.name = "BasketBallBigLine";
+			line.gameObject.AddObjectToEditor();
 
 			sets = RegisterSpecialRoom("BasketballArea", Color.cyan);
 
@@ -707,7 +707,7 @@ namespace BBTimes.Manager
 			// **********************************************
 
 			// Tree
-			var tree = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Forest", "forestTree.png")), 8f)).AddSpriteHolder(10.76f, 0).transform.parent;
+			var tree = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Forest", "forestTree.png")), 8f)).AddSpriteHolder(out _, 10.76f, 0);
 			tree.gameObject.AddBoxCollider(Vector3.zero, new(0.8f, 10f, 0.8f), false);
 			tree.gameObject.AddNavObstacle(new(1.9f, 10f, 1.9f));
 
@@ -726,7 +726,7 @@ namespace BBTimes.Manager
 			// Campfire
 			var campFire = tree.DuplicatePrefab();
 			((SpriteRenderer)campFire.GetComponent<RendererContainer>().renderers[0]).sprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Forest", "FireStatic.png")), 27f);
-			Object.Destroy(campFire.Find("TreeRaycastHitbox").gameObject); // Not needed for the campfire
+			Object.Destroy(campFire.transform.Find("TreeRaycastHitbox").gameObject); // Not needed for the campfire
 
 			campFire.transform.GetChild(0).localPosition = Vector3.up * 1.2f;
 			campFire.name = "Campfire";
@@ -742,8 +742,7 @@ namespace BBTimes.Manager
 				.AddStartingAudiosToAudioManager(true, campFireAud);
 
 			// BearTrap
-			var trapRender = ObjectCreationExtensions.CreateSpriteBillboard(man.Get<Sprite[]>("Beartrap")[1]).AddSpriteHolder(1f, 0);
-			var trap = trapRender.transform.parent.gameObject.AddComponent<PersistentBearTrap>();
+			var trap = ObjectCreationExtensions.CreateSpriteBillboard(man.Get<Sprite[]>("Beartrap")[1]).AddSpriteHolder(out var trapRender, 1f, 0).gameObject.AddComponent<PersistentBearTrap>();
 			trap.name = "Beartrap";
 
 			trap.gameObject.AddObjectToEditor();

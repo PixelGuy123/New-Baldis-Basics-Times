@@ -17,11 +17,11 @@ namespace BBTimes.CustomContent.Events
 			eventIntro = this.GetSound("SkateboardDay.wav", "Event_SkateboardDay1", SoundType.Effect, Color.green);
 			eventIntro.additionalKeys = [new() { time = 3.156f, key = "Event_SkateboardDay2" }];
 
-			var skRender = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(0f);
-			skRender.transform.parent.gameObject.ConvertToPrefab(true);
-			skRender.CreateAnimatedSpriteRotator(new SpriteRotationMap() { angleCount = 8, spriteSheet = this.GetSpriteSheet(4, 2, 15f, "skate.png") });
+			var skRender = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(out var skRenderer, 0f);
+			skRender.gameObject.ConvertToPrefab(true);
+			skRenderer.CreateAnimatedSpriteRotator(new SpriteRotationMap() { angleCount = 8, spriteSheet = this.GetSpriteSheet(4, 2, 15f, "skate.png") });
 
-			var sk = skRender.transform.parent.gameObject.AddComponent<Skateboard>();
+			var sk = skRender.gameObject.AddComponent<Skateboard>();
 			sk.entity = sk.gameObject.CreateEntity(3.5f, 1f, skRender.transform);
 			((CapsuleCollider)sk.entity.collider).height = 10f; // Should stop it from going below anything
 			sk.name = "Skateboard";
