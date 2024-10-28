@@ -17,26 +17,26 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefab()
 		{
 			SoundObject[] soundObjects = [ // huge ass array lmao
-			this.GetSound("bounce.wav", "BB_Bong", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSoundNoSub("throw.wav", SoundType.Voice),
-			this.GetSound("DRI_Idle1.wav", "Vfx_Dribble_Idle1", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Idle2.wav", "Vfx_Dribble_Idle2", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Chase1.wav", "Vfx_Dribble_Notice1", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Chase2.wav", "Vfx_Dribble_Notice2", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Caught1.wav", "Vfx_Dribble_Caught1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Caught2.wav", "Vfx_Dribble_Caught2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Instructions.wav", "Vfx_Dribble_Instructions", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), // 9
-			this.GetSound("DRI_Ready.wav", "Vfx_Dribble_Ready", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Catch.wav", "Vfx_Dribble_Catch", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Praise1.wav", "Vfx_Dribble_Praise1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Praise2.wav", "Vfx_Dribble_Praise2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Dismissed.wav", "Vfx_Dribble_Dismissed", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSoundNoSub("punch.wav", SoundType.Voice),
-			this.GetSound("DRI_Disappointed1.wav", "Vfx_Dribble_Disappointed1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Disappointed2.wav", "Vfx_Dribble_Disappointed2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Angry1.wav", "Vfx_Dribble_Angry1", SoundType.Voice, new(1f, 0.15f, 0.15f)), // 18
-			this.GetSound("DRI_Angry2.wav", "Vfx_Dribble_Angry2", SoundType.Voice, new(1f, 0.15f, 0.15f)),
-			this.GetSound("DRI_Step1.wav", "Vfx_Spj_Step", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("bounce.wav", "BB_Bong", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), // 0
+			this.GetSoundNoSub("throw.wav", SoundType.Voice), // 1
+			this.GetSound("DRI_Idle1.wav", "Vfx_Dribble_Idle1", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)), // 2
+			this.GetSound("DRI_Idle2.wav", "Vfx_Dribble_Idle2", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)), // 3
+			this.GetSound("DRI_Chase1.wav", "Vfx_Dribble_Notice1", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)), //4
+			this.GetSound("DRI_Chase2.wav", "Vfx_Dribble_Notice2", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)), //5
+			this.GetSound("DRI_Caught1.wav", "Vfx_Dribble_Caught1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), //6
+			this.GetSound("DRI_Caught2.wav", "Vfx_Dribble_Caught2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), //7
+			this.GetSound("DRI_Instructions.wav", "Vfx_Dribble_Instructions", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), // 8
+			this.GetSound("DRI_Ready.wav", "Vfx_Dribble_Ready", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), //9
+			this.GetSound("DRI_Catch.wav", "Vfx_Dribble_Catch", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), //10
+			this.GetSound("DRI_Praise1.wav", "Vfx_Dribble_Praise1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), //11
+			this.GetSound("DRI_Praise2.wav", "Vfx_Dribble_Praise2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), // 12
+			this.GetSound("DRI_Dismissed.wav", "Vfx_Dribble_Dismissed", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), //13
+			this.GetSoundNoSub("punch.wav", SoundType.Voice), //14
+			this.GetSound("DRI_Disappointed1.wav", "Vfx_Dribble_Disappointed1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), //15
+			this.GetSound("DRI_Disappointed2.wav", "Vfx_Dribble_Disappointed2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), //16
+			this.GetSound("DRI_Angry1.wav", "Vfx_Dribble_Angry1", SoundType.Voice, new(1f, 0.15f, 0.15f)), // 17
+			this.GetSound("DRI_Angry2.wav", "Vfx_Dribble_Angry2", SoundType.Voice, new(1f, 0.15f, 0.15f)), //18
+			this.GetSound("DRI_Step1.wav", "Vfx_Spj_Step", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), //19
 			this.GetSound("DRI_Step2.wav", "Vfx_Spj_Step", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
 			this.GetSound("DRI_AngryChase1.wav", "Vfx_Dribble_ChaseAngry1", SoundType.Voice, new(1f, 0.15f, 0.15f)),
 			this.GetSound("DRI_AngryChase2.wav", "Vfx_Dribble_ChaseAngry2", SoundType.Voice, new(1f, 0.15f, 0.15f)),
@@ -65,7 +65,7 @@ namespace BBTimes.CustomContent.NPCs
 			audPraise = [soundObjects[11], soundObjects[12]];
 			audDismissed = soundObjects[13];
 			audDisappointed = [soundObjects[15], soundObjects[16]];
-			audAngry = [soundObjects[18], soundObjects[19]];
+			audAngry = [soundObjects[17], soundObjects[18]];
 			audStep = [soundObjects[19], soundObjects[20]];
 			audChaseAngry = [soundObjects[21], soundObjects[22]];
 			audAngryCaught = [soundObjects[23], soundObjects[24]];
