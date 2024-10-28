@@ -500,6 +500,24 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 50 });
+
+			// Detention Bot
+			npc = new NPCBuilder<DetentionBot>(plug.Info)
+				.AddSpawnableRoomCategories(RoomCategory.Office)
+				.AddHeatmap()
+				.AddLooker()
+				.SetMinMaxAudioDistance(215f, 255f)
+				.SetEnum("DetentionBot")
+				.SetMetaName("PST_DetentionBot_Name")
+				.SetName("DetentionBot")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("DetentionBot", "PST_DetentionBot_Name", "PST_DetentionBot_Desc", -0.715f)
+				.MarkAsReplacement(15, Character.Principal);
+
+			npc.Navigator.SetRoomAvoidance(false);
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 38 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 41 });
 		}
 
 		

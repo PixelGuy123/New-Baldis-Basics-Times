@@ -96,6 +96,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (cells.Count == 0)
 			{
 				Debug.LogWarning("JERRY HAS FAILED TO FIND ANY GOOD SPOT, NOOOOOOOO!!!");
+				behaviorStateMachine.ChangeNavigationState(new NavigationState_DoNothing(this, 0));
 				behaviorStateMachine.ChangeState(new NpcState(this));
 				return;
 			}
@@ -116,8 +117,8 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.SetLoop(true);
 			audMan.QueueAudio(audRolling);
 
-			navigator.maxSpeed = 17f;
-			navigator.SetSpeed(17f);
+			navigator.maxSpeed = 24.5f;
+			navigator.SetSpeed(24.5f);
 			nextPos = zero;
 
 			var em = parts.emission;

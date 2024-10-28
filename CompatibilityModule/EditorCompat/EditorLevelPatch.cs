@@ -127,6 +127,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("cheeseMan", "CheeseMan");
 			AddNPC("crazyClock", "CrazyClock");
 			AddNPCCopy<ClassicGottaSweep>("oldsweep");
+			AddNPC("detentionBot", "DetentionBot");
 			AddNPC("dribble", "Dribble");
 			AddNPC("faker", "Faker");
 			AddNPC("gluebotrony", "Glubotrony");

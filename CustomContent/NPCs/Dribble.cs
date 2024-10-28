@@ -25,7 +25,6 @@ namespace BBTimes.CustomContent.NPCs
 			this.GetSound("DRI_Chase2.wav", "Vfx_Dribble_Notice2", SoundType.Voice,new(0.99609375f, 0.609375f, 0.3984375f)),
 			this.GetSound("DRI_Caught1.wav", "Vfx_Dribble_Caught1", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
 			this.GetSound("DRI_Caught2.wav", "Vfx_Dribble_Caught2", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Clap.wav", "Vfx_Dribble_Clap", SoundType.Voice, Color.white),
 			this.GetSound("DRI_Instructions.wav", "Vfx_Dribble_Instructions", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)), // 9
 			this.GetSound("DRI_Ready.wav", "Vfx_Dribble_Ready", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
 			this.GetSound("DRI_Catch.wav", "Vfx_Dribble_Catch", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
@@ -47,6 +46,11 @@ namespace BBTimes.CustomContent.NPCs
 			this.GetSound("DRI_AngryPush2.wav", "Vfx_Dribble_Punch2", SoundType.Voice, new(1f, 0.15f, 0.15f))
 			];
 
+			audClaps = [
+			this.GetSound("DRI_Clap1.wav", "Vfx_Dribble_Clap", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Clap2.wav", "Vfx_Dribble_Clap", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f))
+			];
+
 			audMan = GetComponent<PropagatedAudioManager>();
 			bounceAudMan = gameObject.CreatePropagatedAudioManager(85f, 125f);
 			clapAudMan = gameObject.CreatePropagatedAudioManager(85f, 125f);
@@ -55,19 +59,18 @@ namespace BBTimes.CustomContent.NPCs
 			audIdle = [soundObjects[2], soundObjects[3]];
 			audNotice = [soundObjects[4], soundObjects[5]];
 			audCaught = [soundObjects[6], soundObjects[7]];
-			audClap = soundObjects[8];
-			audInstructions = soundObjects[9];
-			audReady = soundObjects[10];
-			audCatch = soundObjects[11];
-			audPraise = [soundObjects[12], soundObjects[13]];
-			audDismissed = soundObjects[14];
-			audDisappointed = [soundObjects[16], soundObjects[17]];
+			audInstructions = soundObjects[8];
+			audReady = soundObjects[9];
+			audCatch = soundObjects[10];
+			audPraise = [soundObjects[11], soundObjects[12]];
+			audDismissed = soundObjects[13];
+			audDisappointed = [soundObjects[15], soundObjects[16]];
 			audAngry = [soundObjects[18], soundObjects[19]];
-			audStep = [soundObjects[20], soundObjects[21]];
-			audChaseAngry = [soundObjects[22], soundObjects[23]];
-			audAngryCaught = [soundObjects[24], soundObjects[25]];
-			audPunchResponse = [soundObjects[26], soundObjects[27]];
-			audPunch = soundObjects[15];
+			audStep = [soundObjects[19], soundObjects[20]];
+			audChaseAngry = [soundObjects[21], soundObjects[22]];
+			audAngryCaught = [soundObjects[23], soundObjects[24]];
+			audPunchResponse = [soundObjects[25], soundObjects[26]];
+			audPunch = soundObjects[14];
 
 			renderer = spriteRenderer[0];
 
@@ -145,8 +148,11 @@ namespace BBTimes.CustomContent.NPCs
 		internal void AngryNoise(bool chasing) =>
 			audMan.PlayRandomAudio(chasing ? audChaseAngry : audAngry);
 
-		internal void Clap() =>
-			clapAudMan.PlaySingle(audClap);
+		internal void Clap()
+		{
+			clapAudMan.PlaySingle(audClaps[clapIndex]);
+			clapIndex = (clapIndex + 1) % audClaps.Length;
+		}
 
 		internal void TeleportToClass(PlayerManager pm)
 		{
@@ -255,10 +261,10 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] idleSprsTalking, clapSprsTalking, classSprsTalking, disappointedSprsTalking, crazySprsTalking, chasingSprsTalking;
 
 		[SerializeField]
-		internal SoundObject[] audIdle, audNotice, audPraise, audDisappointed, audAngry, audChaseAngry, audCaught, audStep, audAngryCaught, audPunchResponse;
+		internal SoundObject[] audIdle, audClaps, audNotice, audPraise, audDisappointed, audAngry, audChaseAngry, audCaught, audStep, audAngryCaught, audPunchResponse;
 
 		[SerializeField]
-		internal SoundObject audCatch, audClap, audDismissed, audInstructions, audReady, audBounceBall, audThrow, audPunch;
+		internal SoundObject audCatch, audDismissed, audInstructions, audReady, audBounceBall, audThrow, audPunch;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan, bounceAudMan, clapAudMan;
@@ -272,7 +278,7 @@ namespace BBTimes.CustomContent.NPCs
 		PickableBasketball basketball;
 		bool _step = false;
 		Sprite[] currentArrayInUsage;
-		int idxInCurrentArray;
+		int idxInCurrentArray, clapIndex = 0;
 
 
 		readonly internal TimeScaleModifier introMod = new(0f, 0f, 0f);
