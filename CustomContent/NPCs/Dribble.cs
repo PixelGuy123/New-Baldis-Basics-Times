@@ -103,7 +103,7 @@ namespace BBTimes.CustomContent.NPCs
 			comp.gameObject.layer = LayerStorage.iClickableLayer;
 			comp.entity = basket.CreateEntity(2f, 2f, basket.transform);
 			comp.spriteAnim = BBTimesManager.man.Get<Sprite[]>("basketBall");
-			comp.audHit = soundObjects[15];
+			comp.audHit = soundObjects[14];
 
 			comp.renderer = rendererBase;
 
