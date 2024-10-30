@@ -18,6 +18,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 			gameObject.layer = LayerStorage.standardEntities;
 			entity = gameObject.CreateEntity(2f, 2f, rendererBase.transform);
+			entity.SetGrounded(false);
 
 			audMan = gameObject.CreatePropagatedAudioManager(75, 105);
 			stungAudMan = gameObject.CreatePropagatedAudioManager(95, 125);

@@ -26,6 +26,7 @@ namespace BBTimes.CustomContent.CustomItems
 			groundedSprite = rendererBase.Find("Sprite_Grounded");
 
 			entity = gameObject.CreateEntity(1f, 1f, out var collider, out _, rendererBase).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
+			entity.SetGrounded(false);
 			collider.height = 4;
 
 		}

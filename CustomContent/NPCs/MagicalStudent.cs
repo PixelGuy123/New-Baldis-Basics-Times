@@ -25,6 +25,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			var mo = mos.gameObject.AddComponent<MagicObject>();
 			mo.entity = mos.gameObject.CreateEntity(4f, 4f, mos.transform).SetEntityCollisionLayerMask(0);
+			mo.entity.SetGrounded(false);
 
 			// MGS Setup
 			magicPre = mo;

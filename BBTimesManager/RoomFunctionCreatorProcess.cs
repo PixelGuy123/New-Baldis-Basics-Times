@@ -11,6 +11,7 @@ using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
+using BBTimes.CustomContent.Objects;
 
 namespace BBTimes.Manager
 {
@@ -80,6 +81,8 @@ namespace BBTimes.Manager
 				});
 			});
 
+			// -------------------- DUST SHROOM CREATION ----------------------------
+
 			WeightedTransform[] transforms = [.. transformsList];
 
 			var cos = AddFunctionToEveryRoom<CornerObjectSpawner>(FacultyPrefix);
@@ -97,6 +100,84 @@ namespace BBTimes.Manager
 			cos.randomObjs = transforms;
 			cos.nonSafeEntityCell = true;
 
+			var sprites = TextureExtensions.LoadSpriteSheet(2, 1, 33f, BasePlugin.ModPath, "objects", "DustShroom", GetAssetName("shroom.png"));
+			transforms = [
+				new() {selection = ObjectCreationExtensions.CreateSpriteBillboard(sprites[0]).AddSpriteHolder(out var shroomRenderer, 1.25f, LayerStorage.ignoreRaycast).transform, 
+				weight = 100 }
+				];
+
+			var shroom = transforms[0].selection.gameObject.AddComponent<DustShroom>();
+			shroom.name = "DustShroom";
+			shroomRenderer.name = "DustShroomRenderer";
+			shroom.gameObject.AddBoxCollider(Vector3.up * 5f, new(1f, 10f, 1f), true); // Touching hitbox
+			shroom.gameObject.AddObjectToEditor();
+
+			shroom.renderer = shroomRenderer;
+
+			shroom.audMan = shroom.gameObject.CreatePropagatedAudioManager(55f, 65f);
+
+			shroom.raycastBlockingCollider = new GameObject("RaycastBlocker").AddBoxCollider(Vector3.up * 5f, new(4f, 10f, 4f), false);
+			shroom.raycastBlockingCollider.gameObject.layer = LayerStorage.blockRaycast;
+			shroom.raycastBlockingCollider.transform.SetParent(shroom.transform);
+			shroom.raycastBlockingCollider.transform.localPosition = Vector3.zero;
+			shroom.raycastBlockingCollider.enabled = false;
+
+			shroom.sprUsed = sprites[1];
+			shroom.sprActive = sprites[0];
+
+			var system = new GameObject("Dusts").AddComponent<ParticleSystem>();
+			system.transform.SetParent(shroom.transform);
+			system.transform.localPosition = Vector3.up * shroom.renderer.transform.localPosition.y;
+			system.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			var partsRenderer = system.GetComponent<ParticleSystemRenderer>();
+			partsRenderer.material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "objects", "DustShroom", GetAssetName("dust.png"))) };
+
+			var main = system.main;
+			main.gravityModifierMultiplier = -0.65f;
+			main.startLifetimeMultiplier = 5f;
+			main.startSpeedMultiplier = 2f;
+			main.simulationSpace = ParticleSystemSimulationSpace.World;
+			main.startSize = 1f;
+			main.startRotation = new(1f, 90f);
+
+			var size = system.sizeOverLifetime;
+			size.enabled = true;
+
+			var minMaxCurve = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(
+				new Keyframe(0f, 1f),
+				new Keyframe(0.15f, 2.5f),
+				new Keyframe(0.3f, 3.5f),
+				new Keyframe(5f, 8f)
+				));
+
+			size.x = minMaxCurve;
+			size.y = minMaxCurve;
+			size.z = minMaxCurve;
+
+
+			var emission = system.emission;
+			emission.rateOverTimeMultiplier = 35f;
+			emission.enabled = false;
+
+			var vel = system.velocityOverLifetime;
+			vel.enabled = true;
+			vel.space = ParticleSystemSimulationSpace.World;
+			vel.x = new(-3f, 3f);
+			vel.y = new(4f, 12f);
+			vel.z = new(-3f, 3f);
+
+			var rot = system.rotationOverLifetime;
+			rot.enabled = true;
+			rot.x = new(2f, 5f);
+
+			shroom.particles = system;
+
+			var rendCont = shroom.GetComponent<RendererContainer>();
+			rendCont.renderers = rendCont.renderers.AddToArray(partsRenderer);
+
+			var rngSpawner = AddFunctionToEveryRoom<RandomObjectSpawner>(PlaygroundPrefix);
+			rngSpawner.transformsPre = transforms;
+			rngSpawner.horizontalOffset = 3f;
 
 			static R AddFunctionToEveryRoom<R>(string prefix) where R : RoomFunction
 			{

@@ -62,6 +62,7 @@ namespace BBTimes.CustomContent.NPCs
 			laser.renderer = laserRenderer;
 
 			laser.entity = laserRend.gameObject.CreateEntity(2f, 2f, laserRend.transform).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
+			laser.entity.SetGrounded(false);
 			laser.audMan = laserRend.gameObject.CreatePropagatedAudioManager(15, 45);
 			laser.audShock = soundObjects[9];
 			laserPre = laser;

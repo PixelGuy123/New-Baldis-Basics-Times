@@ -29,7 +29,7 @@ namespace BBTimes.CustomContent.CustomItems
 			renderer = hammer.transform;
 
 			entity = gameObject.CreateEntity(2f, 2f, hammer.transform);
-			entity.SetHeight(0f);
+			entity.SetGrounded(false);
 			((CapsuleCollider)entity.collider).height = 10f;
 
 			audMan = gameObject.CreatePropagatedAudioManager(86f, 125f);

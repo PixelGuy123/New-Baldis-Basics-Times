@@ -19,6 +19,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 			gameObject.layer = LayerStorage.standardEntities;
 			entity = gameObject.CreateEntity(2f, 2f, rendererBase);
+			entity.SetGrounded(false);
 
 			audMan = gameObject.CreatePropagatedAudioManager(95, 115);
 			audThrow = BBTimesManager.man.Get<SoundObject>("audGenericThrow");
@@ -56,7 +57,8 @@ namespace BBTimes.CustomContent.CustomItems
 				var e = other.GetComponent<Entity>();
 				if (e)
 				{
-					e.AddForce(new((other.transform.position - transform.position).normalized, 35f, -26f));
+					dir = (other.transform.position - transform.position).normalized;
+					e.AddForce(new(dir, 35f, -20f));
 
 					speed *= 0.3f;
 					velocityY = 0.7f * heightIncreaseFactor;

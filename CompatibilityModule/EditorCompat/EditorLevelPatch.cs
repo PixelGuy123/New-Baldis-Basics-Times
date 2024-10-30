@@ -71,6 +71,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			MarkObject(man.Get<GameObject>("editorPrefab_FocusedStudent"), Vector3.up * 5f);
 
 			MarkObject(man.Get<GameObject>("editorPrefab_ComputerTeleporter"), Vector3.zero);
+			MarkObject(man.Get<GameObject>("editorPrefab_DustShroom"), Vector3.zero);
 
 			// Decorations
 			MarkObject(man.Get<GameObject>("editorPrefab_SecretBread"), Vector3.zero);

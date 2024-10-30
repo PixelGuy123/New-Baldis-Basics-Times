@@ -41,6 +41,7 @@ namespace BBTimes.CustomContent.NPCs
 			bubble.renderer = bubbleVisual;
 			bubble.gameObject.layer = LayerStorage.standardEntities;
 			bubble.entity = bubble.gameObject.CreateEntity(1f, 4f, visual.transform);
+			bubble.entity.SetGrounded(false);
 			var canvas = ObjectCreationExtensions.CreateCanvas();
 			canvas.transform.SetParent(bubble.transform);
 			ObjectCreationExtensions.CreateImage(canvas, TextureExtensions.CreateSolidTexture(1, 1, new(0f, 0.5f, 0.5f, 0.35f)));

@@ -27,7 +27,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 			audShoot = grap.audLaunch;
 			audBreak = grap.audSnap;
+
 			entity.collisionLayerMask = grap.entity.collisionLayerMask;
+			entity.SetGrounded(false);
 		}
 
 		public override bool Use(PlayerManager pm)
