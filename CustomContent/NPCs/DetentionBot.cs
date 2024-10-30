@@ -276,12 +276,6 @@ namespace BBTimes.CustomContent.NPCs
 			bot.Wander();
 			ChangeNavigationState(navPm);
 		}
-
-		public override void DestinationEmpty()
-		{
-			base.DestinationEmpty();
-			bot.behaviorStateMachine.ChangeState(new DetentionBot_Wandering(bot));
-		}
 		public override void Update()
 		{
 			base.Update();

@@ -115,6 +115,9 @@ namespace BBTimes.Manager
 			shroom.renderer = shroomRenderer;
 
 			shroom.audMan = shroom.gameObject.CreatePropagatedAudioManager(55f, 65f);
+			shroom.audUsed = ObjectCreators.CreateSoundObject(
+				AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "objects", "DustShroom", GetAssetName("deflate.wav"))),
+				"Vfx_DustShroom_Deflate", SoundType.Voice, Color.white);
 
 			shroom.raycastBlockingCollider = new GameObject("RaycastBlocker").AddBoxCollider(Vector3.up * 5f, new(4f, 10f, 4f), false);
 			shroom.raycastBlockingCollider.gameObject.layer = LayerStorage.blockRaycast;

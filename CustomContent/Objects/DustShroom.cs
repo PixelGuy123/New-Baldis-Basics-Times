@@ -63,8 +63,8 @@ namespace BBTimes.CustomContent.Objects
 
 		void EnableMush(bool enable)
 		{
-			//if (enable)
-				//audMan.PlaySingle(audUsed);
+			if (enable)
+				audMan.PlaySingle(audUsed);
 			
 		
 			var emission = particles.emission;

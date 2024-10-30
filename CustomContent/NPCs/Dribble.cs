@@ -102,6 +102,7 @@ namespace BBTimes.CustomContent.NPCs
 			var comp = basket.AddComponent<PickableBasketball>();
 			comp.gameObject.layer = LayerStorage.iClickableLayer;
 			comp.entity = basket.CreateEntity(2f, 2f, basket.transform);
+			comp.entity.SetGrounded(false);
 			comp.spriteAnim = BBTimesManager.man.Get<Sprite[]>("basketBall");
 			comp.audHit = soundObjects[14];
 
