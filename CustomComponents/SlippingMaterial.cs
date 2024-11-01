@@ -13,15 +13,28 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 			if (other.isTrigger)
 			{
-				var e = other.GetComponent<Entity>();
-				var pm = other.GetComponent<PlayerManager>();
-				if (e && e.Grounded && !float.IsNaN(e.Velocity.x) && (!pm || !pm.GetAttribute().HasAttribute("boots")))
-				{
-					e.AddForce(new(e.Velocity.normalized, force + e.Velocity.magnitude, e.Velocity.magnitude + (-force * antiForceReduceFactor)));
-					if (audSlip)
-						audMan.PlaySingle(audSlip);
-				}
+				SlipObject(other.gameObject, force, antiForceReduceFactor);
+				if (audSlip)
+					audMan.PlaySingle(audSlip);
 			}
+		}
+
+		public static void SlipObject(GameObject other, float force, float acceleration)
+		{
+
+			var e = other.GetComponent<Entity>();
+			var pm = other.GetComponent<PlayerManager>();
+
+			if (e && e.Grounded && !float.IsNaN(e.Velocity.x) && (!pm || !pm.GetAttribute().HasAttribute("boots")))
+				e.AddForce(new(e.Velocity.normalized, force + e.Velocity.magnitude, e.Velocity.magnitude + (-force * acceleration)));
+
+		}
+
+		public static void SlipEntity(Entity e, float force, float acceleration)
+		{
+			var pm = e.GetComponent<PlayerManager>();
+			if (!pm || !pm.GetAttribute().HasAttribute("boots"))
+				e.AddForce(new(e.Velocity.normalized, force + e.Velocity.magnitude, e.Velocity.magnitude + (-force * acceleration)));
 		}
 
 		[SerializeField]

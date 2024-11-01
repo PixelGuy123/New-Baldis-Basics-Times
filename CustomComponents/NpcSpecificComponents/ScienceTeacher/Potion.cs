@@ -5,7 +5,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 {
 	public abstract class Potion : EnvironmentObject, IEntityTrigger
 	{
-		public void Initialize(EnvironmentController ec, Vector3 position, Vector3 throwingDirection, float throwSpeed, float throwUpSpeed = 0f)
+		public void Initialize(EnvironmentController ec, Vector3 position, Vector3 throwingDirection, float throwSpeed, float despawnCooldown = 30f, float throwUpSpeed = 0f)
 		{
 			if (initialized)
 				return;
@@ -15,7 +15,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 			entity.Initialize(ec, position);
 			dir = throwingDirection * throwSpeed;
 			verticalSpeed = throwUpSpeed;
+			cooldown = despawnCooldown;
+
+			Initialize();
 		}
+
+		protected virtual void Initialize() { }
 
 		void TurnIntoPuddle()
 		{
@@ -24,20 +29,24 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 			entity.SetFrozen(true);
 			isAPuddle = true;
 			StartCoroutine(PuddleAnimation());
+			PuddleTransformation();
 		}
+
+		protected virtual void PuddleTransformation() { }
 
 		public void Despawn()
 		{
 			if (despawned) return;
 
 			despawned = true;
+			Despawned();
 			StartCoroutine(DespawnAnimation());
 		}
 
-		protected abstract void CrashOnEntity(Entity entity);
-		protected abstract void OnEntityEnter(Entity entity);
-		protected abstract void OnEntityStay(Entity entity);
-		protected abstract void OnEntityExit(Entity entity);
+		protected virtual void Despawned() { }
+		protected virtual void OnEntityEnter(Entity entity) { }
+		protected virtual void OnEntityStay(Entity entity) { }
+		protected virtual void OnEntityExit(Entity entity) { }
 
 		public void EntityTriggerEnter(Collider other)
 		{
@@ -69,8 +78,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 
 				if (!isAPuddle)
 				{
-					CrashOnEntity(e);
 					TurnIntoPuddle();
+					OnEntityEnter(e);
 					return;
 				}
 				if (e.Grounded)
@@ -116,9 +125,14 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 
 		void Update()
 		{
-			if (!IsAPuddle)
+			if (isAPuddle)
 			{
 				entity.UpdateInternalMovement(Vector3.zero);
+
+				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+				if (cooldown <= 0f)
+					Despawn();
+				
 				return;
 			}
 			entity.UpdateInternalMovement(dir);
@@ -136,7 +150,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 			renderer.transform.localPosition = Vector3.up * height;
 		}
 
-		float verticalSpeed, height;
+		float verticalSpeed, height, cooldown;
 		Vector3 dir;
 		bool isAPuddle = false, initialized = false, despawned = false;
 		public bool IsAPuddle => isAPuddle;
@@ -149,6 +163,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 
 		[SerializeField]
 		internal Sprite sprPuddleVariant;
+
+		[SerializeField]
+		internal AudioManager audMan;
+
+		[SerializeField]
+		internal SoundObject audCrashOnGround;
 
 		[SerializeField]
 		internal float gravityConstant = -4f, heightLimit = 9f;
