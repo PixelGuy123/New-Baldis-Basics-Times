@@ -13,28 +13,35 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 			if (other.isTrigger)
 			{
-				SlipObject(other.gameObject, force, antiForceReduceFactor);
-				if (audSlip)
+				if (SlipObject(other.gameObject, force, -force * antiForceReduceFactor ) && audSlip)
 					audMan.PlaySingle(audSlip);
 			}
 		}
 
-		public static void SlipObject(GameObject other, float force, float acceleration)
+		public static bool SlipObject(GameObject other, float force, float acceleration)
 		{
 
 			var e = other.GetComponent<Entity>();
 			var pm = other.GetComponent<PlayerManager>();
 
 			if (e && e.Grounded && !float.IsNaN(e.Velocity.x) && (!pm || !pm.GetAttribute().HasAttribute("boots")))
-				e.AddForce(new(e.Velocity.normalized, force + e.Velocity.magnitude, e.Velocity.magnitude + (-force * acceleration)));
+			{
+				e.AddForce(new(e.Velocity.normalized, force + e.Velocity.magnitude, e.Velocity.magnitude + acceleration));
+				return true;
+			}
+			return false;
 
 		}
 
-		public static void SlipEntity(Entity e, float force, float acceleration)
+		public static bool SlipEntity(Entity e, float force, float acceleration)
 		{
 			var pm = e.GetComponent<PlayerManager>();
 			if (!pm || !pm.GetAttribute().HasAttribute("boots"))
-				e.AddForce(new(e.Velocity.normalized, force + e.Velocity.magnitude, e.Velocity.magnitude + (-force * acceleration)));
+			{
+				e.AddForce(new(e.Velocity.normalized, force + e.Velocity.magnitude, e.Velocity.magnitude + acceleration));
+				return true;
+			}
+			return false;
 		}
 
 		[SerializeField]

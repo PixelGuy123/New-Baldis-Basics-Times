@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class DetentionBot : NPC, INPCPrefab
+	public class DetentionBot : NPC, INPCPrefab // FIX NPC NOT BEING SPOTTED OR SMTH FIRST, THEN GO BACK TO SCIENCE TEACHER
 	{
-		public void SetupPrefab() // edit me
+		public void SetupPrefab()
 		{
 			audMan = GetComponent<PropagatedAudioManager>();
 			renderer = spriteRenderer[0];
@@ -58,6 +58,8 @@ namespace BBTimes.CustomContent.NPCs
 					behaviorStateMachine.ChangeState(new DetentionBot_GoAfterPlayer(this, player));
 				}
 			}
+			else
+				LoseTrackOfPlayer(player);
 		}
 
 		public void LoseTrackOfPlayer(PlayerManager player) =>
@@ -189,19 +191,17 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				if (npc != bot && npc.Disobeying)
 				{
-					bot.looker.Raycast(npc.transform, Mathf.Min(new float[]
-					{
+					bot.looker.Raycast(npc.transform, Mathf.Min(
 				(bot.transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,
 				bot.looker.distance,
 				npc.ec.MaxRaycast
-					}), out bool flag);
+					), out bool flag);
 					if (flag)
 					{
 						bot.TroubleMakerDetected();
 						bot.behaviorStateMachine.ChangeState(new DetentionBot_GoAfterNPC(bot, npc));
 						break;
 					}
-					break;
 				}
 			}
 			whistleTime -= Time.deltaTime * bot.TimeScale;
@@ -223,6 +223,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			navPm = new NavigationState_TargetPlayer(bot, 64, pm.transform.position);
+			bot.LoseTrackOfPlayer(pm);
 			bot.Wander();
 			ChangeNavigationState(navPm);
 		}
@@ -280,7 +281,10 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 			if (!troubleMaker)
+			{
+				Debug.LogWarning("DETENTION BOT IGNORED DESTROYED TROUBLE MAKER");
 				bot.behaviorStateMachine.ChangeState(new DetentionBot_Wandering(bot));
+			}
 			else
 				navPm.UpdatePosition(troubleMaker.transform.position);
 		}
@@ -354,8 +358,9 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-	internal class DetentionBot_Lecture(DetentionBot bot) : DetentionBot_Wandering(bot)
+	internal class DetentionBot_Lecture(DetentionBot bot) : DetentionBot_StateBase(bot)
 	{
+		float delay = 3f;
 		public override void Enter()
 		{
 			base.Enter();
@@ -368,8 +373,13 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			if (!bot.audMan.QueuedAudioIsPlaying)
-				bot.behaviorStateMachine.ChangeState(new DetentionBot_Wandering(bot));
+			if (delay <= 0f)
+			{
+				if (!bot.audMan.QueuedAudioIsPlaying)
+					bot.behaviorStateMachine.ChangeState(new DetentionBot_Wandering(bot));
+			}
+			else
+				delay -= bot.TimeScale * Time.deltaTime;
 		}
 
 		public override void DestinationEmpty()

@@ -148,6 +148,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("quiker", "Quiker");
 			AddNPC("rollBot", "Rollingbot");
 			AddNPC("serOran", "SerOran");
+			AddNPC("scienceTeacher", "ScienceTeacher");
 			AddNPC("stunly", "Stunly");
 			AddNPC("superintendent", "Superintendent");
 			AddNPC("spj", "Superintendentjr");

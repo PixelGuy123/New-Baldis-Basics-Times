@@ -33,6 +33,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 				bool buff = Random.value <= speedChance;
 
 				audMan.PlaySingle(buff ? audSpeedBuff : audSpeedNerf);
+				splashRenderer.sprite = buff ? sprFast : sprSlow;
 				StartCoroutine(Timer(entity, buff ? speedMod : slowMod));
 			}
 		}
@@ -63,5 +64,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 
 		[SerializeField]
 		internal SoundObject audSpeedBuff, audSpeedNerf;
+
+		[SerializeField]
+		internal Sprite sprSlow, sprFast;
 	}
 }

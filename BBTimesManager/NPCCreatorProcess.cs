@@ -516,8 +516,25 @@ namespace BBTimes.Manager
 				.MarkAsReplacement(15, Character.Principal);
 
 			npc.Navigator.SetRoomAvoidance(false);
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 38 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 41 });
+
+			// Science Teacher
+			npc = new NPCBuilder<ScienceTeacher>(plug.Info)
+				.SetMinMaxAudioDistance(122f, 165.5f)
+				.SetEnum("ScienceTeacher")
+				.SetMetaName("PST_SciTeacher_Name")
+				.SetName("ScienceTeacher")
+				.AddTrigger()
+				.AddLooker()
+				.SetMaxSightDistance(81.4f)
+				.Build()
+				.SetupNPCData("ScienceTeacher", "PST_SciTeacher_Name", "PST_SciTeacher_Desc", -0.1f);
+
+			npc.Navigator.SetRoomAvoidance(false);
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 24 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 37 });
 		}
 
 		

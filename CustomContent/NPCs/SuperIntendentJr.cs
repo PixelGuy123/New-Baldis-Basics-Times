@@ -111,6 +111,7 @@ namespace BBTimes.CustomContent.NPCs
 			audLongAssInstructions = soundObjects[4];
 			audMan = GetComponent<PropagatedAudioManager>();
 			stepMan = gameObject.CreatePropagatedAudioManager(audMan.minDistance, audMan.maxDistance);
+
 			renderer = spriteRenderer[0];
 			spriteRenderer[0].sprite = anim[0];
 		}

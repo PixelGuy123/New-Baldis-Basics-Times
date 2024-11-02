@@ -1,6 +1,6 @@
-﻿
-using BBTimes.CustomComponents;
+﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
@@ -52,7 +52,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			// laser (16, 17)
 			var laserRend = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[23]).AddSpriteHolder(out var laserRenderer, 0f, LayerStorage.standardEntities);
-			laserRend.gameObject.SetAsPrefab(true);
+			laserRend.gameObject.ConvertToPrefab(true);
 			laserRenderer.name = "PixLaserBeamRenderer";
 			laserRend.name = "PixLaserBeam";
 
@@ -61,7 +61,7 @@ namespace BBTimes.CustomContent.NPCs
 			laser.shockSprites = [storedSprites[24], storedSprites[25], storedSprites[26], storedSprites[27]];
 			laser.renderer = laserRenderer;
 
-			laser.entity = laserRend.gameObject.CreateEntity(2f, 2f, laserRend.transform).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
+			laser.entity = laserRend.gameObject.CreateEntity(2f, 2f, laserRenderer.transform).SetEntityCollisionLayerMask(LayerStorage.gumCollisionMask);
 			laser.entity.SetGrounded(false);
 			laser.audMan = laserRend.gameObject.CreatePropagatedAudioManager(15, 45);
 			laser.audShock = soundObjects[9];
