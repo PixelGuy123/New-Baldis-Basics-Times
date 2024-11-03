@@ -58,16 +58,17 @@ namespace BBTimes.CompatibilityModule
 					BBTimesManager.floorDatas[i].Offices.ForEach(data.officeRoomAssets.Add);
 					BBTimesManager.floorDatas[i].Halls.Do(x => data.hallInsertions.Add(x.Key));
 					BBTimesManager.floorDatas[i].SpecialRooms.ForEach(data.specialRoomAssets.Add);
-					BBTimesManager.floorDatas[i].NPCs.ForEach(npc =>
-					{
-						var dat = npc.selection.GetComponent<INPCPrefab>();
-						if (BBTimesManager.plug.enableReplacementNPCsAsNormalOnes.Value || dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
-							data.npcs.Add(npc);
-						else
-							data.forcedNpcs.Add(npc.selection);
-					});
-					BBTimesManager.floorDatas[i].Events.ForEach(data.randomEvents.Add);
-					BBTimesManager.floorDatas[i].Items.ForEach(data.items.Add);
+					// Below contains stuff that Arcade adds by default, so unnecessary
+					//BBTimesManager.floorDatas[i].NPCs.ForEach(npc => 
+					//{
+					//	var dat = npc.selection.GetComponent<INPCPrefab>();
+					//	if (BBTimesManager.plug.enableReplacementNPCsAsNormalOnes.Value || dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
+					//		data.npcs.Add(npc);
+					//	else
+					//		data.forcedNpcs.Add(npc.selection);
+					//});
+					//BBTimesManager.floorDatas[i].Events.ForEach(data.randomEvents.Add);
+					//BBTimesManager.floorDatas[i].Items.ForEach(data.items.Add);
 					BBTimesManager.floorDatas[i].ForcedObjectBuilders.ForEach(data.forcedObjectBuilders.Add);
 					BBTimesManager.floorDatas[i].WeightedObjectBuilders.ForEach(data.objectBuilders.Add);
 				}

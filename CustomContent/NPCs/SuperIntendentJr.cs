@@ -6,10 +6,10 @@ using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class NavigationState_FollowToSpot(NPC npc, Cell target) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
+    public class NavigationState_FollowToSpot(NPC npc, Cell target, float speedMultiplier = 8f) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
 	{
 		readonly Cell tar = target;
-		readonly MovementModifier moveMod = new(Vector3.zero, 13.33f);
+		readonly MovementModifier moveMod = new(Vector3.zero, speedMultiplier);
 		public override void Enter()
 		{
 			base.Enter();

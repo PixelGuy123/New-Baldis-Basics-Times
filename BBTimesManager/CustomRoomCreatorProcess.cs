@@ -439,6 +439,38 @@ namespace BBTimes.Manager
 			trap.sprOpen = trapRender.sprite;
 			trap.renderer = trapRender;
 
+			// ======================== Focus Room ===========================
+			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
+			var student = ObjectCreationExtensions.CreateSpriteBillboard(studentSprs[0]);
+			student.name = "FocusedStudent";
+			student.gameObject.AddObjectToEditor();
+
+			var focusedStudent = student.gameObject.AddComponent<FocusedStudent>();
+			focusedStudent.audMan = student.gameObject.CreatePropagatedAudioManager(95f, 125f);
+			focusedStudent.audAskSilence = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please.wav")), "Vfx_FocusStd_Disturbed1", SoundType.Voice, Color.white);
+			focusedStudent.audAskSilence2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please2.wav")), "Vfx_FocusStd_Disturbed2", SoundType.Voice, Color.white);
+			focusedStudent.audDisturbed = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_scream.wav")), "Vfx_FocusStd_Scream1", SoundType.Voice, Color.white);
+			focusedStudent.audDisturbed.additionalKeys = [new() { key = "Vfx_FocusStd_Scream2", time = 1.209f }];
+
+			focusedStudent.renderer = student;
+			focusedStudent.sprSpeaking = studentSprs[1];
+			focusedStudent.sprScreaming = studentSprs[2];
+			focusedStudent.sprNormal = student.sprite;
+			// ======================== Art Room ============================
+			var vaseSprs = TextureExtensions.LoadSpriteSheet(2, 1, 15f, GetRoomAsset("ArtRoom", "Vase.png"));
+			var vase = ObjectCreationExtensions.CreateSpriteBillboard(vaseSprs[0]).AddSpriteHolder(out var vaseRenderer, 0f, LayerStorage.ignoreRaycast);
+			vase.gameObject.AddBoxCollider(Vector3.zero, new(4.5f, 5f, 4.5f), true);
+			vase.gameObject.AddNavObstacle(new(6.5f, 5f, 6.5f));
+			vase.name = "SensitiveVase";
+			vaseRenderer.name = "VaseSprite";
+			vase.gameObject.AddObjectToEditor();
+
+			var vaseObj = vase.gameObject.AddComponent<Vase>();
+			vaseObj.audBreak = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ArtRoom", "break.wav")), "Vfx_Vase_Break", SoundType.Voice, Color.white);
+			vaseObj.audMan = vase.gameObject.CreatePropagatedAudioManager(50f, 85f);
+			vaseObj.renderer = vaseRenderer;
+			vaseObj.sprBroken = vaseSprs[1];
+
 			// ================================================ Modded Room Generator Application ==========================================
 			// Bathrooms
 			var sets = RegisterRoom("Bathroom", new(0.85f, 0.85f, 0.85f, 1f),
@@ -836,26 +868,21 @@ namespace BBTimes.Manager
 
 			Superintendent.AddAllowedRoom(sets.category);
 
-			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
-			var student = ObjectCreationExtensions.CreateSpriteBillboard(studentSprs[0]);
-			student.name = "FocusedStudent";
-			student.gameObject.AddObjectToEditor();
-
-			var focusedStudent = student.gameObject.AddComponent<FocusedStudent>();
-			focusedStudent.audMan = student.gameObject.CreatePropagatedAudioManager(95f, 125f);
-			focusedStudent.audAskSilence = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please.wav")), "Vfx_FocusStd_Disturbed1", SoundType.Voice, Color.white);
-			focusedStudent.audAskSilence2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please2.wav")), "Vfx_FocusStd_Disturbed2", SoundType.Voice, Color.white);
-			focusedStudent.audDisturbed = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_scream.wav")), "Vfx_FocusStd_Scream1", SoundType.Voice, Color.white);
-			focusedStudent.audDisturbed.additionalKeys = [new() { key = "Vfx_FocusStd_Scream2", time = 1.209f }];
-
-			focusedStudent.renderer = student;
-			focusedStudent.sprSpeaking = studentSprs[1];
-			focusedStudent.sprScreaming = studentSprs[2];
-			focusedStudent.sprNormal = student.sprite;
-
 			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 			if (!plug.enableBigRooms.Value)
 				RemoveBigRooms(room);
+
+			// ****** Art Room *******
+			sets = RegisterRoom("ArtRoom", new(0.54296875f, 0.18359375f, 0.95703125f),
+				ObjectCreators.CreateDoorDataObject("ArtRoomDoor",
+				AssetLoader.TextureFromFile(GetRoomAsset("ArtRoom", "ArtClassStandard_Open.png")),
+				AssetLoader.TextureFromFile(GetRoomAsset("ArtRoom", "ArtClassStandard_Closed.png"))));
+
+			Superintendent.AddAllowedRoom(sets.category);
+
+			//room = GetAllAssets(GetRoomAsset("ArtRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			//if (!plug.enableBigRooms.Value)
+			//	RemoveBigRooms(room);
 
 			room.ForEach(x =>
 			{

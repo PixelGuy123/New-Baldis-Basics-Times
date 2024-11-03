@@ -72,6 +72,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 
 			MarkObject(man.Get<GameObject>("editorPrefab_ComputerTeleporter"), Vector3.zero);
 			MarkObject(man.Get<GameObject>("editorPrefab_DustShroom"), Vector3.zero);
+			MarkObject(man.Get<GameObject>("editorPrefab_SensitiveVase"), Vector3.up * 4.2f);
 
 			// Decorations
 			MarkObject(man.Get<GameObject>("editorPrefab_SecretBread"), Vector3.zero);
@@ -243,6 +244,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			__instance.defaultTextures.Add("Kitchen", new TextureContainer("kitchenFloor", "Wall", "Ceiling"));
 			__instance.defaultTextures.Add("FocusRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
 			__instance.defaultTextures.Add("SuperMystery", new TextureContainer("redCeil", "redWall", "redFloor"));
+			__instance.defaultTextures.Add("ArtRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
 		}
 
 		[HarmonyPatch(typeof(PlusLevelEditor), "Initialize")]
@@ -284,7 +286,8 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				new TimesRoom("Forest"),
 				new TimesRoom("Kitchen"),
 				new TimesRoom("FocusRoom"),
-				new TimesRoom("SuperMystery")
+				new TimesRoom("SuperMystery"),
+				new TimesRoom("ArtRoom")
 			]);
 		}
 

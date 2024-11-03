@@ -308,16 +308,16 @@ namespace BBTimes.Extensions
 
 		public static Vector3 ToVector3(this IntVector2 vec) =>
 			new(vec.x * 10f + 5f, 0f, vec.z * 10f + 5f);
-		public static void CallOutPrincipals(this EnvironmentController ec, Vector3 pos) =>
-			ec.CallOutPrincipals(ec.CellFromPosition(pos));
-		public static void CallOutPrincipals(this EnvironmentController ec, Cell spot)
+		public static void CallOutPrincipals(this EnvironmentController ec, Vector3 pos, bool whistleCall = true) =>
+			ec.CallOutPrincipals(ec.CellFromPosition(pos), whistleCall);
+		public static void CallOutPrincipals(this EnvironmentController ec, Cell spot, bool whistleCall = true)
 		{
 			foreach (var n in ec.Npcs)
 			{
 				var dat = n.GetComponent<INPCPrefab>();
-				if (n.Navigator.enabled && (n.Character == Character.Principal || (dat != null && dat.ReplacesCharacter(Character.Principal))))
+				if (n.Navigator.enabled && n.IsAPrincipal())
 				{
-					if (n is Principal pr)
+					if (whistleCall && n is Principal pr)
 					{
 						pr.audMan.FlushQueue(true);
 						pr.audMan.PlaySingle(pr.audComing);
@@ -326,6 +326,13 @@ namespace BBTimes.Extensions
 				}
 			}
 		}
+
+		public static bool IsAPrincipal(this NPC n)
+		{
+			var dat = n.GetComponent<INPCPrefab>();
+			return n.Character == Character.Principal || (dat != null && dat.ReplacesCharacter(Character.Principal));
+		}
+
 
 		internal static DetentionUi detentionUiPre;
 
