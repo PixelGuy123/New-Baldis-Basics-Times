@@ -76,6 +76,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			// Decorations
 			MarkObject(man.Get<GameObject>("editorPrefab_SecretBread"), Vector3.zero);
 			MarkObject(man.Get<GameObject>("editorPrefab_TimesKitchenSteak"), Vector3.zero);
+			MarkObject(man.Get<GameObject>("editorPrefab_JoeSign"), Vector3.zero);
 
 			// ************************ Items ****************************
 

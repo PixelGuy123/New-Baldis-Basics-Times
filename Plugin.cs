@@ -102,11 +102,13 @@ namespace BBTimes
 			var fieldTrip = GenericExtensions.FindResourceObject<FieldTripBaseRoomFunction>();
 			foreach (var floor in BBTimesManager.floorDatas)
 			{
-				List<WeightedItemObject> items = [];
+				List<WeightedItemObject> items = new(floor.FieldTripItems);
 				for (int i = 0; i < items.Count; i++)
+				{
 					if (!Config.Bind("Item Settings", $"Enable {(items[i].selection.itemType == Items.Points ? items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)items[i].selection.itemType))}",
 						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value || fieldTrip.potentialItems.Any(x => x.selection == items[i].selection))
 						items.RemoveAt(i--);
+				}
 
 				fieldTrip.potentialItems = fieldTrip.potentialItems.AddRangeToArray([.. items]);
 			}

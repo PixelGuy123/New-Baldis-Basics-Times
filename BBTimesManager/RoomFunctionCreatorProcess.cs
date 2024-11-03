@@ -101,12 +101,9 @@ namespace BBTimes.Manager
 			cos.nonSafeEntityCell = true;
 
 			var sprites = TextureExtensions.LoadSpriteSheet(2, 1, 33f, BasePlugin.ModPath, "objects", "DustShroom", GetAssetName("shroom.png"));
-			transforms = [
-				new() {selection = ObjectCreationExtensions.CreateSpriteBillboard(sprites[0]).AddSpriteHolder(out var shroomRenderer, 1.25f, LayerStorage.ignoreRaycast).transform, 
-				weight = 100 }
-				];
+			var shroomObject = ObjectCreationExtensions.CreateSpriteBillboard(sprites[0]).AddSpriteHolder(out var shroomRenderer, 1.25f, LayerStorage.ignoreRaycast);
 
-			var shroom = transforms[0].selection.gameObject.AddComponent<DustShroom>();
+			var shroom = shroomObject.gameObject.AddComponent<DustShroom>();
 			shroom.name = "DustShroom";
 			shroomRenderer.name = "DustShroomRenderer";
 			shroom.gameObject.AddBoxCollider(Vector3.up * 5f, new(1f, 10f, 1f), true); // Touching hitbox
@@ -179,8 +176,9 @@ namespace BBTimes.Manager
 			rendCont.renderers = rendCont.renderers.AddToArray(partsRenderer);
 
 			var rngSpawner = AddFunctionToEveryRoom<RandomObjectSpawner>(PlaygroundPrefix);
-			rngSpawner.transformsPre = transforms;
-			rngSpawner.horizontalOffset = 3f;
+			rngSpawner.objectPlacer = ObjectCreationExtensions.SetANewObjectPlacer(shroomObject.gameObject, CellCoverage.Down, TileShape.Open, TileShape.Corner, TileShape.Straight, TileShape.Single).
+				SetMinAndMaxObjects(4, 8)
+				.SetTilePreferences(false, true, true);
 
 			static R AddFunctionToEveryRoom<R>(string prefix) where R : RoomFunction
 			{
