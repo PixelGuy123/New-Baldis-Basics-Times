@@ -38,7 +38,7 @@ namespace BBTimes.CustomContent.CustomItems
 			
 			while (cooldown > 0f)
 			{
-				plm.AddStamina(staminaIncreasePerTime, true);
+				plm.AddStamina(staminaIncreasePerTime * Time.deltaTime * plm.pm.PlayerTimeScale, true);
 				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
 				yield return null;
 			}

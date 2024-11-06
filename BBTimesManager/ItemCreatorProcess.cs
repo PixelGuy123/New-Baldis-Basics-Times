@@ -179,8 +179,8 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 10 });
-			((ITM_StaminaDrinkable)item.item).SetMod(1f, 1.8f, 0.5f);
-			((ITM_StaminaDrinkable)item.item).SetStaminaIncrease(0.25f);
+			((ITM_StaminaDrinkable)item.item).SetMod(1f, 1.8f, 0.75f);
+			((ITM_StaminaDrinkable)item.item).SetStaminaIncrease(5f);
 			((ITM_StaminaDrinkable)item.item).audDrink = man.Get<SoundObject>("audRobloxDrink");
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 90 });
 			JoeChef.AddFood(item, 55);
