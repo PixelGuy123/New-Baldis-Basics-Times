@@ -8,6 +8,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		{
 			base.Build(builder, rng);
 			objectPlacer.Build(builder, room, rng);
+			objectPlacer.ObjectsPlaced.ForEach(obj => obj.transform.SetParent(room.transform, false));
 		}
 
 		[SerializeField]

@@ -222,7 +222,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			sci.behaviorStateMachine.ChangeState(new ScienceTeacher_GoAfterPlayerToThrow(sci, player));
+			if (!player.Tagged)
+				sci.behaviorStateMachine.ChangeState(new ScienceTeacher_GoAfterPlayerToThrow(sci, player));
 		}
 	}
 
@@ -240,7 +241,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			if (pm == player)
+			if (pm == player && !player.Tagged)
 			{
 				tarPla.UpdatePosition(player.transform.position);
 				if (Vector3.Distance(player.transform.position, sci.transform.position) <= sci.potionThrowDistanceBuffer)

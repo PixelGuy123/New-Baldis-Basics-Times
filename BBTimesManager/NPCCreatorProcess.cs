@@ -535,6 +535,21 @@ namespace BBTimes.Manager
 			npc.Navigator.SetRoomAvoidance(false);
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 24 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 37 });
+
+			// Adverto
+			npc = new NPCBuilder<Adverto>(plug.Info)
+				.SetEnum("Adverto")
+				.SetMetaName("PST_Adverto_Name")
+				.SetName("Adverto")
+				.AddTrigger()
+				.AddLooker()
+				.SetMaxSightDistance(110f)
+				.Build()
+				.SetupNPCData("Adverto", "PST_Adverto_Name", "PST_Adverto_Desc", -0.1f);
+
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 15 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 25 });
 		}
 
 		

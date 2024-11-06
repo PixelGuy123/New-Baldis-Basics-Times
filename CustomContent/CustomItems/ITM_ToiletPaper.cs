@@ -12,8 +12,14 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void SetupPrefab()
 		{
-			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "toiletpaper.png"));
+			var sprs = this.GetSpriteSheet(4, 2, 30f, "toiletpaper.png");
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(sprs[0]);
 			var rendererBase = renderer.transform;
+
+			animComp = renderer.gameObject.AddComponent<AnimationComponent>();
+			animComp.animation = sprs;
+			animComp.speed = 1f;
+
 			rendererBase.SetParent(transform);
 			rendererBase.localPosition = Vector3.zero;
 
@@ -41,6 +47,7 @@ namespace BBTimes.CustomContent.CustomItems
 			this.pm = pm;
 			dir = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
 
+			animComp.Initialize(pm.ec);
 			entity.Initialize(pm.ec, pm.transform.position);
 			ec = pm.ec;
 			audMan.PlaySingle(audThrow);
@@ -107,6 +114,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
+
+		[SerializeField]
+		internal AnimationComponent animComp;
 
 		[SerializeField]
 		internal SoundObject audThrow, audHit;

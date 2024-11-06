@@ -28,15 +28,17 @@ namespace BBTimes.CustomContent.CustomItems
 			comp.AddModifier("staminaRise", stamRise);
 			comp.AddModifier("staminaDrop", stamDrop);
 
-			StartCoroutine(Timer(comp, mod));
+			StartCoroutine(Timer(pm.plm, comp, mod));
 
 			return true;
 		}
 
-		IEnumerator Timer(PlayerMovementStatModifier comp, PlayerAttributesComponent mod)
+		IEnumerator Timer(PlayerMovement plm, PlayerMovementStatModifier comp, PlayerAttributesComponent mod)
 		{
+			
 			while (cooldown > 0f)
 			{
+				plm.AddStamina(staminaIncreasePerTime, true);
 				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
 				yield return null;
 			}
@@ -58,13 +60,16 @@ namespace BBTimes.CustomContent.CustomItems
 			staminaDropMod = staminadrop;
 		}
 
+		internal void SetStaminaIncrease(float increase) =>
+			staminaIncreasePerTime = Mathf.Max(0, increase);
+
 		ValueModifier stamMax, stamRise, stamDrop;
 
 		[SerializeField]
 		public float cooldown = 10f;
 
 		[SerializeField]
-		float staminaMaxMod = 1f, staminaRiseMod = 1f, staminaDropMod = 1f;
+		float staminaMaxMod = 1f, staminaRiseMod = 1f, staminaDropMod = 1f, staminaIncreasePerTime = 0f;
 
 		[SerializeField]
 		internal SoundObject audDrink;

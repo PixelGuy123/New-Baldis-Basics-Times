@@ -16,7 +16,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 			tar = target;
 			tarHeight = tar.InternalHeight;
 			this.ec = ec;
-			entity.Initialize(ec, target.transform.position); // For some reason, entities are in 0,0???? So a pos is required
+			entity.Initialize(ec, target.transform.position);
 			entity.SetHeight(2f);
 			tar.SetHeight(tarHeight + 1f);
 
@@ -27,15 +27,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 				direction = Vector3.Reflect(direction, hit.normal);
 				speed *= speedHitDecreaser;
 			};
-
-			StartCoroutine(Delay());
-		}
-
-		IEnumerator Delay()
-		{
-			yield return null;
-			initialized = true; // Gives time to the skateboard's entity's velocity turn into 0
-			yield break;
+			initialized = true;
 		}
 
 		void OnTeleportEv(Vector3 pos)

@@ -135,7 +135,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 				if (npc.Navigator.enabled && npc.Navigator.Entity != ent && npc.GetMeta().flags.HasFlag(NPCFlags.Standard))
 				{
 					float force = 45f - (Vector3.Distance(npc.transform.position, ent.transform.position) * 0.25f);
-					if (force > 0f)
+					if (force > 2f)
 						npc.Navigator.Entity.AddForce(new((npc.transform.position - ent.transform.position).normalized, force, -force * 0.75f));
 				}
 			}

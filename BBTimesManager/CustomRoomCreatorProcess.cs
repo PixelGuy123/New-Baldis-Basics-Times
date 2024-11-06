@@ -457,7 +457,7 @@ namespace BBTimes.Manager
 			focusedStudent.sprScreaming = studentSprs[2];
 			focusedStudent.sprNormal = student.sprite;
 			// ======================== Art Room ============================
-			var vaseSprs = TextureExtensions.LoadSpriteSheet(2, 1, 15f, GetRoomAsset("ArtRoom", "Vase.png"));
+			var vaseSprs = TextureExtensions.LoadSpriteSheet(2, 1, 15f, GetRoomAsset("ExibitionRoom", "Vase.png"));
 			var vase = ObjectCreationExtensions.CreateSpriteBillboard(vaseSprs[0]).AddSpriteHolder(out var vaseRenderer, 0f, LayerStorage.ignoreRaycast);
 			vase.gameObject.AddBoxCollider(Vector3.zero, new(4.5f, 5f, 4.5f), true);
 			vase.gameObject.AddNavObstacle(new(6.5f, 5f, 6.5f));
@@ -466,7 +466,7 @@ namespace BBTimes.Manager
 			vase.gameObject.AddObjectToEditor();
 
 			var vaseObj = vase.gameObject.AddComponent<Vase>();
-			vaseObj.audBreak = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ArtRoom", "break.wav")), "Vfx_Vase_Break", SoundType.Voice, Color.white);
+			vaseObj.audBreak = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ExibitionRoom", "break.wav")), "Vfx_Vase_Break", SoundType.Voice, Color.white);
 			vaseObj.audMan = vase.gameObject.CreatePropagatedAudioManager(50f, 85f);
 			vaseObj.renderer = vaseRenderer;
 			vaseObj.sprBroken = vaseSprs[1];
@@ -869,20 +869,20 @@ namespace BBTimes.Manager
 			Superintendent.AddAllowedRoom(sets.category);
 
 			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
-			if (!plug.enableBigRooms.Value)
-				RemoveBigRooms(room);
 
 			// ****** Art Room *******
-			sets = RegisterRoom("ArtRoom", new(0.54296875f, 0.18359375f, 0.95703125f),
-				ObjectCreators.CreateDoorDataObject("ArtRoomDoor",
-				AssetLoader.TextureFromFile(GetRoomAsset("ArtRoom", "ArtClassStandard_Open.png")),
-				AssetLoader.TextureFromFile(GetRoomAsset("ArtRoom", "ArtClassStandard_Closed.png"))));
+			sets = RegisterRoom("ExibitionRoom", new(0.54296875f, 0.18359375f, 0.95703125f),
+				ObjectCreators.CreateDoorDataObject("ExibitionRoomDoor",
+				AssetLoader.TextureFromFile(GetRoomAsset("ExibitionRoom", "ExibitClassStandard_Open.png")),
+				AssetLoader.TextureFromFile(GetRoomAsset("ExibitionRoom", "ExibitClassStandard_Closed.png"))));
 
 			Superintendent.AddAllowedRoom(sets.category);
 
-			//room = GetAllAssets(GetRoomAsset("ArtRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
-			//if (!plug.enableBigRooms.Value)
-			//	RemoveBigRooms(room);
+			room.AddRange(GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false));
+
+
+			if (!plug.enableBigRooms.Value)
+				RemoveBigRooms(room);
 
 			room.ForEach(x =>
 			{

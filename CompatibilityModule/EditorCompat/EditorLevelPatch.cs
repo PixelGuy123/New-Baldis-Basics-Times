@@ -125,6 +125,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			// ************************ Npcs *****************************
 
 			AddNPC("0thprize", "ZeroPrize");
+			AddNPC("adverto", "Adverto");
 			AddNPC("bubbly", "Bubbly");
 			AddNPC("Camerastand", "Camerastand");
 			AddNPC("cheeseMan", "CheeseMan");
@@ -244,7 +245,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			__instance.defaultTextures.Add("Kitchen", new TextureContainer("kitchenFloor", "Wall", "Ceiling"));
 			__instance.defaultTextures.Add("FocusRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
 			__instance.defaultTextures.Add("SuperMystery", new TextureContainer("redCeil", "redWall", "redFloor"));
-			__instance.defaultTextures.Add("ArtRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
+			__instance.defaultTextures.Add("ExibitionRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
 		}
 
 		[HarmonyPatch(typeof(PlusLevelEditor), "Initialize")]
@@ -287,7 +288,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				new TimesRoom("Kitchen"),
 				new TimesRoom("FocusRoom"),
 				new TimesRoom("SuperMystery"),
-				new TimesRoom("ArtRoom")
+				new TimesRoom("ExibitionRoom")
 			]);
 		}
 
