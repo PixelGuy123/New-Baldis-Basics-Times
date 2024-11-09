@@ -18,7 +18,7 @@ namespace BBTimes.CustomContent.Objects
 
 		public void TurnMe(bool on)
 		{
-			waitingForSquish = false;
+			waitingForSquish = on;
 			cooldown = Random.Range(5f, 10f);
 			if (!on)
 			{

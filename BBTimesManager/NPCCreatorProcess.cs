@@ -550,10 +550,22 @@ namespace BBTimes.Manager
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 15 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 25 });
+
+			// Vacuum Cleaner
+			npc = new NPCBuilder<VacuumCleaner>(plug.Info)
+				.SetEnum("VacuumCleaner")
+				.SetMetaName("PST_VacClean_Name")
+				.SetName("VacuumCleaner")
+				.AddTrigger()
+				.AddLooker()
+				.SetMaxSightDistance(55f)
+				.Build()
+				.SetupNPCData("VacuumCleaner", "PST_VacClean_Name", "PST_VacClean_Desc", -1.1691f)
+				.MarkAsReplacement(15, Character.Sweep);
+
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
 		}
-
-		
-
-		
 	}
 }

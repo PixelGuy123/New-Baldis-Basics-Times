@@ -157,6 +157,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("spj", "Superintendentjr");
 			AddNPC("tickTock", "TickTock");
 			AddNPC("watcher", "Watcher");
+			AddNPC("VacuumCleaner", "VacuumCleaner");
 			AddNPC("ZapZap", "ZapZap");
 
 			// ************* Local Methods ***************

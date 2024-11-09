@@ -671,6 +671,7 @@ namespace BBTimes.Manager
 			AddAssetsToNpc<GottaSweep>(room);
 			AddAssetsToNpc<ZeroPrize>([new() { selection = sweepCloset, weight = 100 }, .. room]);
 			AddAssetsToNpc<Mopper>([new() { selection = sweepCloset, weight = 100 }, .. room]);
+			AddAssetsToNpc<VacuumCleaner>([new() { selection = sweepCloset, weight = 100 }, .. room]);
 
 			// Dr Reflex Office
 			sweepCloset = GenericExtensions.FindResourceObject<DrReflex>().potentialRoomAssets[0].selection;
@@ -870,6 +871,8 @@ namespace BBTimes.Manager
 
 			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
+			RegisterFalseClass();
+
 			// ****** Art Room *******
 			sets = RegisterRoom("ExibitionRoom", new(0.54296875f, 0.18359375f, 0.95703125f),
 				ObjectCreators.CreateDoorDataObject("ExibitionRoomDoor",
@@ -878,33 +881,36 @@ namespace BBTimes.Manager
 
 			Superintendent.AddAllowedRoom(sets.category);
 
-			room.AddRange(GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false));
+			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
+			RegisterFalseClass();			
 
-			if (!plug.enableBigRooms.Value)
-				RemoveBigRooms(room);
-
-			room.ForEach(x =>
+			void RegisterFalseClass()
 			{
-				x.selection.name.Replace("Class", sets.category.ToString()); // lol
-				x.selection.doorMats = sets.doorMat;
-				x.selection.category = sets.category;
-				x.selection.color = sets.color;
-				x.selection.wallTex = classWeightPre.selection.wallTex;
-				x.selection.florTex = classWeightPre.selection.florTex;
-				x.selection.ceilTex = classWeightPre.selection.ceilTex;
-				x.selection.posters = classWeightPre.selection.posters;
-				x.selection.posterChance = classWeightPre.selection.posterChance;
-				x.selection.windowChance = classWeightPre.selection.windowChance;
-				x.selection.windowObject = classWeightPre.selection.windowObject;
-				x.selection.mapMaterial = classWeightPre.selection.mapMaterial;
-				x.selection.lightPre = classWeightPre.selection.lightPre;
-				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
-			});
+				if (!plug.enableBigRooms.Value)
+					RemoveBigRooms(room);
 
-			for (int i = 1; i < floorDatas.Count; i++)
-				floorDatas[i].Classrooms.AddRange(room);
+				room.ForEach(x =>
+				{
+					x.selection.name.Replace("Class", sets.category.ToString()); // lol
+					x.selection.doorMats = sets.doorMat;
+					x.selection.category = sets.category;
+					x.selection.color = sets.color;
+					x.selection.wallTex = classWeightPre.selection.wallTex;
+					x.selection.florTex = classWeightPre.selection.florTex;
+					x.selection.ceilTex = classWeightPre.selection.ceilTex;
+					x.selection.posters = classWeightPre.selection.posters;
+					x.selection.posterChance = classWeightPre.selection.posterChance;
+					x.selection.windowChance = classWeightPre.selection.windowChance;
+					x.selection.windowObject = classWeightPre.selection.windowObject;
+					x.selection.mapMaterial = classWeightPre.selection.mapMaterial;
+					x.selection.lightPre = classWeightPre.selection.lightPre;
+					x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
+				});
 
+				for (int i = 1; i < floorDatas.Count; i++)
+					floorDatas[i].Classrooms.AddRange(room);
+			}
 
 			//Faculties
 

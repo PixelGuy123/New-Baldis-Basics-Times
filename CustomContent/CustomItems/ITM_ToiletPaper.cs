@@ -18,7 +18,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 			animComp = renderer.gameObject.AddComponent<AnimationComponent>();
 			animComp.animation = sprs;
-			animComp.speed = 1f;
+			animComp.speed = 14.5f;
+			animComp.renderers = [renderer];
 
 			rendererBase.SetParent(transform);
 			rendererBase.localPosition = Vector3.zero;
