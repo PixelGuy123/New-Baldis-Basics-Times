@@ -99,7 +99,7 @@ namespace BBTimes.CustomContent.Builders
 			}
 
 			List<WeightedSelection<Cell>> intVectors = t.ConvertAll(x => new WeightedSelection<Cell>() { selection = x, weight = 100 });
-			int max = allTilesCount / intVectors.Count / 2;
+			int max = allTilesCount / intVectors.Count / 3;
 
 			for (int i = 0; i < max; i++)
 			{
@@ -110,7 +110,7 @@ namespace BBTimes.CustomContent.Builders
 				t.Remove(intVectors[idx].selection);
 				intVectors.RemoveAt(idx);
 
-				if (t.Count != 0 && max - i > 1 && cRng.NextDouble() >= 0.55) // Linked trapdoor
+				if (t.Count != 0 && intVectors.Count != 0 && max - i > 1 && cRng.NextDouble() >= 0.55) // Linked trapdoor
 				{
 					idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, cRng);
 					t.Remove(intVectors[idx].selection);

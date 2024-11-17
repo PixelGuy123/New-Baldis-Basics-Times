@@ -18,7 +18,7 @@ namespace BBTimes.CustomContent.CustomItems
 			baseSpeed = 30f;
 			speed = baseSpeed;
 
-			spriteRenderer.sprite = this.GetSprite(spriteRenderer.sprite.pixelsPerUnit, "spray.png");
+			spriteRenderer.sprite = this.GetSprite(spriteRenderer.sprite.pixelsPerUnit, "GrapeSpray.png");
 			Destroy(transform.Find("RendereBase").Find("Particles").gameObject);
 
 			Destroy(nbsoda);

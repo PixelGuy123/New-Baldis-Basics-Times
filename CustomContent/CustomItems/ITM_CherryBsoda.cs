@@ -21,7 +21,7 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan = gameObject.CreatePropagatedAudioManager(65, 125);
 			audHit = this.GetSoundNoSub("hit.wav", SoundType.Voice);
 
-			spriteRenderer.sprite = this.GetSprite(spriteRenderer.sprite.pixelsPerUnit, "spray.png");
+			spriteRenderer.sprite = this.GetSprite(spriteRenderer.sprite.pixelsPerUnit, "CherrySpray.png");
 			speed = 45f;
 			Destroy(transform.Find("RendereBase").Find("Particles").gameObject);
 

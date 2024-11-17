@@ -158,6 +158,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (Singleton<CoreGameManager>.Instance.GetPlayer(player).itm.selectedItem == requiredSlot)
 			{
 				animComp.animation = happyTalk;
+				Singleton<CoreGameManager>.Instance.AddPoints(Singleton<CoreGameManager>.Instance.GetPlayer(player).itm.items[requiredSlot].price / 6, player, true);
 				Singleton<CoreGameManager>.Instance.GetPlayer(player).itm.RemoveItem(requiredSlot);
 				behaviorStateMachine.ChangeState(new NpcState(this)); // Doing nothing basically
 				requiredSlot = -1;

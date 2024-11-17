@@ -86,7 +86,7 @@ namespace BBTimes.CustomContent.CustomItems
 			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
 			{
 				var e = other.GetComponent<Entity>();
-				if (e)
+				if (e && e.Grounded)
 				{
 					entity.Teleport(other.transform.position);
 					canHitEntities = true;

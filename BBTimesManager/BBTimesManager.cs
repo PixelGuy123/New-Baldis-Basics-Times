@@ -161,29 +161,29 @@ namespace BBTimes.Manager
 				];
 			MainMenuPatch.aud_welcome_endless = mainSpeech;
 
-			if (File.Exists(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")))
-			{
-				mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")), "Vfx_BAL_SecretSpecificForUserSpeech1", SoundType.Effect, Color.green);
-				mainSpeech.encrypted = true;
-				mainSpeech.additionalKeys = [
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech2", time = 1.093f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech3", time = 3.576f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech4", time = 12.087f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech5", time = 15.651f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech6", time = 20.931f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech7", time = 28.62f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech8", time = 32.523f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech9", time = 36.192f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech10", time = 40.598f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech11", time = 43.181f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech12", time = 44.377f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech13", time = 46.727f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech14", time = 50.45f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech15", time = 52.595f, encrypted = true },
-					new() { key = "Vfx_BAL_SecretSpecificForUserSpeech16", time = 54.739f, encrypted = true }
-					];
-				MainMenuPatch.aud_superSecretOnlyReservedForThoseIselect = mainSpeech;
-			}
+			//if (File.Exists(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")))
+			//{
+			//	mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")), "Vfx_BAL_SecretSpecificForUserSpeech1", SoundType.Effect, Color.green);
+			//	mainSpeech.encrypted = true;
+			//	mainSpeech.additionalKeys = [
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech2", time = 1.093f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech3", time = 3.576f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech4", time = 12.087f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech5", time = 15.651f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech6", time = 20.931f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech7", time = 28.62f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech8", time = 32.523f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech9", time = 36.192f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech10", time = 40.598f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech11", time = 43.181f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech12", time = 44.377f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech13", time = 46.727f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech14", time = 50.45f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech15", time = 52.595f, encrypted = true },
+			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech16", time = 54.739f, encrypted = true }
+			//		];
+			//	MainMenuPatch.aud_superSecretOnlyReservedForThoseIselect = mainSpeech;
+			//}
 
 			// Math Machine new Nums
 
