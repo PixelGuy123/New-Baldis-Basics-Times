@@ -1,7 +1,9 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Manager;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +66,11 @@ namespace BBTimes.CustomContent.NPCs
 			col.enableDynamicColliders = false;
 
 			parts = system;
+
+			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
+			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(12f, "wat.png");
+			slipMatPre.antiForceReduceFactor = 0.735f;
+			slipMatPre.name = "JerryIcePatch";
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
@@ -85,6 +92,9 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal float minActive = 30f, maxActive = 60f;
+
+		[SerializeField]
+		internal SlippingMaterial slipMatPre;
 
 		public override void Initialize()
 		{
@@ -143,6 +153,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			RemoveFuncIfExists();
 			lastCreatedFunction = room.functionObject.AddComponent<FreezingRoomFunction>();
+			lastCreatedFunction.slipMatPre = slipMatPre;
 			room.functions.AddFunction(lastCreatedFunction);
 			lastCreatedFunction.Initialize(room);
 
@@ -175,7 +186,7 @@ namespace BBTimes.CustomContent.NPCs
 		Vector3 nextPos;
 		readonly Vector3 zero = Vector3.zero;
 
-		RoomFunction lastCreatedFunction;
+		FreezingRoomFunction lastCreatedFunction;
 		public Cell GetRandomSpotToGo => cells[Random.Range(0, cells.Count)];
 		public float ActiveCooldown => Random.Range(minActive, maxActive);
 

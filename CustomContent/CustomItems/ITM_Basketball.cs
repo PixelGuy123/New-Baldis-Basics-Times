@@ -56,6 +56,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void Setup(EnvironmentController ec, Vector3 direction, Vector3 pos, RoomController room, float speedDecrease = 0.2f)
 		{
+			hitsBeforeDeath = maxHitsBeforeDying;
 			entity.Initialize(ec, pos);
 			this.ec = ec;
 			dir = direction;
@@ -106,9 +107,11 @@ namespace BBTimes.CustomContent.CustomItems
 					renderer.enabled = false;
 					hasHit = true;
 
-					e.AddForce(new((other.transform.position - transform.position).normalized, speed * 1.9f, -speed));
+					var offset = (other.transform.position - transform.position).normalized;
+					e.AddForce(new(offset, speed * 1.9f, -speed));
+					dir = Vector3.Reflect(dir, offset);
 
-					StartCoroutine(Timer(e));
+					StartCoroutine(Timer(e, --maxHitsBeforeDying <= 0));
 				}
 			}
 
@@ -133,7 +136,7 @@ namespace BBTimes.CustomContent.CustomItems
 			yield break;
 		}
 
-		IEnumerator Timer(Entity e)
+		IEnumerator Timer(Entity e, bool destroy = true)
 		{
 			e.ExternalActivity.moveMods.Add(moveMod);
 			float cooldown = 15f;
@@ -143,8 +146,9 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			e.ExternalActivity.moveMods.Remove(moveMod);
-			Destroy(gameObject);
+			e?.ExternalActivity.moveMods.Remove(moveMod);
+			if (destroy)
+				Destroy(gameObject);
 
 			yield break;
 		}
@@ -152,6 +156,7 @@ namespace BBTimes.CustomContent.CustomItems
 		GameObject target = null;
 		RoomController targetRoom = null;
 		float frame = 0f, lifeTime = 160f;
+		int hitsBeforeDeath = 0;
 		bool hasHit = false;
 		EnvironmentController ec;
 
@@ -169,6 +174,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal SoundObject audThrow, audHit, audBong, audPop;
+
+		[SerializeField]
+		internal int maxHitsBeforeDying = 3;
 
 		Vector3 dir;
 

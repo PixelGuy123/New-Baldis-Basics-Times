@@ -18,6 +18,7 @@ namespace BBTimes.CustomContent.NPCs
 			spriteRenderer[0].CreateAnimatedSpriteRotator(
 				GenericExtensions.CreateRotationMap(16, storedSprites) // Normal first frame of rotation map
 				);
+			spriteRenderer[0].sprite = storedSprites[0];
 
 			audMan = GetComponent<PropagatedAudioManager>();
 			audPic = this.GetSoundNoSub("photo.wav", SoundType.Voice);

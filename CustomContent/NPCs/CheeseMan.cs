@@ -32,12 +32,27 @@ namespace BBTimes.CustomContent.NPCs
 
 			Color subColor = new(0.796875f, 0.796875f, 0f);
 
-			audHitted = [this.GetSound("CMS_Heck.wav", "Vfx_CheeseMan_Hit1", SoundType.Voice, subColor), this.GetSound("CMS_Oh.wav", "Vfx_CheeseMan_Hit2", SoundType.Voice, subColor)];
+			audHitted = new SoundObject[5];
+			for (int i = 0; i < 5; i++)
+				audHitted[i] = this.GetSound($"CMS_Hit{i+1}.wav", $"Vfx_CheeseMan_Hit{i+1}", SoundType.Voice, subColor);
+
 			audHumming = this.GetSound("CMS_Hum.wav", "Vfx_CheeseMan_Hum", SoundType.Voice, subColor);
-			audYTPOffer = this.GetSound("CMS_YTPs.wav", "Vfx_CheeseMan_YTPs", SoundType.Voice, subColor);
+
+			audYTPOffer = new SoundObject[4];
+
+			for (int i = 0; i < 4; i++)
+				audYTPOffer[i] = this.GetSound($"CMS_YTPs{i + 1}.wav", $"Vfx_CheeseMan_YTPs{i + 1}", SoundType.Voice, subColor);
+
 			audStunned = this.GetSound("CMS_Head.wav", "Vfx_CheeseMan_AfterHit", SoundType.Voice, subColor);
-			audSorry = this.GetSound("CMS_Sorry.wav", "Vfx_CheeseMan_Sorry", SoundType.Voice, subColor);
-			audAngry = this.GetSound("CMS_Watch.wav", "Vfx_CheeseMan_Watch", SoundType.Voice, subColor);
+
+			audSorry = new SoundObject[5];
+			for (int i = 0; i < 5; i++)
+				audSorry[i] = this.GetSound($"CMS_Sorry{i+1}.wav", $"Vfx_CheeseMan_Sorry{i+1}", SoundType.Voice, subColor);
+
+			audAngry = new SoundObject[3];
+			for (int i = 0; i < 3; i++)
+				audAngry[i] = this.GetSound($"CMS_Watch{i+1}.wav", $"Vfx_CheeseMan_Watch{i+1}", SoundType.Voice, subColor);
+
 			audBumpNoise = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
 		}
 		public void SetupPrefabPost() { }
@@ -53,10 +68,10 @@ namespace BBTimes.CustomContent.NPCs
 		internal AudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject[] audHitted;
+		internal SoundObject[] audHitted, audAngry, audYTPOffer, audSorry;
 
 		[SerializeField]
-		internal SoundObject audHumming, audSorry, audStunned, audYTPOffer, audBumpNoise, audAngry;
+		internal SoundObject audHumming, audStunned, audBumpNoise;
 
 		[SerializeField]
 		internal int minYTPGain = 15, maxYTPGain = 30;
@@ -148,8 +163,8 @@ namespace BBTimes.CustomContent.NPCs
 			if (playerToOffer)
 			{
 				animComp.animation = sprsOfferYTP;
-				audMan.QueueAudio(audSorry);
-				audMan.QueueAudio(audYTPOffer);
+				audMan.QueueRandomAudio(audSorry);
+				audMan.QueueRandomAudio(audYTPOffer);
 				offeringYTP = true;
 				bool speaking = true;
 				bool angry = false;
@@ -183,7 +198,7 @@ namespace BBTimes.CustomContent.NPCs
 				}
 
 				animComp.animation = sprAngryTalk;
-				audMan.QueueAudio(audAngry);
+				audMan.QueueRandomAudio(audAngry);
 
 				while (audMan.QueuedAudioIsPlaying) yield return null;
 
@@ -192,7 +207,7 @@ namespace BBTimes.CustomContent.NPCs
 				yield break;
 			}
 
-			audMan.QueueAudio(audSorry);
+			audMan.QueueRandomAudio(audSorry);
 			behaviorStateMachine.ChangeState(new CheeseMan_Walking(this));
 
 			yield break;

@@ -30,7 +30,7 @@ namespace BBTimes.CustomContent.NPCs
 			adPre.img = ObjectCreationExtensions.CreateImage(adPre.canvas, BBTimesManager.man.Get<Sprite>("whiteScreen"));
 			adPre.img.transform.localScale = Vector3.one * 0.5f;
 
-			adPre.advertisements = this.GetSpriteSheet(7, 4, 1f, "Ads.png");
+			adPre.advertisements = [.. this.GetSpriteSheet(7, 4, 1f, "Ads.png"), .. this.GetSpriteSheet(6, 3, 1f, "ads_secondGeneration.png")];
 
 			adPre.att = advertisementObject.gameObject.AddComponent<VisualAttacher>();
 
@@ -54,9 +54,12 @@ namespace BBTimes.CustomContent.NPCs
 			behaviorStateMachine.ChangeState(new Adverto_Wander(this));
 		}
 
-		public void AdPlayer(PlayerManager pm) =>
-			CreateAd().AttachToCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam, 
+		public void AdPlayer(PlayerManager pm)
+		{
+			CreateAd().AttachToCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam,
 				Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform);
+			affectedPlayers.Add(new(this, pm));
+		}
 		public void AdNPC(NPC npc) =>
 			CreateAd().AttachToNPC(npc);
 
@@ -68,22 +71,31 @@ namespace BBTimes.CustomContent.NPCs
 			return ad;
 		}
 
+		public void CleanUpAds()
+		{
+			while (advertisements.Count != 0)
+			{
+				Destroy(advertisements[0].gameObject);
+				advertisements.RemoveAt(0);
+			}
+			affectedPlayers.RemoveAll(x => x.Key == this);
+		}
+
 		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
 			for (int i = 0; i < advertisements.Count; i++)
 				if (!advertisements[i])
 					advertisements.RemoveAt(i--);
+
+			if (advertisements.Count == 0)
+				affectedPlayers.RemoveAll(x => x.Key == this);
 		}
 
 		public override void Despawn()
 		{
 			base.Despawn();
-			while (advertisements.Count != 0)
-			{
-				Destroy(advertisements[0].gameObject);
-				advertisements.RemoveAt(0);
-			}
+			CleanUpAds();
 		}
 
 		[SerializeField]
@@ -93,6 +105,8 @@ namespace BBTimes.CustomContent.NPCs
 		internal float adLifeTime = 7.5f, timeBeforeAdvertisement = 0.08f;
 
 		readonly List<Advertisement> advertisements = [];
+
+		public readonly static List<KeyValuePair<Adverto, PlayerManager>> affectedPlayers = [];
 
 	}
 

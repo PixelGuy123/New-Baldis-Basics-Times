@@ -20,8 +20,13 @@ namespace BBTimes.CustomComponents
 
 		readonly static HashSet<StandardMenuButton> falseButtons = [];
 
-		void OnDisable() =>
+		new void OnDisable()
+		{
 			audMan.FlushQueue(true);
+			UnHighilight();
+			wasHighlighted = false;
+			highlighted = false;
+		}
 
 		public static void AddProhibitedButton(StandardMenuButton button) =>
 			falseButtons.Add(button);

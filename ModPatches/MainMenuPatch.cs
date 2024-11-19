@@ -49,19 +49,43 @@ namespace BBTimes.ModPatches
 			BaldiTutorialButton.AddProhibitedButton(mainModeBut.transform.Find("SeedInput").GetComponent<StandardMenuButton>());
 
 			AddButtonTut("Endless", "BAL_Explains_EndlessMode.wav", "Vfx_BAL_MenuExplain_EndlessMode_1", 
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_2", time = 2.724f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_3", time = 4.864f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_4", time = 8.569f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_5", time = 11.088f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_6", time = 14.713f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_7", time = 19.312f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_8", time = 21.823f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_9", time = 24.57f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_10", time = 27.024f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_11", time = 28.417f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_12", time = 33.176f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_13", time = 36.029f }
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_2", time = 2.994f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_3", time = 6.98f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_4", time = 11.483f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_5", time = 13.646f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_6", time = 18.118f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_7", time = 21.649f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_8", time = 23.852f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_9", time = 27.148f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_10", time = 31.918f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_11", time = 37.502f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_12", time = 41.495f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_13", time = 42.295f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_14", time = 45.214f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_15", time = 48.318f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_16", time = 49.761f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_17", time = 55.784f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_18", time = 58.851f }
 				);
+
+			AddButtonTut("Free", "BAL_Explains_ExplorerMode.wav", "Vfx_BAL_MenuExplain_ExplorerMode_1",
+				new() { key = "Vfx_BAL_MenuExplain_ExplorerMode_2", time = 2.615f },
+				new() { key = "Vfx_BAL_MenuExplain_ExplorerMode_3", time = 6.206f },
+				new() { key = "Vfx_BAL_MenuExplain_ExplorerMode_4", time = 8.56f },
+				new() { key = "Vfx_BAL_MenuExplain_ExplorerMode_5", time = 15.786f },
+				new() { key = "Vfx_BAL_MenuExplain_ExplorerMode_6", time = 19.607f },
+				new() { key = "Vfx_BAL_MenuExplain_ExplorerMode_7", time = 24.669f }
+				);
+
+			AddButtonTut("Challenge", "BAL_Explains_ChallengeMode.wav", "Vfx_BAL_MenuExplain_ChallengeMode_1",
+				new() { key = "Vfx_BAL_MenuExplain_ChallengeMode_2", time = 2.904f },
+				new() { key = "Vfx_BAL_MenuExplain_ChallengeMode_3", time = 6f },
+				new() { key = "Vfx_BAL_MenuExplain_ChallengeMode_4", time = 7.096f },
+				new() { key = "Vfx_BAL_MenuExplain_ChallengeMode_5", time = 10.517f },
+				new() { key = "Vfx_BAL_MenuExplain_ChallengeMode_6", time = 14.246f },
+				new() { key = "Vfx_BAL_MenuExplain_ChallengeMode_7", time = 16.133f }
+				);
+
 			void AddButtonTut(string name, string audioName, string sub, params SubtitleTimedKey[] keys)
 			{
 				var sndobj = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(
@@ -89,20 +113,18 @@ namespace BBTimes.ModPatches
 			baldiButton.audTutorialIntroduction = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(
 				Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BaldiBut", BBTimesManager.GetAssetName("BAL_Explains_Tutorial.wav"))), "Vfx_BAL_MenuExplain_Tutorial_1", SoundType.Effect, Color.green);
 			baldiButton.audTutorialIntroduction.additionalKeys = [
-				new() { key = "Vfx_BAL_MenuExplain_Tutorial_2", time = 1.691f },
-				new() { key = "Vfx_BAL_MenuExplain_Tutorial_3", time = 3.757f },
-				new() { key = "Vfx_BAL_MenuExplain_Tutorial_4", time = 7.277f },
-				new() { key = "Vfx_BAL_MenuExplain_Tutorial_5", time = 10.323f },
-				new() { key = "Vfx_BAL_MenuExplain_Tutorial_6", time = 14.851f },
-				new() { key = "Vfx_BAL_MenuExplain_Tutorial_7", time = 17.865f }
+				new() { key = "Vfx_BAL_MenuExplain_Tutorial_2", time = 1.565f },
+				new() { key = "Vfx_BAL_MenuExplain_Tutorial_3", time = 5.268f },
+				new() { key = "Vfx_BAL_MenuExplain_Tutorial_4", time = 7.929f },
+				new() { key = "Vfx_BAL_MenuExplain_Tutorial_5", time = 12.855f },
+				new() { key = "Vfx_BAL_MenuExplain_Tutorial_6", time = 17.79f },
+				new() { key = "Vfx_BAL_MenuExplain_Tutorial_7", time = 21.775f }
 				];
 
 			baldiButton.audDontKnowButton = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(
 				Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BaldiBut", BBTimesManager.GetAssetName("BAL_Explains_HowWeirdSelections.wav"))), "Vfx_BAL_MenuExplain_HowWeird_1", SoundType.Effect, Color.green);
 			baldiButton.audDontKnowButton.additionalKeys = [
 				new() { key = "Vfx_BAL_MenuExplain_HowWeird_2", time = 1.818f },
-				new() { key = "Vfx_BAL_MenuExplain_HowWeird_3", time = 4.359f },
-				new() { key = "Vfx_BAL_MenuExplain_HowWeird_4", time = 7.437f }
 				];
 
 			baldiButton.audHmLetsSee = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(

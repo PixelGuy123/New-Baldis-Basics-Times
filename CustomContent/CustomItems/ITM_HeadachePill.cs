@@ -19,6 +19,15 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			bool flag = false;
 
+			for (int i = 0; i < Adverto.affectedPlayers.Count; i++)
+			{
+				if (Adverto.affectedPlayers[i].Value == pm)
+				{
+					Adverto.affectedPlayers[i].Key.CleanUpAds();
+					flag = true;
+				}
+			}
+
 			for (int i = 0; i < Quiker.affectedPlayers.Count; i++)
 			{
 				if (Quiker.affectedPlayers[i].Key.Key == pm)

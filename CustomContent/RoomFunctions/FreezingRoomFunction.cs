@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.RoomFunctions
 {
@@ -8,10 +10,20 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public override void OnEntityStay(Entity entity)
 		{
 			base.OnEntityStay(entity);
-			if (!actMods.Contains(entity.ExternalActivity))
+			var pm = entity.GetComponent<PlayerAttributesComponent>();
+			int entIdx = actMods.IndexOf(entity.ExternalActivity);
+			if (entIdx == -1)
 			{
-				entity.ExternalActivity.moveMods.Add(moveMod);
-				actMods.Add(entity.ExternalActivity);
+				if (!pm || !pm.HasAttribute("hotchocactive"))
+				{
+					entity.ExternalActivity.moveMods.Add(moveMod);
+					actMods.Add(entity.ExternalActivity);
+				}
+			}
+			else if (pm && pm.HasAttribute("hotchocactive"))
+			{
+				entity.ExternalActivity.moveMods.Remove(moveMod);
+				actMods.RemoveAt(entIdx);
 			}
 		}
 
@@ -29,10 +41,44 @@ namespace BBTimes.CustomContent.RoomFunctions
 				actMods[0]?.moveMods.Remove(moveMod);
 				actMods.RemoveAt(0);
 			}
+
+			while (slippers.Count != 0)
+			{
+				Destroy(slippers[0].gameObject);
+				slippers.RemoveAt(0);
+			}
 		}
 
+		public override void Initialize(RoomController room)
+		{
+			base.Initialize(room);
+			var cells = room.AllEntitySafeCellsNoGarbage();
+			int am = Random.Range(minSlippersPerRoom, maxSlippersPerRoom);
+			for (int i = 0; i <= am; i++)
+			{
+				if (cells.Count == 0)
+					return;
+
+				int index = Random.Range(0, cells.Count);
+
+				var slip = Instantiate(slipMatPre);
+				slip.transform.position = cells[index].FloorWorldPosition;
+				slippers.Add(slip);
+
+				cells.RemoveAt(index);
+			}
+		}
 
 		readonly List<ActivityModifier> actMods = [];
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.25f);
+		readonly List<SlippingMaterial> slippers = [];
+
+		[SerializeField]
+		internal SlippingMaterial slipMatPre;
+
+		[SerializeField]
+		internal int minSlippersPerRoom = 4, maxSlippersPerRoom = 7;
+
+
 	}
 }

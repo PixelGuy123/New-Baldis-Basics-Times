@@ -754,7 +754,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_ToiletPaper>()
 				.SetGeneratorCost(45)
-				.SetShopPrice(700)
+				.SetShopPrice(150)
 				.SetNameAndDescription("Toiletpaper_Name", "Toiletpaper_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("ToiletPaper");

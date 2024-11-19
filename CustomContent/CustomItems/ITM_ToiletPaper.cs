@@ -111,7 +111,7 @@ namespace BBTimes.CustomContent.CustomItems
 		EnvironmentController ec;
 		Vector3 dir;
 		float speed = 35f;
-		float height = 0f, heightDecreaseFactor = 1.05f, heightIncreaseFactor = 0.9f, velocityY = 0.03f;
+		float height = 0f, heightDecreaseFactor = 1.015f, heightIncreaseFactor = 0.92f, velocityY = 0.03f;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;

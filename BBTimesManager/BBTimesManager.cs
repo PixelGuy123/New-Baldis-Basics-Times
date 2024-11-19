@@ -58,6 +58,24 @@ namespace BBTimes.Manager
 			yield return "Creating map icons...";
 			GameExtensions.TryRunMethod(GetIcons);
 
+			if (plug.enableYoutuberMode.Value)
+			{
+				foreach (var flDat in floorDatas)
+				{
+					flDat.Classrooms.ForEach(x => x.weight = 9999);
+					flDat.Events.ForEach(x => x.weight = 9999);
+					flDat.Faculties.ForEach(x => x.weight = 9999);
+					flDat.FieldTripItems.ForEach(x => x.weight = 9999);
+					flDat.HallBuilders.ForEach(x => x.chance = 9999);
+					flDat.Halls.Do(x => x.Key.weight = 9999);
+					flDat.Items.Do(x => x.weight = 9999);
+					flDat.NPCs.Do(x => x.weight = 9999);
+					flDat.Offices.ForEach(x => x.weight = 9999);
+					flDat.ShopItems.ForEach(x => x.weight = 9999);
+					flDat.WeightedObjectBuilders.ForEach(x => x.weight = 9999);
+				}
+			}
+
 			yield return "Calling GC Collect...";
 			GC.Collect(); // Get any garbage I guess
 
