@@ -49,23 +49,20 @@ namespace BBTimes.ModPatches
 			BaldiTutorialButton.AddProhibitedButton(mainModeBut.transform.Find("SeedInput").GetComponent<StandardMenuButton>());
 
 			AddButtonTut("Endless", "BAL_Explains_EndlessMode.wav", "Vfx_BAL_MenuExplain_EndlessMode_1", 
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_2", time = 2.994f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_3", time = 6.98f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_4", time = 11.483f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_5", time = 13.646f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_6", time = 18.118f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_7", time = 21.649f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_8", time = 23.852f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_9", time = 27.148f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_10", time = 31.918f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_11", time = 37.502f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_12", time = 41.495f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_13", time = 42.295f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_14", time = 45.214f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_15", time = 48.318f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_16", time = 49.761f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_17", time = 55.784f },
-				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_18", time = 58.851f }
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_2", time = 3.105f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_3", time = 6.869f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_4", time = 11.098f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_5", time = 13.269f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_6", time = 15.173f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_7", time = 18.761f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_8", time = 20.949f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_9", time = 24.425f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_10", time = 27.174f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_11", time = 29.48f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_12", time = 32.525f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_13", time = 35.71f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_14", time = 39.329f },
+				new() { key = "Vfx_BAL_MenuExplain_EndlessMode_15", time = 42.642f }
 				);
 
 			AddButtonTut("Free", "BAL_Explains_ExplorerMode.wav", "Vfx_BAL_MenuExplain_ExplorerMode_1",
@@ -86,14 +83,48 @@ namespace BBTimes.ModPatches
 				new() { key = "Vfx_BAL_MenuExplain_ChallengeMode_7", time = 16.133f }
 				);
 
-			void AddButtonTut(string name, string audioName, string sub, params SubtitleTimedKey[] keys)
+			AddButtonTutNoise("MainContinue", // Both MainContinue and MainNew lol
+				AddButtonTut("MainNew", "BAL_Explains_HideAndSeek.wav", "Vfx_BAL_MenuExplain_HideAndSeek_1",
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_2", time = 2.417f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_3", time = 4.957f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_4", time = 7.186f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_5", time = 10.446f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_6", time = 13.822f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_7", time = 16.379f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_8", time = 18.071f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_9", time = 20.06f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_10", time = 24.712f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_11", time = 26.728f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_12", time = 29.537f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_13", time = 32.357f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_14", time = 37.196f },
+				new() { key = "Vfx_BAL_MenuExplain_HideAndSeek_15", time = 40.452f }
+				));
+
+			AddButtonTut("FieldTrips", "BAL_Explains_FieldTrip.wav", "Vfx_BAL_MenuExplain_FieldTrip_1",
+				new() { key = "Vfx_BAL_MenuExplain_FieldTrip_2", time = 2.804f },
+				new() { key = "Vfx_BAL_MenuExplain_FieldTrip_3", time = 9.013f },
+				new() { key = "Vfx_BAL_MenuExplain_FieldTrip_4", time = 12.62f },
+				new() { key = "Vfx_BAL_MenuExplain_FieldTrip_5", time = 16.312f },
+				new() { key = "Vfx_BAL_MenuExplain_FieldTrip_6", time = 20.228f },
+				new() { key = "Vfx_BAL_MenuExplain_FieldTrip_7", time = 22.87f },
+				new() { key = "Vfx_BAL_MenuExplain_FieldTrip_8", time = 26.772f },
+				new() { key = "Vfx_BAL_MenuExplain_FieldTrip_9", time = 29.68f },
+				new() { key = "Vfx_BAL_MenuExplain_FieldTrip_10", time = 31.384f }
+				);
+
+			SoundObject AddButtonTut(string name, string audioName, string sub, params SubtitleTimedKey[] keys)
 			{
 				var sndobj = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(
 				Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BaldiBut", BBTimesManager.GetAssetName(audioName))), sub, SoundType.Effect, Color.green);
 
-				BaldiTutorialButton.AddButtonTutorial(mainModeBut.transform.Find(name).GetComponent<StandardMenuButton>(), sndobj);
+				AddButtonTutNoise(name, sndobj);
 				sndobj.additionalKeys = keys;
+				return sndobj;
 			}
+
+			void AddButtonTutNoise(string name, SoundObject sound) =>
+				BaldiTutorialButton.AddButtonTutorial(mainModeBut.transform.Find(name).GetComponent<StandardMenuButton>(), sound);
 
 			var baldiButtonObj = new GameObject("BaldiButton")
 			{
