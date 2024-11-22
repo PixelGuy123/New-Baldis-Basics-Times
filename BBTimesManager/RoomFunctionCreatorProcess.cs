@@ -69,6 +69,7 @@ namespace BBTimes.Manager
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 55 },
 				];
 
+
 			TextureExtensions.LoadSpriteSheet(3, 1, 40f, MiscPath, TextureFolder, GetAssetName("SugaLamps.png")).Do(x =>
 			{
 				transformsList.Add(new()
@@ -80,6 +81,12 @@ namespace BBTimes.Manager
 					weight = 38
 				});
 			});
+
+			for (int i = 0; i < transformsList.Count; i++)
+			{
+				transformsList[i].selection.name = "TimesGenericCornerLamp_" + (i + 1);
+				transformsList[i].selection.gameObject.AddObjectToEditor();
+			}
 
 			// -------------------- DUST SHROOM CREATION ----------------------------
 

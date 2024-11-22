@@ -457,7 +457,7 @@ namespace BBTimes.Manager
 			focusedStudent.sprScreaming = studentSprs[2];
 			focusedStudent.sprNormal = student.sprite;
 			// ======================== Art Room ============================
-			var vaseSprs = TextureExtensions.LoadSpriteSheet(2, 1, 15f, GetRoomAsset("ExibitionRoom", "Vase.png"));
+			var vaseSprs = TextureExtensions.LoadSpriteSheet(2, 1, 23.5f, GetRoomAsset("ExibitionRoom", "Vase.png"));
 			var vase = ObjectCreationExtensions.CreateSpriteBillboard(vaseSprs[0]).AddSpriteHolder(out var vaseRenderer, 0f, LayerStorage.ignoreRaycast);
 			vase.gameObject.AddBoxCollider(Vector3.zero, new(4.5f, 5f, 4.5f), true);
 			vase.gameObject.AddNavObstacle(new(6.5f, 5f, 6.5f));

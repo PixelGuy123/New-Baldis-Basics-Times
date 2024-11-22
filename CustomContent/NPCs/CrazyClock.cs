@@ -66,6 +66,42 @@ namespace BBTimes.CustomContent.NPCs
 
 		public List<Cell> Cells => availableCells;
 
+		public void TeleportAllToMe()
+		{
+			var npcs = new List<NPC>(ec.Npcs);
+			npcs.RemoveAll(x => x == this || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.isActiveAndEnabled);
+			var cell = ec.CellFromPosition(transform.position);
+				
+
+			StartCoroutine(TeleportEachNPCRandomly(
+				npcs, 
+				cell,
+				cell.AllOpenNavDirections.ConvertAll(x => x.ToVector3())));
+		}
+
+		IEnumerator TeleportEachNPCRandomly(List<NPC> npcs, Cell cell, List<Vector3> directionsToThrow)
+		{
+			float t = delayPerCharacter;
+			while (npcs.Count != 0)
+			{
+				int idx = Random.Range(0, npcs.Count);
+				if (npcs[idx])
+				{
+					npcs[idx].Navigator.Entity.Teleport(cell.CenterWorldPosition); // YES, CHAOS
+					npcs[idx].Navigator.Entity.AddForce(new(directionsToThrow[Random.Range(0, directionsToThrow.Count)], throwSpeed, -throwSpeed * 0.95f));
+				}
+				npcs.RemoveAt(idx);
+
+				t += delayPerCharacter;
+				while (t > 0f)
+				{
+					t -= ec.EnvironmentTimeScale * Time.deltaTime;
+					yield return null;
+				}
+				yield return null;
+			}
+		}
+
 		[SerializeField]
 		internal SoundObject audTick, audTack;
 
@@ -77,6 +113,9 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal SoundObject[] allClockAudios;
+
+		[SerializeField]
+		internal float delayPerCharacter = 0.12f, throwSpeed = 50f;
 	}
 
 	internal class CrazyClock_StateBase(CrazyClock clock) : NpcState(clock)
@@ -165,8 +204,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			speedMultiplier = Mathf.Max(2f, 15f - (Vector3.Distance(player.transform.position, clock.transform.position) / 3.5f));
-			if (speedMultiplier >= 11f)
+			speedMultiplier = Mathf.Max(2f, 15f - (Vector3.Distance(player.transform.position, clock.transform.position) / 2.1f));
+			if (speedMultiplier >= 10f)
 				clock.behaviorStateMachine.ChangeState(new CrazyClock_Frown(clock));
 		}
 
@@ -224,20 +263,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			clock.audMan.PlaySingle(clock.allClockAudios[2]); // crazy noises
-			Cell cell = clock.ec.CellFromPosition(clock.transform.position);
-			var npcs = new List<NPC>(clock.ec.Npcs);
-			npcs.RemoveAll(x => x == clock || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.Entity);
-
-			int max = npcs.Count / 2;
-
-			for (int i = 0; i < max; i++)
-			{
-				if (npcs.Count == 0) return;
-				int idx = Random.Range(0, npcs.Count);
-				if (npcs[idx])
-					npcs[idx].Navigator.Entity.Teleport(cell.CenterWorldPosition); // YES, CHAOS
-				npcs.RemoveAt(idx);
-			}
+			clock.TeleportAllToMe();
 		}
 
 		public override void Update()

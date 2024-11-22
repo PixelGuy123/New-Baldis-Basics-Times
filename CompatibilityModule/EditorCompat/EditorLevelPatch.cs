@@ -78,6 +78,10 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			MarkObject(man.Get<GameObject>("editorPrefab_SecretBread"), Vector3.zero);
 			MarkObject(man.Get<GameObject>("editorPrefab_TimesKitchenSteak"), Vector3.zero);
 			MarkObject(man.Get<GameObject>("editorPrefab_JoeSign"), Vector3.zero);
+			for (int i = 1; i <= 8; i++)
+				MarkObject(man.Get<GameObject>("editorPrefab_TimesGenericOutsideFlower_" + i), Vector3.zero);
+			for (int i = 1; i <= 6; i++)
+				MarkObject(man.Get<GameObject>("editorPrefab_TimesGenericCornerLamp_" + i), Vector3.zero);
 
 			// ************************ Items ****************************
 

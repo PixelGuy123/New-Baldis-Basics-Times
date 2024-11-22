@@ -21,7 +21,11 @@ namespace BBTimes.Manager
 
 			GameObject[] flowers = new GameObject[flowerSprites.Length];
 			for (int i = 0; i < flowers.Length; i++)
-				flowers[i] = ObjectCreationExtensions.CreateSpriteBillboard(flowerSprites[i]).AddSpriteHolder(out _, 2.6f).gameObject.SetAsPrefab(true);
+			{
+				flowers[i] = ObjectCreationExtensions.CreateSpriteBillboard(flowerSprites[i]).AddSpriteHolder(out _, 2.6f).gameObject;
+				flowers[i].name = $"TimesGenericOutsideFlower_{i+1}";
+				flowers[i].AddObjectToEditor();
+			}
 
 			EnvironmentControllerMakeBeautifulOutside.decorations = flowers;
 			// Fire Object

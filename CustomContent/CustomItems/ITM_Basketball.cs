@@ -40,10 +40,6 @@ namespace BBTimes.CustomContent.CustomItems
 
 
 
-
-
-
-
 		// Prefab Setup Above^^
 		public override bool Use(PlayerManager pm)
 		{
@@ -56,7 +52,6 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void Setup(EnvironmentController ec, Vector3 direction, Vector3 pos, RoomController room, float speedDecrease = 0.2f)
 		{
-			hitsBeforeDeath = maxHitsBeforeDying;
 			entity.Initialize(ec, pos);
 			this.ec = ec;
 			dir = direction;
@@ -104,14 +99,17 @@ namespace BBTimes.CustomContent.CustomItems
 				{
 					if (isnpc && pm) pm.RuleBreak("Bullying", 1f);
 					audMan.PlaySingle(audHit);
-					renderer.enabled = false;
-					hasHit = true;
+					if (--maxHitsBeforeDying <= 0) {
+						renderer.enabled = false;
+						hasHit = true;
+						StartCoroutine(Timer(e, true));
+						return;
+					}
 
 					var offset = (other.transform.position - transform.position).normalized;
 					e.AddForce(new(offset, speed * 1.9f, -speed));
 					dir = Vector3.Reflect(dir, offset);
-
-					StartCoroutine(Timer(e, --maxHitsBeforeDying <= 0));
+					StartCoroutine(Timer(e, false));
 				}
 			}
 
@@ -156,7 +154,6 @@ namespace BBTimes.CustomContent.CustomItems
 		GameObject target = null;
 		RoomController targetRoom = null;
 		float frame = 0f, lifeTime = 160f;
-		int hitsBeforeDeath = 0;
 		bool hasHit = false;
 		EnvironmentController ec;
 

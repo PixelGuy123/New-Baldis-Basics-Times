@@ -28,6 +28,14 @@ namespace BBTimes.Manager
 				];
 			// map icon for Event Machine
 			EventMachineSpawner.iconPre = ObjectCreationExtension.CreateMapIcon<MapIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, GetAssetName("fogMachineIcon.png"))), "EventMachineIcon");
+
+			sprs = TextureExtensions.LoadSpriteSheet(2, 1, ObjectCreationExtension.defaultMapIconPixelsPerUnit, IconPath, GetAssetName("rotoHallIcons.png"));
+			// map icon for roto halls
+			RotoHallPatch.rotoHallIcons = [
+				ObjectCreationExtension.CreateMapIcon<TransformOrientedIcon>(sprs[0], "RotohallIcon_Straight"),
+				ObjectCreationExtension.CreateMapIcon<TransformOrientedIcon>(sprs[1], "RotohallIcon_Corner"),
+				];
+			RotoHallPatch.rotoHallIcons[1].invertRotation = true;
 		}
 
 		static string IconPath => Path.Combine(BasePlugin.ModPath, "icons");

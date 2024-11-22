@@ -151,7 +151,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				Cell oppoCell = !window.aTile.Null ? window.bTile : window.aTile;
 
 				BreastFirstSearch(normCell, oppoCell.position, window.direction.GetOpposite(),
-				oppoCell);
+				oppoCell, __instance.CellFromPosition(oppoCell.position + window.direction.ToIntVector2()));
 				});
 
 
@@ -176,7 +176,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			Debug.Log("TIMES: Outside created successfully!");
 
 
-			void BreastFirstSearch(Cell ogCell, IntVector2 pos, Direction forbiddenDirection, Cell cellReference)
+			void BreastFirstSearch(Cell ogCell, IntVector2 pos, Direction forbiddenDirection, params Cell[] cellReferences)
 			{
 				HashSet<IntVector2> accessedTiles = [];
 				Queue<IntVector2> tilesToAccess = [];
@@ -200,13 +200,13 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						if (cell.Null &&
 							__instance.ContainsCoordinates(nextPos) &&
 							!accessedTiles.Contains(nextPos) &&
-							Raycast(cellReference.FloorWorldPosition, prevCell.FloorWorldPosition)) // If cell is null, add the renderers from it
+							cellReferences.Any(cellReference => Raycast(cellReference.FloorWorldPosition, prevCell.FloorWorldPosition))) // If cell is null, add the renderers from it
 						{
 							accessedTiles.Add(nextPos);
 							tilesToAccess.Enqueue(nextPos);
 						}
 					}
-					visibleRenderers.AddRange(availableMeshes.Where(x => x.Key == cellReference.position || (x.Key == curPos &&
+					visibleRenderers.AddRange(availableMeshes.Where(x => x.Key == cellReferences[0].position || (x.Key == curPos &&
 					x.Value.Key != forbiddenDirection))
 						.Select(x => new KeyValuePair<Cell, Renderer>(ogCell, x.Value.Value)));
 

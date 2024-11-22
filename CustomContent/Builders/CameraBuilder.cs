@@ -38,7 +38,7 @@ namespace BBTimes.CustomContent.Builders
 			camComp.audTurn = this.GetSound("camSwitch.wav", "Vfx_Camera_Switch", SoundType.Voice, Color.white);
 			camComp.audDetect = this.GetSound("spot.wav", "Vfx_Camera_Spot", SoundType.Voice, Color.white);
 
-			GetComponent<CameraBuilder>().camPre = cam.transform;
+			camPre = cam.transform;
 		}
 		public void SetupPrefabPost() { }
 

@@ -59,7 +59,7 @@ namespace BBTimes.CustomContent.CustomItems
 			return true;
 		}
 
-		public void PlaceDown(Vector3 pos, EnvironmentController ec, float delayBeforeActive = 5f)
+		public void PlaceDown(Vector3 pos, EnvironmentController ec, float delayBeforeActive = 1.5f)
 		{
 			if (initialized)
 				return;
@@ -210,7 +210,7 @@ namespace BBTimes.CustomContent.CustomItems
 		internal RendererContainer lightningPre;
 
 		[SerializeField]
-		internal float maxForce = 40f, minDistanceForHitting = 60f, minCooldownForStorming = 0.25f, maxCooldownForStorming = 2.1f, lifeTime = 30f;
+		internal float maxForce = 40f, minDistanceForHitting = 60f, minCooldownForStorming = 0.15f, maxCooldownForStorming = 0.8f, lifeTime = 30f;
 
 		[SerializeField]
 		internal LayerMask raycastCheck = LayerStorage.principalLookerMask;

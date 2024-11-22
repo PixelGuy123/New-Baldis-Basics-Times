@@ -55,6 +55,11 @@ namespace BBTimes.Manager
 			AddBuilderAtIdx(squish, 45, 2, 6);
 			AddBuilderAtIdx(squish, 35, 3, 3);
 
+			// Small Door builder
+			SmallDoorBuilder smalDor = CreatorExtensions.CreateObjectBuilder<SmallDoorBuilder>("SmallDoor", "SmallDoor");
+			smalDor.AddMeta(plug);
+			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(smalDor));
+
 			static void AddBuilderAtIdx(ObjectBuilder bld, int weight, int index, int n)
 			{
 				for (int i = 0; i < n; i++)

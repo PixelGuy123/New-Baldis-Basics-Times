@@ -166,6 +166,10 @@ namespace BBTimes
 
 				if (floorName == "F1")
 				{
+					//var builder = Resources.FindObjectsOfTypeAll<RotoHallBuilder>()[0];
+					//for (int i = 0; i < 5; i++)
+					//	ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddToArray(builder);
+
 					ld.minSpecialRooms = 0; // Chance to have no special room
 					ld.additionalNPCs += 2;
 					ld.additionTurnChance += 10;
