@@ -44,7 +44,8 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			while (slippers.Count != 0)
 			{
-				Destroy(slippers[0].gameObject);
+				if (slippers[0])
+					Destroy(slippers[0].gameObject);
 				slippers.RemoveAt(0);
 			}
 		}

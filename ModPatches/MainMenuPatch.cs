@@ -44,7 +44,7 @@ namespace BBTimes.ModPatches
 			if (baldiButPre)
 				goto instantiateBaldiPrefab;
 
-			// Adding buttons
+			// *************** ADDING BALDI BUTTON FOR EXPERIMENTS ON MAIN MENU ********************
 			BaldiTutorialButton.AddProhibitedButton(mainModeBut.transform.Find("BackButton").GetComponent<StandardMenuButton>());
 			BaldiTutorialButton.AddProhibitedButton(mainModeBut.transform.Find("SeedInput").GetComponent<StandardMenuButton>());
 
@@ -180,13 +180,13 @@ namespace BBTimes.ModPatches
 			static void SetupBaldiButtonCalls(BaldiTutorialButton baldiButton)
 			{
 				baldiButton.eventOnHigh = true;
-				baldiButton.OnHighlight.AddListener(() =>
+				baldiButton.OnHighlight.AddListener(() => // Be on
 				{
 					baldiButton.image.sprite = baldiButton.HasBeenClicked ? baldiButton.sprNormal[1] : baldiButton.sprClickMe[1];
 					baldiButton.transform.localPosition = Vector3.down * 145f;
 				});
 				baldiButton.OffHighlight = new();
-				baldiButton.OffHighlight.AddListener(() =>
+				baldiButton.OffHighlight.AddListener(() => // Be off
 				{
 					baldiButton.image.sprite = baldiButton.HasBeenClicked ? baldiButton.sprNormal[0] : baldiButton.sprClickMe[0];
 					if (!baldiButton.IsWaiting)

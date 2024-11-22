@@ -848,7 +848,26 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 22 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 20 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 15 });
-			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 15 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
+
+			// Storm in a Bag
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_StormInABag>()
+				.SetGeneratorCost(45)
+				.SetShopPrice(650)
+				.SetNameAndDescription("StormInABag_Name", "StormInABag_Desc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build("StormInABag");
+
+			floorDatas[1].Items.Add(new() { selection = item, weight = 12 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 24 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 30 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 21 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 26 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 45 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 25 });
 
 		}
 	}

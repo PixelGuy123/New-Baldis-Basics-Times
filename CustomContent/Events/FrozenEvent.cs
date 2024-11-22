@@ -35,7 +35,7 @@ namespace BBTimes.CustomContent.Events
 			canvasPre = canvas;
 
 			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
-			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(12f, "wat.png");
+			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(16.5f, "wat.png");
 			slipMatPre.name = "IcePatch";
 		}
 		public void SetupPrefabPost() { }

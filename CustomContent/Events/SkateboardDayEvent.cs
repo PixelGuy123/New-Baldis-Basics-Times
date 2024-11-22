@@ -22,7 +22,7 @@ namespace BBTimes.CustomContent.Events
 			skRenderer.CreateAnimatedSpriteRotator(new SpriteRotationMap() { angleCount = 8, spriteSheet = this.GetSpriteSheet(4, 2, 15f, "skate.png") });
 
 			var sk = skRender.gameObject.AddComponent<Skateboard>();
-			sk.entity = sk.gameObject.CreateEntity(3.5f, 1f, skRenderer.transform);
+			sk.entity = sk.gameObject.CreateEntity(1.5f, 1f, skRenderer.transform);
 			((CapsuleCollider)sk.entity.collider).height = 10f; // Should stop it from going below anything
 			sk.name = "Skateboard";
 			sk.audMan = sk.gameObject.CreatePropagatedAudioManager(45f, 65f);

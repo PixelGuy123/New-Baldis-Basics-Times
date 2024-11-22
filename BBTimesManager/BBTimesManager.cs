@@ -249,7 +249,7 @@ namespace BBTimes.Manager
 			MainGameManagerPatches.gateTextures = TextureExtensions.LoadTextureSheet(3, 1, MiscPath, TextureFolder, GetAssetName("RUN.png"));
 
 			// Player Visual
-			var tex = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("player.png"))), 225f);
+			var tex = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("player.png"))), 29.8f);
 			var playerVisual = ObjectCreationExtensions.CreateSpriteBillboard(tex).AddSpriteHolder(out _, -1.6f);
 			playerVisual.gameObject.AddComponent<PlayerVisual>();
 

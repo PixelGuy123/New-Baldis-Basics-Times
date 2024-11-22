@@ -25,7 +25,7 @@ namespace BBTimes.CustomContent.Events
 			audThunder = this.GetSoundNoSub("thunder.wav", SoundType.Effect);
 			eletricityPre = BBTimesManager.man.Get<Eletricity>("EletricityPrefab");
 
-			lightningPre = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(20f, "lightning.png"));
+			lightningPre = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(11.35f, "lightning.png")).GetComponent<RendererContainer>();
 			lightningPre.gameObject.ConvertToPrefab(true);
 			lightningPre.name = "Lightning";
 		}
@@ -92,7 +92,7 @@ namespace BBTimes.CustomContent.Events
 
 						var lig = Instantiate(lightningPre);
 						lig.transform.position = pos.CenterWorldPosition;
-						StartCoroutine(FadeOutLightning(lig));
+						lig.StartCoroutine(((SpriteRenderer)lig.renderers[0]).FadeOutLightning(ec, 0.5f, 2f));
 					}
 				}
 			}
@@ -187,30 +187,6 @@ namespace BBTimes.CustomContent.Events
 			yield break;
 		}
 
-		IEnumerator FadeOutLightning(SpriteRenderer renderer)
-		{
-			float delay = 0.5f;
-			while (delay > 0f)
-			{
-				delay -= ec.EnvironmentTimeScale * Time.deltaTime;
-				yield return null;
-			}
-
-			Color color = renderer.color;
-			while (true)
-			{
-				color.a -= ec.EnvironmentTimeScale * Time.deltaTime * 2f;
-				if (color.a <= 0f)
-				{
-					Destroy(renderer.gameObject);
-					yield break;
-				}
-				renderer.color = color;
-
-				yield return null;
-			}
-		}
-
 		[SerializeField]
 		internal AudioManager audMan;
 
@@ -218,7 +194,7 @@ namespace BBTimes.CustomContent.Events
 		internal SoundObject audThunderstorm, audThunder;
 
 		[SerializeField]
-		internal SpriteRenderer lightningPre;
+		internal RendererContainer lightningPre;
 
 		[SerializeField]
 		internal Eletricity eletricityPre;

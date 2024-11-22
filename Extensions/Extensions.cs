@@ -333,6 +333,29 @@ namespace BBTimes.Extensions
 			return n.Character == Character.Principal || (dat != null && dat.ReplacesCharacter(Character.Principal));
 		}
 
+		public static IEnumerator FadeOutLightning(this SpriteRenderer renderer, EnvironmentController ec, float delay, float fadeFactor)
+		{
+			while (delay > 0f)
+			{
+				delay -= ec.EnvironmentTimeScale * Time.deltaTime;
+				yield return null;
+			}
+
+			Color color = renderer.color;
+			while (true)
+			{
+				color.a -= ec.EnvironmentTimeScale * Time.deltaTime * fadeFactor;
+				if (color.a <= 0f)
+				{
+					Object.Destroy(renderer.gameObject);
+					yield break;
+				}
+				renderer.color = color;
+
+				yield return null;
+			}
+		}
+
 
 		internal static DetentionUi detentionUiPre;
 

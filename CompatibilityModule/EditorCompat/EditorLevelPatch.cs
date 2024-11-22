@@ -111,6 +111,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("rottenCheese", "RottenCheese");
 			AddItem("screwDriver", "Screwdriver");
 			AddItem("soapBubbles", "SoapBubbles");
+			AddItem("stormInABag", "StormInABag");
 			AddItem("sugarFlavoredZestyBar", "SugarFlavorZestyBar");
 			AddItem("superCamera", "SuperCamera");
 			AddItem("soap", "Soap");
