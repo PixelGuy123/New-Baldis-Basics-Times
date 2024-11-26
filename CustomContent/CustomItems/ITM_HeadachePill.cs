@@ -1,4 +1,5 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.Extensions;
 using UnityEngine;
@@ -19,11 +20,20 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			bool flag = false;
 
+			for (int i = 0; i < Hallucinations.activeHallucinations.Count; i++)
+			{
+				if (Hallucinations.activeHallucinations[i].Value == pm)
+				{
+					Hallucinations.activeHallucinations[i--].Key.Despawn();
+					flag = true;
+				}
+			}
+
 			for (int i = 0; i < Adverto.affectedPlayers.Count; i++)
 			{
 				if (Adverto.affectedPlayers[i].Value == pm)
 				{
-					Adverto.affectedPlayers[i].Key.CleanUpAds();
+					Adverto.affectedPlayers[i--].Key.CleanUpAds();
 					flag = true;
 				}
 			}

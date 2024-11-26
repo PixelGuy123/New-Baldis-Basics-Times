@@ -73,10 +73,13 @@ namespace BBTimes.CustomContent.Events
 				if (list.Count == 0) return;
 
 				int num3 = crng.Next(list.Count);
-				var lockdownDoor = Instantiate(superFanPre, list[num3].TileTransform);
-				lockdownDoor.Initialize(ec, list[num3].position, list[num3].RandomConstDirection(crng).GetOpposite(), out var l);
-				list[num3].HardCoverEntirely();
-				superFans.Add(lockdownDoor);
+				var superFan = Instantiate(superFanPre, list[num3].TileTransform);
+				var wallDir = list[num3].RandomConstDirection(crng);
+
+				superFan.Initialize(ec, list[num3].position, wallDir.GetOpposite(), out var l);
+
+				list[num3].HardCover(wallDir.ToCoverage());
+				superFans.Add(superFan);
 				list.RemoveAt(num3);
 				for (int z = 0; z < l.Count; z++)
 					list.Remove(l[z]);

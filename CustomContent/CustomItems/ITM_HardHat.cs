@@ -44,7 +44,7 @@ namespace BBTimes.CustomContent.CustomItems
 		IEnumerator Timer(PlayerAttributesComponent comp)
 		{
 			comp.AddAttribute("protectedhead");
-			float cooldown = 15f;
+			float cooldown = lifeTime;
 			while (cooldown > 0f)
 			{
 				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
@@ -59,6 +59,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal Canvas canvas;
+
+		[SerializeField]
+		internal float lifeTime = 120f;
 
 		static bool used = false;
 	}

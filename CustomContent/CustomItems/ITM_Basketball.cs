@@ -99,6 +99,10 @@ namespace BBTimes.CustomContent.CustomItems
 				{
 					if (isnpc && pm) pm.RuleBreak("Bullying", 1f);
 					audMan.PlaySingle(audHit);
+
+					var offset = (other.transform.position - transform.position).normalized;
+					e.AddForce(new(offset, speed * 1.9f, -speed));
+
 					if (--maxHitsBeforeDying <= 0) {
 						renderer.enabled = false;
 						hasHit = true;
@@ -106,8 +110,6 @@ namespace BBTimes.CustomContent.CustomItems
 						return;
 					}
 
-					var offset = (other.transform.position - transform.position).normalized;
-					e.AddForce(new(offset, speed * 1.9f, -speed));
 					dir = Vector3.Reflect(dir, offset);
 					StartCoroutine(Timer(e, false));
 				}

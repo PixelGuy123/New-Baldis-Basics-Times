@@ -66,7 +66,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (IsSleeping) return;
 
 
-			if (other.isTrigger)
+			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
 			{
 				Entity component = other.GetComponent<Entity>();
 				if (component != null)
@@ -83,7 +83,7 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public override void VirtualOnTriggerExit(Collider other) // copypaste from gotta sweep's code
 		{
-			if (other.isTrigger)
+			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
 			{
 				Entity component = other.GetComponent<Entity>();
 				if (component != null)

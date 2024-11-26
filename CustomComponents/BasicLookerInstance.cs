@@ -12,22 +12,23 @@ namespace BBTimes.CustomComponents
 		public bool Raycast(Transform target, float rayDistance)
 		{
 			var offset = target.position - origin.position;
-
-			if (offset.magnitude > rayDistance)
+			if (offset.magnitude > rayDistance || _mask != (_mask | (1 << target.gameObject.layer)))
 				return false;
 
-			int hitCount = Physics.RaycastNonAlloc(new Ray(origin.position, offset.normalized), hits, rayDistance, _mask, QueryTriggerInteraction.Ignore);
-			for (int i = 0; i < hitCount; i++)
-				if (hits[i].transform.CompareTag("Player") && !hits[i].transform.CompareTag("NPC") && hits[i].transform != target)
-					return false;
+			ray.origin = origin.position;
+			ray.direction = offset;
 
-			return true;
+			if (Physics.Raycast(ray, out hit, rayDistance, _mask, QueryTriggerInteraction.Ignore))
+				return hit.transform == target;
+			return false;
 		}
 
 		readonly Transform origin = origin;
 
 		readonly LayerMask _mask = LayerStorage.principalLookerMask;
 
-		RaycastHit[] hits = new RaycastHit[32];
+		Ray ray = new();
+
+		RaycastHit hit;
 	}
 }

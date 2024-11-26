@@ -1,11 +1,12 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class HappyHolidays : NPC, INPCPrefab, IClickable<int>
+    public class HappyHolidays : NPC, INPCPrefab, IClickable<int>, IItemAcceptor
 	{
 		public void SetupPrefab()
 		{
@@ -45,6 +46,16 @@ namespace BBTimes.CustomContent.NPCs
 			pm.itm.AddItem(Random.value > coalChance ? objects[Random.Range(0, objects.Length)] : itmCoal);
 			behaviorStateMachine.ChangeState(new HappyHolidays_WaitToRespawn(this));
 			audMan.PlaySingle(audHappyHolidays);
+		}
+
+		public bool ItemFits(Items itm) =>
+			!IsDisabled && cutters.Contains(itm);
+
+		public void InsertItem(PlayerManager pm, EnvironmentController ec)
+		{
+			unwraps = unwrapSprites.Length;
+			clickDelay = 0f;
+			Clicked(pm.playerNumber);
 		}
 
 		public void Clicked(int player)
@@ -100,7 +111,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] unwrapSprites;
 
 		[SerializeField]
-		internal float coalChance = 0.25f, maxClickDelay = 1.5f;
+		internal float coalChance = 0.25f, maxClickDelay = 0.75f;
 
 		[SerializeField]
 		internal AudioManager audMan;
@@ -111,6 +122,10 @@ namespace BBTimes.CustomContent.NPCs
 		float clickDelay = 0;
 		int hhDisables = 0;
 		bool IsDisabled => hhDisables > 0;
+
+		public static void AddItemThatCanCut(Items itm) => cutters.Add(itm);
+
+		readonly static HashSet<Items> cutters = [Items.Scissors];
 	}
 
 	internal class HappyHolidays_StateBase(HappyHolidays hh) : NpcState(hh) // A default npc state
@@ -128,7 +143,7 @@ namespace BBTimes.CustomContent.NPCs
 			hh.Navigator.SetSpeed(speed);
 		}
 
-		const float speed = 20f;
+		const float speed = 14.5f;
 	}
 
 	internal class HappyHolidays_FleeFromPlayer(HappyHolidays hh, HappyHolidays_StateBase prevState, params Transform[] runningFrom) : HappyHolidays_StateBase(hh)
@@ -139,8 +154,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			hh.Navigator.maxSpeed = 30f;
-			hh.Navigator.SetSpeed(30f);
+			hh.Navigator.maxSpeed = 23.05f;
+			hh.Navigator.SetSpeed(23.05f);
 			map.QueueUpdate();
 			map.Activate();
 			ChangeNavigationState(new NavigationState_WanderFlee(hh, 0, map));

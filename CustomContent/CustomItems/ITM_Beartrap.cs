@@ -100,7 +100,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		bool active = false;
 
-		float cooldown = 10f;
+		float cooldown = 15f;
 
 		Entity target;
 

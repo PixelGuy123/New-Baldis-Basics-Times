@@ -118,7 +118,7 @@ namespace BBTimes.CustomContent.Builders
 
 				int index = cRng.Next(availableCells.Count);
 				var cellPair = availableCells[index];
-				BuildDoor(ec, cellPair.Key, cellPair.Value);
+				BuildDoor(room, ec, cellPair.Key, cellPair.Value);
 				availableCells.RemoveAt(index);
 			}
 
@@ -128,12 +128,12 @@ namespace BBTimes.CustomContent.Builders
 		{
 			base.Load(ec, pos, dir);
 			for (int i = 0; i < pos.Count; i++)
-				BuildDoor(ec, ec.CellFromPosition(pos[i]), dir[i]);
+				BuildDoor(ec.mainHall, ec, ec.CellFromPosition(pos[i]), dir[i]);
 		}
 
-		void BuildDoor(EnvironmentController ec, Cell cell, Direction dir)
+		void BuildDoor(RoomController room, EnvironmentController ec, Cell cell, Direction dir)
 		{
-			var door = Instantiate(doorPre);
+			var door = Instantiate(doorPre, room.transform);
 			door.ec = ec;
 			door.position = cell.position;
 			door.direction = dir;

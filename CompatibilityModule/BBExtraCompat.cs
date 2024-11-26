@@ -35,9 +35,9 @@ namespace BBTimes.CompatibilityModule
 			}
 		}
 
-		[HarmonyPatch(typeof(Mopper), "Initialize")]
+		[HarmonyPatch(typeof(CoolMop), "Initialize")]
 		[HarmonyPrefix]
-		static void MopperQuantum(ref float ___slipDropCooldown, ref int ___slipsPerTile, ref float ___speed, ref float ___minActive, ref float ___maxActive, ref float ___minWait, ref float ___maxWait)
+		static void QuantumMop(ref float ___slipDropCooldown, ref int ___slipsPerTile, ref float ___speed, ref float ___minActive, ref float ___maxActive, ref float ___minWait, ref float ___maxWait)
 		{
 			if (FunSettingsType.HardMode.IsActive())
 			{

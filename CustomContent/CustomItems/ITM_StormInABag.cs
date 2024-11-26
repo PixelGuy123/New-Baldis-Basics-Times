@@ -2,7 +2,6 @@
 using PixelInternalAPI.Extensions;
 using BBTimes.Extensions;
 using BBTimes.CustomComponents;
-using PixelInternalAPI.Classes;
 using HarmonyLib;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,7 +29,7 @@ namespace BBTimes.CustomContent.CustomItems
 			storm.transform.localPosition = Vector3.zero;
 			storm.transform.localScale = Vector3.zero;
 
-			audMan = gameObject.CreatePropagatedAudioManager(100f, 125f);
+			audMan = gameObject.CreatePropagatedAudioManager(145f, 165f);
 			audAttack = new SoundObject[3];
 			for (int i = 0; i < audAttack.Length; i++)
 				audAttack[i] = this.GetSoundNoSub($"shoot{i+1}.wav", SoundType.Voice);
@@ -211,10 +210,6 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal float maxForce = 40f, minDistanceForHitting = 60f, minCooldownForStorming = 0.15f, maxCooldownForStorming = 0.8f, lifeTime = 30f;
-
-		[SerializeField]
-		internal LayerMask raycastCheck = LayerStorage.principalLookerMask;
-
 		
 	}
 }

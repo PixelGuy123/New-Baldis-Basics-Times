@@ -94,6 +94,32 @@ namespace BBTimes.Manager
 
 		static void SetAssets()
 		{
+			//AverageCheck(RoomCategory.Class);
+			//AverageCheck(RoomCategory.Faculty);
+			//AverageCheck(RoomCategory.Office);
+
+			//static void AverageCheck(RoomCategory cat)
+			//{
+			//	Debug.LogWarning($"------------- GETTING AVERAGE OF EVERY ROOM ASSET OF CATEGORY \"{cat}\" -------------");
+			//	float magTotal = 0f;
+			//	int total = 0;
+			//	IntVector2 sizeAxis = new();
+
+			//	foreach (var room in GenericExtensions.FindResourceObjects<RoomAsset>())
+			//	{
+			//		if (room.category != cat)
+			//			continue;
+
+			//		var foundSize = room.GetRoomSize();
+
+			//		magTotal += foundSize.Magnitude();
+			//		sizeAxis += foundSize;
+			//		total++;
+			//	}
+
+			//	Debug.Log("Average magnitude size: " + (magTotal / total) + $" | Average size for ({sizeAxis.x / total},{sizeAxis.z / total})");
+			//}
+
 			try
 			{
 				CompatibilityInitializer.InitializeOnLoadMods();
@@ -229,17 +255,12 @@ namespace BBTimes.Manager
 			//F2
 			floorDatas[1].MinNumberBallAmount = 9;
 			floorDatas[1].MaxNumberBallAmount = 12;
-			floorDatas[1].LockdownDoorSpeedOffset = 3;
 			//F3
 			floorDatas[2].MinNumberBallAmount = 12;
 			floorDatas[2].MaxNumberBallAmount = MaximumNumballs;
-			//floorDatas[2].ConveyorSpeedOffset = 4;
-			floorDatas[2].LockdownDoorSpeedOffset = 4;
 			//END
 			floorDatas[3].MinNumberBallAmount = 9;
 			floorDatas[3].MaxNumberBallAmount = 14;
-			//floorDatas[3].ConveyorSpeedOffset = 3;
-			floorDatas[3].LockdownDoorSpeedOffset = 2;
 
 			// LITERALLY an empty object. Can be used for stuff like hiding those lightPre for example
 			EmptyGameObject = new("NullObject");
@@ -278,6 +299,7 @@ namespace BBTimes.Manager
 			man.Add("slipAud", GenericExtensions.FindResourceObjectByName<SoundObject>("Nana_Slip"));
 			man.Add("whiteScreen", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, Color.white), 1f));
 			man.Add("whitePix", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(1, 1, Color.white), 1f));
+			man.Add("fieldTripBucket", AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("fieldTripBucket.png"))), 25f)); // PixelsPerUnit for world size
 			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("throw.wav"))), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
 			man.Add("audGenericThrow", sd);
@@ -342,6 +364,7 @@ namespace BBTimes.Manager
 				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", GetAssetName(audioName))), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));
 		}
 
+		// Misc getters and methods
 		internal static string MiscPath => Path.Combine(BasePlugin.ModPath, "misc"); static string GlobalAssetsPath => Path.Combine(BasePlugin.ModPath, "GlobalAssets");
 
 		internal static string GetAssetName(string name) => TimesAssetPrefix + name;
@@ -423,8 +446,5 @@ namespace BBTimes.Manager
 
 		public int MaxNumberBallAmount = 9; // Default
 		public int MinNumberBallAmount = 9; // Default
-
-	//	public int ConveyorSpeedOffset = 2;
-		public int LockdownDoorSpeedOffset = 2;
 	}
 }

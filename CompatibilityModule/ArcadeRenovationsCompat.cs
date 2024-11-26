@@ -67,8 +67,8 @@ namespace BBTimes.CompatibilityModule
 					//	else
 					//		data.forcedNpcs.Add(npc.selection);
 					//});
-					//BBTimesManager.floorDatas[i].Events.ForEach(data.randomEvents.Add);
-					//BBTimesManager.floorDatas[i].Items.ForEach(data.items.Add);
+					BBTimesManager.floorDatas[i].Events.ForEach(data.randomEvents.Add);
+					BBTimesManager.floorDatas[i].Items.ForEach(data.items.Add);
 					BBTimesManager.floorDatas[i].ForcedObjectBuilders.ForEach(data.forcedObjectBuilders.Add);
 					BBTimesManager.floorDatas[i].WeightedObjectBuilders.ForEach(data.objectBuilders.Add);
 				}

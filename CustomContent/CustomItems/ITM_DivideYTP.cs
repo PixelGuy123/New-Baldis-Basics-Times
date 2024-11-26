@@ -17,7 +17,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public override bool Use(PlayerManager pm)
 		{
-			Singleton<CoreGameManager>.Instance.AddPoints(Mathf.Abs(Singleton<CoreGameManager>.Instance.GetPointsThisLevel(pm.playerNumber)) / Random.Range(minDivider, maxDivider), pm.playerNumber, true);
+			Singleton<CoreGameManager>.Instance.AddPoints(100 + Mathf.Abs(Singleton<CoreGameManager>.Instance.GetPointsThisLevel(pm.playerNumber)) / Random.Range(minDivider, maxDivider), pm.playerNumber, true);
 			Destroy(gameObject);
 			return true;
 		}

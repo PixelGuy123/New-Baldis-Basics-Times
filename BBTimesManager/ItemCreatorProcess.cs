@@ -30,14 +30,14 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Hammer>()
 				.SetGeneratorCost(30)
-				.SetShopPrice(205)
+				.SetShopPrice(200)
 				.SetNameAndDescription("HAM_Name", "HAM_Desc")
 				.Build("Hammer");
 			//CreatorExtensions.CreateItem<ITM_Hammer, CustomItemData>("Hammer", "HAM_Name", "HAM_Desc", 125, 30).AddMeta(plug, ItemFlags.None).value;
 
 
-			floorDatas[0].Items.Add(new() { selection = item, weight = 45 });
-			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[0].Items.Add(new() { selection = item, weight = 65 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 65 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 15 });
@@ -49,7 +49,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Present>()
 				.SetGeneratorCost(0)
-				.SetShopPrice(245)
+				.SetShopPrice(950)
 				.SetNameAndDescription("PRS_Name", "PRS_Desc")
 				.Build("Present");
 
@@ -71,9 +71,9 @@ namespace BBTimes.Manager
 				.Build("Gum");
 
 			//CreatorExtensions.CreateItem<ITM_Gum, GumCustomData>("Gum", "GUM_Name", "GUM_Desc", 225, 20).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
-			floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
-			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
-			floorDatas[2].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[0].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 45 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 10 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
@@ -86,13 +86,13 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Bell>()
 				.SetGeneratorCost(25)
-				.SetShopPrice(240)
+				.SetShopPrice(200)
 				.SetNameAndDescription("BEL_Name", "BEL_Desc")
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
 				.Build("Bell");
 
 			//CreatorExtensions.CreateItem<ITM_Bell, BellCustomData>("Bell", "BEL_Name", "BEL_Desc", 155, 25).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
-			floorDatas[0].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[0].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 55 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 35 });
@@ -100,13 +100,12 @@ namespace BBTimes.Manager
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
-			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 5 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 45 });
 			// headache pill
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_HeadachePill>()
 				.SetGeneratorCost(20)
-				.SetShopPrice(243)
+				.SetShopPrice(240)
 				.SetNameAndDescription("HDP_Name", "HDP_Desc")
 				.Build("Headachepill");
 			//CreatorExtensions.CreateItem<ITM_HeadachePill, HeadachePillCustomData>("Headachepill", "HDP_Name", "HDP_Desc", 145, 20).AddMeta(plug, ItemFlags.None).value;
@@ -124,13 +123,13 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 			.SetItemComponent<ITM_GPS>()
 			.SetGeneratorCost(30)
-			.SetShopPrice(500)
+			.SetShopPrice(250)
 			.SetNameAndDescription("GPS_Name", "GPS_Desc")
 			.SetMeta(ItemFlags.Persists, [])
 			.Build("Gps");
 
 			//CreatorExtensions.CreateItem<ITM_GPS, GpsCustomData>("Gps", "GPS_Name", "GPS_Desc", 185, 30).AddMeta(plug, ItemFlags.Persists).value;
-			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 75 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
@@ -149,7 +148,7 @@ namespace BBTimes.Manager
 				.Build("GoldenQuarter");
 			//CreatorExtensions.CreateItem<ITM_GoldenQuarter, CustomItemData>("GoldenQuarter", "gquarter_Name", "gquarter_Desc", 175, 22).AddMeta(plug, ItemFlags.None).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
-			floorDatas[2].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 45 });
@@ -166,7 +165,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_StaminaDrinkable>()
 				.SetGeneratorCost(20)
-				.SetShopPrice(450)
+				.SetShopPrice(400)
 				.SetNameAndDescription("BSED_Name", "BSED_Desc")
 				.SetMeta(ItemFlags.Persists, ["Drink"])
 				.Build("BSED");
@@ -189,16 +188,16 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_SpeedPotion>()
 				.SetGeneratorCost(28)
-				.SetShopPrice(600)
+				.SetShopPrice(450)
 				.SetNameAndDescription("SPP_Name", "SPP_Desc")
 				.SetMeta(ItemFlags.Persists, ["Drink"])
 				.Build("SpeedPotion");
 
 			//CreatorExtensions.CreateItem<ITM_SpeedPotion, SpeedPotionCustomData>("SpeedPotion", "SPP_Name", "SPP_Desc", 165, 28).AddMeta(plug, ItemFlags.Persists).value;
-			floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
-			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
-			floorDatas[2].Items.Add(new() { selection = item, weight = 36 });
-			floorDatas[3].Items.Add(new() { selection = item, weight = 18 });
+			floorDatas[0].Items.Add(new() { selection = item, weight = 5 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 50 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 15 });
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 47 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 56 });
@@ -216,9 +215,9 @@ namespace BBTimes.Manager
 				.SetMeta(ItemFlags.Persists, [])
 				.Build("Pencil");
 			//CreatorExtensions.CreateItem<ITM_Pencil, PencilCustomData>("Pencil", "PC_Name", "PC_Desc", 255, 20).AddMeta(plug, ItemFlags.Persists).value;
-			floorDatas[0].Items.Add(new() { selection = item, weight = 5 });
-			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
-			floorDatas[2].Items.Add(new() { selection = item, weight = 36 });
+			floorDatas[0].Items.Add(new() { selection = item, weight = 75 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 15 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 18 });
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 47 });
@@ -232,7 +231,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_WaterBottle>()
 				.SetGeneratorCost(20)
-				.SetShopPrice(350)
+				.SetShopPrice(200)
 				.SetNameAndDescription("WBottle_Name", "WBottle_Desc")
 				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, ["Drink"])
 				.Build("WaterBottle");
@@ -252,12 +251,12 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_EmptyWaterBottle>()
 				.SetGeneratorCost(18)
-				.SetShopPrice(200)
+				.SetShopPrice(100)
 				.SetNameAndDescription("EBottle_Name", "EBottle_Desc")
 				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, [])
 				.Build("EmptyWaterBottle");
 			//CreatorExtensions.CreateItem<ITM_EmptyWaterBottle, CustomItemData>("EmptyWaterBottle", "EBottle_Name", "EBottle_Desc", 90, 18).AddMeta(plug, ItemFlags.MultipleUse | ItemFlags.Persists).value;
-			floorDatas[0].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[0].Items.Add(new() { selection = item, weight = 50 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 55 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 25 });
@@ -272,7 +271,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Pogostick>()
 				.SetGeneratorCost(65)
-				.SetShopPrice(800)
+				.SetShopPrice(550)
 				.SetNameAndDescription("POGST_Name3", "POGST_Desc")
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists | ItemFlags.MultipleUse, [])
 				.Build("Pogostick");
@@ -296,7 +295,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Beartrap>()
 				.SetGeneratorCost(18)
-				.SetShopPrice(350)
+				.SetShopPrice(300)
 				.SetNameAndDescription("BT_Name", "BT_Desc")
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
 				.Build("Beartrap");
@@ -315,13 +314,13 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Basketball>()
 				.SetGeneratorCost(35)
-				.SetShopPrice(365)
+				.SetShopPrice(350)
 				.SetNameAndDescription("BB_Name", "BB_Desc")
 				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
 				.Build("Basketball");
 			//CreatorExtensions.CreateItem<ITM_Basketball, BasketballCustomData>("Basketball", "BB_Name", "BB_Desc", 365, 29).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
-			floorDatas[0].Items.Add(new() { selection = item, weight = 25 });
-			floorDatas[1].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[0].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 10 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 15 });
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
@@ -335,7 +334,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_StaminaDrinkable>()
 				.SetGeneratorCost(24)
-				.SetShopPrice(250)
+				.SetShopPrice(200)
 				.SetNameAndDescription("HotChoc_Name", "HotChoc_Desc")
 				.SetMeta(ItemFlags.Persists, ["Drink"])
 				.Build("HotChocolate");
@@ -358,7 +357,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_InvisibilityController>()
 				.SetGeneratorCost(29)
-				.SetShopPrice(355)
+				.SetShopPrice(350)
 				.SetNameAndDescription("InvCon_Name", "InvCon_Desc")
 				.SetMeta(ItemFlags.Persists, [])
 				.Build("InvRemControl");
@@ -377,7 +376,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Screwdriver>()
 				.SetGeneratorCost(45)
-				.SetShopPrice(350)
+				.SetShopPrice(225)
 				.SetNameAndDescription("SD_Name", "SD_Desc")
 				.Build("Screwdriver");
 			//CreatorExtensions.CreateItem<ITM_Screwdriver, ScrewdriverCustomData>("Screwdriver", "SD_Name", "SD_Desc", 175, 25).AddMeta(plug, ItemFlags.None).value;
@@ -398,6 +397,7 @@ namespace BBTimes.Manager
 			OfficeChair.AddFixableItem(item.itemType);
 			RollingBot.AddFixableItem(item.itemType);
 			ZapZap.AddDeactivator(item.itemType);
+			DetentionBot.AddDisablingItem(item.itemType);
 
 			// Hardhat
 			item = new ItemBuilder(plug.Info)
@@ -408,7 +408,8 @@ namespace BBTimes.Manager
 				.SetMeta(ItemFlags.Persists, [])
 				.Build("Hardhat");
 			//CreatorExtensions.CreateItem<ITM_HardHat, HardHatCustomData>("Hardhat", "Hardhat_Name", "Hardhat_Desc", 250, 27).AddMeta(plug, ItemFlags.Persists).value;
-			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[0].ForcedItems.Add(item);
+			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 45 });
 			floorDatas[3].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 35 });
@@ -441,7 +442,7 @@ namespace BBTimes.Manager
 
 			var itemBs = normBsoda.DuplicateItem("CherryBsoda_Name");
 
-			itemBs.price += 100;
+			itemBs.price += 50;
 			itemBs.descKey = "CherryBsoda_Desc";
 			itemBs.value += 5;
 
@@ -477,7 +478,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Soap>()
 				.SetGeneratorCost(42)
-				.SetShopPrice(450)
+				.SetShopPrice(400)
 				.SetNameAndDescription("Soap_Name", "Soap_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("Soap");
@@ -523,7 +524,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_BlowDrier>()
 				.SetGeneratorCost(45)
-				.SetShopPrice(600)
+				.SetShopPrice(550)
 				.SetNameAndDescription("BlowDrier_Name", "BlowDrier_Desc")
 				.SetMeta(ItemFlags.Persists, [])
 				.Build("BlowDrier");
@@ -537,7 +538,6 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 50 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 80 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 15 });
-			ResourceManager.AddMysteryItem(new() { selection = item, weight = 35 });
 
 			// Comically Large Trumpet Item
 			item = new ItemBuilder(plug.Info)
@@ -583,7 +583,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_ThrowableTeleporter>()
 				.SetGeneratorCost(30)
-				.SetShopPrice(400)
+				.SetShopPrice(250)
 				.SetNameAndDescription("ThrTelep_Name", "ThrTelep_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("ThrowableTeleporter");
@@ -603,7 +603,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_SugarFlavoredZestyBar>()
 				.SetGeneratorCost(55)
-				.SetShopPrice(750)
+				.SetShopPrice(600)
 				.SetNameAndDescription("SugZestyBar_Name", "SugZestyBar_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["Food"])
 				.Build("SugarFlavorZestyBar");
@@ -623,7 +623,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_RottenCheese>()
 				.SetGeneratorCost(70)
-				.SetShopPrice(900)
+				.SetShopPrice(450)
 				.SetNameAndDescription("RotCheese_Name", "RotCheese_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("RottenCheese");
@@ -644,7 +644,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_SoapBubbles>()
 				.SetGeneratorCost(55)
-				.SetShopPrice(1100)
+				.SetShopPrice(500)
 				.SetNameAndDescription("SoapBub_Name3", "SoapBub_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity | ItemFlags.MultipleUse, [])
 				.Build("SoapBubbles");
@@ -668,7 +668,7 @@ namespace BBTimes.Manager
 			// GSoda
 			itemBs = normBsoda.DuplicateItem("GSoda_Name");
 
-			itemBs.price += 350;
+			itemBs.price += 175;
 			itemBs.descKey = "GSoda_Desc";
 			itemBs.value += 7;
 
@@ -734,7 +734,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_PickupGun>()
 				.SetGeneratorCost(40)
-				.SetShopPrice(600)
+				.SetShopPrice(200)
 				.SetNameAndDescription("Pickupgun_Name", "Pickupgun_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("GrabGun");
@@ -775,7 +775,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_FidgetSpinner>()
 				.SetGeneratorCost(55)
-				.SetShopPrice(900)
+				.SetShopPrice(650)
 				.SetNameAndDescription("FidgetSpinner_Name", "FidgetSpinner_Desc")
 				.SetMeta(ItemFlags.Persists, [])
 				.Build("FidgetSpinner");
@@ -795,7 +795,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_FryingPan>()
 				.SetGeneratorCost(48)
-				.SetShopPrice(750)
+				.SetShopPrice(450)
 				.SetNameAndDescription("FryingPan_Name", "FryingPan_Desc")
 				.SetMeta(ItemFlags.Persists, [])
 				.Build("FryingPan");
@@ -814,7 +814,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_ElectricalGel>()
 				.SetGeneratorCost(48)
-				.SetShopPrice(750)
+				.SetShopPrice(500)
 				.SetNameAndDescription("ElectricalGel_Name", "ElectricalGel_Desc")
 				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
 				.Build("ElectricalGel");

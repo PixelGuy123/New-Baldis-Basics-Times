@@ -457,7 +457,7 @@ namespace BBTimes.Manager
 			focusedStudent.sprScreaming = studentSprs[2];
 			focusedStudent.sprNormal = student.sprite;
 			// ======================== Art Room ============================
-			var vaseSprs = TextureExtensions.LoadSpriteSheet(2, 1, 23.5f, GetRoomAsset("ExibitionRoom", "Vase.png"));
+			var vaseSprs = TextureExtensions.LoadSpriteSheet(2, 1, 17f, GetRoomAsset("ExibitionRoom", "Vase.png"));
 			var vase = ObjectCreationExtensions.CreateSpriteBillboard(vaseSprs[0]).AddSpriteHolder(out var vaseRenderer, 0f, LayerStorage.ignoreRaycast);
 			vase.gameObject.AddBoxCollider(Vector3.zero, new(4.5f, 5f, 4.5f), true);
 			vase.gameObject.AddNavObstacle(new(6.5f, 5f, 6.5f));
@@ -671,7 +671,8 @@ namespace BBTimes.Manager
 
 			AddAssetsToNpc<GottaSweep>(room);
 			AddAssetsToNpc<ZeroPrize>([new() { selection = sweepCloset, weight = 100 }, .. room]);
-			AddAssetsToNpc<Mopper>([new() { selection = sweepCloset, weight = 100 }, .. room]);
+			AddAssetsToNpc<CoolMop>([new() { selection = sweepCloset, weight = 100 }, .. room]);
+			AddAssetsToNpc<Mopliss>([new() { selection = sweepCloset, weight = 100 }, .. room]);
 			AddAssetsToNpc<VacuumCleaner>([new() { selection = sweepCloset, weight = 100 }, .. room]);
 
 			// Dr Reflex Office
@@ -843,7 +844,7 @@ namespace BBTimes.Manager
 			var classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialClassRooms.Length != 0).potentialClassRooms[0];
 			room = GetAllAssets(GetRoomAsset("Class"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
 			if (!plug.enableBigRooms.Value)
-				RemoveBigRooms(room);
+				RemoveBigRooms(room, 6.56f);
 
 			room.ForEach(x =>
 			{
@@ -889,7 +890,7 @@ namespace BBTimes.Manager
 			void RegisterFalseClass()
 			{
 				if (!plug.enableBigRooms.Value)
-					RemoveBigRooms(room);
+					RemoveBigRooms(room, 6.655f);
 
 				room.ForEach(x =>
 				{
@@ -936,7 +937,7 @@ namespace BBTimes.Manager
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialOffices.Length != 0).potentialOffices[0];
 			room = GetAllAssets(GetRoomAsset("Office"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 			if (!plug.enableBigRooms.Value)
-				RemoveBigRooms(room);
+				RemoveBigRooms(room, 7.65f);
 
 			room.ForEach(x =>
 			{
@@ -1075,12 +1076,15 @@ namespace BBTimes.Manager
 				});
 			}
 
-			static void RemoveBigRooms(List<WeightedRoomAsset> assets)
+			static void RemoveBigRooms(List<WeightedRoomAsset> assets, float averageGiven)
 			{
 				for (int i = 0; i < assets.Count; i++)
 				{
-					if (assets[i].selection.GetRoomSize().Magnitude() >= 9.5f) // Between 6x6 and 7x7
+					if (assets[i].selection.GetRoomSize().Magnitude() >= averageGiven) // Between 6x6 and 7x7
+					{
+						Object.Destroy(assets[i].selection); // Remove the asset since it's never going to be used anyways (free up memory)
 						assets.RemoveAt(i--);
+					}
 				}
 			}
 

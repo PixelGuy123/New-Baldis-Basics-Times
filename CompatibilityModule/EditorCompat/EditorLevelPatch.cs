@@ -134,6 +134,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("bubbly", "Bubbly");
 			AddNPC("Camerastand", "Camerastand");
 			AddNPC("cheeseMan", "CheeseMan");
+			AddNPC("coolMop", "CoolMop");
 			AddNPC("crazyClock", "CrazyClock");
 			AddNPCCopy<ClassicGottaSweep>("oldsweep");
 			AddNPC("detentionBot", "DetentionBot");
@@ -145,7 +146,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("JerryTheAC", "JerryTheAC");
 			AddNPC("leapy", "Leapy");
 			AddNPC("MGS", "Magicalstudent");
-			AddNPC("mopper", "Mopper");
+			AddNPC("mopliss", "Mopliss");
 			AddNPC("Mugh", "Mugh");
 			AddNPC("officeChair", "OfficeChair");
 			AddNPC("pencilBoy", "PencilBoy");

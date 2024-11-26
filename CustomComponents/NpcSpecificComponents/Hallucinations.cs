@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
@@ -12,6 +13,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			target = pm;
 			ec = pm.ec;
 			initialized = true;
+			activeHallucinations.Add(new(this, pm));
 			StartCoroutine(Hallucinating());
 		}
 
@@ -28,7 +30,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			while (true)
 			{
 				if (!target)
-					Destroy(gameObject);
+					Despawn();
 
 				transform.position = target.transform.position + new Vector3(Random.Range(-16f, 16f), 0f, Random.Range(-16f, 16f));
 				audMan.PlaySingle(audSpawn);
@@ -67,7 +69,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 				renderer.color = alpha;
 
 				if (timeAlive < 0f)
-					Destroy(gameObject);
+					Despawn();
 
 				float del = 1f;
 				while (del > 0f)
@@ -87,6 +89,13 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			timeAlive -= ec.EnvironmentTimeScale * Time.deltaTime;
 		}
 
+		public void Despawn()
+		{
+			activeHallucinations.RemoveAll(x => x.Key == this);
+			Destroy(gameObject);
+		}
+		
+
 		EnvironmentController ec;
 		PlayerManager target;
 		bool initialized = false;
@@ -103,5 +112,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		[SerializeField]
 		internal SoundObject audSpawn, audLoop;
+
+		readonly public static List<KeyValuePair<Hallucinations, PlayerManager>> activeHallucinations = [];
 	}
 }

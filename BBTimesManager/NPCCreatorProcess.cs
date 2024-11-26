@@ -30,7 +30,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("OfficeChair", "PST_OFC_Name", "PST_OFC_Desc", -2f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 60 });
 			
 			// Happy Holidays
@@ -46,7 +46,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("HappyHolidays", "PST_HapH_Name", "PST_HapH_Desc", -2f);
 			//CreatorExtensions.CreateNPC<HappyHolidays, HappyHolidaysCustomData>("HappyHolidays", 45f, 80f, [RoomCategory.Hall], [], "PST_HapH_Name", "PST_HapH_Desc", lookerDistance: 125, spriteYOffset: -2f).AddMeta(plug, NPCFlags.Standard).value;
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 10 });
 
 			// Classic Gotta Sweep
 			npc = CreatorExtensions.CreateCustomNPCFromExistent<GottaSweep, ClassicGottaSweep>(Character.Sweep, "oldsweep", "ClassicGottaSweep").MarkAsReplacement(45, Character.Sweep);
@@ -400,17 +400,17 @@ namespace BBTimes.Manager
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 10 });
 
-			// Mopper
-			npc = new NPCBuilder<Mopper>(plug.Info)
-				.SetMinMaxAudioDistance(195f, 235f)
-				.SetEnum("Mopper")
+			// CoolMop
+			npc = new NPCBuilder<CoolMop>(plug.Info)
+				.SetMinMaxAudioDistance(215f, 250f)
+				.SetEnum("CoolMop")
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetMetaName("PST_MOP_Name")
-				.SetName("Mopper")
+				.SetName("CoolMop")
 				.IgnorePlayerOnSpawn()
 				.AddTrigger()
 				.Build()
-				.SetupNPCData("Mopper", "PST_MOP_Name", "PST_MOP_Desc", -0.196f)
+				.SetupNPCData("CoolMop", "PST_MOP_Name", "PST_MOP_Desc", -0.67f)
 				.MarkAsReplacement(35, Character.Sweep);
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
@@ -565,6 +565,22 @@ namespace BBTimes.Manager
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+
+			// Mopliss
+			npc = new NPCBuilder<Mopliss>(plug.Info)
+				.SetMinMaxAudioDistance(215f, 250f)
+				.SetEnum("Mopliss")
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetMetaName("PST_MOPLISS_Name")
+				.SetName("Mopliss")
+				.IgnorePlayerOnSpawn()
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("Mopliss", "PST_MOPLISS_Name", "PST_MOPLISS_Desc", -0.75f)
+				.MarkAsReplacement(20, Character.Sweep);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 65 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
 		}
 	}

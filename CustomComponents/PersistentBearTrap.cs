@@ -25,7 +25,7 @@ namespace BBTimes.CustomComponents
 			audMan.PlaySingle(audCatch);
 			renderer.sprite = sprClosed;
 			e.ExternalActivity.moveMods.Add(moveMod);
-			float cooldown = Random.Range(10f, 15f);
+			float cooldown = Random.Range(5f, 10f);
 			while (cooldown > 0f)
 			{
 				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;

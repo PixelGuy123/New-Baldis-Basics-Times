@@ -71,7 +71,8 @@ namespace BBTimes.CustomContent.CustomItems
 							if (!cell.Null && cell.TileMatches(room)) 
 							{
 								var ele = Instantiate(elePre);
-								ele.Initialize(null, cell.FloorWorldPosition, 0.3f, ec);
+								ele.Initialize(null, cell.FloorWorldPosition, 0.15f, ec);
+								ele.eletricityForce = 10f;
 								ele.StartCoroutine(GameExtensions.TimerToDestroy(ele.gameObject, ec, 15f));
 							}
 						}

@@ -1,26 +1,30 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_Pogostick : Item, IItemPrefab
+	public class ITM_Pogostick : Item, IItemPrefab, IEntityTrigger
 	{
 		public void SetupPrefab()
 		{
+			gameObject.layer = LayerStorage.standardEntities;
+
 			audBoing = this.GetSound("boing.wav", "POGST_Boing", SoundType.Effect, Color.white);
+			audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
 			var falseRenderer = new GameObject("PogoStickRendererBase");
 			falseRenderer.transform.SetParent(transform);
 			falseRenderer.transform.localPosition = Vector3.zero;
 
 
-			entity = gameObject.CreateEntity(3.5f, rendererBase: falseRenderer.transform);
+			entity = gameObject.CreateEntity(2f, 2f, rendererBase: falseRenderer.transform);
 			entity.SetGrounded(false);
 			((CapsuleCollider)entity.collider).height = 10f;
-			gameObject.layer = LayerStorage.ignoreRaycast;
 
 			rendererBase = falseRenderer.transform;
 		}
@@ -63,19 +67,22 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			Force force = new(pm.transform.forward, 45f, -2.5f);
 			entity.AddForce(force);
+			forcesApplied.Add(force);
 			pm.plm.Entity.Override(overrider);
 			overrider.SetFrozen(true);
 			overrider.SetInteractionState(false);
 
-			float time = 0f;
 
 			while (true)
 			{
-				height = time.QuadraticEquation(-3f, 7f, 0f);
-				time += pm.PlayerTimeScale * Time.deltaTime;
+				yVelocity -= pm.PlayerTimeScale * Time.deltaTime * 5.5f;
+				height += yVelocity * Time.deltaTime * 0.35f;
 
 				if (height > maxHeight)
+				{
 					height = maxHeight;
+					yVelocity = 0f;
+				}
 
 				if ((transform.position - pm.transform.position).magnitude > 5f)
 				{
@@ -113,11 +120,42 @@ namespace BBTimes.CustomContent.CustomItems
 			transform.rotation = pm.cameraBase.rotation;
 		}
 
+		public void EntityTriggerEnter(Collider other)
+		{
+			if (pm.gameObject == other.gameObject) return;
+
+			if (other.isTrigger)
+			{
+				var e = other.GetComponent<Entity>();
+				if (e && !e.Squished)
+				{
+					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audHit);
+					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audBoing);
+					Vector3 dir = pm.transform.forward;
+					Force f = new(dir, 25f / forcesApplied.Count * 0.5f, -3f); // When more forces were applied, more weaker will be the force
+					entity.AddForce(f);
+					forcesApplied.ForEach(x => x.direction = new(dir.x, dir.z)); // Updates direction
+
+					forcesApplied.Add(f);
+
+					e.Squish(15f);
+					if (yVelocity < 0f)
+						yVelocity = 0f;
+					yVelocity += 10f;
+					
+				}
+			}
+		}
+
+		public void EntityTriggerStay(Collider other){}
+
+		public void EntityTriggerExit(Collider other){}
+
 		void OnDestroy() => usingPogo = false;
 
 		static bool usingPogo = false;
 
-		float height = 0f;
+		float height = 0f, yVelocity = 10f;
 
 		const int targetIdx = 15;
 
@@ -125,11 +163,13 @@ namespace BBTimes.CustomContent.CustomItems
 
 		readonly EntityOverrider overrider = new();
 
+		readonly List<Force> forcesApplied = [];
+
 		[SerializeField]
 		internal ItemObject pogoStickReplacement;
 
 		[SerializeField]
-		internal SoundObject audBoing;
+		internal SoundObject audBoing, audHit;
 
 		[SerializeField]
 		internal Entity entity;

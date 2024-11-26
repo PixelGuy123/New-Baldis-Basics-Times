@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class DetentionBot : NPC, INPCPrefab // FIX NPC NOT BEING SPOTTED OR SMTH FIRST, THEN GO BACK TO SCIENCE TEACHER
+	public class DetentionBot : NPC, INPCPrefab, IItemAcceptor
 	{
 		public void SetupPrefab()
 		{
@@ -112,6 +112,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audFindTroubleMaker);
+			IsAngryAtSomeone = true;
 		}
 		public void CarryingTroubleMaker()
 		{
@@ -119,6 +120,12 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.PlaySingle(audCarryTroubleMaker);
 			renderer.sprite = sprCarrying;
 		}
+		public bool ItemFits(Items itm) =>
+			IsAngryAtSomeone && disablingItems.Contains(itm);
+
+		public void InsertItem(PlayerManager pm, EnvironmentController ec) =>
+			behaviorStateMachine.ChangeState(new DetentionBot_Wandering(this));
+		
 
 
 		[SerializeField]
@@ -142,6 +149,10 @@ namespace BBTimes.CustomContent.NPCs
 
 		readonly List<RoomController> offices = [];
 		public RoomController PickRandomOffice => offices[Random.Range(0, offices.Count)];
+
+		readonly static HashSet<Items> disablingItems = [];
+		public static void AddDisablingItem(Items item) => disablingItems.Add(item);
+		public bool IsAngryAtSomeone { get; internal set; } = false;
 
 	}
 
@@ -169,6 +180,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			bot.MoveOrNot(true);
 			bot.Wander();
+			bot.IsAngryAtSomeone = false;
 			ChangeNavigationState(new NavigationState_WanderRounds(bot, 0));
 		}
 
@@ -368,6 +380,7 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(new NavigationState_TargetPosition(bot, 0, bot.ec.CellFromPosition(bot.transform.position).room.RandomEntitySafeCellNoGarbage().FloorWorldPosition));
 			bot.MoveOrNot(true);
 			bot.Wander();
+			bot.IsAngryAtSomeone = false;
 		}
 
 		public override void Update()

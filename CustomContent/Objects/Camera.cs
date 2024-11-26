@@ -105,12 +105,13 @@ namespace BBTimes.CustomContent.Objects
 
 				size++;
 
-				if (cell.HasWallInDirection(nextDirections[dirIndex]))
+				if (cell.HasWallInDirection(nextDirections[dirIndex]) || 
+					ec.CellFromPosition(pos + nextDirections[dirIndex].ToIntVector2()).Null)
 					break;
 			}
 
 			collider.size = new Vector3(3f, 10f, size * 9f);
-			collider.center = new Vector3(0f, 1f, size * 6.7f);
+			collider.center = new Vector3(0f, 1f, (5 * collider.size.z / 9f) + 5f); // Linear function lol
 		}
 
 		void OnTriggerEnter(Collider other)
