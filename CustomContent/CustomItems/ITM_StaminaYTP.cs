@@ -1,13 +1,14 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Manager;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_TimesYTP : Item, IItemPrefab
+	public class ITM_StaminaYTP : Item, IItemPrefab
 	{
 		public void SetupPrefab() =>
-			ItmObj.audPickupOverride = this.GetSoundNoSub("audTimesYtpPickup.wav", SoundType.Effect);
+			ItmObj.audPickupOverride = BBTimesManager.man.Get<SoundObject>("audGenericStaminaYTPGrab");
 
 		public void SetupPrefabPost() { }
 
@@ -16,12 +17,16 @@ namespace BBTimes.CustomContent.CustomItems
 		public ItemObject ItmObj { get; set; }
 		public override bool Use(PlayerManager pm)
 		{
-			Singleton<CoreGameManager>.Instance.AddPoints(100 + Mathf.FloorToInt(Mathf.Abs(Singleton<CoreGameManager>.Instance.GetPointsThisLevel(pm.playerNumber)) * multiplier), pm.playerNumber, true);
+			Singleton<CoreGameManager>.Instance.AddPoints(points, pm.playerNumber, true);
+			pm.plm.stamina = staminaGain;
 			Destroy(gameObject);
 			return true;
 		}
 
 		[SerializeField]
-		internal float multiplier = 1.5f;
+		internal int points = 45;
+
+		[SerializeField]
+		internal float staminaGain = 100f;
 	}
 }

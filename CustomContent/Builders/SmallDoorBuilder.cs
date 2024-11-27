@@ -119,7 +119,8 @@ namespace BBTimes.CustomContent.Builders
 				int index = cRng.Next(availableCells.Count);
 				var cellPair = availableCells[index];
 				BuildDoor(room, ec, cellPair.Key, cellPair.Value);
-				availableCells.RemoveAt(index);
+
+				availableCells.RemoveAll(cell => cell.Key.TileMatches(cellPair.Key.room));
 			}
 
 		}

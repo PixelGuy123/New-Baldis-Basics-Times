@@ -60,6 +60,15 @@ namespace BBTimes.Manager
 			smalDor.AddMeta(plug);
 			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(smalDor));
 
+			// ItemAlarm Builder
+			ItemAlarmBuilder alarm = CreatorExtensions.CreateObjectBuilder<ItemAlarmBuilder>("ItemAlarmBuilder", "ItemAlarm");
+			alarm.AddMeta(plug);
+			for (int i = 0; i < 10; i++)
+				floorDatas[0].ForcedObjectBuilders.Add(alarm); // debugging purposes
+			AddBuilderAtIdx(alarm, 35, 1, 4);
+			AddBuilderAtIdx(alarm, 60, 2, 5);
+			AddBuilderAtIdx(alarm, 15, 3, 2);
+
 			static void AddBuilderAtIdx(ObjectBuilder bld, int weight, int index, int n)
 			{
 				for (int i = 0; i < n; i++)

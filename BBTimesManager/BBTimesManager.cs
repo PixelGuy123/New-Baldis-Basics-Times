@@ -308,6 +308,10 @@ namespace BBTimes.Manager
 			sd.subtitle = false;
 			man.Add("audGenericGrab", sd);
 
+			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("audGenericStaminaYTPPickup.wav"))), string.Empty, SoundType.Effect, Color.white);
+			sd.subtitle = false;
+			man.Add("audGenericStaminaYTPGrab", sd);
+
 			// Eletricity Prefab
 			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, GetAssetName("shock.png"));
 			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(out var eleRenderer, 0.1f, LayerStorage.ignoreRaycast);

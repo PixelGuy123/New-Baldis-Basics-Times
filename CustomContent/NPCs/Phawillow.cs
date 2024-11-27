@@ -321,7 +321,7 @@ namespace BBTimes.CustomContent.NPCs
 				}
 				else
 				{
-					pickup.AssignItem(previousItem);
+					pickup.AssignItem(previousItem); // Silently changing the item/No Collect() trigger
 					pickup.gameObject.SetActive(true);
 					if (pickup.icon != null)
 						pickup.icon.spriteRenderer.enabled = true;

@@ -24,7 +24,7 @@ namespace BBTimes.CustomContent.Objects
 				IsBroken = true;
 				audMan.PlaySingle(audBreak);
 				renderer.sprite = sprBroken;
-				ec.CallOutPrincipals(transform.position, false);
+				ec.CallOutPrincipals(transform.position, whistleCall:false);
 				other.GetComponent<PlayerManager>()?.RuleBreak("breakingproperty", ruleBreakTime, 0.5f);
 				
 				ec.MakeNoise(transform.position, 35); // Not so high because principal can just take you to detention

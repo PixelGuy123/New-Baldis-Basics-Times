@@ -201,7 +201,11 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal void SetAsSuccess() => hasFailed = false;
 
-		internal void DecrementBeamCount() => beams = Mathf.Max(0, beams - 1);
+		internal void DecrementBeamCount()
+		{
+			beams = Mathf.Max(0, beams - 1);
+			SetGuilt(5f, "Bullying");
+		}
 
 		bool hasFailed = true;
 		int beams = 0, rageStreak = 0;

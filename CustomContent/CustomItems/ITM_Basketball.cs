@@ -111,6 +111,7 @@ namespace BBTimes.CustomContent.CustomItems
 					}
 
 					dir = Vector3.Reflect(dir, offset);
+					entity.AddForce(new(dir, hitExtraMomentum, -hitExtraMomentum));
 					StartCoroutine(Timer(e, false));
 				}
 			}
@@ -176,6 +177,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal int maxHitsBeforeDying = 3;
+
+		[SerializeField]
+		internal float hitExtraMomentum = 6f;
 
 		Vector3 dir;
 

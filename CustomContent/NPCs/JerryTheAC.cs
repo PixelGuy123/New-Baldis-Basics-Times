@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class JerryTheAC : NPC, INPCPrefab
+	public class JerryTheAC : NPC, INPCPrefab, IItemAcceptor
 	{
 		public void SetupPrefab()
 		{
@@ -179,19 +179,40 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.VirtualUpdate();
 			if (nextPos != zero)
-			{
 				transform.RotateSmoothlyToNextPoint(nextPos, 1f);
-			}
+			
 		}
+
+		public bool ItemFits(Items itm) =>
+			behaviorStateMachine.CurrentState is JerryTheAC_Activate && disablingItems.Contains(itm);
+
+		public void InsertItem(PlayerManager pm, EnvironmentController ec) =>
+			behaviorStateMachine.ChangeState(new JerryTheAC_GoToRoom(this));
+
 		Vector3 nextPos;
 		readonly Vector3 zero = Vector3.zero;
 
 		FreezingRoomFunction lastCreatedFunction;
-		public Cell GetRandomSpotToGo => cells[Random.Range(0, cells.Count)];
-		public float ActiveCooldown => Random.Range(minActive, maxActive);
+		public Cell GetRandomSpotToGo
+		{
+			get
+			{
+				var cells = new List<Cell>(this.cells);
+				var currentCell = ec.CellFromPosition(transform.position);
 
+				cells.RemoveAll(x => x.TileMatches(currentCell.room));
+
+				return cells.Count == 0 ? 
+					this.cells[Random.Range(0, this.cells.Count)] :
+					cells[Random.Range(0, cells.Count)];
+			}
+		}
+		public float ActiveCooldown => Random.Range(minActive, maxActive);
 		readonly List<Cell> cells = [];
-		
+
+		readonly static HashSet<Items> disablingItems = [Items.Scissors];
+		public static void AddDisablingItem(Items item) => disablingItems.Add(item);
+
 	}
 
 	internal class JerryTheAC_StateBase(JerryTheAC jr) : NpcState(jr)

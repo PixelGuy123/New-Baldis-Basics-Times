@@ -92,6 +92,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("BSED", "BSED");
 			AddItem("cherryBsoda", "CherryBsoda");
 			AddItem("chocolate", "HotChocolate");
+			AddPointItem<ITM_StaminaYTP>("ChocolateYTP");
 			AddItem("comicallyLargeTrumpet", "ComicallyLargeTrumpet");
 			AddPointItem<ITM_DivideYTP>("DivisionPoint");
 			AddItem("DoorStopper", "DoorStopper");
@@ -125,6 +126,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("throwableTeleporter", "ThrowableTeleporter");
 			AddItem("toiletPaper", "ToiletPaper");
 			AddItem("water", "WaterBottle");
+			AddPointItem<ITM_StaminaYTP>("WaterYTP");
 
 
 			// ************************ Npcs *****************************
@@ -194,7 +196,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 
 			static void AddPointItem<T>(string itemName) where T : Item
 			{
-				var itm = points.Find(x => x.item is T);
+				var itm = points.Find(x => x.item is T && x.nameKey == itemName);
 				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemName, itm);
 				itemsToAdd.Add(new(itemName, itemName));
 			}

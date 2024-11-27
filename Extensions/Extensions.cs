@@ -20,6 +20,9 @@ namespace BBTimes.Extensions
 			r.renderers = renderers;
 			return r;
 		}
+		public static Vector3 RotateAroundAxis(this Vector3 vector, Vector3 axis, float angle) =>
+		 Quaternion.AngleAxis(angle, axis) * vector;
+		
 		public static float Magnitude(this IntVector2 vec) =>
 			Mathf.Sqrt((vec.x * vec.x) + (vec.z * vec.z));
 		public static IntVector2 GetRoomSize(this RoomAsset asset)
@@ -308,9 +311,9 @@ namespace BBTimes.Extensions
 
 		public static Vector3 ToVector3(this IntVector2 vec) =>
 			new(vec.x * 10f + 5f, 0f, vec.z * 10f + 5f);
-		public static void CallOutPrincipals(this EnvironmentController ec, Vector3 pos, bool whistleCall = true) =>
-			ec.CallOutPrincipals(ec.CellFromPosition(pos), whistleCall);
-		public static void CallOutPrincipals(this EnvironmentController ec, Cell spot, bool whistleCall = true)
+		public static void CallOutPrincipals(this EnvironmentController ec, Vector3 pos, float speedMultiplier = 8f, bool whistleCall = true) =>
+			ec.CallOutPrincipals(ec.CellFromPosition(pos), speedMultiplier, whistleCall);
+		public static void CallOutPrincipals(this EnvironmentController ec, Cell spot, float speedMultiplier = 8f, bool whistleCall = true)
 		{
 			foreach (var n in ec.Npcs)
 			{
@@ -322,7 +325,7 @@ namespace BBTimes.Extensions
 						pr.audMan.FlushQueue(true);
 						pr.audMan.PlaySingle(pr.audComing);
 					}
-					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, spot));
+					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, spot, speedMultiplier));
 				}
 			}
 		}

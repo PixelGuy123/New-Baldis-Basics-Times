@@ -157,7 +157,7 @@ namespace BBTimes.CustomContent.NPCs
 	internal class Pran_DanceWithMe(PranTheDancer pran, Entity target) : Pran_StateBase(pran)
 	{
 		readonly Entity target = target;
-		Vector3 throwDir;
+		Vector3 throwDir, rotatingReference;
 		readonly MovementModifier stayMod = new(Vector3.zero, 0.5f);
 		public override void Enter()
 		{
@@ -167,7 +167,8 @@ namespace BBTimes.CustomContent.NPCs
 			pran.PlayGrab();
 			pran.PlaySpinningMusic();
 			pran.SpinningDance();
-			throwDir = (pran.Navigator.NextPoint - pran.transform.position).normalized;
+			throwDir = (pran.transform.position - pran.Navigator.NextPoint).normalized; // Inverted subtraction to throw backwards
+			rotatingReference = pran.transform.forward;
 			target.ExternalActivity.moveMods.Add(stayMod);
 		}
 
@@ -184,7 +185,8 @@ namespace BBTimes.CustomContent.NPCs
 				pran.behaviorStateMachine.ChangeState(new Pran_Wondering(pran, 15f));
 				return;
 			}
-			var dist = pran.transform.position - target.transform.position;
+			rotatingReference.RotateAroundAxis(Vector3.up, Time.deltaTime * pran.TimeScale * 14f);
+			var dist = rotatingReference * 10f + pran.transform.position - target.transform.position;
 			stayMod.movementAddend = dist * 185f * Time.deltaTime * pran.TimeScale;
 
 			if (dist.magnitude > 100)

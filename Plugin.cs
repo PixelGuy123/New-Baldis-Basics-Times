@@ -1,5 +1,6 @@
 ﻿using BBTimes.CompatibilityModule;
 using BBTimes.CustomComponents;
+using BBTimes.CustomContent.Builders;
 using BBTimes.CustomContent.Events;
 using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.RoomFunctions;
@@ -148,6 +149,9 @@ namespace BBTimes
 			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), false);
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, SetupPost(), true); // Post
+
+			PixelInternalAPI.ResourceManager.AddPostGenCallback((_) => 
+			FindObjectsOfType<ItemAlarmBuilder>().Do(bld => bld.ActuallySpawnAlarms())); // A workaround to affect generated items in the schoolhouse, since ObjectBuilders are limited to the hallways and stuff
 
 			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, ld) =>
 			{

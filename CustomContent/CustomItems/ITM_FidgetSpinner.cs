@@ -158,7 +158,7 @@ namespace BBTimes.CustomContent.CustomItems
 		readonly List<RoomController> rooms = [];
 
 		[SerializeField]
-		internal float lifeTime = 30f;
+		internal float lifeTime = 15f;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;

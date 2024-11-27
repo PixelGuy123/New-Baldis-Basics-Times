@@ -398,6 +398,7 @@ namespace BBTimes.Manager
 			RollingBot.AddFixableItem(item.itemType);
 			ZapZap.AddDeactivator(item.itemType);
 			DetentionBot.AddDisablingItem(item.itemType);
+			JerryTheAC.AddDisablingItem(item.itemType);
 
 			// Hardhat
 			item = new ItemBuilder(plug.Info)
@@ -869,6 +870,40 @@ namespace BBTimes.Manager
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 45 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 25 });
 
+			// ChocolateYTP
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_StaminaYTP>()
+				.SetGeneratorCost(30)
+				.SetShopPrice(9999)
+				.SetNameAndDescription("ChocolateYTP", string.Empty)
+				.SetAsInstantUse()
+				.Build("ChocolateYTP", Items.Points);
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 5 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 20 });
+			floorDatas[0].ForcedItems.Add(item);
+			if (EditorExists)
+				EditorLevelPatch.AddPoint(item);
+			((ITM_StaminaYTP)item.item).staminaGain = 200;
+
+			// WaterYTP
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_StaminaYTP>()
+				.SetGeneratorCost(30)
+				.SetShopPrice(9999)
+				.SetNameAndDescription("WaterYTP", string.Empty) // Clear rule for ytps: nameKey should be the same name as the one registered in the editor, for this to work properly
+				.SetAsInstantUse()
+				.Build("WaterYTP", Items.Points);
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].ForcedItems.Add(item);
+			if (EditorExists)
+				EditorLevelPatch.AddPoint(item);
 		}
 	}
 }

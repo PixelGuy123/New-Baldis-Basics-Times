@@ -150,7 +150,7 @@ namespace BBTimes.CustomContent.NPCs
 		readonly List<RoomController> offices = [];
 		public RoomController PickRandomOffice => offices[Random.Range(0, offices.Count)];
 
-		readonly static HashSet<Items> disablingItems = [];
+		readonly static HashSet<Items> disablingItems = [Items.Scissors];
 		public static void AddDisablingItem(Items item) => disablingItems.Add(item);
 		public bool IsAngryAtSomeone { get; internal set; } = false;
 

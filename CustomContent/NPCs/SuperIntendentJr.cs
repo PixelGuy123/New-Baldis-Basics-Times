@@ -133,7 +133,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		void CallPrincipals()
 		{
-			ec.CallOutPrincipals(transform.position);
+			ec.CallOutPrincipals(transform.position, 11.5f);
 
 			Directions.ReverseList(navigator.currentDirs);
 			behaviorStateMachine.ChangeState(new SuperIntendentJr_Wander(this));

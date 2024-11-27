@@ -7,7 +7,7 @@ namespace BBTimes.CustomContent.CustomItems
 	public class ITM_DivideYTP : Item, IItemPrefab
 	{
 		public void SetupPrefab() =>
-			ItmObj.audPickupOverride = this.GetSoundNoSub("audYtpPickup.wav", SoundType.Effect);
+			ItmObj.audPickupOverride = this.GetSoundNoSub("audDivisionYtpPickup.wav", SoundType.Effect);
 		
 		public void SetupPrefabPost() { }
 
