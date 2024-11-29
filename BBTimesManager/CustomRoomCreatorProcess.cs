@@ -23,6 +23,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using NewPlusDecorations;
 using BBTimes.Plugin;
+using TMPro;
 
 namespace BBTimes.Manager
 {
@@ -212,6 +213,31 @@ namespace BBTimes.Manager
 			teleporter.animComp.renderers = [machine];
 			teleporter.animComp.animation = [.. sprs.Take(5)];
 			teleporter.animComp.speed = 11.5f;
+
+			// Item Descriptor
+			var descriptorObj = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", GetAssetName("item_descriptor.png"))), 13f))
+				.AddSpriteHolder(out var descriptorRenderer, -0.15f, LayerStorage.iClickableLayer);
+			descriptorObj.name = "TimesItemDescriptor";
+			descriptorRenderer.name = "TimesItemDescriptor_Renderer";
+
+			descriptorObj.gameObject.AddObjectToEditor();
+
+			descriptorObj.gameObject.AddBoxCollider(Vector3.zero, new(2.5f, 5f, 2.5f), true);
+			var descriptor = descriptorObj.gameObject.AddComponent<ItemDescriptor>();
+			descriptor.audMan = descriptorObj.gameObject.CreatePropagatedAudioManager(45f, 65f);
+			descriptor.audTap = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", GetAssetName("descriptor_beep.wav"))), string.Empty, SoundType.Voice, Color.white);
+			descriptor.audTap.subtitle = false;
+
+			descriptor.text = new GameObject("DescriptorText", typeof(BillboardRotator)).AddComponent<TextMeshPro>();
+			descriptor.text.transform.SetParent(descriptorObj.transform);
+			descriptor.text.transform.localPosition = Vector3.up * 2f;
+			descriptor.text.fontSize = 5.5f;
+			descriptor.text.richText = true; // Allow html stuff... I hope this is the right setting
+			descriptor.text.color = new(0, 0.339f, 1f);
+			descriptor.text.alignment = TextAlignmentOptions.Center;
+			descriptor.text.wordSpacing = 5;
+			descriptor.text.rectTransform.sizeDelta = new(8.15f, 5f);
+			descriptor.text.text = Singleton<LocalizationManager>.Instance.GetLocalizedText("PST_ItemDescriptor_NoDescription");
 
 			//***************************************************
 			//***************************************************
