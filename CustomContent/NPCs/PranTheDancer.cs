@@ -185,9 +185,9 @@ namespace BBTimes.CustomContent.NPCs
 				pran.behaviorStateMachine.ChangeState(new Pran_Wondering(pran, 15f));
 				return;
 			}
-			rotatingReference.RotateAroundAxis(Vector3.up, Time.deltaTime * pran.TimeScale * 14f);
-			var dist = rotatingReference * 10f + pran.transform.position - target.transform.position;
-			stayMod.movementAddend = dist * 185f * Time.deltaTime * pran.TimeScale;
+			rotatingReference = rotatingReference.RotateAroundAxis(Vector3.up, Time.deltaTime * pran.TimeScale * 254f);
+			var dist = rotatingReference * 5f + pran.transform.position - target.transform.position;
+			stayMod.movementAddend = dist * 215f * Time.deltaTime * pran.TimeScale;
 
 			if (dist.magnitude > 100)
 			{

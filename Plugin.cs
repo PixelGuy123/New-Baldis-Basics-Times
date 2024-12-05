@@ -1,5 +1,6 @@
 ﻿using BBTimes.CompatibilityModule;
 using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.SecretEndingComponents;
 using BBTimes.CustomContent.Builders;
 using BBTimes.CustomContent.Events;
 using BBTimes.CustomContent.Objects;
@@ -17,6 +18,8 @@ using MTM101BaldAPI.Registers;
 using MTM101BaldAPI.SaveSystem;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
+using PlusLevelFormat;
+using PlusLevelLoader;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -114,6 +117,113 @@ namespace BBTimes
 				fieldTrip.potentialItems = fieldTrip.potentialItems.AddRangeToArray([.. items]);
 			}
 			// No guaranteed items required to not mess with the good ones in
+
+
+			// Times Ending Manager Setup
+			var sceneObjectClone = Instantiate(GenericExtensions.FindResourceObjectByName<SceneObject>("EndlessPremadeMedium"));
+			sceneObjectClone.name = "TimesSecretEnding";
+
+			sceneObjectClone.extraAsset = Instantiate(sceneObjectClone.extraAsset);
+			sceneObjectClone.extraAsset.name = "TimesSecretExtraAsset";
+			sceneObjectClone.extraAsset.npcSpawnPoints.Clear();
+			sceneObjectClone.extraAsset.npcsToSpawn.Clear();
+			sceneObjectClone.extraAsset.lightMode = LightMode.Additive;
+			sceneObjectClone.extraAsset.minLightColor = Color.white;
+
+			sceneObjectClone.levelContainer = null;
+			sceneObjectClone.levelNo = 99;
+			sceneObjectClone.nextLevel = null;
+			sceneObjectClone.levelTitle = "???";
+			sceneObjectClone.nameKey = "???";
+			sceneObjectClone.shopItems = [];
+			sceneObjectClone.skyboxColor = Color.black;
+			sceneObjectClone.usesMap = false;
+			sceneObjectClone.levelObject = null;
+
+
+			using (BinaryReader reader = new(File.OpenRead(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLevel.cbld"))))
+			{
+				sceneObjectClone.levelAsset = CustomLevelLoader.LoadLevelAsset(LevelExtensions.ReadLevel(reader));
+				sceneObjectClone.levelAsset.name = "TimesSecretEndingAsset";
+				sceneObjectClone.levelAsset.rooms[0].ceilTex = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLabCeiling.png"));
+				sceneObjectClone.levelAsset.rooms[0].wallTex = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLabWall.png"));
+				sceneObjectClone.levelAsset.rooms[0].florTex = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLabFloor.png"));
+
+				sceneObjectClone.levelAsset.rooms[0].doorMats = ObjectCreators.CreateDoorDataObject("TimesSecretLabMetalDoor",
+					AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "smallMetalDoorOpen.png")),
+					AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "smallMetalDoorClosed.png")));
+
+				var doorTextureMask = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "metalDoorMask.png"));
+				sceneObjectClone.levelAsset.rooms[0].doorMats.open.SetTexture("_Mask", doorTextureMask);
+				sceneObjectClone.levelAsset.rooms[0].doorMats.shut.SetTexture("_Mask", doorTextureMask);
+
+				sceneObjectClone.levelAsset.posters.Add(new()
+				{
+					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "liveTubeMakeUp.png"))]),
+					position = new(16, 12),
+					direction = Direction.North
+				});
+				sceneObjectClone.levelAsset.posters.Add(new()
+				{
+					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "levelGenMakeUp.png"))]),
+					position = new(15, 10),
+					direction = Direction.South
+				});
+				sceneObjectClone.levelAsset.posters.Add(new()
+				{
+					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "chk_funFormula.png"))]),
+					position = new(15, 7),
+					direction = Direction.South
+				});
+				sceneObjectClone.levelAsset.posters.Add(new()
+				{
+					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "chk_theNoWinFormula.png"))]),
+					position = new(15, 9),
+					direction = Direction.North
+				});
+				sceneObjectClone.levelAsset.posters.Add(new()
+				{
+					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "chk_noRealWin.png"))]),
+					position = new(16, 8),
+					direction = Direction.East
+				});
+				sceneObjectClone.levelAsset.rooms[0].hasActivity = false;
+				sceneObjectClone.levelAsset.rooms[0].activity = null;
+				// Setup door clone
+				var newDoor = (StandardDoor)sceneObjectClone.levelAsset.doors[0].doorPre.SafeDuplicatePrefab(true);
+				newDoor.audDoorShut = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "metalDoorShut.wav")), "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
+				newDoor.audDoorOpen = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "metalDoorOpen.wav")), "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
+				newDoor.name = "SmallMetalDoor";
+
+				sceneObjectClone.levelAsset.doors.ForEach(d => d.doorPre = newDoor);
+			}
+
+			var newManager = new GameObject("TimesSecretEndingManager").SetAsPrefab(true).AddComponent<TimesSecretEndingManager>();
+
+
+			newManager.Mono_GetACopyFromFields(sceneObjectClone.manager);
+
+			newManager.canvas = ObjectCreationExtensions.CreateCanvas();
+			newManager.canvas.transform.SetParent(newManager.transform);
+			newManager.canvas.gameObject.SetActive(false);
+			newManager.canvas.name = newManager.name + "Canvas";
+
+			newManager.activeImage = ObjectCreationExtensions.CreateImage(newManager.canvas, TextureExtensions.CreateSolidTexture(480, 360, Color.black));
+			newManager.activeImage.name = "TimesEndScreen";
+			newManager.audSlap = GenericExtensions.FindResourceObject<Baldi>().slap;
+			newManager.timesScreen = AssetLoader.SpriteFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretTimesEnd.jpg"), Vector2.one * 0.5f);
+			newManager.audSeeYaSoon = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence_End.wav")), "Vfx_SecBAL_EndSequence_SeeYa", SoundType.Voice, Color.green);
+
+			newManager.levelNo = 99;
+			newManager.spawnNpcsOnInit = false;
+			newManager.managerNameKey = "???";
+
+			sceneObjectClone.manager = newManager;
+			MainGameManagerPatches.secretEndingObj = sceneObjectClone;
+
+			//var scene = GenericExtensions.FindResourceObjects<SceneObject>().First(x => x.levelTitle == "F1");
+			//scene.nextLevel = sceneObjectClone;
+			//scene.levelObject.finalLevel = true;
 		}
 
 
@@ -150,6 +260,12 @@ namespace BBTimes
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, SetupPost(), true); // Post
 
+
+			PixelInternalAPI.ResourceManager.AddReloadLevelCallback((_, isNextlevel) => // Note: since it's always in the last level, there's no point to make a saving handler for this, since people cannot save in the middle of a level
+			{
+				if (!isNextlevel)
+					MainGameManagerPatches.allowEndingToBePlayed = false;
+			});
 			PixelInternalAPI.ResourceManager.AddPostGenCallback((_) => 
 			FindObjectsOfType<ItemAlarmBuilder>().Do(bld => bld.ActuallySpawnAlarms())); // A workaround to affect generated items in the schoolhouse, since ObjectBuilders are limited to the hallways and stuff
 

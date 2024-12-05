@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Adverto : NPC, INPCPrefab
+    public class Adverto : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -34,7 +34,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			adPre.att = advertisementObject.gameObject.AddComponent<VisualAttacher>();
 
-			advertisementObject.gameObject.CreatePropagatedAudioManager(60f, 75f).AddStartingAudiosToAudioManager(false, [this.GetSoundNoSub("erro.mp3", SoundType.Voice)]);
+			advertisementObject.gameObject.CreatePropagatedAudioManager(60f, 75f).AddStartingAudiosToAudioManager(false, [this.GetSoundNoSub("erro.mp3", SoundType.Effect)]);
 		}
 
 		public void SetupPrefabPost() { }

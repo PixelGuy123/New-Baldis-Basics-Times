@@ -21,7 +21,7 @@ namespace BBTimes.CustomContent.NPCs
 			spriteRenderer[0].sprite = storedSprites[0];
 
 			audMan = GetComponent<PropagatedAudioManager>();
-			audPic = this.GetSoundNoSub("photo.wav", SoundType.Voice);
+			audPic = this.GetSoundNoSub("photo.wav", SoundType.Effect);
 
 			var canvas = ObjectCreationExtensions.CreateCanvas();
 			canvas.transform.SetParent(transform);

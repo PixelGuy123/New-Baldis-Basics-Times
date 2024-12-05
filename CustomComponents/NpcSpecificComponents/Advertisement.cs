@@ -1,10 +1,11 @@
-﻿using MTM101BaldAPI.Components;
+﻿using BBTimes.CustomContent;
+using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
 {
-	public class Advertisement : MonoBehaviour
+    public class Advertisement : MonoBehaviour
 	{
 		public void Initialize(EnvironmentController ec, float lifeTime)
 		{

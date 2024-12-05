@@ -14,6 +14,13 @@ namespace BBTimes.Extensions
 {
 	public static class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
 	{
+		public static Sprite[] TakeAPair(this Sprite[] sprs, int index, int count)
+		{
+			Sprite[] newSprs = new Sprite[count];
+			for (int i = 0; i < count; i++)
+				newSprs[i] = sprs[index++];
+			return newSprs;
+		}
 		public static RendererContainer AddContainer(this GameObject obj, params Renderer[] renderers)
 		{
 			var r = obj.AddComponent<RendererContainer>();
@@ -317,7 +324,6 @@ namespace BBTimes.Extensions
 		{
 			foreach (var n in ec.Npcs)
 			{
-				var dat = n.GetComponent<INPCPrefab>();
 				if (n.Navigator.enabled && n.IsAPrincipal())
 				{
 					if (whistleCall && n is Principal pr)

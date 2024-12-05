@@ -233,7 +233,7 @@ namespace BBTimes.Manager
 			descriptor.text.transform.localPosition = Vector3.up * 2f;
 			descriptor.text.fontSize = 5.5f;
 			descriptor.text.richText = true; // Allow html stuff... I hope this is the right setting
-			descriptor.text.color = new(0, 0.339f, 1f);
+			descriptor.text.color = new(0.16796875f, 0.16796875f, 0.31640625f);
 			descriptor.text.alignment = TextAlignmentOptions.Center;
 			descriptor.text.wordSpacing = 5;
 			descriptor.text.rectTransform.sizeDelta = new(8.15f, 5f);
@@ -720,7 +720,7 @@ namespace BBTimes.Manager
 			AddAssetsToNpc<DrReflex>(room);
 
 			// Kitchen
-			sets = RegisterRoom("Kitchen", new(0.9f, 0.9f, 0.9f, 1f),
+			sets = RegisterRoom("Kitchen", new(0.59765625f, 0.796875f, 0.99609375f, 1f),
 				ObjectCreators.CreateDoorDataObject("KitchenDoor",
 				AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "kitchenDoorOpened.png")),
 				AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "kitchenDoorClosed.png"))));

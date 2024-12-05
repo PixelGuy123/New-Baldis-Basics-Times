@@ -1,6 +1,7 @@
 ﻿using BBTimes.CompatibilityModule;
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBTimes.CustomComponents.SecretEndingComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Misc.SelectionHolders;
@@ -177,7 +178,7 @@ namespace BBTimes.Manager
 
 			// Setup Window hit audio
 
-			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Voice, Color.white);
+			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Effect, Color.white);
 
 			// Principal's extra dialogues
 			AddRule("breakingproperty", "principal_nopropertybreak.wav", "Vfx_PRI_NoPropertyBreak");
@@ -188,7 +189,7 @@ namespace BBTimes.Manager
 
 			// Main Menu Stuff
 			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("mainMenu.png"))), 1f);
-			var mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Effect, Color.green);
+			var mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
 			mainSpeech.additionalKeys = [
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 5.56f },
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_3", time = 11.718f }
@@ -196,7 +197,7 @@ namespace BBTimes.Manager
 			MainMenuPatch.aud_welcome = mainSpeech;
 
 			MainMenuPatch.mainMenuEndless = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("endlessFloors.png"))), 1f);
-			mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_InfFloorSpeech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Effect, Color.green);
+			mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_InfFloorSpeech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
 			mainSpeech.additionalKeys = [
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_1", time = 5.961f },
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_2", time = 9.988f },
@@ -204,30 +205,6 @@ namespace BBTimes.Manager
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_4", time = 18.108f }
 				];
 			MainMenuPatch.aud_welcome_endless = mainSpeech;
-
-			//if (File.Exists(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")))
-			//{
-			//	mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_VeryDifferentSpeechForFun.wav")), "Vfx_BAL_SecretSpecificForUserSpeech1", SoundType.Effect, Color.green);
-			//	mainSpeech.encrypted = true;
-			//	mainSpeech.additionalKeys = [
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech2", time = 1.093f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech3", time = 3.576f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech4", time = 12.087f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech5", time = 15.651f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech6", time = 20.931f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech7", time = 28.62f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech8", time = 32.523f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech9", time = 36.192f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech10", time = 40.598f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech11", time = 43.181f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech12", time = 44.377f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech13", time = 46.727f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech14", time = 50.45f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech15", time = 52.595f, encrypted = true },
-			//		new() { key = "Vfx_BAL_SecretSpecificForUserSpeech16", time = 54.739f, encrypted = true }
-			//		];
-			//	MainMenuPatch.aud_superSecretOnlyReservedForThoseIselect = mainSpeech;
-			//}
 
 			// Math Machine new Nums
 
@@ -276,14 +253,15 @@ namespace BBTimes.Manager
 
 			GameCameraPatch.playerVisual = playerVisual.transform;
 			playerVisual.gameObject.ConvertToPrefab(true);
+			UnityEngine.Object.Destroy(playerVisual.GetComponent<RendererContainer>()); // Should make the game not cull the player's visual, if that happens
 
 			// Global Assets
 			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("potion_drink.wav"))), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
-			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("pc_stab.wav"))), "Vfx_PC_stab", SoundType.Voice, Color.yellow));
+			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("pc_stab.wav"))), "Vfx_PC_stab", SoundType.Effect, Color.yellow));
 			man.Add("basketBall", TextureExtensions.LoadSpriteSheet(5, 1, 25f, GlobalAssetsPath, GetAssetName("basketball.png")));
 			man.Add("Beartrap", TextureExtensions.LoadSpriteSheet(2, 1, 50f, GlobalAssetsPath, GetAssetName("trap.png")));
-			man.Add("BeartrapCatch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("trap_catch.wav"))), "Vfx_BT_catch", SoundType.Voice, Color.white));
-			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("punch.wav"))), "BB_Hit", SoundType.Voice, Color.white));
+			man.Add("BeartrapCatch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("trap_catch.wav"))), "Vfx_BT_catch", SoundType.Effect, Color.white));
+			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("punch.wav"))), "BB_Hit", SoundType.Effect, Color.white));
 			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
 			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
 			man.Add("audBuzz", GenericExtensions.FindResourceObjectByName<SoundObject>("Elv_Buzz"));
@@ -363,6 +341,198 @@ namespace BBTimes.Manager
 			slipMatPre.audSlip = man.Get<SoundObject>("slipAud");
 			slipMatPre.gameObject.AddBoxCollider(Vector3.zero, new(9.9f, 10f, 9.9f), true);
 			man.Add("SlipperyMatPrefab", slipMatPre);
+
+			// ********************************************************** Secret Ending Setup ***************************************************************************
+
+			var sprs = TextureExtensions.LoadSpriteSheet(6, 3, 25f, MiscPath, TextureFolder, "SecretEnding", "susComputerBaldi.png");
+
+			var bal = ObjectCreationExtensions.CreateSpriteBillboard(sprs[0])
+				.AddSpriteHolder(out var balRenderer, 0.345f, 0);
+			var sphere = bal.gameObject.AddBoxCollider(Vector3.zero, new(65f, 5f, 65f), true);
+			bal.name = "Times_SecretBaldi";
+
+			bal.gameObject.AddObjectToEditor(); // Technically they exist in the editor, but none of them will be placeable in the final build
+
+			var secBal = bal.gameObject.AddComponent<SecretBaldi>();
+			secBal.audMan = secBal.gameObject.CreateAudioManager(45f, 135f);
+			secBal.renderer = balRenderer;
+
+			// Sprites for Baldi
+
+			secBal.sprLookingComputer = [sprs[0]]; // Oh boy, this sprite selection will be a fun ride...
+			secBal.sprOnlyPeek = [sprs[1]];
+			secBal.sprSideEyeBack = sprs.TakeAPair(1, 4);
+			secBal.sprFacingFront =  sprs.TakeAPair(5, 6);
+			secBal.sprFacingFrontNervous =  sprs.TakeAPair(11, 6);
+
+			sprs = TextureExtensions.LoadSpriteSheet(12, 3, 25f, MiscPath, TextureFolder, "SecretEnding", "evilBaldiSheet.png");
+			secBal.sprAngryBal =  sprs.TakeAPair(0, 6);
+			secBal.sprAngryHappyBal =  sprs.TakeAPair(6, 6);
+			secBal.sprAngryHappySideEyeBal =  sprs.TakeAPair(12, 6);
+			secBal.sprThinkingBal =  sprs.TakeAPair(18, 6);
+			secBal.sprTakeRulerAnim =  sprs.TakeAPair(24, 5);
+			secBal.sprWithRulerBal =  sprs.TakeAPair(28, 6);
+
+			secBal.sprCatchBal = TextureExtensions.LoadSpriteSheet(3, 2, 27f, MiscPath, TextureFolder, "SecretEnding", "baldiCatchSheet.png");
+
+
+			// Audios for Baldi
+			secBal.audMeetMe1 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_MeetBaldi_1.wav")), "Vfx_SecBAL_Meet_1", SoundType.Voice, Color.green);
+			secBal.audMeetMe1.additionalKeys = [new() { key = "Vfx_SecBAL_Meet_2", time = 2.503f }];
+
+			secBal.audMeetMe2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_MeetBaldi_2.wav")), "Vfx_SecBAL_Meet_3", SoundType.Voice, Color.green);
+
+			secBal.audMeetMe3 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_MeetBaldi_3.wav")), "Vfx_SecBAL_Meet_4", SoundType.Voice, Color.green);
+			secBal.audMeetMe3.additionalKeys = [
+				new() { key = "Vfx_SecBAL_Meet_5", time = 1.716f },
+				new() { key = "Vfx_SecBAL_Meet_6", time = 4.318f },
+				new() { key = "Vfx_SecBAL_Meet_7", time = 6.829f },
+				new() { key = "Vfx_SecBAL_Meet_8", time = 9.293f },
+				new() { key = "Vfx_SecBAL_Meet_9", time = 11.567f }
+				];
+
+			secBal.audMeetMe4 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_MeetBaldi_4.wav")), "Vfx_SecBAL_Meet_10", SoundType.Voice, Color.green);
+
+			secBal.audAngry1 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence1.wav")), "Vfx_SecBAL_EndSequence_1", SoundType.Voice, Color.green);
+			secBal.audAngry1.additionalKeys = [
+				new() { key = "Vfx_SecBAL_EndSequence_2", time = 2.73f }
+				];
+
+			secBal.audAngry2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence2.wav")), "Vfx_SecBAL_EndSequence_3", SoundType.Voice, Color.green);
+			secBal.audAngry2.additionalKeys = [
+				new() { key = "Vfx_SecBAL_EndSequence_4", time = 3.365f },
+				new() { key = "Vfx_SecBAL_EndSequence_5", time = 5.643f },
+				new() { key = "Vfx_SecBAL_EndSequence_6", time = 8.087f },
+				new() { key = "Vfx_SecBAL_EndSequence_7", time = 13.156f },
+				new() { key = "Vfx_SecBAL_EndSequence_8", time = 16.742f },
+				new() { key = "Vfx_SecBAL_EndSequence_9", time = 18.914f },
+				new() { key = "Vfx_SecBAL_EndSequence_10", time = 20.961f },
+				new() { key = "Vfx_SecBAL_EndSequence_11", time = 23.261f }
+				];
+
+			secBal.audAngry3 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence3.wav")), "Vfx_SecBAL_EndSequence_12", SoundType.Voice, Color.green);
+
+			secBal.audAngry4 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence4.wav")), "Vfx_SecBAL_EndSequence_13", SoundType.Voice, Color.green);
+			secBal.audAngry5 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence5.wav")), "Vfx_SecBAL_EndSequence_14", SoundType.Voice, Color.green);
+			secBal.audAngry6 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence6.wav")), "Vfx_SecBAL_EndSequence_15", SoundType.Voice, Color.green);
+
+			secBal.audAngry7 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence7.wav")), "Vfx_SecBAL_EndSequence_16", SoundType.Voice, Color.green);
+			secBal.audAngry7.additionalKeys = [
+				new() { key = "Vfx_SecBAL_EndSequence_17", time = 1.399f },
+				new() { key = "Vfx_SecBAL_EndSequence_18", time = 3.346f }
+				];
+			secBal.audAngry8 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence8.wav")), "Vfx_SecBAL_EndSequence_19", SoundType.Voice, Color.green);
+			secBal.audAngry9 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence9.wav")), "Vfx_SecBAL_EndSequence_20", SoundType.Voice, Color.green);
+
+			secBal.audAngry10 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence10.wav")), "Vfx_SecBAL_EndSequence_21", SoundType.Voice, Color.green);
+
+			secBal.audAngry11 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence11.wav")), "Vfx_SecBAL_EndSequence_22", SoundType.Voice, Color.green);
+			secBal.audAngry11.additionalKeys = [
+				new() { key = "Vfx_SecBAL_EndSequence_23", time = 2.859f },
+				new() { key = "Vfx_SecBAL_EndSequence_24", time = 5.202f }
+				];
+
+			secBal.audAngry12 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence12.wav")), "Vfx_SecBAL_EndSequence_25", SoundType.Voice, Color.green);
+			secBal.audAngry13 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence13.wav")), "Vfx_SecBAL_EndSequence_26", SoundType.Voice, Color.green);
+
+			secBal.volumeAnimator = secBal.gameObject.AddComponent<SpriteVolumeAnimator>();
+			secBal.volumeAnimator.audMan = secBal.audMan;
+			secBal.volumeAnimator.renderer = balRenderer;
+			secBal.volumeAnimator.volumeMultipler = 1.2f;
+			secBal.UpdateSpriteTo(secBal.sprLookingComputer);
+
+
+
+			var invisibleWall = ObjectCreationExtension.CreateCube(man.Get<Sprite>("whitePix").texture, false); // White texture to show where it is
+			invisibleWall.transform.localScale = new Vector3(10f, 10f, 1f);
+			invisibleWall.name = "Times_InvisibleWall";
+			invisibleWall.AddObjectToEditor();
+
+			var noRendererWall = invisibleWall.AddComponent<NoRendererOnStart>();
+			noRendererWall.collider = noRendererWall.GetComponent<BoxCollider>();
+
+			var destroyableInvisibleWall = noRendererWall.DuplicatePrefab();
+			destroyableInvisibleWall.canBeDisabled = true;
+			destroyableInvisibleWall.name = "Times_CanBeDisabledInvisibleWall";
+			destroyableInvisibleWall.gameObject.AddObjectToEditor();
+
+			var scewInvisibleWall = noRendererWall.DuplicatePrefab();
+			scewInvisibleWall.affectedByScrewDriver = true;
+			scewInvisibleWall.name = "Times_ScrewingInvisibleWall";
+			scewInvisibleWall.gameObject.AddObjectToEditor();
+
+			var keyLocked = noRendererWall.DuplicatePrefab();
+			keyLocked.affectedByKey = true;
+			keyLocked.name = "Times_KeyLockedInvisibleWall";
+			keyLocked.gameObject.AddObjectToEditor();
+			keyLocked.audMan = keyLocked.gameObject.CreatePropagatedAudioManager(45f, 65f);
+			keyLocked.audUse = GenericExtensions.FindResourceObject<StandardDoor>().audDoorUnlock; // Unlock noises
+
+
+			var generatorComp = new GameObject("Times_SecretGenerator");
+			generatorComp.AddBoxCollider(Vector3.zero, new(19f, 10f, 21f), false);
+
+			var generator = ObjectCreationExtension.CreateCube(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, "SecretEnding", "SecretGeneratorBox.png")));
+			generator.name = "Times_SecretGeneratorRenderer";
+			UnityEngine.Object.Destroy(generator.GetComponent<BoxCollider>());
+			generator.transform.SetParent(generatorComp.transform);
+			generator.transform.localPosition = new(9.5f, 2.5f, -10.5f);
+			generator.transform.localScale = new(19f, 5f, 21f);
+			generator.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
+			generatorComp.AddObjectToEditor();
+
+			
+			var genNoise = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "generatorLoop.wav")), string.Empty, SoundType.Effect, Color.white);
+			genNoise.subtitle = false;
+
+			generatorComp.gameObject.CreatePropagatedAudioManager(0f, 65f)
+				.AddStartingAudiosToAudioManager(true, genNoise);
+
+			var generatorCylinderRenderer = ObjectCreationExtension.CreatePrimitiveObject(PrimitiveType.Cylinder, TextureExtensions.CreateSolidTexture(1, 1, new(0.35f, 0.35f, 0.35f)));
+			var generatorCylinder = new GameObject("Times_GeneratorCylinder");
+			generatorCylinder.AddBoxCollider(Vector3.up * 4.5f, Vector3.one * 2f, true); // Just so the Editor detects this one first
+			generatorCylinderRenderer.transform.SetParent(generatorCylinder.transform);
+			generatorCylinder.AddObjectToEditor();
+
+			generatorCylinderRenderer.transform.localPosition = Vector3.zero;
+			generatorCylinderRenderer.transform.localRotation = Quaternion.Euler(0f, 0f, 50f);
+			generatorCylinderRenderer.transform.localScale = new(7f, 12f, 7f);
+
+			Sprite[] baldis = TextureExtensions.LoadSpriteSheet(4, 1, 35f, MiscPath, TextureFolder, "SecretEnding", "containedBaldis.png");
+			for (int i = 0; i < baldis.Length; i++)
+			{
+				var baldiObj = ObjectCreationExtensions.CreateSpriteBillboard(baldis[i]).AddSpriteHolder(out var baldiRenderer, 0f, 0);
+				baldiObj.name = "Times_ContainedBaldi_F" + (i + 1);
+				baldiObj.gameObject.AddBoxCollider(Vector3.zero, new(1.5f, 5f, 1.5f), false);
+				baldiObj.gameObject.AddObjectToEditor();
+
+				baldiRenderer.name = "ContainedBaldiRenderer";
+			}
+
+			var yayComputer = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromFile(Path.Combine(MiscPath, TextureFolder, "SecretEnding", "theYAYComputer.png"), Vector2.one * 0.5f, 25f));
+			yayComputer.name = "Times_theYAYComputer";
+			yayComputer.gameObject.AddObjectToEditor();
+
+			var lorePaper = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromFile(Path.Combine(MiscPath, TextureFolder, "SecretEnding", "TheTrueLorePaper.png"), Vector2.one * 0.5f, 40f), false)
+				.AddSpriteHolder(out var paperRenderer, 0.07f);
+			paperRenderer.name = "LorePaperRenderer";
+			paperRenderer.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+			lorePaper.name = "Times_TrueLorePaper";
+			lorePaper.gameObject.AddObjectToEditor();
+
+			var genLeverSprs = TextureExtensions.LoadSpriteSheet(2, 1, 25f, MiscPath, TextureFolder, "SecretEnding", "generatorLever.png");
+
+			var genLever = ObjectCreationExtensions.CreateSpriteBillboard(genLeverSprs[0], false)
+				.AddSpriteHolder(out var genLeverRender, Vector3.forward * 0.24f, LayerStorage.iClickableLayer);
+			genLever.name = "Times_GeneratorLever";
+			genLeverRender.name = "GenLeverRenderer";
+			genLever.gameObject.AddObjectToEditor();
+
+			var lever = genLever.gameObject.AddComponent<FakeLever>();
+			lever.renderer = genLeverRender;
+			lever.sprUnscrewed = genLeverSprs[1];
+			lever.gameObject.AddBoxCollider(Vector3.zero, new(4f, 4f, 1f), true);
+
 
 			static void AddRule(string name, string audioName, string vfx) =>
 				PrincipalPatches.ruleBreaks.Add(name, ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "npcs", "Principal", "Audios", GetAssetName(audioName))), vfx, SoundType.Voice, new(0, 0.1176f, 0.4824f)));

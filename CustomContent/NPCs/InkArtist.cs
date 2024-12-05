@@ -10,7 +10,7 @@ using PixelInternalAPI.Components;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class InkArtist : NPC, INPCPrefab
+    public class InkArtist : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{

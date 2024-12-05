@@ -1,11 +1,12 @@
-﻿using MTM101BaldAPI.Components;
+﻿using BBTimes.CustomContent;
+using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 {
-	public class SunFlower : Plant
+    public class SunFlower : Plant
 	{
 		protected override void TriggerEnterNPC(NPC npc)
 		{

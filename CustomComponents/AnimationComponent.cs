@@ -40,8 +40,13 @@ namespace BBTimes.CustomComponents
 
 		public void ChangeRendererSpritesTo(Sprite sprite)
 		{
-			for (int i = 0; i < renderers.Length; i++)
-				renderers[i].sprite = sprite;
+			if (renderers != null)
+				for (int i = 0; i < renderers.Length; i++)
+					renderers[i].sprite = sprite;
+
+			if (rotators != null)
+				for (int i = 0; i < rotators.Length; i++)
+					rotators[i].targetSprite = sprite;
 		}
 
 		public void StopLastFrameMode() =>
@@ -70,6 +75,9 @@ namespace BBTimes.CustomComponents
 
 		[SerializeField]
 		internal SpriteRenderer[] renderers;
+
+		[SerializeField]
+		internal AnimatedSpriteRotator[] rotators;
 
 		int pause = 0;
 

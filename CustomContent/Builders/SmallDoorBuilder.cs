@@ -113,14 +113,17 @@ namespace BBTimes.CustomContent.Builders
 
 			for (int i = 0; i < max; i++)
 			{
-				if (availableCells.Count == 0)
+				if (availableCells.Count == 0) // Reminder that the cells here are all from the mainHall, the direction is the one that tells what room it is aiming to
 					return;
 
 				int index = cRng.Next(availableCells.Count);
 				var cellPair = availableCells[index];
 				BuildDoor(room, ec, cellPair.Key, cellPair.Value);
+				var nextRoom = ec.CellFromPosition(cellPair.Key.position + cellPair.Value.ToIntVector2()).room;
 
-				availableCells.RemoveAll(cell => cell.Key.TileMatches(cellPair.Key.room));
+				availableCells.RemoveAll(cell => ec.CellFromPosition(
+					cell.Key.position + cell.Value.ToIntVector2()
+					).TileMatches(nextRoom));
 			}
 
 		}

@@ -237,12 +237,17 @@ namespace BBTimes.CustomContent.NPCs
 			base.PlayerLost(player);
 			if (players.ContainsKey(player))
 				TakeFovOut(player);
+
 			if (players.Count == 0)
+			{
 				CanDespawn = true;
+				f.ApplyScale(false);
+			}
 		}
 
 		void TakeFovOut(PlayerManager player, bool removeFromDic = true)
 		{
+			
 			player.Am.moveMods.Remove(moveMod);
 			var cam = player.GetCustomCam();
 			var k = players[player];
@@ -251,7 +256,7 @@ namespace BBTimes.CustomContent.NPCs
 			cam.ResetSlideFOVAnimation(k.Key);
 			if (removeFromDic)
 				players.Remove(player);
-			f.ApplyScale(false);
+			
 		}
 
 		public override void Exit()
@@ -294,6 +299,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerLost(player);
 			CanDespawn = true;
+			f.ApplyScale(false);
 		}
 		public override void Exit()
 		{
@@ -359,6 +365,8 @@ namespace BBTimes.CustomContent.NPCs
 			f.Navigator.maxSpeed = 25;
 			f.Navigator.SetSpeed(25);
 			sighted--;
+			if (sighted <= 0)
+				f.ApplyScale(false);
 		}
 		public override void OnStateTriggerEnter(Collider other)
 		{
@@ -373,6 +381,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerLost(PlayerManager player)
 		{
 			base.PlayerLost(player);
+			f.ApplyScale(false);
 			f.behaviorStateMachine.ChangeState(prev);
 		}
 		public override void Exit()

@@ -75,6 +75,19 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			MarkObject(man.Get<GameObject>("editorPrefab_SensitiveVase"), Vector3.up * 4.2f);
 			MarkObject(man.Get<GameObject>("editorPrefab_TimesItemDescriptor"), Vector3.up * 5f);
 
+			MarkObject(man.Get<GameObject>("editorPrefab_Times_SecretBaldi"), Vector3.up * 5f);
+			MarkRotatingObject(man.Get<GameObject>("editorPrefab_Times_InvisibleWall"), Vector3.up * 5f);
+			MarkRotatingObject(man.Get<GameObject>("editorPrefab_Times_CanBeDisabledInvisibleWall"), Vector3.up * 5f);
+			MarkRotatingObject(man.Get<GameObject>("editorPrefab_Times_ScrewingInvisibleWall"), Vector3.up * 5f);
+			MarkRotatingObject(man.Get<GameObject>("editorPrefab_Times_KeyLockedInvisibleWall"), Vector3.up * 5f);
+			MarkRotatingObject(man.Get<GameObject>("editorPrefab_Times_SecretGenerator"), Vector3.up * 5f);
+			MarkObject(man.Get<GameObject>("editorPrefab_Times_GeneratorCylinder"), Vector3.up * 5f);
+			for (int i = 1; i <= 4; i++)
+				MarkObject(man.Get<GameObject>($"editorPrefab_Times_ContainedBaldi_F{i}"), Vector3.up * 5f);
+			MarkObject(man.Get<GameObject>("editorPrefab_Times_theYAYComputer"), Vector3.up * 5f);
+			MarkObject(man.Get<GameObject>("editorPrefab_Times_TrueLorePaper"), Vector3.up * 5f);
+			MarkObject(man.Get<GameObject>("editorPrefab_Times_GeneratorLever"), Vector3.up * 5f);
+
 			// Decorations
 			MarkObject(man.Get<GameObject>("editorPrefab_SecretBread"), Vector3.zero);
 			MarkObject(man.Get<GameObject>("editorPrefab_TimesKitchenSteak"), Vector3.zero);
@@ -113,6 +126,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("pogostick", "Pogostick");
 			AddItem("present", "Present");
 			AddItem("magnet", "Magnet");
+			AddItem("mrMolar", "MrMolar");
 			AddItem("remote", "InvRemControl");
 			AddItem("rottenCheese", "RottenCheese");
 			AddItem("screwDriver", "Screwdriver");
@@ -150,7 +164,9 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("leapy", "Leapy");
 			AddNPC("MGS", "Magicalstudent");
 			AddNPC("mopliss", "Mopliss");
+			AddNPC("mimiCry", "Mimicry");
 			AddNPC("Mugh", "Mugh");
+			AddNPC("noseMan", "NoseMan");
 			AddNPC("officeChair", "OfficeChair");
 			AddNPC("pencilBoy", "PencilBoy");
 			AddNPC("phawillow", "Phawillow");

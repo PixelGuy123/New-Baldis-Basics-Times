@@ -582,6 +582,38 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 65 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+
+			// Nose
+			npc = new NPCBuilder<NoseMan>(plug.Info)
+				.SetMinMaxAudioDistance(165f, 175f)
+				.SetEnum("NoseMan")
+				.SetMetaName("PST_NOSE_Name")
+				.SetName("NoseMan")
+				.AddTrigger()
+				.AddLooker()
+				.SetMaxSightDistance(135f)
+				.Build()
+				.SetupNPCData("NoseMan", "PST_NOSE_Name", "PST_NOSE_Desc", -1.45f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 15 });
+
+			// Nose
+			npc = new NPCBuilder<Mimicry>(plug.Info)
+				.SetMinMaxAudioDistance(165f, 175f)
+				.SetEnum("Mimicry")
+				.SetMetaName("PST_Mimi_Name")
+				.SetName("Mimicry")
+				.AddTrigger()
+				.SetForcedSubtitleColor(new(0.546875f, 0.1015625f, 0.99609375f))
+				.AddLooker()
+				.SetMaxSightDistance(20f)
+				.Build()
+				.SetupNPCData("Mimicry", "PST_Mimi_Name", "PST_Mimi_Desc", -2f);
+
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 15 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
 		}
 	}
 }

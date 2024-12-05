@@ -904,6 +904,37 @@ namespace BBTimes.Manager
 			floorDatas[1].ForcedItems.Add(item);
 			if (EditorExists)
 				EditorLevelPatch.AddPoint(item);
+
+			// SmallTimesKey
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_Acceptable>()
+				.SetGeneratorCost(99)
+				.SetShopPrice(9999)
+				.SetNameAndDescription("SmallTimesKey_Name", "SmallTimesKey_Desc")
+				.SetMeta(ItemFlags.Persists, [])
+				.Build("SmallTimesKey");
+
+			floorDatas[0].ForcedItems.Add(item);
+
+			((ITM_Acceptable)item.item).item = item.itemType;
+
+			// Mr Molar
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_MrMolar>()
+				.SetGeneratorCost(27)
+				.SetShopPrice(500)
+				.SetNameAndDescription("MrMolar_Name", "MrMolar_Desc")
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.Build("MrMolar");
+
+			floorDatas[1].Items.Add(new() { selection = item, weight = 12 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 12 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 30 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 9 });
 		}
 	}
 }

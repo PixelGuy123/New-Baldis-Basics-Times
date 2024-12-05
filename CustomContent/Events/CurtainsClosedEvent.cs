@@ -5,7 +5,6 @@ using BBTimes.Extensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using Rewired.UI.ControlMapper;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,9 +41,9 @@ namespace BBTimes.CustomContent.Events
 				layer = LayerStorage.blockRaycast
 			};
 			colliderObj.transform.SetParent(curt.transform);
-			colliderObj.transform.localPosition = Vector3.zero;
+			colliderObj.transform.localPosition = Vector3.up * 5f;
 
-			curt.collider = colliderObj.gameObject.AddBoxCollider(Vector3.zero, new(5f, 5f, 1f), true);
+			curt.collider = colliderObj.gameObject.AddBoxCollider(Vector3.zero, new(10f, 10f, 1f), true);
 			curt.collider.enabled = false;
 
 			curtPre = curt;

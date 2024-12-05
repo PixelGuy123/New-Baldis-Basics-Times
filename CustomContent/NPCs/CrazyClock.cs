@@ -16,10 +16,10 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
-			SoundObject[] audios = [this.GetSound("clock_tick.wav", "Vfx_CC_Tick", SoundType.Voice, Color.yellow),
-		this.GetSound("clock_tack.wav", "Vfx_CC_Tack", SoundType.Voice, Color.yellow),
-		this.GetSound("clock_Scream.wav", "Vfx_CC_Scream", SoundType.Voice, Color.yellow),
-		this.GetSound("clock_frown.wav", "Vfx_CC_Frown", SoundType.Voice, Color.yellow)];
+			SoundObject[] audios = [this.GetSound("clock_tick.wav", "Vfx_CC_Tick", SoundType.Effect, Color.yellow),
+		this.GetSound("clock_tack.wav", "Vfx_CC_Tack", SoundType.Effect, Color.yellow),
+		this.GetSound("clock_Scream.wav", "Vfx_CC_Scream", SoundType.Effect, Color.yellow),
+		this.GetSound("clock_frown.wav", "Vfx_CC_Frown", SoundType.Effect, Color.yellow)];
 
 			audTick = audios[0];
 			audTack = audios[1];

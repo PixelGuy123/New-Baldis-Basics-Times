@@ -13,10 +13,32 @@ using MTM101BaldAPI;
 namespace BBTimes.ModPatches
 {
 
-	[ConditionalPatchNoMod("mtm101.rulerp.baldiplus.endlessfloors")]
+	[ConditionalPatchNoMod("rad.rulerp.baldiplus.arcaderenovations")]
 	[HarmonyPatch(typeof(MainGameManager))]
 	internal class MainGameManagerPatches
 	{
+
+		// SECRET ENDING PATCH
+
+		[HarmonyPatch("LoadSceneObject")]
+		[HarmonyPrefix]
+		private static void RedirectEndingIfPossible(MainGameManager __instance, ref SceneObject sceneObject, bool restarting)
+		{
+			if (restarting || !allowEndingToBePlayed || !__instance.levelObject.finalLevel) return;
+
+			sceneObject = secretEndingObj;
+		}
+
+
+		public static bool allowEndingToBePlayed = false;
+
+		internal static SceneObject secretEndingObj;
+
+
+
+
+
+		// -------------------------
 
 		[HarmonyPatch("AllNotebooks")]
 		[HarmonyPostfix]
