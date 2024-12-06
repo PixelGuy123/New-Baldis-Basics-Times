@@ -69,6 +69,8 @@ namespace BBTimes.CustomContent.NPCs
 			moveMod = new MovementModifier(Vector3.zero, slownessFactor);
 			itemsToDisguiseAs = Resources.FindObjectsOfTypeAll<ItemObject>();
 			animComp.Initialize(ec);
+			childReference = new GameObject("Mimicry_PositionReference").transform;
+
 			SetWalking(true);
 			Undisguise(false);
 		}
@@ -89,17 +91,19 @@ namespace BBTimes.CustomContent.NPCs
 			rooms.RemoveAll(r => r.type != RoomType.Room || r.itemSpawnPoints.Count == 0);
 
 			if (rooms.Count == 0)
-			{
-				Debug.LogWarning("TIMES: MIMICRY SOMEHOW DIDN\'T FOUND A SPOT TO DISGUISE");
 				return transform.position;
-			}
+
+			// Workaround to work with objects to actually give the exact position that Mimicry should go
+			if (!childReference)
+				childReference = new GameObject("Mimicry_PositionReference").transform;
+
 
 			var selectedRoom = rooms[Random.Range(0, rooms.Count)];
 			Vector2 pos = selectedRoom.itemSpawnPoints[Random.Range(0, selectedRoom.itemSpawnPoints.Count)].position;
-			pos.x += selectedRoom.objectObject.transform.position.x; // Should make it really go to the right spot
-			pos.y += selectedRoom.objectObject.transform.position.z;
+			childReference.SetParent(selectedRoom.objectObject.transform);
+			childReference.localPosition = new(pos.x, 0, pos.y); // It should go to the exact position, since it'll be relative to how the objectObject is placed in world
 
-			return new(pos.x, 0f, pos.y);
+			return childReference.position;
 		}
 
 		public void DisguiseAsRandomItem()
@@ -180,7 +184,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			while (frame < jumpscareSprs.Length)
 			{
-				frame += Time.deltaTime * TimeScale * 24f;
+				frame += Time.deltaTime * TimeScale * 16f;
 				jumpscareImg.sprite = jumpscareSprs[Mathf.FloorToInt(Mathf.Min(jumpscareSprs.Length - 1, frame))];
 				yield return null;
 			}
@@ -219,6 +223,7 @@ namespace BBTimes.CustomContent.NPCs
 		ItemObject[] itemsToDisguiseAs;
 		readonly List<Entity> affectedEntities = [];
 		MovementModifier moveMod;
+		Transform childReference;
 
 		bool disguised = false;
 
@@ -262,10 +267,10 @@ namespace BBTimes.CustomContent.NPCs
 		public override void DestinationEmpty()
 		{
 			base.DestinationEmpty();
-			if (mimi.transform.position != spotToGo)
-				ChangeNavigationState(tarPos);
+			if (mimi.transform.position.x == spotToGo.x && mimi.transform.position.z == spotToGo.z)
+				mimi.behaviorStateMachine.ChangeState(new Mimicry_Disguise(mimi)); 
 			else
-				mimi.behaviorStateMachine.ChangeState(new Mimicry_Disguise(mimi));
+				ChangeNavigationState(tarPos);
 		}
 
 		public override void Exit()

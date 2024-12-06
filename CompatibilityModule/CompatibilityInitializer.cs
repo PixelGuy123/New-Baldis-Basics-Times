@@ -1,4 +1,5 @@
-﻿using BepInEx.Bootstrap;
+﻿using BBTimes.CompatibilityModule.GrapplingHookTweaksCompats;
+using BepInEx.Bootstrap;
 
 namespace BBTimes.CompatibilityModule
 {

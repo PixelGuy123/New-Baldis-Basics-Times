@@ -137,7 +137,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal float minWait = 30f, maxWait = 45f, speed = 35f;
 
 		[SerializeField]
-		internal int slipsPerTile = 5, roomsPerActivation = 10, slipperRadius = 6;
+		internal int roomsPerActivation = 10, slipperRadius = 6;
 	}
 
 	internal class Mopliss_StateBase(Mopliss mop) : NpcState(mop)

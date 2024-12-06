@@ -41,7 +41,7 @@ namespace BBTimes.CompatibilityModule
 		{
 			if (FunSettingsType.HardMode.IsActive())
 			{
-				___slipsPerTile = 8;
+				___slipsPerTile = 15;
 				___slipDropCooldown = 0.5f;
 			}
 
@@ -50,6 +50,24 @@ namespace BBTimes.CompatibilityModule
 				___speed = 250f;
 				___minActive = int.MaxValue;
 				___maxActive = int.MaxValue;
+				___minWait = 1f;
+				___maxWait = 1f;
+			}
+		}
+
+		[HarmonyPatch(typeof(Mopliss), "Initialize")]
+		[HarmonyPrefix]
+		static void QuantumMopliss(EnvironmentController ___ec, ref int ___roomsPerActivation, ref int ___slipperRadius, ref float ___speed, ref float ___minWait, ref float ___maxWait)
+		{
+			if (FunSettingsType.HardMode.IsActive())
+			{
+				___roomsPerActivation = ___ec.rooms.Count;
+				___slipperRadius = 12;
+			}
+
+			if (FunSettingsType.QuantumSweep.IsActive())
+			{
+				___speed = 125f;
 				___minWait = 1f;
 				___maxWait = 1f;
 			}

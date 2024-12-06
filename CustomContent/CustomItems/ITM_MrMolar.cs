@@ -107,7 +107,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Minigame()
 		{
-			MovementModifier moveMod = new(Vector3.zero, 0.9f);
+			MovementModifier moveMod = new(Vector3.zero, 0.65f);
 			pm.Am.moveMods.Add(moveMod);
 
 			canDecrementMolar = true;
@@ -214,9 +214,9 @@ namespace BBTimes.CustomContent.CustomItems
 			biteDelay -= ec.EnvironmentTimeScale * Time.deltaTime;
 			if (biteDelay <= 0f)
 			{
-				biteDelay += Random.Range(minBiteDelay, maxBiteDelay) / (bitePower * 7.5f);
+				biteDelay += Random.Range(minBiteDelay, maxBiteDelay) / (bitePower * 10f);
 				audMan.PlaySingle(audBite);
-				attachedEntity.AddForce(new(dir, biteForce * bitePower, -biteForce)); // Intentionally without multiplying the acceleration
+				attachedEntity.AddForce(new(dir, biteForce * bitePower * 2.15f, -biteForce)); // Intentionally without multiplying the acceleration
 			}
 		}
 

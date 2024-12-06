@@ -210,7 +210,11 @@ namespace BBTimes
 
 			newManager.activeImage = ObjectCreationExtensions.CreateImage(newManager.canvas, TextureExtensions.CreateSolidTexture(480, 360, Color.black));
 			newManager.activeImage.name = "TimesEndScreen";
-			newManager.audSlap = GenericExtensions.FindResourceObject<Baldi>().slap;
+			var baldiReference = GenericExtensions.FindResourceObject<Baldi>();
+
+			newManager.audSlap = baldiReference.slap;
+			newManager.audLoseSounds = baldiReference.loseSounds;
+
 			newManager.timesScreen = AssetLoader.SpriteFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretTimesEnd.jpg"), Vector2.one * 0.5f);
 			newManager.audSeeYaSoon = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence_End.wav")), "Vfx_SecBAL_EndSequence_SeeYa", SoundType.Voice, Color.green);
 
@@ -221,9 +225,9 @@ namespace BBTimes
 			sceneObjectClone.manager = newManager;
 			MainGameManagerPatches.secretEndingObj = sceneObjectClone;
 
-			//var scene = GenericExtensions.FindResourceObjects<SceneObject>().First(x => x.levelTitle == "F1");
-			//scene.nextLevel = sceneObjectClone;
-			//scene.levelObject.finalLevel = true;
+			var scene = GenericExtensions.FindResourceObjects<SceneObject>().First(x => x.levelTitle == "F1");
+			scene.nextLevel = sceneObjectClone;
+			scene.levelObject.finalLevel = true;
 		}
 
 

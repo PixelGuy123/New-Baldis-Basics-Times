@@ -10,7 +10,6 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 		{
 			base.BeginPlay();
 			Singleton<CoreGameManager>.Instance.disablePause = true;
-			Singleton<CoreGameManager>.Instance.GetPlayer(0).itm.ClearItems();
 		}
 
 		public override void Initialize()
@@ -30,12 +29,11 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 			Singleton<CoreGameManager>.Instance.ResetCameras();
 			Singleton<CoreGameManager>.Instance.ResetShaders();
 			Singleton<CoreGameManager>.Instance.GetHud(0).SetNotebookDisplay(false);
-			if (beginPlayImmediately)
-			{
-				BeginPlay();
-			}
 
 			Shader.SetGlobalColor("_SkyboxColor", Color.black);
+
+			for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)
+				Singleton<CoreGameManager>.Instance.GetPlayer(i).itm.ClearItems();
 		}
 		public override void CallSpecialManagerFunction(int val, GameObject source)
 		{
@@ -56,9 +54,21 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 			Singleton<CoreGameManager>.Instance.GetPlayer(0).transform.position = new(999f, 5f, 999f); // Far away from any audio manager
 
 			Singleton<CoreGameManager>.Instance.audMan.FlushQueue(true);
-			Singleton<CoreGameManager>.Instance.audMan.QueueAudio(audSlap);
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audSlap);
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(
+				WeightedSoundObject.RandomSelection(audLoseSounds) // Buzz noises
+				);
 
-			float delay = 2f;
+			float delay = 1f; // For jumpscare delay
+			while (delay > 0f)
+			{
+				delay -= Time.deltaTime;
+				yield return null;
+			}
+
+			Singleton<CoreGameManager>.Instance.audMan.FlushQueue(true);
+
+			delay = 2f; // Normal delay
 			while (delay > 0f)
 			{
 				delay -= Time.deltaTime;
@@ -68,7 +78,6 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 			Singleton<CoreGameManager>.Instance.audMan.QueueAudio(audSeeYaSoon);
 
 			activeImage.sprite = timesScreen;
-			Singleton<GlobalCam>.Instance.FadeIn(UiTransition.Dither, 0.2f);
 
 			delay = 5f;
 			while (delay > 0f)
@@ -85,6 +94,9 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 
 		[SerializeField]
 		internal SoundObject audSlap, audSeeYaSoon;
+
+		[SerializeField]
+		internal WeightedSoundObject[] audLoseSounds;
 
 		[SerializeField]
 		internal Canvas canvas;

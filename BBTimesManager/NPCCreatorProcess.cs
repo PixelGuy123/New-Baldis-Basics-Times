@@ -370,20 +370,6 @@ namespace BBTimes.Manager
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 21 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 
-			// Pran the Dancer
-			npc = new NPCBuilder<PranTheDancer>(plug.Info)
-				.SetMinMaxAudioDistance(165f, 170f)
-				.AddSpawnableRoomCategories(RoomCategory.Hall)
-				.SetEnum("Pran")
-				.SetMetaName("PST_Pran_Name")
-				.SetName("Pran")
-				.AddTrigger()
-				.Build()
-				.SetupNPCData("Pran", "PST_Pran_Name", "PST_Pran_Desc", 0f);
-
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 45 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
-
 			// Ser Oran
 			npc = new NPCBuilder<SerOran>(plug.Info)
 				.SetMinMaxAudioDistance(165f, 170f)
@@ -595,9 +581,9 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("NoseMan", "PST_NOSE_Name", "PST_NOSE_Desc", -1.45f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 15 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 20 });
 
-			// Nose
+			// Mimicry
 			npc = new NPCBuilder<Mimicry>(plug.Info)
 				.SetMinMaxAudioDistance(165f, 175f)
 				.SetEnum("Mimicry")
@@ -612,8 +598,8 @@ namespace BBTimes.Manager
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 15 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 20 });
 		}
 	}
 }
