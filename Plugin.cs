@@ -225,9 +225,9 @@ namespace BBTimes
 			sceneObjectClone.manager = newManager;
 			MainGameManagerPatches.secretEndingObj = sceneObjectClone;
 
-			var scene = GenericExtensions.FindResourceObjects<SceneObject>().First(x => x.levelTitle == "F1");
-			scene.nextLevel = sceneObjectClone;
-			scene.levelObject.finalLevel = true;
+			//var scene = GenericExtensions.FindResourceObjects<SceneObject>().First(x => x.levelTitle == "F1");
+			//scene.nextLevel = sceneObjectClone;
+			//scene.levelObject.finalLevel = true;
 		}
 
 
