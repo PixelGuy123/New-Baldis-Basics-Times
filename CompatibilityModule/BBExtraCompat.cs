@@ -73,37 +73,37 @@ namespace BBTimes.CompatibilityModule
 			}
 		}
 	}
-
-	[HarmonyPatch]
-	[ConditionalPatchModByVersion("rost.moment.baldiplus.extramod", "2.1.9.5", includePostVersions:true, invertCondition:true)]
-	internal static class BBExtraCompat_KulakOldFix
-	{
-		[HarmonyPatch(typeof(Kulak_Angry), "OnStateTriggerStay")]
-		[HarmonyPatch(typeof(Kulak_Wandering), "OnStateTriggerStay")]
-		[HarmonyTranspiler]
-		static IEnumerable<CodeInstruction> KulakDontBreakUnbreakable(IEnumerable<CodeInstruction> i) =>
-			new CodeMatcher(i)
-			.MatchForward(true,
-				new(OpCodes.Nop),
-				new(OpCodes.Ldarg_1),
-				new(OpCodes.Callvirt, AccessTools.Method(typeof(Component), "GetComponent", [], [typeof(Window)])),
-				new(CodeInstruction.LoadField(typeof(Window), "broken")),
-				new(OpCodes.Ldc_I4_0),
-				new(OpCodes.Ceq),
-				new(OpCodes.Stloc_1)
-				)
-			.Advance(1)
-			.InsertAndAdvance(
-				new(OpCodes.Ldloc_1),
-				new(OpCodes.Ldarg_1),
-				new(OpCodes.Callvirt, AccessTools.Method(typeof(Component), "GetComponent", [], [typeof(CustomWindowComponent)])),
-				new(Transpilers.EmitDelegate<Func<bool, CustomWindowComponent, bool>>((loc, win) =>
-				{
-					if (!win || !loc) return false; // If it's already false, it means it is broken
-					return !win.unbreakable; // Otherwise, if the window is unbreakable, return the inverse
-				})),
-				new(OpCodes.Stloc_1)
-				)
-			.InstructionEnumeration();
-	}
+	/* Not needed anymore */
+	//[HarmonyPatch]
+	//[ConditionalPatchModByVersion("rost.moment.baldiplus.extramod", "2.1.9.5", includePostVersions:true, invertCondition:true)]
+	//internal static class BBExtraCompat_KulakOldFix
+	//{
+	//	[HarmonyPatch(typeof(Kulak_Angry), "OnStateTriggerStay")]
+	//	[HarmonyPatch(typeof(Kulak_Wandering), "OnStateTriggerStay")]
+	//	[HarmonyTranspiler]
+	//	static IEnumerable<CodeInstruction> KulakDontBreakUnbreakable(IEnumerable<CodeInstruction> i) =>
+	//		new CodeMatcher(i)
+	//		.MatchForward(true,
+	//			new(OpCodes.Nop),
+	//			new(OpCodes.Ldarg_1),
+	//			new(OpCodes.Callvirt, AccessTools.Method(typeof(Component), "GetComponent", [], [typeof(Window)])),
+	//			new(CodeInstruction.LoadField(typeof(Window), "broken")),
+	//			new(OpCodes.Ldc_I4_0),
+	//			new(OpCodes.Ceq),
+	//			new(OpCodes.Stloc_1)
+	//			)
+	//		.Advance(1)
+	//		.InsertAndAdvance(
+	//			new(OpCodes.Ldloc_1),
+	//			new(OpCodes.Ldarg_1),
+	//			new(OpCodes.Callvirt, AccessTools.Method(typeof(Component), "GetComponent", [], [typeof(CustomWindowComponent)])),
+	//			new(Transpilers.EmitDelegate<Func<bool, CustomWindowComponent, bool>>((loc, win) =>
+	//			{
+	//				if (!win || !loc) return false; // If it's already false, it means it is broken
+	//				return !win.unbreakable; // Otherwise, if the window is unbreakable, return the inverse
+	//			})),
+	//			new(OpCodes.Stloc_1)
+	//			)
+	//		.InstructionEnumeration();
+	//}
 }

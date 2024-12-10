@@ -56,25 +56,25 @@ namespace BBTimes.CustomContent.Events
 			}
 		}
 
-		public override void AfterUpdateSetup()
+		public override void AfterUpdateSetup(System.Random rng)
 		{
-			base.AfterUpdateSetup(); // Copy paste from LockdownDoorEvent
+			base.AfterUpdateSetup(rng); // Copy paste from LockdownDoorEvent
 			List<Cell> list = ec.AllCells();
 
 			for (int i = 0; i < list.Count; i++)
-				if (!list[i].TileMatches(ec.mainHall)|| list[i].HasAnyHardCoverage || list[i].open || !list[i].HasFreeWall || (list[i].shape != TileShape.Single && list[i].shape != TileShape.Corner))
+				if (!list[i].TileMatches(ec.mainHall)|| list[i].HasAnyHardCoverage || list[i].open || !list[i].HasAllFreeWall || (!list[i].shape.HasFlag(TileShapeMask.Single) && !list[i].shape.HasFlag(TileShapeMask.Corner)))
 					list.RemoveAt(i--);
 
 
 
-			int fans = crng.Next(minFans, maxFans + 1);
+			int fans = rng.Next(minFans, maxFans + 1);
 			for (int i = 0; i < fans; i++)
 			{
 				if (list.Count == 0) return;
 
-				int num3 = crng.Next(list.Count);
+				int num3 = rng.Next(list.Count);
 				var superFan = Instantiate(superFanPre, list[num3].TileTransform);
-				var wallDir = list[num3].RandomConstDirection(crng);
+				var wallDir = list[num3].RandomConstDirection(rng);
 
 				superFan.Initialize(ec, list[num3].position, wallDir.GetOpposite(), out var l);
 

@@ -12,9 +12,9 @@ using BBTimes.Extensions;
 namespace BBTimes.CustomContent.Builders
 {
 
-    public class TrapDoorBuilder : ObjectBuilder, IObjectPrefab
+    public class Structure_Trapdoor : StructureBuilder, IBuilderPrefab
 	{
-		public void SetupPrefab()
+		public StructureWithParameters SetupBuilderPrefabs()
 		{
 			var trapdoorholder = new GameObject("TrapDoor").AddComponent<Trapdoor>();
 			trapdoorholder.gameObject.ConvertToPrefab(true);
@@ -34,7 +34,7 @@ namespace BBTimes.CustomContent.Builders
 			collider.size = Vector3.one * 4.9f;
 			collider.isTrigger = true;
 
-			var builder = GetComponent<TrapDoorBuilder>();
+			var builder = GetComponent<Structure_Trapdoor>();
 			builder.trapDoorpre = trapdoorholder;
 
 			var trapSprites = this.GetSpriteSheet(2, 2, 25f, "traps.png");
@@ -65,9 +65,12 @@ namespace BBTimes.CustomContent.Builders
 			fake.name = "FakeTrapDoor";
 			fake.gameObject.CreatePropagatedAudioManager(35f, 45f);
 			trapdoorholder.fakeTrapdoorPre = fake.transform;
+
+			return new() { prefab = this, parameters = null };
 		}
 
 		public void SetupPrefabPost() { }
+		public void SetupPrefab() { }
 
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("objects", "Textures");
 		public string SoundPath => this.GenerateDataPath("objects", "Audios");
@@ -76,9 +79,11 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// setup prefab ^^
-		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
+		public override void Generate(LevelGenerator lg, System.Random rng)
 		{
-			base.Build(ec, builder, room, cRng);
+			base.Generate(lg, rng);
+
+			var room = lg.Ec.mainHall;
 			builtTraps = [];
 
 			map = new(ec, PathType.Const, []);
@@ -88,13 +93,13 @@ namespace BBTimes.CustomContent.Builders
 			var t = room.AllTilesNoGarbage(false, false);
 			int allTilesCount = t.Count;
 			for (int i = 0; i < t.Count; i++)
-				if ((t[i].shape != TileShape.Corner && t[i].shape != TileShape.End) || t[i].open)
+				if (t[i].open || (!t[i].shape.HasFlag(TileShapeMask.Corner) && !t[i].shape.HasFlag(TileShapeMask.End)))
 					t.RemoveAt(i--);
 
 
 			if (t.Count == 0)
 			{
-				Debug.LogWarning("No initial spots found for the TrapdoorBuilder");
+				Debug.LogWarning("No initial spots found for the Structure_Trapdoor");
 				return;
 			}
 
@@ -105,20 +110,19 @@ namespace BBTimes.CustomContent.Builders
 			{
 				if (t.Count == 0 || intVectors.Count == 0)
 					break;
-				int idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, cRng);
+				int idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, rng);
 				var trap = CreateTrapDoor(intVectors[idx].selection, ec, ecData);
 				t.Remove(intVectors[idx].selection);
 				intVectors.RemoveAt(idx);
 
-				if (t.Count != 0 && intVectors.Count != 0 && max - i > 1 && cRng.NextDouble() >= 0.55) // Linked trapdoor
+				if (t.Count != 0 && intVectors.Count != 0 && max - i > 1 && rng.NextDouble() >= 0.55) // Linked trapdoor
 				{
-					idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, cRng);
+					idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, rng);
 					t.Remove(intVectors[idx].selection);
 
 					var strap = CreateTrapDoor(intVectors[idx].selection, ec, ecData);
 					trap.SetLinkedTrapDoor(strap);
 					strap.SetLinkedTrapDoor(trap);
-
 
 					trap.renderer.sprite = openSprites[1];
 					strap.renderer.sprite = openSprites[1];
@@ -143,37 +147,61 @@ namespace BBTimes.CustomContent.Builders
 
 		}
 
-		public override void Load(EnvironmentController ec, List<IntVector2> pos, List<Direction> dir)
+		public override void Load(List<StructureData> data)
 		{
-			base.Load(ec, pos, dir);
+			base.Load(data);
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
 
-			for (int i = 0; i < pos.Count; i++)
+			List<StructureData> datas = new(data);
+
+			for (int i = 0; i < datas.Count; i++)
 			{
-				var cell = ec.CellFromPosition(pos[i]);
+				var cell = ec.CellFromPosition(datas[i].position);
 
 				var trap = CreateTrapDoor(cell, ec, ecData);
-				if (dir[i] != Direction.Null) // Means it is a linked trapdoor
+				if (datas[i].data <= 0) // If below or equal to 0, there's no link explicitely told
 				{
-					if (++i >= pos.Count)
-						throw new System.ArgumentException("A linked trapdoor was flagged with no link available on the next item of the pos collection");
-
-					cell = ec.CellFromPosition(pos[i]); // Updates cell for the next position
-
-					var strap = CreateTrapDoor(cell, ec, ecData); // Linked trapdoor setup
-					trap.SetLinkedTrapDoor(strap);
-					strap.SetLinkedTrapDoor(trap);
-
-					trap.renderer.sprite = openSprites[1];
-					strap.renderer.sprite = openSprites[1];
-					trap.sprites = [closedSprites[1], openSprites[1]];
-					strap.sprites = [closedSprites[1], openSprites[1]];
-
+					RandomTrapdoor();
 					continue;
-				} 
+				}
 
-				trap.renderer.sprite = openSprites[0]; // Random trapdoor
-				trap.sprites = [closedSprites[0], openSprites[0]];
+				// Algorithm to find a potential trapdoor to link
+				int id = datas[i].data;
+				bool success = false;
+
+				for (int z = i + 1; z < datas.Count; z++)
+				{
+					if (datas[z].data == id)
+					{
+						cell = ec.CellFromPosition(datas[z].position); // Updates cell for the next position
+
+						var strap = CreateTrapDoor(cell, ec, ecData); // Linked trapdoor setup
+						trap.SetLinkedTrapDoor(strap);
+						strap.SetLinkedTrapDoor(trap);
+
+						trap.renderer.sprite = openSprites[1];
+						strap.renderer.sprite = openSprites[1];
+						trap.sprites = [closedSprites[1], openSprites[1]];
+						strap.sprites = [closedSprites[1], openSprites[1]];
+
+
+						datas.RemoveAt(z);
+						datas.RemoveAt(i--);
+						success = true;
+						break;
+					}
+				}
+
+				if (!success) // If no success on finding a linked trapdoor, just assign it as a random one
+					RandomTrapdoor();
+				
+
+				void RandomTrapdoor()
+				{
+					trap.renderer.sprite = openSprites[0]; // Random trapdoor
+					trap.sprites = [closedSprites[0], openSprites[0]];
+					datas.RemoveAt(i--);
+				}
 			}
 		}
 
@@ -184,7 +212,7 @@ namespace BBTimes.CustomContent.Builders
 			trapdoor.transform.position = pos.FloorWorldPosition;
 			trapdoor.gameObject.SetActive(true);
 			trapdoor.SetEC(ec);
-			pos.HardCover(CellCoverage.Down | CellCoverage.Center | CellCoverage.East | CellCoverage.North | CellCoverage.South | CellCoverage.West);
+			pos.HardCover(CellCoverage.Down | CellCoverage.Center);
 			pos.AddRenderer(trapdoor.renderer);
 			pos.AddRenderer(trapdoor.text.GetComponent<MeshRenderer>());
 			ec.map.AddIcon(icon, trapdoor.transform, Color.white);

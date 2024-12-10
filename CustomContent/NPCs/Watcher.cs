@@ -107,7 +107,7 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				for (int j = 0; j < ec.levelSize.z; j++)
 				{
-					if (!ec.cells[i, j].Null && ec.cells[i, j].room.type == RoomType.Hall && (ec.cells[i, j].shape == TileShape.Corner || ec.cells[i, j].shape == TileShape.End) && !ec.cells[i, j].HasAnyHardCoverage)
+					if (!ec.cells[i, j].Null && ec.cells[i, j].room.type == RoomType.Hall && (ec.cells[i, j].shape.HasFlag(TileShapeMask.Corner) || ec.cells[i, j].shape.HasFlag(TileShapeMask.End)) && !ec.cells[i, j].HasAnyHardCoverage)
 						cells.Add(ec.cells[i, j]);
 				}
 			}

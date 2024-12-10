@@ -47,8 +47,9 @@ namespace BBTimes.CustomContent.Events
 				}
 			}
 		}
-		public override void AfterUpdateSetup()
+		public override void AfterUpdateSetup(System.Random rng)
 		{
+			base.AfterUpdateSetup(rng);
 			if (room != null)
 			{
 				foreach (Cell cell in room.GetNewTileList())

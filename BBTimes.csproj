@@ -4,7 +4,7 @@
     <TargetFramework>net46</TargetFramework>
     <AssemblyName>BBTimes</AssemblyName>
     <Description>Enjoy a grand experience with Baldi's Basics Times!</Description>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;Cheat</Configurations>
@@ -25,9 +25,6 @@
   
   <ItemGroup>
     <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
-    <Reference Include="BaldiEndless">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\FullyAccessibleEditor\Arcade Renovations.dll</HintPath>
-    </Reference>
     <Reference Include="BaldiLevelEditor">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\BaldiLevelEditor.dll</HintPath>
     </Reference>
@@ -36,9 +33,6 @@
     </Reference>
     <Reference Include="BBE">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBE.dll</HintPath>
-    </Reference>
-    <Reference Include="BBPCustomPosters">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBPCustomPosters.dll</HintPath>
     </Reference>
     <Reference Include="BBPlusAnimations">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBPlusAnimations.dll</HintPath>
@@ -88,8 +82,14 @@
     <Reference Include="PlusLevelLoader">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\PlusLevelLoader.dll</HintPath>
     </Reference>
+    <Reference Include="Re-Renovated">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\FullyAccessibleEditor\Re-Renovated.dll</HintPath>
+    </Reference>
     <Reference Include="StackableItems">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\StackableItems.dll</HintPath>
+    </Reference>
+    <Reference Include="UncertainLuei.CustomPosters">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\UncertainLuei.CustomPosters.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Unity.TextMeshPro.dll</HintPath>

@@ -18,7 +18,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			var cells = room.AllTilesNoGarbage(false, false);
 			for (int i = 0; i < cells.Count; i++)
-				if (!cells[i].HasFreeWall || (cells[i].shape != TileShape.Single && cells[i].shape != TileShape.Corner))
+				if (!cells[i].HasAllFreeWall || (!cells[i].shape.HasFlag(TileShapeMask.Single) && !cells[i].shape.HasFlag(TileShapeMask.Corner)))
 					cells.RemoveAt(i--);
 
 

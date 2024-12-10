@@ -67,7 +67,6 @@ namespace BBTimes.Manager
 					flDat.Events.ForEach(x => x.weight = 9999);
 					flDat.Faculties.ForEach(x => x.weight = 9999);
 					flDat.FieldTripItems.ForEach(x => x.weight = 9999);
-					flDat.HallBuilders.ForEach(x => x.chance = 9999);
 					flDat.Halls.Do(x => x.Key.weight = 9999);
 					flDat.Items.Do(x => x.weight = 9999);
 					flDat.NPCs.Do(x => x.weight = 9999);
@@ -136,7 +135,6 @@ namespace BBTimes.Manager
 			ObjectCreationExtension.defaultDustMaterial = GenericExtensions.FindResourceObjectByName<Material>("DustTest");
 			ObjectCreationExtension.defaultCubemap = GenericExtensions.FindResourceObjectByName<Cubemap>("Cubemap_DayStandard");
 			ObjectCreationExtension.mapMaterial = GenericExtensions.FindResourceObjectByName<MapIcon>("Icon_Prefab").spriteRenderer.material;
-			GameExtensions.detentionUiPre = GenericExtensions.FindResourceObject<DetentionUi>();
 			man.Add("buttonPre", GenericExtensions.FindResourceObject<RotoHallBuilder>().buttonPre);
 			man.AddFromResources<StandardDoorMats>();
 
@@ -608,9 +606,8 @@ namespace BBTimes.Manager
 
 
 		// Object Builders
-		public readonly List<ObjectBuilder> ForcedObjectBuilders = [];
-		public readonly List<WeightedObjectBuilder> WeightedObjectBuilders = [];
-		public readonly List<RandomHallBuilder> HallBuilders = [];
+		public readonly List<StructureWithParameters> ForcedObjectBuilders = [];
+		public readonly List<WeightedStructureWithParameters> WeightedObjectBuilders = [];
 
 		//readonly List<GenericHallBuilder> _genericHallBuilders = [];
 		//public List<GenericHallBuilder> GenericHallBuilders => _genericHallBuilders;

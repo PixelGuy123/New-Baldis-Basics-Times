@@ -1,28 +1,38 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.Builders
 {
-    public class RandomForcedPostersBuilder : ObjectBuilder
+    public class RandomForcedPostersBuilder : StructureBuilder, IBuilderPrefab
 	{
-		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
+		public StructureWithParameters SetupBuilderPrefabs() =>
+			new() { parameters = new() { chance = [0f] }, prefab = this }; // Can be null, right?
+		public void SetupPrefabPost() { }
+		public void SetupPrefab() { }
+
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("objects", "Textures");
+		public string SoundPath => this.GenerateDataPath("objects", "Audios");
+		public override void Generate(LevelGenerator lg, System.Random rng)
 		{
-			if (posters.Length == 0 || allowedShapes.Count == 0 || chance == 0f)
+			base.Generate(lg, rng);
+			if (posters.Length == 0)
 				return;
 
-			foreach (var c in room.GetTilesOfShape(allowedShapes, false))
-				if (c.HasFreeWall && cRng.NextDouble() <= chance)
-					ec.BuildPoster(WeightedPosterObject.ControlledRandomSelection(posters, cRng), c, c.RandomUncoveredDirection(cRng));
+			var room = lg.Ec.mainHall;
+
+			foreach (var c in room.GetTilesOfShape(allowedShape, false))
+				if (c.HasAllFreeWall && rng.NextDouble() <= parameters.chance[0])
+					ec.BuildPoster(WeightedPosterObject.ControlledRandomSelection(posters, rng), c, c.RandomUncoveredDirection(rng));
 		}
 
 
 		[SerializeField]
-		public List<TileShape> allowedShapes = [];
+		public TileShapeMask allowedShape;
 
 		[SerializeField]
 		public WeightedPosterObject[] posters = [];
 
-		[SerializeField]
-		public float chance = 0f;
 	}
 }

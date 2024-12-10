@@ -183,9 +183,15 @@ namespace BBTimes.Manager
 			rendCont.renderers = rendCont.renderers.AddToArray(partsRenderer);
 
 			var rngSpawner = AddFunctionToEveryRoom<RandomObjectSpawner>(PlaygroundPrefix);
-			rngSpawner.objectPlacer = ObjectCreationExtensions.SetANewObjectPlacer(shroomObject.gameObject, CellCoverage.Down, TileShape.Open, TileShape.Corner, TileShape.Straight, TileShape.Single).
-				SetMinAndMaxObjects(4, 8)
-				.SetTilePreferences(false, true, true);
+			rngSpawner.objectPlacer = new ObjectPlacer() { 
+				prefab = shroomObject.gameObject, 
+				coverage = CellCoverage.Down, 
+				eligibleShapes = TileShapeMask.Open | TileShapeMask.Corner | TileShapeMask.Straight | TileShapeMask.Single,
+			min = 4,
+			max = 8,
+			useOpenDir = true,
+			useWallDir = false,
+			includeOpen = true};
 
 			static R AddFunctionToEveryRoom<R>(string prefix) where R : RoomFunction
 			{

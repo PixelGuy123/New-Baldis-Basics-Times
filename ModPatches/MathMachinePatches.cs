@@ -16,7 +16,7 @@ namespace BBTimes.ModPatches
 		
 
 		[HarmonyPostfix]
-		[HarmonyPatch("Completed")]
+		[HarmonyPatch("Completed", [typeof(int)])]
 		private static void WOOOW(MathMachine __instance)
 		{
 			var t = __instance.transform.Find("Answer").GetComponent<TextMeshPro>();

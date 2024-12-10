@@ -9,10 +9,10 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
 {
-	public class SmallDoorBuilder : ObjectBuilder, IObjectPrefab
+	public class Structure_SmallDoor : StructureBuilder, IBuilderPrefab
 	{
 
-		public void SetupPrefab()
+		public StructureWithParameters SetupBuilderPrefabs()
 		{
 			var templateDoor = Instantiate(GenericExtensions.FindResourceObject<StandardDoor>());
 			templateDoor.gameObject.ConvertToPrefab(true);
@@ -74,7 +74,10 @@ namespace BBTimes.CustomContent.Builders
 
 			doorPre.gameObject.AddComponent<RendererContainer>().renderers = doorPre.doors;
 			doorPre.doorIcon = this.GetSprite(ObjectCreationExtension.defaultMapIconPixelsPerUnit, "smallDoorIcon.png");
+
+			return new() { prefab = this, parameters = new() { chance = [0.55f] } }; // Chance = factor to multiply with the amount of rooms in a level (determines the amount of small doors)
 		}
+		public void SetupPrefab() { }
 		public void SetupPrefabPost() { }
 
 		public string Name { get; set; }
@@ -83,14 +86,16 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// Prefab stuff above ^^
-		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
+		public override void Generate(LevelGenerator lg, System.Random rng)
 		{
-			base.Build(ec, builder, room, cRng);
+			base.Generate(lg, rng);
+
+			var room = lg.Ec.mainHall;
 			var cells = room.AllTilesNoGarbage(false, false);
 			List<KeyValuePair<Cell, Direction>> availableCells = [];
 			for (int i = 0; i < cells.Count; i++)
 			{
-				if (!cells[i].HasFreeWall)
+				if (!cells[i].HasAllFreeWall)
 				{
 					cells.RemoveAt(i--);
 					continue;
@@ -109,14 +114,14 @@ namespace BBTimes.CustomContent.Builders
 				}
 			}
 
-			int max = Mathf.FloorToInt(ec.rooms.Count * roomWithSmallDoorFactor);
+			int max = Mathf.FloorToInt(ec.rooms.Count * parameters.chance[0]);
 
 			for (int i = 0; i < max; i++)
 			{
 				if (availableCells.Count == 0) // Reminder that the cells here are all from the mainHall, the direction is the one that tells what room it is aiming to
 					return;
 
-				int index = cRng.Next(availableCells.Count);
+				int index = rng.Next(availableCells.Count);
 				var cellPair = availableCells[index];
 				BuildDoor(room, ec, cellPair.Key, cellPair.Value);
 				var nextRoom = ec.CellFromPosition(cellPair.Key.position + cellPair.Value.ToIntVector2()).room;
@@ -128,11 +133,11 @@ namespace BBTimes.CustomContent.Builders
 
 		}
 
-		public override void Load(EnvironmentController ec, List<IntVector2> pos, List<Direction> dir)
+		public override void Load(List<StructureData> data)
 		{
-			base.Load(ec, pos, dir);
-			for (int i = 0; i < pos.Count; i++)
-				BuildDoor(ec.mainHall, ec, ec.CellFromPosition(pos[i]), dir[i]);
+			base.Load(data);
+			for (int i = 0; i < data.Count; i++)
+				BuildDoor(ec.mainHall, ec, ec.CellFromPosition(data[i].position), data[i].direction);
 		}
 
 		void BuildDoor(RoomController room, EnvironmentController ec, Cell cell, Direction dir)

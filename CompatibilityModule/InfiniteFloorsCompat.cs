@@ -13,8 +13,6 @@ namespace BBTimes.CompatibilityModule
 	{
 		static void Prefix()
 		{
-			ControlledWeightsDictionary.GetInfiniteObjectBuilderWeight(EnumExtensions.GetFromExtendedName<Obstacle>("Vent"), BBTimesManager.plug.Info).AllowStacking = true;
-			ControlledWeightsDictionary.GetInfiniteObjectBuilderWeight(EnumExtensions.GetFromExtendedName<Obstacle>("Trapdoor"), BBTimesManager.plug.Info).AllowStacking = true;
 		}
 	}
 }

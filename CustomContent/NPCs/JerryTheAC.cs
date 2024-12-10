@@ -101,7 +101,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Initialize();
 			foreach (var room in ec.rooms)
 				if (room.type == RoomType.Room && room.category != RoomCategory.Special)
-					cells.AddRange(room.AllEntitySafeCellsNoGarbage().Where(x => x.open && !x.HasAnyHardCoverage && x.shape == TileShape.Corner));
+					cells.AddRange(room.AllEntitySafeCellsNoGarbage().Where(x => x.open && !x.HasAnyHardCoverage && x.shape.HasFlag(TileShapeMask.Corner)));
 
 			if (cells.Count == 0)
 			{
@@ -158,7 +158,7 @@ namespace BBTimes.CustomContent.NPCs
 			lastCreatedFunction.Initialize(room);
 
 			var cell = ec.CellFromPosition(transform.position);
-			if (cell.shape != TileShape.Corner) return;
+			if (!cell.shape.HasFlag(TileShapeMask.Corner)) return;
 
 			Vector3 fwd = new();
 			cell.AllWallDirections.ForEach(x => fwd += x.GetOpposite().ToVector3()); // (A + B).normalized gives the diagonal between two points (thanks to ChatGPT, probably some general knowledge, I haven't reached study in Vectors yet lol)

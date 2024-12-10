@@ -64,7 +64,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_CC_Name")
 				.AddLooker()
 				.SetMaxSightDistance(55)
-				.IgnoreBelts()
+				
 				.SetStationary()
 				.Build()
 				.SetupNPCData("CrazyClock", "PST_CC_Name", "PST_CC_Desc", 0f);
@@ -147,7 +147,7 @@ namespace BBTimes.Manager
 				.SetName("Pencil Boy")
 				.SetMetaName("PST_PB_Name")
 				.AddLooker()
-				.IgnoreBelts()
+				
 				.SetMaxSightDistance(45f)
 				.AddTrigger()
 				.Build()
@@ -212,7 +212,6 @@ namespace BBTimes.Manager
 				.SetName("Superintendentjr")
 				.SetMetaName("PST_Spj_Name")
 				.AddTrigger()
-				.IgnoreBelts()
 				.AddLooker()
 				.SetMaxSightDistance(155)
 				.Build()
@@ -245,7 +244,6 @@ namespace BBTimes.Manager
 				.SetName("Glubotrony")
 				.SetMetaName("PST_Gboy_Name")
 				.AddLooker()
-				.IgnoreBelts()
 				.SetMaxSightDistance(45)
 				.SetFOV(110f)
 				.AddTrigger()
@@ -264,7 +262,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_Dribble_Name")
 				.AddSpawnableRoomCategories(RoomCategory.Special)
 				.AddLooker()
-				.IgnoreBelts()
+				
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("Dribble", "PST_Dribble_Name", "PST_Dribble_Desc", 0.3f)
@@ -300,7 +298,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.AddTrigger()
 				.SetAirborne()
-				.IgnoreBelts()
+				
 				.Build()
 				.SetupNPCData("Phawillow", "PST_Phawillow_Name", "PST_Phawillow_Desc", 0f);
 
@@ -342,7 +340,7 @@ namespace BBTimes.Manager
 			npc = new NPCBuilder<Mugh>(plug.Info)
 				.SetMinMaxAudioDistance(165f, 175f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
-				.IgnoreBelts()
+				
 				.SetEnum("Mugh")
 				.SetMetaName("PST_Mugh_Name")
 				.SetName("Mugh")

@@ -48,7 +48,7 @@ namespace BBTimes
 	[BepInDependency("mtm101.rulerp.baldiplus.leveleditor", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.infinitefloors", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.endlessfloors", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("rad.rulerp.baldiplus.arcaderenovations", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("Rad.cmr.baldiplus.arcaderenovations", BepInDependency.DependencyFlags.SoftDependency)]
 
 
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
@@ -238,7 +238,7 @@ namespace BBTimes
 		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode;
 		internal Dictionary<string, ConfigEntry<bool>> enabledCharacters = [], enabledItems = [], enabledStructures = [];
 		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") || 
-			Chainloader.PluginInfos.ContainsKey("rad.rulerp.baldiplus.arcaderenovations");
+			Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
 
 		private void Awake()
 		{
@@ -248,12 +248,14 @@ namespace BBTimes
 			enableReplacementNPCsAsNormalOnes = Config.Bind("NPC Settings", "Disable replacement feature", false, "Setting this \"true\" will allow replacement npcs to spawn as normal npcs instead, making the game considerably harder in some ways.");
 			enableYoutuberMode = Config.Bind("Misc Settings", "Enable youtuber mode", false, "Wanna get some exclusive content easily? Turn this on and *everything* will have the weight of 9999.");
 
+
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAllConditionals();
 
 			ModdedSaveGame.AddSaveHandler(Info);
 
 			_modPath = AssetLoader.GetModPath(this);
+			AssetLoader.LoadLocalizationFolder(Path.Combine(ModPath, "Language", "English"), Language.English);
 			BBTimesManager.plug = this;
 
 			CompatibilityInitializer.InitializeOnAwake();
@@ -270,11 +272,22 @@ namespace BBTimes
 				if (!isNextlevel)
 					MainGameManagerPatches.allowEndingToBePlayed = false;
 			});
-			PixelInternalAPI.ResourceManager.AddPostGenCallback((_) => 
-			FindObjectsOfType<ItemAlarmBuilder>().Do(bld => bld.ActuallySpawnAlarms())); // A workaround to affect generated items in the schoolhouse, since ObjectBuilders are limited to the hallways and stuff
 
-			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, ld) =>
+			GeneratorManagement.Register(this, GenerationModType.Finalizer, (_, _2, sco) =>
 			{
+				var ld = sco.levelObject;
+				if (ld == null) return;
+
+				ld.minSpecialBuilders = Mathf.Min(ld.minSpecialBuilders, ld.potentialStructures.Length);
+				ld.maxSpecialBuilders = Mathf.Min(ld.maxSpecialBuilders, ld.potentialStructures.Length); // Workaround to avoid a bug (that results in a crash) caused by an oversight from Mystman12.
+			});
+
+			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, sco) =>
+			{
+				var ld = sco.levelObject;
+				if (ld == null)
+					return;
+
 #if CHEAT
 				Debug.Log($"Level Object loaded as: {floorName} with num: {floorNum}. LevelObj name: {ld.name}");
 				Debug.Log("------- ITEM DATA -------");
@@ -295,23 +308,21 @@ namespace BBTimes
 					//	ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddToArray(builder);
 
 					ld.minSpecialRooms = 0; // Chance to have no special room
-					ld.additionalNPCs += 2;
+					sco.additionalNPCs += 2;
 					ld.additionTurnChance += 10;
 					ld.bridgeTurnChance += 4;
 					ld.outerEdgeBuffer += 1;
 					ld.extraDoorChance += 0.2f;
-					ld.windowChance += 0.2f;
 					groups[0].maxRooms = 5;
-					ld.maxFacultyRooms += 2;
 					ld.maxHallsToRemove += 1;
 					ld.maxPlots += 1;
 					ld.maxReplacementHalls += 1;
-					ld.maxSize += new IntVector2(8, 5);
+					ld.maxSize += new IntVector2(5, 3);
 					ld.maxSpecialBuilders += 2;
-					ld.minFacultyRooms += 1;
 					ld.minHallsToRemove += 1;
-					ld.minSize += new IntVector2(3, 5);
+					ld.minSize += new IntVector2(3, 1);
 					ld.timeBonusLimit *= 1.8f;
+					ld.timeLimit *= 1.2f;
 					return;
 				}
 
@@ -320,12 +331,11 @@ namespace BBTimes
 					ld.deadEndBuffer = 4;
 					ld.minSpecialRooms = 1;
 					ld.maxSpecialRooms = 2;
-					ld.additionalNPCs += 4;
+					sco.additionalNPCs += 4;
 					ld.additionTurnChance += 5;
 					ld.bridgeTurnChance += 3;
 					ld.outerEdgeBuffer += 3;
 					ld.extraDoorChance += 0.3f;
-					ld.windowChance += 0.35f;
 					groups[1].minRooms++;
 					groups[1].maxRooms += 4;
 					groups[0].maxRooms = 8;
@@ -335,15 +345,15 @@ namespace BBTimes
 					ld.maxPlots += 2;
 					ld.minPlots += 1;
 					ld.maxReplacementHalls += 3;
-					ld.maxSize += new IntVector2(9, 6);
+					ld.maxSize += new IntVector2(6, 4);
 					ld.maxSpecialBuilders += 2;
 					ld.minHallsToRemove += 1;
-					ld.minSize += new IntVector2(5, 6);
+					ld.minSize += new IntVector2(4, 2);
 					ld.minSpecialBuilders += 1;
-					ld.maxOffices = 2;
 					ld.specialRoomsStickToEdge = false;
 					ld.maxLightDistance += 2;
 					ld.timeBonusLimit *= 1.8f;
+					ld.timeLimit *= 1.45f;
 					return;
 				}
 
@@ -351,11 +361,10 @@ namespace BBTimes
 				{
 					ld.minSpecialRooms += 1;
 					ld.maxSpecialRooms += 2;
-					ld.additionalNPCs += 4;
+					sco.additionalNPCs += 4;
 					ld.additionTurnChance += 15;
 					ld.bridgeTurnChance += 6;
 					ld.extraDoorChance = 0.5f;
-					ld.windowChance += 0.35f;
 					groups[1].minRooms++;
 					groups[1].maxRooms += 4;
 					groups[0].maxRooms = 10;
@@ -365,8 +374,8 @@ namespace BBTimes
 					ld.maxPlots += 2;
 					ld.minPlots += 1;
 					ld.maxReplacementHalls += 2;
-					ld.maxSize += new IntVector2(9, 6);
-					ld.minSize += new IntVector2(5, 6);
+					ld.maxSize += new IntVector2(6, 5);
+					ld.minSize += new IntVector2(5, 4);
 					ld.maxSpecialBuilders += 2;
 					ld.minHallsToRemove += 1;
 					ld.minSpecialBuilders += 1;
@@ -375,6 +384,7 @@ namespace BBTimes
 						.Where(x => x.name.StartsWith("Playground"))
 						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
 					ld.timeBonusLimit *= 1.8f;
+					ld.timeLimit *= 1.9f;
 					return;
 				}
 
@@ -383,12 +393,11 @@ namespace BBTimes
 					ld.minSpecialRooms = 1; // Chance to have no special room
 					ld.maxSpecialRooms = 2;
 					ld.deadEndBuffer = 3;
-					ld.additionalNPCs += 4;
+					sco.additionalNPCs += 4;
 					ld.additionTurnChance += 25;
 					ld.bridgeTurnChance += 6;
 					ld.outerEdgeBuffer += 3;
 					ld.extraDoorChance += 0.3f;
-					ld.windowChance += 0.35f;
 					ld.maxHallsToRemove += 2;
 					ld.maxPlots += 3;
 					ld.minPlots += 1;
@@ -411,12 +420,16 @@ namespace BBTimes
 
 			});
 
-			GeneratorManagement.Register(this, GenerationModType.Addend, (floorName, floorNum, ld) =>
+			GeneratorManagement.Register(this, GenerationModType.Addend, (floorName, floorNum, sco) =>
 			{
+				var ld = sco.levelObject;
+				if (ld == null)
+					return;
+
 				var floordata = BBTimesManager.floorDatas.FirstOrDefault(x => x.Floor == floorName);
 				if (floordata == null)
 				{
-					Debug.LogWarning("Failed to get floor data for level: " + ld.name);
+					//Debug.LogWarning("Failed to get floor data for level: " + ld.name);
 					return;
 				}
 
@@ -430,9 +443,9 @@ namespace BBTimes
 
 					var dat = floordata.NPCs[i].selection.GetComponent<INPCPrefab>();
 					if (enableReplacementNPCsAsNormalOnes.Value || dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
-						ld.potentialNPCs.Add(floordata.NPCs[i]); // Only non-replacement Npcs
+						sco.potentialNPCs.Add(floordata.NPCs[i]); // Only non-replacement Npcs
 					else
-						ld.forcedNpcs = ld.forcedNpcs.AddToArray(floordata.NPCs[i].selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
+						sco.forcedNpcs = sco.forcedNpcs.AddToArray(floordata.NPCs[i].selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
 				}
 
 				//List<WeightedItemObject> acceptableItems = floordata.Items;
@@ -468,28 +481,19 @@ namespace BBTimes
 
 				//List<ObjectBuilder> objBlds = new(floordata.ForcedObjectBuilders);
 				for (int i = 0; i < floordata.ForcedObjectBuilders.Count; i++)
-					if (!Config.Bind("Structure Settings", $"Enable {(floordata.ForcedObjectBuilders[i].obstacle != Obstacle.Null ?
-						EnumExtensions.GetExtendedName<Obstacle>((int)floordata.ForcedObjectBuilders[i].obstacle) : floordata.ForcedObjectBuilders[i].name)}", true,
+					if (!Config.Bind("Structure Settings", $"Enable {floordata.ForcedObjectBuilders[i].prefab.name}", true,
 						"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
 						floordata.ForcedObjectBuilders.RemoveAt(i--);
 
-				ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddRangeToArray([.. floordata.ForcedObjectBuilders]);
+				ld.forcedStructures = ld.forcedStructures.AddRangeToArray([.. floordata.ForcedObjectBuilders]);
 
 				//List<WeightedObjectBuilder> rngObjBlds = new(floordata.WeightedObjectBuilders);
 				for (int i = 0; i < floordata.WeightedObjectBuilders.Count; i++)
-					if (!Config.Bind("Structure Settings", $"Enable {(floordata.WeightedObjectBuilders[i].selection.obstacle != Obstacle.Null ? 
-						EnumExtensions.GetExtendedName<Obstacle>((int)floordata.WeightedObjectBuilders[i].selection.obstacle) : floordata.WeightedObjectBuilders[i].selection.name)}", true, 
+					if (!Config.Bind("Structure Settings", $"Enable {floordata.WeightedObjectBuilders[i].selection.prefab.name}", true, 
 						"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
 						floordata.WeightedObjectBuilders.RemoveAt(i--);
 
-				ld.specialHallBuilders = ld.specialHallBuilders.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
-
-				//List<RandomHallBuilder> hallObjBlds = new(floordata.HallBuilders);
-				for (int i = 0; i < floordata.HallBuilders.Count; i++)
-					if (!Config.Bind("Structure Settings", $"Enable {floordata.HallBuilders[i].selectable.name}", true, "If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-						floordata.HallBuilders.RemoveAt(i--);
-
-				ld.standardHallBuilders = ld.standardHallBuilders.AddRangeToArray([.. floordata.HallBuilders]);
+				ld.potentialStructures = ld.potentialStructures.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
 
 				ld.roomGroup = ld.roomGroup.AddRangeToArray([.. floordata.RoomAssets]);
 				ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. floordata.SpecialRooms]);

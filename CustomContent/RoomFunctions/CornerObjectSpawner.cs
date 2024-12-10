@@ -13,7 +13,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			if (rng.NextDouble() > randomChance)
 				return;
 			
-			var cells = room.GetTilesOfShape([TileShape.Corner], true);
+			var cells = room.GetTilesOfShape(TileShapeMask.Corner, true);
 			if (randomObjs.Length == 0 || cells.Count == 0) 
 			{
 #if CHEAT

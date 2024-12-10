@@ -8,10 +8,10 @@ using MTM101BaldAPI;
 
 namespace BBTimes.CustomContent.Builders
 {
-	internal class SecretButtonBuilder : ObjectBuilder, IObjectPrefab
+	internal class Structure_SecretButton : StructureBuilder, IBuilderPrefab
 	{
 
-		public void SetupPrefab()
+		public StructureWithParameters SetupBuilderPrefabs()
 		{
 			var sprs = this.GetSpriteSheet(3, 1, 25f, "SecretButton.png");
 			var but = ObjectCreationExtensions.CreateSpriteBillboard(sprs[0], false)
@@ -27,25 +27,31 @@ namespace BBTimes.CustomContent.Builders
 			secButPre.gameObject.AddBoxCollider(Vector3.zero, new(5f, 5f, 1f), true);
 			secButPre.audPress = GenericExtensions.FindResourceObject<GameButton>().audPress;
 			secButPre.sprReadyToPress = sprs[1];
+
+			return new() { prefab = this, parameters = null };
 		}
+		public void SetupPrefab() { }
 		public void SetupPrefabPost() { }
 
 		public string Name { get; set; }
 		public string TexturePath => this.GenerateDataPath("objects", "Textures");
 		public string SoundPath => this.GenerateDataPath("objects", "Audios");
-		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
+		public override void Generate(LevelGenerator lg, System.Random rng)
 		{
-			base.Build(ec, builder, room, cRng);
+			base.Generate(lg, rng);
+
 			if (Singleton<BaseGameManager>.Instance is not MainGameManager || !Singleton<BaseGameManager>.Instance.levelObject.finalLevel) // hard checks because it needs to be specifically in the final level, to override the ending
 				return;
 
+			var room = lg.Ec.mainHall;
+
 			var cells = room.AllTilesNoGarbage(false, false);
-			cells.RemoveAll(c => !c.HasFreeWall);
+			cells.RemoveAll(c => !c.HasAllFreeWall);
 			if (cells.Count != 0)
 			{
 				var but = Instantiate(secButPre, ec.transform);
-				var cell = cells[cRng.Next(cells.Count)];
-				var dir = cell.RandomUncoveredDirection(cRng);
+				var cell = cells[rng.Next(cells.Count)];
+				var dir = cell.RandomUncoveredDirection(rng);
 				but.transform.position = cell.CenterWorldPosition + dir.ToVector3() * 4.9f;
 				but.transform.rotation = dir.ToRotation();
 				cell.HardCoverEntirely(); // YES, entirely. To make the spot completely safe lol

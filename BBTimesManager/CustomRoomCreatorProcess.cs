@@ -832,7 +832,7 @@ namespace BBTimes.Manager
 
 			room[0].selection.AddRoomFunctionToContainer<SpecialRoomSwingingDoorsBuilder>().swingDoorPre = man.Get<SwingDoor>("swingDoorPre");
 			room[0].selection.AddRoomFunctionToContainer<RuleFreeZone>();
-			room[0].selection.AddRoomFunctionToContainer<WallSoftCoverRoomFunction>();
+			room[0].selection.AddRoomFunctionToContainer<CoverRoomFunction>().coverage = (CellCoverage)~0; // Reverse of 0
 
 			var highCeil = room[0].selection.AddRoomFunctionToContainer<HighCeilingRoomFunction>(); // The first is from the playground
 			highCeil.ceilingHeight = 2;
@@ -867,7 +867,8 @@ namespace BBTimes.Manager
 
 			//Classrooms
 
-			var classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialClassRooms.Length != 0).potentialClassRooms[0];
+			WeightedRoomAsset classWeightPre = FindRoomGroupOfName("Class");
+			
 			room = GetAllAssets(GetRoomAsset("Class"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
 			if (!plug.enableBigRooms.Value)
 				RemoveBigRooms(room, 6.56f);
@@ -942,7 +943,7 @@ namespace BBTimes.Manager
 
 			//Faculties
 
-			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialFacultyRooms.Length != 0).potentialFacultyRooms[0];
+			classWeightPre = FindRoomGroupOfName("Faculty");
 			room = GetAllAssets(GetRoomAsset("Faculty"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
 			room.ForEach(x =>
@@ -960,7 +961,7 @@ namespace BBTimes.Manager
 
 
 			//Offices
-			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialOffices.Length != 0).potentialOffices[0];
+			classWeightPre = FindRoomGroupOfName("Office");
 			room = GetAllAssets(GetRoomAsset("Office"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 			if (!plug.enableBigRooms.Value)
 				RemoveBigRooms(room, 7.65f);
@@ -1112,6 +1113,18 @@ namespace BBTimes.Manager
 						assets.RemoveAt(i--);
 					}
 				}
+			}
+
+			static WeightedRoomAsset FindRoomGroupOfName(string name)
+			{
+				foreach (var lvl in Resources.FindObjectsOfTypeAll<LevelObject>())
+				{
+					var lvlGroup = lvl.roomGroup.FirstOrDefault(x => x.name == name);
+					if (lvlGroup != null)
+						return lvlGroup.potentialRooms[0];
+					
+				}
+				return null;
 			}
 
 		}

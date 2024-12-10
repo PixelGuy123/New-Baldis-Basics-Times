@@ -22,16 +22,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
             for (int i = 0; i < list.Count; i++)
             {
-                if ((limits.Length != 0 && !limits.Contains(list[i].room.type)) || (shapes.Length != 0 && shapes.Contains(list[i].shape)))
-                {
-                    list.RemoveAt(i);
-                    i--;
-                }
+				var cell = list[i];
+				if ((limits.Length != 0 && !limits.Contains(cell.room.type)) || (shapes.Length != 0 && shapes.Any(t => cell.shape.HasFlag(t))))
+                    list.RemoveAt(i--);
             }
 			if (!persistentData)
 				ResetData();
         }
-		public static void SetNewData(TileShape[] shapes, RoomType[] limitToRoomTypes, bool persistent)
+		public static void SetNewData(TileShapeMask[] shapes, RoomType[] limitToRoomTypes, bool persistent)
 		{
 			EnvironmentControllerPatch.shapes = shapes;
 			limits = limitToRoomTypes;
@@ -44,7 +42,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			persistentData = false;
 		}
 
-		static TileShape[] shapes = null;
+		static TileShapeMask[] shapes = null;
 		static RoomType[] limits = null;
 		static bool persistentData = false;
 

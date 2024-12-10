@@ -219,10 +219,7 @@ namespace BBTimes.Extensions
 				transform.rotation = Quaternion.LookRotation(vector, Vector3.up);
 		}
 
-		public static void SendToDetention(this PlayerManager pm, float time, int detentionNoise = defaultDetentionNoise) =>
-			SendToDetention(pm, detentionUiPre, time, detentionNoise);
-
-		public static void SendToDetention(this PlayerManager pm, DetentionUi detentionUiPre, float time, int detentionNoise = defaultDetentionNoise)
+		public static void SendToDetention(this PlayerManager pm, float time, int detentionNoise = defaultDetentionNoise)
 		{
 			if (pm.ec.offices.Count > 0)
 			{
@@ -230,8 +227,6 @@ namespace BBTimes.Extensions
 				pm.Teleport(pm.ec.RealRoomMid(pm.ec.offices[num]));
 				pm.ClearGuilt();
 				pm.ec.offices[num].functionObject.GetComponent<DetentionRoomFunction>().Activate(time, pm.ec);
-				var detentionUi = Object.Instantiate(detentionUiPre);
-				detentionUi.Initialize(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam, time, pm.ec);
 
 				Baldi baldi = pm.ec.GetBaldi();
 				baldi?.ClearSoundLocations();
@@ -364,9 +359,6 @@ namespace BBTimes.Extensions
 				yield return null;
 			}
 		}
-
-
-		internal static DetentionUi detentionUiPre;
 
 		const int defaultDetentionNoise = 95;
 	}

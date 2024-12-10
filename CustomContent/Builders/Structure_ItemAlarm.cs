@@ -4,15 +4,14 @@ using BBTimes.Extensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
 {
-	public class ItemAlarmBuilder : ObjectBuilder, IObjectPrefab
+	public class Structure_ItemAlarm : StructureBuilder, IBuilderPrefab
 	{
 
-		public void SetupPrefab()
+		public StructureWithParameters SetupBuilderPrefabs()
 		{
 			var alarmObj = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "itemDetectorAlarm.png"))
 				.AddSpriteHolder(out var renderer, 0.7f);
@@ -23,7 +22,10 @@ namespace BBTimes.CustomContent.Builders
 			alarmPre.audMan = alarmObj.gameObject.CreatePropagatedAudioManager(125f, 185f);
 			alarmPre.audAlarm = this.GetSound("itemDetectorAlarmNoise.wav", "Vfx_ItemAlarm_Alarm", SoundType.Voice, Color.white);
 			alarmPre.renderer = renderer.transform;
+
+			return new() { prefab = this, parameters = new() { minMax = [new(2, 5)] } }; // minMax amount
 		}
+		public void SetupPrefab() { }
 		public void SetupPrefabPost() { }
 
 		public string Name { get; set; }
@@ -31,35 +33,36 @@ namespace BBTimes.CustomContent.Builders
 		public string SoundPath => this.GenerateDataPath("objects", "Audios");
 
 		// Prefab stuff above ^^
-		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
-		{
-			base.Build(ec, builder, room, cRng);
-			this.cRng = cRng;
-			this.ec = ec;
-		}
 
-		public void ActuallySpawnAlarms()
+		public override void OnGenerationFinished(LevelGenerator lg)
 		{
-			var existingAlarms = FindObjectsOfType<ItemAlarm>();
+			base.OnGenerationFinished(lg);
 
 			var potentialPickups = new List<Pickup>(ec.items);
-			potentialPickups.RemoveAll(pic =>
-				!pic.free ||
-				existingAlarms.Any(al => al.LinkedPickup == pic)); // If any ItemAlarm is found in their children, it means there is an item alarm there already (they attach to the pickup)
+			potentialPickups.RemoveAll(pic => !pic.free);
 
 			if (potentialPickups.Count == 0)
 			{
-				Debug.LogWarning("ItemAlarmBuilder failed to find any good spots for alarms");
+				Debug.LogWarning("Structure_ItemAlarm failed to find any good spots for alarms");
 				return;
 			}
 
-			var alarm = Instantiate(alarmPre, transform);
-			alarm.AttachToPickup(potentialPickups[cRng.Next(potentialPickups.Count)]);
-			alarm.Ec = ec;
-		}
+			int amount = lg.controlledRNG.Next(parameters.minMax[0].x, parameters.minMax[0].z + 1);
 
-		System.Random cRng;
-		EnvironmentController ec;
+			for (int i = 0; i < amount; i++)
+			{
+				if (potentialPickups.Count == 0)
+					return;
+
+				var alarm = Instantiate(alarmPre, transform);
+
+				int idx = lg.controlledRNG.Next(potentialPickups.Count);
+				alarm.AttachToPickup(potentialPickups[idx]);
+				alarm.Ec = ec;
+
+				potentialPickups.RemoveAt(idx);
+			}
+		}
 
 		[SerializeField]
 		internal ItemAlarm alarmPre;

@@ -54,7 +54,7 @@ namespace BBTimes.CompatibilityModule
 					invalidCats.ForEach(cat => data.roomAssets.Remove(cat));
 
 					BBTimesManager.floorDatas[i].Classrooms.ForEach(data.classRoomAssets.Add);
-					BBTimesManager.floorDatas[i].Faculties.ForEach(data.FieldTripRoomAssets.Add); // Apparently that's the new Faculty implementation??
+					BBTimesManager.floorDatas[i].Faculties.ForEach(data.facultyRoomAssets.Add);
 					BBTimesManager.floorDatas[i].Offices.ForEach(data.officeRoomAssets.Add);
 					BBTimesManager.floorDatas[i].Halls.Do(x => data.hallInsertions.Add(x.Key));
 					BBTimesManager.floorDatas[i].SpecialRooms.ForEach(data.specialRoomAssets.Add);
@@ -69,8 +69,8 @@ namespace BBTimes.CompatibilityModule
 					//});
 					BBTimesManager.floorDatas[i].Events.ForEach(data.randomEvents.Add);
 					BBTimesManager.floorDatas[i].Items.ForEach(data.items.Add);
-					BBTimesManager.floorDatas[i].ForcedObjectBuilders.ForEach(data.forcedObjectBuilders.Add);
-					BBTimesManager.floorDatas[i].WeightedObjectBuilders.ForEach(data.objectBuilders.Add);
+					//BBTimesManager.floorDatas[i].ForcedObjectBuilders.ForEach(data.forcedObjectBuilders.Add);
+					//BBTimesManager.floorDatas[i].WeightedObjectBuilders.ForEach(data.objectBuilders.Add);
 				}
 			});
 		}

@@ -54,24 +54,24 @@ namespace BBTimes.CustomContent.Events
 		public string SoundPath => this.GenerateDataPath("events", "Audios");
 		// ---------------------------------------------------
 
-		public override void AfterUpdateSetup()
+		public override void AfterUpdateSetup(System.Random rng)
 		{
-			base.AfterUpdateSetup();
+			base.AfterUpdateSetup(rng);
 
-			int curtains = crng.Next(minCurtains, maxCurtains + 1);
+			int curtains = rng.Next(minCurtains, maxCurtains + 1);
 			List<List<Cell>> list = ec.FindHallways();
 			int num = 0;
 			while (num < curtains && list.Count > 0)
 			{
-				int num2 = crng.Next(0, list.Count);
+				int num2 = rng.Next(0, list.Count);
 				for (int i = 0; i < list[num2].Count; i++)
-					if (list[num2][i].HasAnyHardCoverage || list[num2][i].shape != TileShape.Straight)
+					if (list[num2][i].HasAnyHardCoverage || !list[num2][i].shape.HasFlag(TileShapeMask.Straight))
 						list[num2].RemoveAt(i--);
 					
 				if (list[num2].Count > 0)
 				{
-					int num3 = crng.Next(0, list[num2].Count);
-					Direction direction = Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin)[crng.Next(0, Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin).Count)];
+					int num3 = rng.Next(0, list[num2].Count);
+					Direction direction = Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin)[rng.Next(0, Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin).Count)];
 					var curt = Instantiate(curtPre, list[num2][num3].TileTransform);
 					curt.transform.localPosition = direction.ToVector3() * 5f;
 					curt.transform.rotation = direction.ToRotation();
@@ -107,7 +107,7 @@ namespace BBTimes.CustomContent.Events
 		public override void End()
 		{
 			base.End();
-			curtains.ForEach(x => x.TimedClose(false, Random.Range(1f, 15f)));
+			curtains.ForEach(x => x.TimedClose(false, crng.Next(1, 15)));
 		}
 
 		readonly List<Curtains> curtains = [];

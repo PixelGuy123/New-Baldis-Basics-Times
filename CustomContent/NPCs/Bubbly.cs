@@ -112,7 +112,7 @@ namespace BBTimes.CustomContent.NPCs
 			List<Cell> spotsToGo = new(ec.mainHall.AllTilesNoGarbage(false, false));
 
 			for (int i = 0; i < spotsToGo.Count; i++)
-				if ((spotsToGo[i].shape != TileShape.Corner && spotsToGo[i].shape != TileShape.Single) || (spotsToGo[i].room.type == RoomType.Room && !spotsToGo[i].open)) // Filter to the ones that are corners or singles
+				if ((!spotsToGo[i].shape.HasFlag(TileShapeMask.Corner) && !spotsToGo[i].shape.HasFlag(TileShapeMask.Single)) || (spotsToGo[i].room.type == RoomType.Room && !spotsToGo[i].open)) // Filter to the ones that are corners or singles
 					spotsToGo.RemoveAt(i--);
 
 			TargetPosition(spotsToGo[Random.Range(0, spotsToGo.Count)].FloorWorldPosition);

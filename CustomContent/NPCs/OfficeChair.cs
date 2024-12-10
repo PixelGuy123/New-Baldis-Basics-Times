@@ -126,7 +126,7 @@ namespace BBTimes.CustomContent.NPCs
 			}
 
 			var room = chair.ec.CellFromPosition(chair.transform.position).room;
-			List<Cell> cells = useCurrent ? room.GetTilesOfShape([TileShape.Single], true) : GetRandomOffice(room);
+			List<Cell> cells = useCurrent ? room.GetTilesOfShape(TileShapeMask.Single, true) : GetRandomOffice(room);
 			if (cells.Count == 0)
 				cells = useCurrent ? room.AllEntitySafeCellsNoGarbage() : GetRandomOffice(room, true);
 
@@ -204,7 +204,7 @@ namespace BBTimes.CustomContent.NPCs
 
 				return cellsToChoose[Random.Range(0, cellsToChoose.Count)];
 			}
-			return rooms[Random.Range(0, rooms.Count)].GetTilesOfShape([TileShape.Single], true);
+			return rooms[Random.Range(0, rooms.Count)].GetTilesOfShape(TileShapeMask.Single, true);
 		}
 
 		void SetTarget(bool active)

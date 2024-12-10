@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
 {
-	public class Vent : MonoBehaviour
+	public class Duct : MonoBehaviour
 	{
 		private void Start()
 		{
@@ -159,7 +159,7 @@ namespace BBTimes.CustomContent.Objects
 
 		readonly List<Entity> touchedEntity = [];
 
-		internal List<Vent> nextVents = [];
+		internal List<Duct> nextVents = [];
 
 		internal EnvironmentController ec;
 

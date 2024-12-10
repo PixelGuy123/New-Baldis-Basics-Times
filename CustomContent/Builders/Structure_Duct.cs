@@ -9,16 +9,17 @@ using BBTimes.Extensions.ObjectCreationExtensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Classes;
+using System.IO;
 
 
 namespace BBTimes.CustomContent.Builders
 {
-    public class VentBuilder : ObjectBuilder, IObjectPrefab
+    public class Structure_Duct : StructureBuilder, IBuilderPrefab
 	{
-		public void SetupPrefab()
+		public StructureWithParameters SetupBuilderPrefabs()
 		{
 			// Making of the main vent
-			var vent = new GameObject("VentPrefab", typeof(Vent)) { layer = LayerStorage.ignoreRaycast};
+			var vent = new GameObject("Duct", typeof(Duct)) { layer = LayerStorage.ignoreRaycast};
 			vent.AddBoxCollider(Vector3.zero, new(9.99f, 10f, 9.99f), true);
 
 			var blockObj = new GameObject("VentPrefab_RaycastBlock");
@@ -43,7 +44,7 @@ namespace BBTimes.CustomContent.Builders
 
 			vent.ConvertToPrefab(true);
 
-			var v = vent.GetComponent<Vent>();
+			var v = vent.GetComponent<Duct>();
 			v.renderer = visual.GetComponent<MeshRenderer>();
 			v.ventTexs = texs;
 			v.normalVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f); // Two propagated audio managers
@@ -58,8 +59,7 @@ namespace BBTimes.CustomContent.Builders
 			visual.transform.localPosition = new Vector3(-4.95f, 9f, -4.95f);
 			visual.transform.localScale = new Vector3(9.9f, 1f, 9.9f);
 
-			var builder = GetComponent<VentBuilder>();
-			builder.ventPrefab = vent;
+			ventPrefab = vent;
 
 			// Making of particles
 
@@ -103,7 +103,7 @@ namespace BBTimes.CustomContent.Builders
 			connection.transform.localScale = new(connectionSize, 0.6f, connectionSize);
 
 
-			builder.ventConnectionPrefab = connection;
+			ventConnectionPrefab = connection;
 
 
 
@@ -123,8 +123,11 @@ namespace BBTimes.CustomContent.Builders
 
 			Destroy(connection2);
 			connection.ConvertToPrefab(true);
+
+			return new() { prefab = this, parameters = null };
 		}
 
+		public void SetupPrefab() { }
 		public void SetupPrefabPost() { }
 
 		const float connectionSize = 2f;
@@ -135,28 +138,32 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// ^^
-		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
+		public override void Generate(LevelGenerator lg, System.Random rng)
 		{
-			List<Cell> halls = room.GetTilesOfShape([TileShape.Corner, TileShape.Single], false);
+			base.Generate(lg, rng);
+
+			var room = lg.Ec.mainHall;
+
+			List<Cell> halls = room.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single, false);
 			if (halls.Count == 0) return;
 
-			int ventAmount = builder.levelSize.x * builder.levelSize.z / 4;
+			int ventAmount = lg.levelSize.x * lg.levelSize.z / 4;
 
-			var selectedWebTile = halls[cRng.Next(halls.Count)];
-			var web = ec.FindNearbyTiles(selectedWebTile.position - new IntVector2(builder.levelSize.x / 5, builder.levelSize.z / 5),
-				selectedWebTile.position + new IntVector2(builder.levelSize.x / 5, builder.levelSize.z / 5),
-				(builder.levelSize.x + builder.levelSize.z) / 6);
+			var selectedWebTile = halls[rng.Next(halls.Count)];
+			var web = lg.Ec.FindNearbyTiles(selectedWebTile.position - new IntVector2(lg.levelSize.x / 5, lg.levelSize.z / 5),
+				selectedWebTile.position + new IntVector2(lg.levelSize.x / 5, lg.levelSize.z / 5),
+				(lg.levelSize.x + lg.levelSize.z) / 6);
 
-			List<Vent> vents = [];
+			List<Duct> vents = [];
 
 			foreach (var cell in web)
 			{
-				if (cell.TileMatches(room) && !cell.HasAnyHardCoverage && !cell.open && !cell.doorHere && (cell.shape == TileShape.Corner || cell.shape == TileShape.Single) && !ec.TrapCheck(cell))
+				if (cell.TileMatches(room) && !cell.HasAnyHardCoverage && !cell.open && !cell.doorHere && (cell.shape.HasFlag(TileShapeMask.Corner) || cell.shape.HasFlag(TileShapeMask.Single)) && !lg.Ec.TrapCheck(cell))
 				{
-					var vent = Instantiate(ventPrefab, room.transform);
+					var vent = Instantiate(ventPrefab, room.transform); // Prefab for Vent is index 0
 					vent.transform.position = cell.FloorWorldPosition;
 					vent.SetActive(true);
-					var v = vent.GetComponent<Vent>();
+					var v = vent.GetComponent<Duct>();
 					v.ec = ec;
 					cell.HardCoverEntirely();
 					cell.AddRenderer(v.renderer);
@@ -177,14 +184,14 @@ namespace BBTimes.CustomContent.Builders
 				for (int i = 0; i < vents.Count; i++)
 				{
 					if (vents[i] == vent) continue; // Not make a path to itself of course
-					EnvironmentControllerPatch.SetNewData([TileShape.Closed], [RoomType.Hall], true); // Limit to only hallways
+					EnvironmentControllerPatch.SetNewData([TileShapeMask.Closed], [RoomType.Hall], true); // Limit to only hallways
 					ec.FindPath(center, ec.CellFromPosition(vents[i].transform.position), PathType.Const, out var path, out bool success);
 					EnvironmentControllerPatch.ResetData();
 					if (!success) continue;
 					foreach (var t in path)
 					{
 						if (connectionpos.ContainsKey(t.position)) continue;
-						var c = Instantiate(ventConnectionPrefab);
+						var c = Instantiate(ventConnectionPrefab); // Connection prefab will be index 1
 						t.HardCover(CellCoverage.Up);
 						c.transform.SetParent(t.TileTransform);
 
@@ -213,7 +220,7 @@ namespace BBTimes.CustomContent.Builders
 							t.AddRenderer(c2.GetComponent<MeshRenderer>());
 					}
 				}
-				var v = vent.GetComponent<Vent>();
+				var v = vent.GetComponent<Duct>();
 				v.nextVents = new(vents);
 				v.nextVents.Remove(vent); // nextVents, excluding itself
 			}
@@ -225,18 +232,19 @@ namespace BBTimes.CustomContent.Builders
 
 		}
 
-		public override void Load(EnvironmentController ec, List<IntVector2> pos, List<Direction> dir) // In case I modify premade assets (like Endless medium)
+		public override void Load(List<StructureData> data)
 		{
-			base.Load(ec, pos, dir);
-			List<Vent> vents = [];
+			base.Load(data);
 
-			foreach (var p in pos)
+			List<Duct> vents = [];
+
+			foreach (var p in data)
 			{
-				var cell = ec.CellFromPosition(p);
-				var vent = Instantiate(ventPrefab, cell.room.transform);
+				var cell = ec.CellFromPosition(p.position);
+				var vent = Instantiate(p.prefab, cell.room.transform);
 				vent.transform.position = cell.FloorWorldPosition;
 				vent.SetActive(true);
-				var v = vent.GetComponent<Vent>();
+				var v = vent.GetComponent<Duct>();
 				v.ec = ec;
 				cell.HardCoverEntirely();
 				vents.Add(v);
@@ -252,7 +260,7 @@ namespace BBTimes.CustomContent.Builders
 				for (int i = 0; i < vents.Count; i++)
 				{
 					if (vents[i] == vent) continue; // Not make a path to itself of course
-					EnvironmentControllerPatch.SetNewData([TileShape.Closed], [RoomType.Hall], true); // Limit to only hallways
+					EnvironmentControllerPatch.SetNewData([TileShapeMask.Closed], [RoomType.Hall], true); // Limit to only hallways
 					ec.FindPath(center, ec.CellFromPosition(vents[i].transform.position), PathType.Const, out var path, out bool success);
 					EnvironmentControllerPatch.ResetData();
 					if (!success) continue;
@@ -288,15 +296,15 @@ namespace BBTimes.CustomContent.Builders
 							t.AddRenderer(c2.GetComponent<MeshRenderer>());
 					}
 				}
-				var v = vent.GetComponent<Vent>();
-				v.nextVents = new(vents);
-				v.nextVents.Remove(vent); // nextVents, excluding itself
+				vent.nextVents = new(vents);
+				vent.nextVents.Remove(vent); // nextVents, excluding itself
 			}
 
 			vents[0].BlockMe();
 
 			ec.GetComponent<EnvironmentControllerData>().Vents.AddRange(vents);
 		}
+		
 
 		[SerializeField]
 		public GameObject ventPrefab;

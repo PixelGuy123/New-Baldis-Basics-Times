@@ -133,10 +133,10 @@ namespace BBTimes.CustomContent.Events
 				flowers[0].Despawn(false);
 		}
 
-		public override void AfterUpdateSetup()
+		public override void AfterUpdateSetup(System.Random rng)
 		{
-			base.AfterUpdateSetup();
-			spots = ec.mainHall.GetTilesOfShape([TileShape.Corner, TileShape.Single], CellCoverage.Down, false);
+			base.AfterUpdateSetup(rng);
+			spots = ec.mainHall.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single, CellCoverage.Down, false);
 			spots.ForEach(cell =>
 			{
 				var grass = Instantiate(grassPre, cell.TileTransform);
@@ -147,7 +147,7 @@ namespace BBTimes.CustomContent.Events
 
 		public void SpawnRandomFlower(Cell cell)
 		{
-			var newFlower = Instantiate(WeightedSelection<Plant>.RandomSelection(flowerPres), cell.TileTransform);
+			var newFlower = Instantiate(WeightedSelection<Plant>.ControlledRandomSelection(flowerPres, crng), cell.TileTransform);
 			newFlower.transform.localPosition = Vector3.up * defaultYOffsetForFlowers;
 			newFlower.renderer.transform.localPosition = Vector3.down * 6f;
 			newFlower.Initialize(this, ec, cell, newFlower.renderer.transform.position + Vector3.up * 6);

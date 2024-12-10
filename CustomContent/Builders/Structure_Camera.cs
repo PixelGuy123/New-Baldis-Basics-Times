@@ -9,10 +9,10 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
 {
-	public class CameraBuilder : ObjectBuilder, IObjectPrefab
+	public class Structure_Camera : StructureBuilder, IBuilderPrefab
 	{
 
-		public void SetupPrefab()
+		public StructureWithParameters SetupBuilderPrefabs()
 		{
 			var cam = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "SecurityCamera.png")).AddSpriteHolder(out var renderer, 9f, 0);
 			renderer.name = "Sprite";
@@ -39,7 +39,10 @@ namespace BBTimes.CustomContent.Builders
 			camComp.audDetect = this.GetSound("spot.wav", "Vfx_Camera_Spot", SoundType.Voice, Color.white);
 
 			camPre = cam.transform;
+
+			return new() { prefab = this, parameters = new() { minMax = [new(1, 1), new(5,10)] } }; // 0 = Amount of cameras, 1 = minMax distance for them
 		}
+		public void SetupPrefab() { }
 		public void SetupPrefabPost() { }
 
 		public string Name { get; set; }
@@ -48,11 +51,13 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// Prefab stuff above ^^
-		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
+		public override void Generate(LevelGenerator lg, System.Random rng)
 		{
-			base.Build(ec, builder, room, cRng);
+			base.Generate(lg, rng);
+
+			var room = lg.Ec.mainHall;
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
-			var spots = room.GetTilesOfShape([TileShape.Corner, TileShape.Single], false);
+			var spots = room.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single, false);
 			for (int i = 0; i < spots.Count; i++)
 				if (!spots[i].HardCoverageFits(CellCoverage.Up))
 					spots.RemoveAt(i--);
@@ -63,29 +68,37 @@ namespace BBTimes.CustomContent.Builders
 				return;
 			}
 
-			int s = cRng.Next(spots.Count);
-			var cam = Instantiate(camPre, spots[s].ObjectBase).GetComponentInChildren<SecurityCamera>();
-			cam.Ec = ec;
-			cam.GetComponentsInChildren<SpriteRenderer>().Do(spots[s].AddRenderer);
-			cam.Setup(spots[s].AllOpenNavDirections, cRng.Next(7, 14));
-			ecData.Cameras.Add(cam);
+			int amount = rng.Next(parameters.minMax[0].x, parameters.minMax[0].z + 1);
 
-			spots[s].HardCover(CellCoverage.Up);
+			for (int i = 0; i < amount; i++)
+			{
+				if (spots.Count == 0)
+					return;
+
+				int s = rng.Next(spots.Count);
+				var cam = Instantiate(camPre, spots[s].ObjectBase).GetComponentInChildren<SecurityCamera>();
+				cam.Ec = ec;
+				cam.GetComponentsInChildren<SpriteRenderer>().Do(spots[s].AddRenderer);
+				cam.Setup(spots[s].AllOpenNavDirections, rng.Next(parameters.minMax[1].x, parameters.minMax[1].z + 1));
+				ecData.Cameras.Add(cam);
+
+				spots[s].HardCover(CellCoverage.Up);
+				spots.RemoveAt(s);
+			}
 
 
 		}
-
-		public override void Load(EnvironmentController ec, List<IntVector2> pos, List<Direction> dir)
+		public override void Load(List<StructureData> data)
 		{
-			base.Load(ec, pos, dir);
+			base.Load(data);
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
-			for (int i = 0; i < pos.Count; i++)
+			for (int i = 0; i < data.Count; i++)
 			{
-				var spot = ec.CellFromPosition(pos[i]);
+				var spot = ec.CellFromPosition(data[i].position);
 				var cam = Instantiate(camPre, spot.ObjectBase).GetComponentInChildren<SecurityCamera>();
 				cam.Ec = ec;
 				cam.GetComponentsInChildren<Renderer>().Do(spot.AddRenderer);
-				cam.Setup(spot.AllOpenNavDirections, (int)dir[i]);
+				cam.Setup(spot.AllOpenNavDirections, data[i].data);
 				ecData.Cameras.Add(cam);
 
 				spot.HardCover(CellCoverage.Up);

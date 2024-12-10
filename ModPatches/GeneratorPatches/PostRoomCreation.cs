@@ -49,7 +49,7 @@ namespace BBTimes.ModPatches.GeneratorPatches
 			Dictionary<Cell, Direction[]> tiles = [];
 			foreach (var t in ec.mainHall.GetNewTileList())
 			{
-				if (t.Hidden || t.offLimits || !t.HasFreeWall) // No elevator tiles or invalid tiles
+				if (t.Hidden || t.offLimits || !t.HasAllFreeWall) // No elevator tiles or invalid tiles
 					continue;
 				// A quick fix for the walls
 

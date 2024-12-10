@@ -59,9 +59,9 @@ namespace BBTimes.CustomContent.Events
 			base.PremadeSetup();
 			spots.AddRange(ec.AllCells());
 		}
-		public override void AfterUpdateSetup()
+		public override void AfterUpdateSetup(System.Random rng)
 		{
-			base.AfterUpdateSetup();
+			base.AfterUpdateSetup(rng);
 			spots.AddRange(ec.AllCells());
 		}
 
@@ -107,12 +107,12 @@ namespace BBTimes.CustomContent.Events
 			{
 				delay += tremblingFrameDelay;
 				for (int i = 0; i < actMods.Count; i++)
-					actMods[i].Value.movementAddend = new(Random.Range(-shakeStrength, shakeStrength) * strengthConstant, 0f, Random.Range(-shakeStrength, shakeStrength) * strengthConstant);
+					actMods[i].Value.movementAddend = new(crng.Next(-shakeStrength, shakeStrength) * strengthConstant, 0f, crng.Next(-shakeStrength, shakeStrength) * strengthConstant);
 				
 			}
 
 			for (int i = 0; i < particles.Count; i++)
-				particles[i].transform.position = spots[Random.Range(0, spots.Count)].FloorWorldPosition + Vector3.up * 3.2f;
+				particles[i].transform.position = spots[crng.Next(0, spots.Count)].FloorWorldPosition + Vector3.up * 3.2f;
 		}
 
 		public override void End()
@@ -149,7 +149,10 @@ namespace BBTimes.CustomContent.Events
 		internal ParticleSystem partPre;
 
 		[SerializeField]
-		internal float shakeStrength = 42f, tremblingFrameDelay = 0.08f;
+		internal float tremblingFrameDelay = 0.08f;
+
+		[SerializeField]
+		internal int shakeStrength = 42;
 
 		[SerializeField]
 		[Range(0.0f, 1.0f)]

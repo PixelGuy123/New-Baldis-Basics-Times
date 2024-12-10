@@ -11,7 +11,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 				return;
 
 			base.Build(builder, rng);
-			List<Cell> tilesOfShape = room.GetTilesOfShape([TileShape.Single, TileShape.Corner], true);
+			List<Cell> tilesOfShape = room.GetTilesOfShape(TileShapeMask.Single | TileShapeMask.Corner, true);
 			for (int i = 0; i < tilesOfShape.Count; i++)
 			{
 				if (!tilesOfShape[i].HasHardFreeWall)

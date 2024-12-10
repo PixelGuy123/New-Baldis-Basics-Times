@@ -7,7 +7,7 @@ namespace BBTimes.CustomComponents
 	public class EnvironmentControllerData : MonoBehaviour
 	{
 		public List<BeltManager> ConveyorBelts = [];
-		public List<Vent> Vents = [];
+		public List<Duct> Vents = [];
 		public List<Trapdoor> Trapdoors = [];
 		public List<SecurityCamera> Cameras = [];
 		public List<Squisher> Squishers = [];

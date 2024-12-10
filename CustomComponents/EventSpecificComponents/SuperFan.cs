@@ -28,7 +28,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 
 			windManager.transform.SetParent(ec.transform);
 			windManager.SetSpeed(pushForce);
-			windManager.Initialize();
+			windManager.Initialize(ec);
 
 			for (int i = 0; i < windGraphics.Length; i++)
 				windGraphics[i].sharedMaterial = windManager.newMaterial;

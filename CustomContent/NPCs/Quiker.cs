@@ -313,7 +313,7 @@ namespace BBTimes.CustomContent.NPCs
 			waitCooldown -= qu.TimeScale * Time.deltaTime;
 			if (waitCooldown <= 0f)
 			{
-				var cells = qu.ec.mainHall.GetTilesOfShape([TileShape.Corner, TileShape.End], true);
+				var cells = qu.ec.mainHall.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.End, true);
 				qu.Navigator.Entity.Teleport(cells[Random.Range(0, cells.Count)].FloorWorldPosition);
 				qu.behaviorStateMachine.ChangeState(new Quiker_Active(qu));
 			}

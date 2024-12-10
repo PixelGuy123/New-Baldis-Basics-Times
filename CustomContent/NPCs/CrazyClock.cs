@@ -50,9 +50,9 @@ namespace BBTimes.CustomContent.NPCs
 			foreach (var r in ec.rooms)
 			{
 				if (preAllowedCategories.Contains(r.category))
-					availableCells.AddRange(r.GetTilesOfShape([TileShape.Corner, TileShape.Single, TileShape.End], true).Where(x => x.HasFreeWall && !x.HasAnyHardCoverage));
+					availableCells.AddRange(r.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single | TileShapeMask.End, true).Where(x => x.HasAllFreeWall && !x.HasAnyHardCoverage));
 			}
-			availableCells.AddRange(ec.mainHall.GetTilesOfShape([TileShape.Corner, TileShape.Single, TileShape.End], false).Where(x => x.HasFreeWall && !x.HasAnyHardCoverage));
+			availableCells.AddRange(ec.mainHall.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single | TileShapeMask.End, false).Where(x => x.HasAllFreeWall && !x.HasAnyHardCoverage));
 
 			behaviorStateMachine.ChangeState(new CrazyClock_Spawn(this));
 		}

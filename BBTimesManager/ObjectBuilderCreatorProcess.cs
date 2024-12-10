@@ -18,70 +18,108 @@ namespace BBTimes.Manager
 			// 3 - END
 
 			// Vent Builder
-			VentBuilder vent = CreatorExtensions.CreateObjectBuilder<VentBuilder>("VentBuilder", "Vent");
-			var meta = vent.AddMeta(plug);
+			StructureWithParameters vent = CreatorExtensions.CreateObjectBuilder<Structure_Duct>("DuctBuilder", out _, "Duct");
 			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 65 });
 			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 105 });
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 45 });
 
 			// Wall Bell Builder
-			RandomForcedPostersBuilder forcedPosterBuilder = CreatorExtensions.CreateObjectBuilder<RandomForcedPostersBuilder>();
-			forcedPosterBuilder.AddMeta(plug);
-			forcedPosterBuilder.allowedShapes = [TileShape.Single, TileShape.Corner];
-			forcedPosterBuilder.chance = 0.6f;
+			vent = CreatorExtensions.CreateObjectBuilder<RandomForcedPostersBuilder>("ForcedPosterBuilder", out var forcedPosterBuilder);
+			forcedPosterBuilder.allowedShape = TileShapeMask.Single | TileShapeMask.Corner;
+			vent.parameters.chance[0] = 0.6f;
 			forcedPosterBuilder.posters = [
 				new WeightedPosterObject() {selection = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("wallbell.png")))]), weight = 100}
 				];
-			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(forcedPosterBuilder));
+			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(vent));
 
 			// Trapdoor Builder
-			TrapDoorBuilder trapdoor = CreatorExtensions.CreateObjectBuilder<TrapDoorBuilder>("TrapdoorBuilder", "Trapdoor");
-			trapdoor.AddMeta(plug);
-			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 35 });
-			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 55 });
-			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = trapdoor, weight = 75 });
+			vent = CreatorExtensions.CreateObjectBuilder<Structure_Trapdoor>("Structure_Trapdoor", out _, "Trapdoor");
+			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
+			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 55 });
+			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 75 });
 
 			// Camera Builder
-			CameraBuilder cams = CreatorExtensions.CreateObjectBuilder<CameraBuilder>("CameraBuilder", "SecurityCamera");
-			cams.AddMeta(plug);
-			AddBuilderAtIdx(cams, 35, 1, 3);
-			AddBuilderAtIdx(cams, 55, 2, 5);
-			AddBuilderAtIdx(cams, 25, 3, 4);
+			vent = CreatorExtensions.CreateObjectBuilder<Structure_Camera>("Structure_Camera", out _, "SecurityCamera");
+			vent.parameters.minMax[0] = new(3, 5);
+
+			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
+			vent = CloneParameter(vent);
+			vent.parameters.minMax[0] = new(5, 7);
+			vent.parameters.minMax[1] = new(12, 15);
+
+			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 45 });
+			vent = CloneParameter(vent);
+			vent.parameters.minMax[0] = new(3, 4);
+			vent.parameters.minMax[1] = new(9, 13);
+
+			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 25 });
+
 
 			// Squisher builder
-			SquisherBuilder squish = CreatorExtensions.CreateObjectBuilder<SquisherBuilder>("SquisherBuilder", "Squisher");
-			squish.AddMeta(plug);
-			AddBuilderAtIdx(squish, 25, 1, 2);
-			AddBuilderAtIdx(squish, 45, 2, 6);
-			AddBuilderAtIdx(squish, 35, 3, 3);
+			vent = CreatorExtensions.CreateObjectBuilder<Structure_Squisher>("Structure_Squisher", out _, "Squisher");
+
+			vent.parameters.minMax[0].z = 3;
+			vent.parameters.chance[0] = 0.15f;
+			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 25 });
+			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
+
+			vent = CloneParameter(vent);
+			vent.parameters.minMax[0] = new(2, 5);
+			vent.parameters.minMax[1] = new(12, 16);
+			vent.parameters.minMax[2] = new(4, 6);
+			vent.parameters.chance[0] = 0.6f;
+
+			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 45 });
+			
 
 			// Small Door builder
-			SmallDoorBuilder smalDor = CreatorExtensions.CreateObjectBuilder<SmallDoorBuilder>("SmallDoor", "SmallDoor");
-			smalDor.AddMeta(plug);
-			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(smalDor));
+			vent = CreatorExtensions.CreateObjectBuilder<Structure_SmallDoor>("Structure_SmallDoor", out _, "SmallDoor");
+			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(vent));
 
 			// ItemAlarm Builder
-			ItemAlarmBuilder alarm = CreatorExtensions.CreateObjectBuilder<ItemAlarmBuilder>("ItemAlarmBuilder", "ItemAlarm");
-			alarm.AddMeta(plug);
-			AddBuilderAtIdx(alarm, 35, 1, 4);
-			AddBuilderAtIdx(alarm, 60, 2, 5);
-			AddBuilderAtIdx(alarm, 15, 3, 2);
+			vent = CreatorExtensions.CreateObjectBuilder<Structure_ItemAlarm>("Structure_ItemAlarm", out _, "ItemAlarm");
+
+			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
+			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 25 });
+
+			vent = CloneParameter(vent);
+			vent.parameters.minMax[0] = new(6, 9);
+			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 55 });
+			
 
 			// SecretButton Builder
-			SecretButtonBuilder secBut = CreatorExtensions.CreateObjectBuilder<SecretButtonBuilder>("SecretButtonBuilder", "SecretButton");
-			secBut.AddMeta(plug);
-			floorDatas[2].ForcedObjectBuilders.Add(secBut); // debugging purposes
+			vent = CreatorExtensions.CreateObjectBuilder<Structure_SecretButton>("Structure_SecretTimesButton", out _, "SecretButton");
+			floorDatas[2].ForcedObjectBuilders.Add(vent); // debugging purposes
 
-			static void AddBuilderAtIdx(ObjectBuilder bld, int weight, int index, int n)
-			{
-				for (int i = 0; i < n; i++)
-					floorDatas[index].WeightedObjectBuilders.Add(new() { selection = bld, weight = weight });
-			}
+			static StructureWithParameters CloneParameter(StructureWithParameters bld) =>
+				new() { prefab = bld.prefab, parameters = new() { chance = bld.parameters.chance.CopyArray(), minMax = bld.parameters.minMax.CopyArray(), prefab = bld.parameters.prefab.CopyObjArray() } };
 
 		}
 
-		
+		static T[] CopyArray<T>(this T[] ogAr)
+		{
+			if (ogAr == null)
+				return null;
 
-		
+			T[] newAr = new T[ogAr.Length];
+			for (int i = 0; i < ogAr.Length; i++) // Useful for arrays that contains structs
+				newAr[i] = ogAr[i];
+			return newAr;
+		}
+
+		static WeightedGameObject[] CopyObjArray(this WeightedGameObject[] ogAr)
+		{
+			if (ogAr == null)
+				return null;
+
+			WeightedGameObject[] newAr = new WeightedGameObject[ogAr.Length];
+			for (int i = 0; i < ogAr.Length; i++) // Useful for arrays that contains structs
+				newAr[i] = new() { selection = ogAr[i].selection, weight = ogAr[i].weight };
+			return newAr;
+		}
+
+
+
+
 	}
 }

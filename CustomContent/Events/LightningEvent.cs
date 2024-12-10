@@ -35,9 +35,9 @@ namespace BBTimes.CustomContent.Events
 		public string TexturePath => this.GenerateDataPath("events", "Textures");
 		public string SoundPath => this.GenerateDataPath("events", "Audios");
 		// ---------------------------------------------------
-		public override void AfterUpdateSetup()
+		public override void AfterUpdateSetup(System.Random rng)
 		{
-			base.AfterUpdateSetup();
+			base.AfterUpdateSetup(rng);
 			spots.AddRange(ec.AllCells());
 		}
 		public override void Begin()
@@ -107,8 +107,8 @@ namespace BBTimes.CustomContent.Events
 			{
 				if (thunderAnimation != null)
 					StopCoroutine(thunderAnimation);
-				thunderAnimation = StartCoroutine(ThrowThunderFog(Random.Range(0.8f, 1f), Random.Range(0.5f, 0.7f), Random.Range(0.37f, 0.4f)));
-				thunderCooldown += Random.Range(minLightningDelay, maxLightningDelay);
+				thunderAnimation = StartCoroutine(ThrowThunderFog(0.8f + ((float)crng.NextDouble() % 0.2f), 0.5f + ((float)crng.NextDouble() % 0.2f), 0.37f + ((float)crng.NextDouble() % 0.03f)));
+				thunderCooldown += crng.Next(minLightningDelay, maxLightningDelay);
 				audMan.PlaySingle(audThunder);
 
 				KillAllEletricities((int)(eletricityAmount * 0.3f) * lightningRange);
@@ -118,7 +118,7 @@ namespace BBTimes.CustomContent.Events
 				{
 					if (cells.Count == 0) return;
 
-					SpawnEletricity(cells[Random.Range(0, cells.Count)], cells);
+					SpawnEletricity(cells[crng.Next(0, cells.Count)], cells);
 				}
 			}
 		}
@@ -200,10 +200,7 @@ namespace BBTimes.CustomContent.Events
 		internal Eletricity eletricityPre;
 
 		[SerializeField]
-		internal int lightningRange = 2, eletricityAmount = 8;
-
-		[SerializeField]
-		internal float minLightningDelay = 5f, maxLightningDelay = 15f;
+		internal int lightningRange = 2, eletricityAmount = 8, minLightningDelay = 5, maxLightningDelay = 15;
 
 		readonly Fog fog = new();
 		Coroutine thunderAnimation;

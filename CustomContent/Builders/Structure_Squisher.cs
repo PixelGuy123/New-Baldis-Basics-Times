@@ -11,9 +11,9 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
 {
-	public class SquisherBuilder : ObjectBuilder, IObjectPrefab
+	public class Structure_Squisher : StructureBuilder, IBuilderPrefab
 	{
-		public void SetupPrefab()
+		public StructureWithParameters SetupBuilderPrefabs()
 		{
 			var squishBase = new GameObject("Squisher").AddComponent<Squisher>();
 			squishBase.gameObject.ConvertToPrefab(true);
@@ -48,11 +48,16 @@ namespace BBTimes.CustomContent.Builders
 			squishBody.transform.localPosition = Vector3.up * ((bodyHeight / 2) + 1);
 			squishBody.transform.localScale = new(headSize / 2, bodyHeight, headSize / 2);
 
-			var builder = GetComponent<SquisherBuilder>();
+			var builder = GetComponent<Structure_Squisher>();
 			builder.squisherPre = squishBase;
 			builder.buttonPre = BBTimesManager.man.Get<GameButton>("buttonPre");
+
+			return new() { prefab = this, parameters = new() { chance = [0.35f], minMax = [new(1, 1), new(5, 9), new(4, 7)] } }; 
+			// Chance = chanceForButtons
+			// minMax = SquisherAmount, squisherSpeed, button range
 		}
 
+		public void SetupPrefab() { }
 		public void SetupPrefabPost() { }
 
 		const float headSize = 6f, bodyHeight = 9f;
@@ -63,12 +68,13 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// prefab stuff ^^
-
-		public override void Build(EnvironmentController ec, LevelBuilder builder, RoomController room, System.Random cRng)
+		public override void Generate(LevelGenerator lg, System.Random rng)
 		{
-			base.Build(ec, builder, room, cRng);
+			base.Generate(lg, rng);
+
+			var room = lg.Ec.mainHall;
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
-			var spots = room.GetTilesOfShape([TileShape.Corner, TileShape.Single, TileShape.Straight], false);
+			var spots = room.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single | TileShapeMask.Straight, false);
 			for (int i = 0; i < spots.Count; i++)
 				if (!spots[i].HardCoverageFits(CellCoverage.Up))
 					spots.RemoveAt(i--);
@@ -79,44 +85,66 @@ namespace BBTimes.CustomContent.Builders
 				return;
 			}
 
+			int amount = rng.Next(parameters.minMax[0].x, parameters.minMax[0].z + 1);
 
-			int idx = cRng.Next(spots.Count);
+			for (int i = 0; i < amount; i++)
+			{
+				if (spots.Count == 0)
+					return;
 
-			var squ = Instantiate(squisherPre, spots[idx].ObjectBase);
-			squ.transform.localPosition = Vector3.up * 8.5f;
-			squ.Ec = ec;
-			squ.Setup(cRng.Next(5, 9));
+				int idx = rng.Next(spots.Count);
 
-			squ.GetComponentsInChildren<Renderer>().Do(spots[idx].AddRenderer);
-			ecData.Squishers.Add(squ);
+				var squ = Instantiate(squisherPre, spots[idx].ObjectBase);
+				squ.transform.localPosition = Vector3.up * 8.5f;
+				squ.Ec = ec;
+				squ.Setup(rng.Next(parameters.minMax[1].x, parameters.minMax[1].z + 1));
 
-			if (cRng.NextDouble() > 0.7f)
-				GameButton.BuildInArea(ec, spots[idx].position, spots[idx].position, cRng.Next(4, 7), squ.gameObject, buttonPre, cRng);
+				squ.GetComponentsInChildren<Renderer>().Do(spots[idx].AddRenderer);
+				ecData.Squishers.Add(squ);
 
-			spots[idx].HardCover(CellCoverage.Up);
+				if (rng.NextDouble() <= parameters.chance[0])
+					GameButton.BuildInArea(ec, spots[idx].position, spots[idx].position, rng.Next(parameters.minMax[2].x, parameters.minMax[2].z + 1), squ.gameObject, buttonPre, rng);
+
+				spots[idx].HardCover(CellCoverage.Up);
+				spots.RemoveAt(idx);
+			}
 
 		}
 
-		public override void Load(EnvironmentController ec, List<IntVector2> pos, List<Direction> dir)
+		public override void Load(List<StructureData> data)
 		{
+			base.Load(data);
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
-			base.Load(ec, pos, dir);
-			for (int i = 0; i < pos.Count; i++)
+
+			Squisher lastBuiltSquisher = null;
+
+			for (int i = 0; i < data.Count; i++)
 			{
-				var cell = ec.CellFromPosition(pos[i]);
+				if (lastBuiltSquisher && data[i].data == -1) // If there's a last built squisher and id == -1 (button), then link a button to it
+				{
+					GameButton.Build(buttonPre, ec, data[i].position, data[i].direction).SetUp(lastBuiltSquisher);
+					lastBuiltSquisher = null;
+					continue;
+				}
+
+				var cell = ec.CellFromPosition(data[i].position);
 				var squ = Instantiate(squisherPre, cell.ObjectBase);
 				squ.transform.localPosition = Vector3.up * 9f;
 				squ.Ec = ec;
-				squ.Setup((int)dir[i] + 1);
+				squ.Setup(data[i].data);
 				squ.GetComponentsInChildren<Renderer>().Do(cell.AddRenderer);
 				ecData.Squishers.Add(squ);
+
+				lastBuiltSquisher = squ;
 			}
 		}
+		
 
 		[SerializeField]
 		internal Squisher squisherPre;
 
 		[SerializeField]
 		internal GameButton buttonPre;
+
 	}
 }

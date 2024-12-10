@@ -17,7 +17,7 @@ namespace BBTimes.Manager
 			// map icon for mathmachine notebooks
 			MathMachinePatches.rightSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(IconPath, GetAssetName("hiddenNotebookIcon.png"))), ObjectCreationExtension.defaultMapIconPixelsPerUnit);
 			// map icon for trapdoors
-			TrapDoorBuilder.icon = ObjectCreationExtension.CreateMapIcon<MapIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, GetAssetName("trapDoorIcon.png"))), "TrapdoorMapIcon");
+			Structure_Trapdoor.icon = ObjectCreationExtension.CreateMapIcon<MapIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, GetAssetName("trapDoorIcon.png"))), "TrapdoorMapIcon");
 			// map icon for buttons
 			Sprite[] sprs = TextureExtensions.LoadSpriteSheet(2, 2, ObjectCreationExtension.defaultMapIconPixelsPerUnit, IconPath, GetAssetName("buticons.png"));
 			GameButtonSpawnPatch.butIconPre = [
