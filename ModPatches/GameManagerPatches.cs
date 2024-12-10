@@ -221,10 +221,11 @@ namespace BBTimes.ModPatches
 				Singleton<MusicManager>.Instance.QueueFile(chaos1, true);
 
 				Singleton<MusicManager>.Instance.MidiPlayer.MPTK_Transpose = Random.Range(-24, -12);
-				___ec.standardDarkLevel = new Color(1f, 0f, 0f);
+				___ec.standardDarkLevel = new Color(1f, 0f, 0f);;
 				foreach (var c in ___ec.AllExistentCells())
 				{
 					c.lightColor = Color.red;
+					c.SetPower(true);
 					c.SetLight(true);
 				}
 
