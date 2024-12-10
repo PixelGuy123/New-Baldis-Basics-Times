@@ -123,7 +123,7 @@ namespace BBTimes.CustomContent.Builders
 
 				int index = rng.Next(availableCells.Count);
 				var cellPair = availableCells[index];
-				BuildDoor(room, ec, cellPair.Key, cellPair.Value);
+				BuildDoor(ec, cellPair.Key, cellPair.Value);
 				var nextRoom = ec.CellFromPosition(cellPair.Key.position + cellPair.Value.ToIntVector2()).room;
 
 				availableCells.RemoveAll(cell => ec.CellFromPosition(
@@ -131,18 +131,21 @@ namespace BBTimes.CustomContent.Builders
 					).TileMatches(nextRoom));
 			}
 
+			Finished();
 		}
 
 		public override void Load(List<StructureData> data)
 		{
 			base.Load(data);
 			for (int i = 0; i < data.Count; i++)
-				BuildDoor(ec.mainHall, ec, ec.CellFromPosition(data[i].position), data[i].direction);
+				BuildDoor(ec, ec.CellFromPosition(data[i].position), data[i].direction);
+
+			Finished();
 		}
 
-		void BuildDoor(RoomController room, EnvironmentController ec, Cell cell, Direction dir)
+		void BuildDoor(EnvironmentController ec, Cell cell, Direction dir)
 		{
-			var door = Instantiate(doorPre, room.transform);
+			var door = Instantiate(doorPre, cell.ObjectBase);
 			door.ec = ec;
 			door.position = cell.position;
 			door.direction = dir;

@@ -7,6 +7,13 @@ using UnityEngine;
 
 namespace BBTimes.ModPatches
 {
+	[HarmonyPatch(typeof(StructureBuilder), "Finished")]
+	internal class LogFinishedStructures
+	{
+		static void Prefix(StructureBuilder __instance) =>
+			Debug.LogWarning($"The builder {__instance.GetType().Name} is finished.");
+	}
+
 	//[HarmonyPatch(typeof(PlayerMovement), "PlayerMove")]
 	//internal class PlayerCheatPatch
 	//{

@@ -9,7 +9,6 @@ using BBTimes.Extensions.ObjectCreationExtensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Classes;
-using System.IO;
 
 
 namespace BBTimes.CustomContent.Builders
@@ -138,9 +137,9 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// ^^
-		public override void Generate(LevelGenerator lg, System.Random rng)
+		public override void PostOpenCalcGenerate(LevelGenerator lg, System.Random rng)
 		{
-			base.Generate(lg, rng);
+			base.PostOpenCalcGenerate(lg, rng);
 
 			var room = lg.Ec.mainHall;
 
@@ -160,7 +159,7 @@ namespace BBTimes.CustomContent.Builders
 			{
 				if (cell.TileMatches(room) && !cell.HasAnyHardCoverage && !cell.open && !cell.doorHere && (cell.shape.HasFlag(TileShapeMask.Corner) || cell.shape.HasFlag(TileShapeMask.Single)) && !lg.Ec.TrapCheck(cell))
 				{
-					var vent = Instantiate(ventPrefab, room.transform); // Prefab for Vent is index 0
+					var vent = Instantiate(ventPrefab, cell.ObjectBase); // Prefab for Vent is index 0
 					vent.transform.position = cell.FloorWorldPosition;
 					vent.SetActive(true);
 					var v = vent.GetComponent<Duct>();
@@ -191,9 +190,8 @@ namespace BBTimes.CustomContent.Builders
 					foreach (var t in path)
 					{
 						if (connectionpos.ContainsKey(t.position)) continue;
-						var c = Instantiate(ventConnectionPrefab); // Connection prefab will be index 1
+						var c = Instantiate(ventConnectionPrefab, t.ObjectBase); // Connection prefab will be index 1
 						t.HardCover(CellCoverage.Up);
-						c.transform.SetParent(t.TileTransform);
 
 						t.AddRenderer(c.GetComponent<MeshRenderer>());
 
@@ -229,7 +227,7 @@ namespace BBTimes.CustomContent.Builders
 
 			ec.GetComponent<EnvironmentControllerData>().Vents.AddRange(vents);
 
-
+			Finished();
 		}
 
 		public override void Load(List<StructureData> data)
@@ -241,7 +239,7 @@ namespace BBTimes.CustomContent.Builders
 			foreach (var p in data)
 			{
 				var cell = ec.CellFromPosition(p.position);
-				var vent = Instantiate(p.prefab, cell.room.transform);
+				var vent = Instantiate(p.prefab, cell.ObjectBase);
 				vent.transform.position = cell.FloorWorldPosition;
 				vent.SetActive(true);
 				var v = vent.GetComponent<Duct>();
@@ -267,9 +265,8 @@ namespace BBTimes.CustomContent.Builders
 					foreach (var t in path)
 					{
 						if (connectionpos.ContainsKey(t.position)) continue;
-						var c = Instantiate(ventConnectionPrefab);
+						var c = Instantiate(ventConnectionPrefab, t.ObjectBase);
 						t.HardCover(CellCoverage.Up);
-						c.transform.SetParent(t.TileTransform);
 
 						t.AddRenderer(c.GetComponent<MeshRenderer>());
 
@@ -303,6 +300,8 @@ namespace BBTimes.CustomContent.Builders
 			vents[0].BlockMe();
 
 			ec.GetComponent<EnvironmentControllerData>().Vents.AddRange(vents);
+
+			Finished();
 		}
 		
 

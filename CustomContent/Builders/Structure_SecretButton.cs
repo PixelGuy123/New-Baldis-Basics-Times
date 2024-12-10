@@ -49,13 +49,15 @@ namespace BBTimes.CustomContent.Builders
 			cells.RemoveAll(c => !c.HasAllFreeWall);
 			if (cells.Count != 0)
 			{
-				var but = Instantiate(secButPre, ec.transform);
 				var cell = cells[rng.Next(cells.Count)];
+				var but = Instantiate(secButPre, cell.ObjectBase);
 				var dir = cell.RandomUncoveredDirection(rng);
 				but.transform.position = cell.CenterWorldPosition + dir.ToVector3() * 4.9f;
 				but.transform.rotation = dir.ToRotation();
 				cell.HardCoverEntirely(); // YES, entirely. To make the spot completely safe lol
 			}
+
+			Finished();
 		}
 
 		[SerializeField]

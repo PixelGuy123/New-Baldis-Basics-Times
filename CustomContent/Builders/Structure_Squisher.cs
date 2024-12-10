@@ -68,9 +68,9 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// prefab stuff ^^
-		public override void Generate(LevelGenerator lg, System.Random rng)
+		public override void PostOpenCalcGenerate(LevelGenerator lg, System.Random rng)
 		{
-			base.Generate(lg, rng);
+			base.PostOpenCalcGenerate(lg, rng);
 
 			var room = lg.Ec.mainHall;
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
@@ -90,7 +90,7 @@ namespace BBTimes.CustomContent.Builders
 			for (int i = 0; i < amount; i++)
 			{
 				if (spots.Count == 0)
-					return;
+					break;
 
 				int idx = rng.Next(spots.Count);
 
@@ -109,6 +109,7 @@ namespace BBTimes.CustomContent.Builders
 				spots.RemoveAt(idx);
 			}
 
+			Finished();
 		}
 
 		public override void Load(List<StructureData> data)
@@ -137,6 +138,8 @@ namespace BBTimes.CustomContent.Builders
 
 				lastBuiltSquisher = squ;
 			}
+
+			Finished();
 		}
 		
 

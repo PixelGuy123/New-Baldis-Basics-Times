@@ -134,6 +134,15 @@ namespace BBTimes.CustomContent.NPCs
 			}
 			base.DoorHit(door);
 		}
+
+		public override void OnRoomExit(RoomController room)
+		{
+			base.OnRoomExit(room);
+			if (room.ec.timeOut && room.type == RoomType.Room && !room.HasIncompleteActivity)
+			{
+				room.SetPower(false);
+			}
+		}
 	}
 
 	internal class MagicalStudent_Wander(MagicalStudent mgs, float waitCooldown) : MagicalStudent_StateBase(mgs)

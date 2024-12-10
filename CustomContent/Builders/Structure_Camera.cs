@@ -51,9 +51,9 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// Prefab stuff above ^^
-		public override void Generate(LevelGenerator lg, System.Random rng)
+		public override void PostOpenCalcGenerate(LevelGenerator lg, System.Random rng)
 		{
-			base.Generate(lg, rng);
+			base.PostOpenCalcGenerate(lg, rng);
 
 			var room = lg.Ec.mainHall;
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
@@ -86,7 +86,7 @@ namespace BBTimes.CustomContent.Builders
 				spots.RemoveAt(s);
 			}
 
-
+			Finished();
 		}
 		public override void Load(List<StructureData> data)
 		{
@@ -103,6 +103,8 @@ namespace BBTimes.CustomContent.Builders
 
 				spot.HardCover(CellCoverage.Up);
 			}
+
+			Finished();
 		}
 
 		[SerializeField]

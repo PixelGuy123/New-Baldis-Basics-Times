@@ -16,13 +16,13 @@ namespace BBTimes.ModPatches.GeneratorPatches
 		{
 			if (__instance.Ec.npcsToSpawn.Count == 0) return;
 
-			foreach (var ld in __instance.ld.previousLevels)
+			foreach (var ld in __instance.scene.previousLevels)
 				ReplaceNpcsWithLevelObject(ld);
 
-			ReplaceNpcsWithLevelObject(__instance.ld);
+			ReplaceNpcsWithLevelObject(__instance.scene);
 
 
-			void ReplaceNpcsWithLevelObject(LevelObject ld)
+			void ReplaceNpcsWithLevelObject(SceneObject ld)
 			{
 				List<WeightedNPC> replacementNpcs = [new() { weight = 100 }];
 				var metas = ld.forcedNpcs;

@@ -62,6 +62,8 @@ namespace BBTimes.CustomContent.Builders
 
 				potentialPickups.RemoveAt(idx);
 			}
+
+			Finished();
 		}
 
 		[SerializeField]

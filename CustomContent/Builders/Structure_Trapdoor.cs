@@ -79,9 +79,9 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// setup prefab ^^
-		public override void Generate(LevelGenerator lg, System.Random rng)
+		public override void PostOpenCalcGenerate(LevelGenerator lg, System.Random rng)
 		{
-			base.Generate(lg, rng);
+			base.PostOpenCalcGenerate(lg, rng);
 
 			var room = lg.Ec.mainHall;
 			builtTraps = [];
@@ -145,6 +145,8 @@ namespace BBTimes.CustomContent.Builders
 				}
 			}
 
+			Finished();
+
 		}
 
 		public override void Load(List<StructureData> data)
@@ -203,12 +205,13 @@ namespace BBTimes.CustomContent.Builders
 					datas.RemoveAt(i--);
 				}
 			}
+			Finished();
 		}
 
 		private Trapdoor CreateTrapDoor(Cell pos, EnvironmentController ec, EnvironmentControllerData dat)
 		{
 			var trapdoor = Instantiate(trapDoorpre);
-			trapdoor.transform.SetParent(pos.TileTransform);
+			trapdoor.transform.SetParent(pos.ObjectBase);
 			trapdoor.transform.position = pos.FloorWorldPosition;
 			trapdoor.gameObject.SetActive(true);
 			trapdoor.SetEC(ec);

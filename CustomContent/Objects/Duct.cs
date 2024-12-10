@@ -182,7 +182,7 @@ namespace BBTimes.CustomContent.Objects
 		internal PropagatedAudioManager normalVentAudioMan, gasLeakVentAudioMan;
 
 		[SerializeField]
-		internal float leakPushForce = 31f, leakAccelerationForce = -21.5f;
+		internal float leakPushForce = 31f, leakAccelerationForce = -12.5f;
 
 		const float minCooldown = 10f, maxCooldown = 25f, emissionRate = 75f;
 	}
