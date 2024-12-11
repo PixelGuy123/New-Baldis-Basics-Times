@@ -42,8 +42,8 @@ namespace BBTimes.CustomContent.Builders
 			builder.closedSprites = [trapSprites[0], trapSprites[1]];
 			builder.openSprites = [trapSprites[2], trapSprites[3]];
 
-			trapdoorholder.aud_shut = this.GetSound("trapDoor_shut.wav", "Sfx_Doors_StandardShut", SoundType.Voice, Color.white);
-			trapdoorholder.aud_open = this.GetSound("trapDoor_open.wav", "Sfx_Doors_StandardOpen", SoundType.Voice, Color.white);
+			trapdoorholder.aud_shut = this.GetSound("trapDoor_shut.wav", "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
+			trapdoorholder.aud_open = this.GetSound("trapDoor_open.wav", "Sfx_Doors_StandardOpen", SoundType.Effect, Color.white);
 
 			var trapdoor = ObjectCreationExtensions.CreateSpriteBillboard(builder.closedSprites[0], false);
 			trapdoor.transform.SetParent(trapdoorholder.transform); // prefab stuf

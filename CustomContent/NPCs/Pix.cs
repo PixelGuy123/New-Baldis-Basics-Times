@@ -21,8 +21,8 @@ namespace BBTimes.CustomContent.NPCs
 				this.GetSound("Pix_Failed.wav", "Vfx_Pix_MisFail", SoundType.Voice, new(0.6f, 0f, 0f)),
 				this.GetSound("Pix_Grrr.wav", "Vfx_Pix_Grr", SoundType.Voice, new(0.6f, 0f, 0f)),
 				this.GetSound("Pix_NextTime.wav", "Vfx_Pix_GetYou", SoundType.Voice, new(0.6f, 0f, 0f)),
-				this.GetSound("Pix_Shoot.wav", "Vfx_Pix_Shoot", SoundType.Voice, new(0.6f, 0f, 0f)),
-				this.GetSoundNoSub("shock.wav", SoundType.Voice)
+				this.GetSound("Pix_Shoot.wav", "Vfx_Pix_Shoot", SoundType.Effect, new(0.6f, 0f, 0f)),
+				this.GetSoundNoSub("shock.wav", SoundType.Effect)
 				];
 
 			soundObjects[2].additionalKeys = [new() { key = "Vfx_Pix_Stop2", time = 1.3f }, new() { key = "Vfx_Pix_Stop3", time = 1.724f }];

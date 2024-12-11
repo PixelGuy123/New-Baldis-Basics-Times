@@ -25,8 +25,8 @@ namespace BBTimes.CustomContent.NPCs
 			this.GetSound("Mugh_WhatDidYouDo.wav", "Vfx_Mugh_Die1", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
 			this.GetSound("Mugh_Why.wav", "Vfx_Mugh_Die2", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
 			this.GetSound("Mugh_Revived.wav", "Vfx_Mugh_Revive", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
-			this.GetSound("mugh_noises.wav", "Vfx_Mugh_Noise", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
-			this.GetSound("mugh_die.wav", "Vfx_Mugh_Noise", SoundType.Voice, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("mugh_noises.wav", "Vfx_Mugh_Noise", SoundType.Effect, new(0.3671875f, 0.1640625f, 0f)),
+			this.GetSound("mugh_die.wav", "Vfx_Mugh_Noise", SoundType.Effect, new(0.3671875f, 0.1640625f, 0f)),
 			];
 
 			audMan = GetComponent<PropagatedAudioManager>();

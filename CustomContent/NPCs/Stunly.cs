@@ -15,8 +15,8 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			allSprites = [.. this.GetSpriteSheet(7, 1, 35f, "stunly.png"), .. this.GetSpriteSheet(2, 1, 1f, "stunlyScreen.png"), this.GetSprite(30f, "StunningStars.png")];
 			spriteRenderer[0].sprite = allSprites[0];
-			allSounds = [this.GetSoundNoSub("stunly_noises.wav", SoundType.Voice),
-		this.GetSound("stunly_stun.wav", "Vfx_Stunly_Stun", SoundType.Voice, Color.white),
+			allSounds = [this.GetSoundNoSub("stunly_noises.wav", SoundType.Effect),
+		this.GetSound("stunly_stun.wav", "Vfx_Stunly_Stun", SoundType.Effect, Color.white),
 		this.GetSound("StunlyChaseLaughter.wav", "Vfx_Stunly_Laughter", SoundType.Voice, Color.white)]; ;
 
 			noiseMan = GetComponent<PropagatedAudioManager>();
@@ -384,10 +384,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			cooldown -= stunly.TimeScale * Time.deltaTime;
 			if (cooldown < 0f)
-			{
-				map.Deactivate();
 				stunly.behaviorStateMachine.ChangeState(new Stunly_WanderNormal(stunly));
-			}
 
 		}
 
@@ -396,6 +393,12 @@ namespace BBTimes.CustomContent.NPCs
 			stunly.SetBlind(subject, false, wasPlayer);
 			removedStun = true;
 			stunly.cancelledEffect = false;
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			map.Deactivate();
 		}
 
 

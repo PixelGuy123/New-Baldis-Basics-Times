@@ -15,7 +15,7 @@ namespace BBTimes.CustomContent.NPCs
 			audMan = GetComponent<PropagatedAudioManager>();
 			audWander = this.GetSound("breathing.wav", "Vfx_Phawillow_Wandering", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
 			audLaugh = this.GetSound("Phawillow_Laughing.wav", "Vfx_Phawillow_Laught", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
-			audRestart = this.GetSound("Phawillow_Laughing.wav", "Vfx_Phawillow_Restart", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
+			audRestart = this.GetSound("Phawillow_Restarting.wav", "Vfx_Phawillow_Restart", SoundType.Voice, new(0.84705f, 0.84705f, 0.84705f));
 			floatingRenderer = spriteRenderer[0];
 
 			var itemHolder = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(out var itmRenderer, new Vector3(3f, -0.8f, 0f), 0);

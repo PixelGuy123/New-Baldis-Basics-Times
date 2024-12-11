@@ -183,8 +183,8 @@ namespace BBTimes.Manager
 			evMac.sprDead = sprs[0];
 			// Audio Setup from event machine
 			evMac.audBalAngry = [
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "NoEv1.wav")), "Vfx_BAL_NoEvent0_0", SoundType.Effect, Color.green),
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "NoEv2.wav")), "Vfx_BAL_NoEvent1_0", SoundType.Effect, Color.green),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "NoEv1.wav")), "Vfx_BAL_NoEvent0_0", SoundType.Voice, Color.green),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "NoEv2.wav")), "Vfx_BAL_NoEvent1_0", SoundType.Voice, Color.green),
 				];
 
 			evMac.audBalAngry[0].additionalKeys = [new() { key = "Vfx_BAL_NoEvent0_1", time = 1.403f }, new() { key = "Vfx_BAL_NoEvent0_2", time = 3.584f }];

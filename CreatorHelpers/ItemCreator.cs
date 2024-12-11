@@ -81,7 +81,6 @@ namespace BBTimes.Helpers
 
 			string[] files = Directory.GetFiles(path);
 			var sprs = new Sprite[files.Length];
-			string[] repeatedOnes = new string[files.Length];
 
 			// Pre found ones
 			var text = files.First(x => Path.GetFileName(x).StartsWith(BBTimesManager.TimesAssetPrefix + itemBigIconPrefix));
@@ -93,7 +92,6 @@ namespace BBTimes.Helpers
 #endif
 			var tex = AssetLoader.TextureFromFile(text);
 			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one * 0.5f, 50f);
-			repeatedOnes[0] = text;
 
 			text = files.First(x => Path.GetFileName(x).StartsWith(BBTimesManager.TimesAssetPrefix + itemSmallIconPrefix));
 #if CHEAT
@@ -101,7 +99,6 @@ namespace BBTimes.Helpers
 #endif
 			tex = AssetLoader.TextureFromFile(text);
 			sprs[0] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one * 0.5f, 1f);
-			repeatedOnes[1] = text;
 
 			return sprs;
 		}

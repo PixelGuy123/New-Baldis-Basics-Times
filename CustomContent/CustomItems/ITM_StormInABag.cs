@@ -32,7 +32,7 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan = gameObject.CreatePropagatedAudioManager(145f, 165f);
 			audAttack = new SoundObject[3];
 			for (int i = 0; i < audAttack.Length; i++)
-				audAttack[i] = this.GetSoundNoSub($"shoot{i+1}.wav", SoundType.Voice);
+				audAttack[i] = this.GetSoundNoSub($"shoot{i+1}.wav", SoundType.Effect);
 
 			lightningPre = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(11.35f, "visualThunder.png")).GetComponent<RendererContainer>();
 			lightningPre.gameObject.ConvertToPrefab(true);

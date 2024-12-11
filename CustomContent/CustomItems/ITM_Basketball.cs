@@ -25,7 +25,7 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan = gameObject.CreatePropagatedAudioManager(75, 105);
 			audThrow = BBTimesManager.man.Get<SoundObject>("audGenericThrow");
 			audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
-			audBong = this.GetSound("bounce.wav", "BB_Bong", SoundType.Voice, Color.white);
+			audBong = this.GetSound("bounce.wav", "BB_Bong", SoundType.Effect, Color.white);
 			audPop = BBTimesManager.man.Get<SoundObject>("audPop");
 			spriteAnim = sprs;
 

@@ -14,7 +14,7 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("SuperFans.wav", "Event_PastHolograms0", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("SuperFans.wav", "Event_PastHolograms0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
 				new() { time = 1.682f, key = "Event_SuperFans1" },
 			new() { time = 4.653f, key = "Event_SuperFans2" }

@@ -16,13 +16,13 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			audMan = GetComponent<PropagatedAudioManager>();
 			angryAudMan = gameObject.CreatePropagatedAudioManager(audMan.minDistance + 25f, audMan.maxDistance + 25f);
-			audWhiteNoise = this.GetSound("whiteNoise.wav", "Vfx_Oran_Sucking", SoundType.Voice, new(0.79609375f, 0.39765625f, 0f));
+			audWhiteNoise = this.GetSound("whiteNoise.wav", "Vfx_Oran_Sucking", SoundType.Effect, new(0.79609375f, 0.39765625f, 0f));
 			audItemCall = new SoundObject[9];
 			for (int i = 0; i < audItemCall.Length; i++)
 				audItemCall[i] = this.GetSound($"{i + 1}item.wav", $"Vfx_Oran_Item{i + 1}", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
 			audAngryCall = [this.GetSound("angryCall1.wav", "Vfx_Oran_Angry1", SoundType.Voice, new(0.79609375f, 0.39765625f, 0f)),
 			this.GetSound("angryCall2.wav", "Vfx_Oran_Angry2", SoundType.Voice, new(0.79609375f, 0.39765625f, 0f))];
-			audCrunch = this.GetSound("crunch.wav", "Vfx_Oran_Crunch", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
+			audCrunch = this.GetSound("crunch.wav", "Vfx_Oran_Crunch", SoundType.Effect, new(0.99609375f, 0.59765625f, 0f));
 			audRefuseItem = this.GetSound("refuseItem.wav", "Vfx_Oran_DontWant", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
 			audRequireItem = this.GetSound("requireItem.wav", "Vfx_Oran_RequireItem", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
 			audThanks = this.GetSound("thanks1.wav", "Vfx_Oran_Thanks1", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
@@ -31,7 +31,7 @@ namespace BBTimes.CustomContent.NPCs
 				audWonder[i] = this.GetSound($"wonder{i + 1}.wav", $"Vfx_Oran_Wander{i + 1}", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
 			audNoticeChase = this.GetSound("noticeChase1.wav", "Vfx_Oran_Notice1", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
 			audLetPlayerOut = this.GetSound("letPlayerOut.wav", "Vfx_Oran_Dirt", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
-			audHeavyCrunch = this.GetSound("heavyCrunch.wav", "Sfx_Misc_ChipCrunch", SoundType.Voice, new(0.99609375f, 0.59765625f, 0f));
+			audHeavyCrunch = this.GetSound("heavyCrunch.wav", "Sfx_Misc_ChipCrunch", SoundType.Effect, new(0.99609375f, 0.59765625f, 0f));
 
 			var sprites = this.GetSpriteSheet(8, 1, 25f, "orange.png");
 			happyTalk = [sprites[0], sprites[1]];

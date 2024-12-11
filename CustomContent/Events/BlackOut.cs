@@ -11,7 +11,7 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("baldi_ele.wav", "Event_BlackOut0", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("baldi_ele.wav", "Event_BlackOut0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
 				new() {time = 1.416f, key = "Event_BlackOut1"},
 				new() {time = 2.735f, key = "Event_BlackOut2"},
@@ -21,8 +21,8 @@ namespace BBTimes.CustomContent.Events
 
 			audMan = gameObject.CreateAudioManager(85, 105)
 				.MakeAudioManagerNonPositional();
-			audOff = this.GetSoundNoSub("blackout_out.wav", SoundType.Music);
-			audOn = this.GetSoundNoSub("blackout_on.wav", SoundType.Music);
+			audOff = this.GetSoundNoSub("blackout_out.wav", SoundType.Effect);
+			audOn = this.GetSoundNoSub("blackout_on.wav", SoundType.Effect);
 		}
 
 		public void SetupPrefabPost() { }

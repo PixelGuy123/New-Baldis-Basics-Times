@@ -30,8 +30,8 @@ namespace BBTimes.CustomContent.NPCs
 			// MGS Setup
 			magicPre = mo;
 			audMan = GetComponent<PropagatedAudioManager>();
-			audThrow = this.GetSound("MGS_Throw.wav", "Vfx_MGS_Magic", SoundType.Voice, new(0f, 0.33203125f, 0.99609375f));
-			audPrepare = this.GetSound("MGS_Prep.wav", "Vfx_MGS_PrepMagic", SoundType.Voice, new(0f, 0.33203125f, 0.99609375f));
+			audThrow = this.GetSound("MGS_Throw.wav", "Vfx_MGS_Magic", SoundType.Effect, new(0f, 0.33203125f, 0.99609375f));
+			audPrepare = this.GetSound("MGS_Prep.wav", "Vfx_MGS_PrepMagic", SoundType.Effect, new(0f, 0.33203125f, 0.99609375f));
 			throwSprites = this.GetSpriteSheet(3, 1, 65f, "MGS.png");
 			spriteRenderer[0].sprite = throwSprites[0];
 			renderer = spriteRenderer[0];

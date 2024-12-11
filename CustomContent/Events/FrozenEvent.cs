@@ -15,7 +15,7 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("baldi_freeze.wav", "Event_FreezeEvent0", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("baldi_freeze.wav", "Event_FreezeEvent0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
 				new() {time = 1.495f, key = "Event_FreezeEvent1"},
 				new() {time = 4.156f, key = "Event_FreezeEvent2"},

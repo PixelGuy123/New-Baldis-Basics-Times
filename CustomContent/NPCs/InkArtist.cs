@@ -17,7 +17,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			spriteRenderer[0].sprite = this.GetSprite(25f, "Ink_Artist.png");
 			audMan = GetComponent<PropagatedAudioManager>();
-			audSplash = this.GetSound("splash.wav", "Vfx_InkArt_Splash", SoundType.Voice, Color.white);
+			audSplash = this.GetSound("splash.wav", "Vfx_InkArt_Splash", SoundType.Effect, Color.white);
 
 			var canvas = ObjectCreationExtensions.CreateCanvas();
 			canvas.transform.SetParent(transform);

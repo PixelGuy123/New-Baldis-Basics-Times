@@ -93,8 +93,8 @@ namespace BBTimes.CustomContent.NPCs
 			SoundObject[] soundObjects = [
 			this.GetSound("spj_principal.wav", "Vfx_Spj_Found", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f)),
 			this.GetSound("spj_wonder.wav", "Vfx_Spj_Wander", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f)),
-			this.GetSound("spj_step1.wav", "Vfx_Spj_Step", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f)),
-			this.GetSound("spj_step2.wav", "Vfx_Spj_Step", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f)),
+			this.GetSound("spj_step1.wav", "Vfx_Spj_Step", SoundType.Effect, new(0.23828125f, 0.06640625f, 0.51953125f)),
+			this.GetSound("spj_step2.wav", "Vfx_Spj_Step", SoundType.Effect, new(0.23828125f, 0.06640625f, 0.51953125f)),
 			this.GetSound("spj_wtfisthis.wav", "Vfx_Spj_FoundLong1", SoundType.Voice, new(0.23828125f, 0.06640625f, 0.51953125f))
 			];
 

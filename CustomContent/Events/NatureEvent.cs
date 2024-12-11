@@ -15,7 +15,7 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("NatureEvent.wav", "Event_NatureEvent_1", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("NatureEvent.wav", "Event_NatureEvent_1", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
 				new() {time = 1.957f, key = "Event_NatureEvent_2"},
 				new() {time = 4.907f, key = "Event_NatureEvent_3"},
@@ -25,18 +25,18 @@ namespace BBTimes.CustomContent.Events
 
 			List<WeightedSelection<Plant>> flowers = [];
 
-			var vineSound = this.GetSoundNoSub("vines.wav", SoundType.Voice);
+			var vineSound = this.GetSoundNoSub("vines.wav", SoundType.Effect);
 			var sprites = this.GetSpriteSheet(5, 1, plantsPixPerUnit, "timesFlowersPack.png");
 
 			// Normal flowers
 			var speedChanging = CreatePlant<SpeedChangingFlower>(sprites[0], 75);
-			speedChanging.audAffect = this.GetSoundNoSub("BluePlantSpeedUp.wav", SoundType.Voice);
+			speedChanging.audAffect = this.GetSoundNoSub("BluePlantSpeedUp.wav", SoundType.Effect);
 
-			CreatePlant<PurpleFlower>(sprites[1], 110).audPush = this.GetSound("PurplePlantBang.wav", "Vfx_Prize_Bang", SoundType.Voice, Color.white);
+			CreatePlant<PurpleFlower>(sprites[1], 110).audPush = this.GetSound("PurplePlantBang.wav", "Vfx_Prize_Bang", SoundType.Effect, Color.white);
 			CreatePlant<MysteryFlower>(sprites[2], 75).audTeleport = BBTimesManager.man.Get<SoundObject>("teleportAud");
 
 			speedChanging = CreatePlant<SpeedChangingFlower>(sprites[3], 100);
-			speedChanging.audAffect = this.GetSoundNoSub("RedPlantSlowDown.wav", SoundType.Voice);
+			speedChanging.audAffect = this.GetSoundNoSub("RedPlantSlowDown.wav", SoundType.Effect);
 			speedChanging.moveMultiplier = 0.75f;
 
 			var sunFlower = CreatePlant<SunFlower>(sprites[4], 45);
@@ -75,7 +75,7 @@ namespace BBTimes.CustomContent.Events
 
 			var catchPlant = CreatePlant<TrapPlant>(sprites[0], 50);
 			catchPlant.sprCatch = sprites[1];
-			catchPlant.audCatch = this.GetSoundNoSub("plantTrapCatch.wav", SoundType.Voice);
+			catchPlant.audCatch = this.GetSoundNoSub("plantTrapCatch.wav", SoundType.Effect);
 
 
 			flowerPres = [..flowers];
@@ -101,8 +101,8 @@ namespace BBTimes.CustomContent.Events
 				flower.gameObject.ConvertToPrefab(true);
 
 				flower.audMan = flower.gameObject.CreatePropagatedAudioManager(30f, 50f);
-				flower.audSpawn = this.GetSound("plantGrow.wav", "Vfx_Plant_Grow", SoundType.Voice, Color.white);
-				flower.audDespawn = this.GetSound("plantDegrow.wav", "Vfx_Plant_DeGrow", SoundType.Voice, Color.white);
+				flower.audSpawn = this.GetSound("plantGrow.wav", "Vfx_Plant_Grow", SoundType.Effect, Color.white);
+				flower.audDespawn = this.GetSound("plantDegrow.wav", "Vfx_Plant_DeGrow", SoundType.Effect, Color.white);
 
 				flower.collider = flower.gameObject.AddBoxCollider(Vector3.up * 5f, Vector3.one * 9f, true);
 

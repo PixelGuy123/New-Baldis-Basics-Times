@@ -23,7 +23,7 @@ namespace BBTimes.CustomContent.NPCs
 			anim.animation = sprDeactivated;
 
 			audActivated = this.GetSound("zap_activated.wav", "Vfx_ZapZap_Activated", SoundType.Voice, new(0f, 0.55f, 0.75f));
-			audActivationNoises = this.GetSoundNoSub("zap_activatesfx.wav", SoundType.Voice);
+			audActivationNoises = this.GetSoundNoSub("zap_activatesfx.wav", SoundType.Effect);
 			audDeactivating = this.GetSound("zap_deactivating.wav", "Vfx_ZapZap_Deactivate", SoundType.Voice, new(0f, 0.55f, 0.75f));
 			audHacked = this.GetSound("zap_hacked.wav", "Vfx_ZapZap_Hacked", SoundType.Voice, new(0f, 0.55f, 0.75f));
 

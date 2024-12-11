@@ -22,7 +22,7 @@ namespace BBTimes.CustomContent.CustomItems
 			entity = gameObject.CreateEntity(1.5f, 2.5f, renderer.transform);
 
 			audMan = gameObject.CreatePropagatedAudioManager(165, 200);
-			audBell = this.GetSound("bell_bellnoise.wav", "Vfx_BEL_Ring", SoundType.Voice, Color.white);
+			audBell = this.GetSound("bell_bellnoise.wav", "Vfx_BEL_Ring", SoundType.Effect, Color.white);
 
 			this.renderer = rendererBell;
 			deactiveSprite = storedSprites[1];

@@ -25,7 +25,7 @@ namespace BBTimes.CustomContent.NPCs
 			normStepSprs = [sprites[3], sprites[4]];
 			angryStepSprs = [sprites[5], sprites[6]];
 
-			audSteps = [this.GetSound("highHeels0.wav", "Vfx_Spj_Step", SoundType.Voice, new(1f, 0.15f, 0f)), this.GetSound("highHeels1.wav", "Vfx_Spj_Step", SoundType.Voice, new(1f, 0.15f, 0f))];
+			audSteps = [this.GetSound("highHeels0.wav", "Vfx_Spj_Step", SoundType.Effect, new(1f, 0.15f, 0f)), this.GetSound("highHeels1.wav", "Vfx_Spj_Step", SoundType.Voice, new(1f, 0.15f, 0f))];
 			audSpellTheWord = this.GetSound("SpellTheWord.wav", "Vfx_Pen_Spell", SoundType.Voice, new(1f, 0.15f, 0f));
 			audAngrySpellTheWord = this.GetSound("Punishment.wav", "Vfx_Pen_AngrySpell", SoundType.Voice, new(1f, 0.15f, 0f));
 			audAngryWarning = [

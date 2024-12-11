@@ -17,7 +17,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
-			SoundObject[] soundObjects = [this.GetSound("WCH_ambience.wav", "Vfx_Wch_Idle", SoundType.Voice, new Color(0.8f, 0.8f, 0.8f)),
+			SoundObject[] soundObjects = [this.GetSound("WCH_ambience.wav", "Vfx_Wch_Idle", SoundType.Effect, new Color(0.8f, 0.8f, 0.8f)),
 		this.GetSoundNoSub("WCH_see.wav", SoundType.Effect),
 		this.GetSound("WCH_angered.wav", "Vfx_Wch_Angry", SoundType.Effect, new Color(0.8f, 0.8f, 0.8f)),
 		this.GetSound("WCH_teleport.wav", "Vfx_Wch_Teleport", SoundType.Effect, new Color(0.8f, 0.8f, 0.8f)),

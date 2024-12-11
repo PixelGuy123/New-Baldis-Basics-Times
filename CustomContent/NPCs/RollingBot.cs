@@ -1,12 +1,10 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
-using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 using BBTimes.Manager;
 
 
@@ -19,7 +17,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			SoundObject[] soundObjects = [this.GetSound("rol_warning.wav", "Vfx_Rollbot_Warning", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
 			this.GetSound("rol_error.wav", "Vfx_Rollbot_Error", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
-			this.GetSound("motor.wav", "Sfx_1PR_Motor", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
+			this.GetSound("motor.wav", "Sfx_1PR_Motor", SoundType.Effect, new(0.7f, 0.7f, 0.7f)),
 			this.GetSound("rol_fix.wav", "Vfx_Rollbot_Fix", SoundType.Voice, new(0.7f, 0.7f, 0.7f))];
 			Sprite[] storedSprites = this.GetSpriteSheet(4, 4, 25f, "rollBotSheet.png");
 

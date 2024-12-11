@@ -11,8 +11,8 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			
 			audMan = GetComponent<PropagatedAudioManager>();
-			audJump = this.GetSound("leapy_jump.wav", "Vfx_Leapy_Leap", SoundType.Voice, new Color(0f, 0.3984f, 0f));
-			audStomp = this.GetSound("leapy_stomp.wav", "Vfx_Leapy_Stomp", SoundType.Voice, new Color(0f, 0.3984f, 0f));
+			audJump = this.GetSound("leapy_jump.wav", "Vfx_Leapy_Leap", SoundType.Effect, new Color(0f, 0.3984f, 0f));
+			audStomp = this.GetSound("leapy_stomp.wav", "Vfx_Leapy_Stomp", SoundType.Effect, new Color(0f, 0.3984f, 0f));
 
 			renderer = spriteRenderer[0];
 			var sprs = this.GetSpriteSheet(3, 1, 25f, "leapy.png");

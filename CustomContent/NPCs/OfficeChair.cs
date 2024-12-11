@@ -11,7 +11,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
-			audRoll = this.GetSound("ChairRolling.wav", "Vfx_OFC_Walk", SoundType.Voice, new(0.74609375f, 0.74609375f, 0.74609375f));
+			audRoll = this.GetSound("ChairRolling.wav", "Vfx_OFC_Walk", SoundType.Effect, new(0.74609375f, 0.74609375f, 0.74609375f));
 
 			var storedSprites = this.GetSpriteSheet(2, 1, 24f, "officeChair.png");
 			spriteRenderer[0].sprite = storedSprites[0];

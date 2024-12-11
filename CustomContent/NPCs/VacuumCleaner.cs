@@ -12,9 +12,9 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			spriteRenderer[0].sprite = this.GetSprite(16.5f, "cleaner.png");
 			audMan = GetComponent<PropagatedAudioManager>();
-			audStartSweep = this.GetSound("cleaner_start.wav", "Vfx_VacClean_Clean", SoundType.Voice, new(0.85f, 0.85f, 0.85f));
-			audSweepLoop = this.GetSound("cleaner_loop.wav", "Vfx_VacClean_Clean", SoundType.Voice, new(0.85f, 0.85f, 0.85f));
-			audEndSweep = this.GetSound("cleaner_end.wav", "Vfx_VacClean_Clean", SoundType.Voice, new(0.85f, 0.85f, 0.85f));
+			audStartSweep = this.GetSound("cleaner_start.wav", "Vfx_VacClean_Clean", SoundType.Effect, new(0.85f, 0.85f, 0.85f));
+			audSweepLoop = this.GetSound("cleaner_loop.wav", "Vfx_VacClean_Clean", SoundType.Effect, new(0.85f, 0.85f, 0.85f));
+			audEndSweep = this.GetSound("cleaner_end.wav", "Vfx_VacClean_Clean", SoundType.Effect, new(0.85f, 0.85f, 0.85f));
 		}
 
 		public void SetupPrefabPost() { }

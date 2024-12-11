@@ -17,7 +17,7 @@ namespace BBTimes.CustomContent.NPCs
 			unwrapSprites = sprites;
 
 			audHappyHolidays = this.GetSound("HappyHolidays.wav", "Vfx_HapH_MerryChristmas", SoundType.Voice, new(0.796875f, 0f, 0f));
-			audUnbox = this.GetSound("unbox.wav", "Vfx_HapH_Unwrap", SoundType.Voice, new(0.796875f, 0f, 0f));
+			audUnbox = this.GetSound("unbox.wav", "Vfx_HapH_Unwrap", SoundType.Effect, new(0.796875f, 0f, 0f));
 
 			var myCol = (CapsuleCollider)baseTrigger[0];
 			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
@@ -169,6 +169,12 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				hh.behaviorStateMachine.ChangeState(prevState);
 			}
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			map.Deactivate();
 		}
 	}
 

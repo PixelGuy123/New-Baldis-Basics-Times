@@ -16,8 +16,8 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefab()
 		{
 			audMan = GetComponent<AudioManager>();
-			audRolling = this.GetSound("acRolling.wav", "Vfx_JerryAc_Rolling", SoundType.Voice, Color.white);
-			audActive = this.GetSound("acRunning.wav", "Vfx_JerryAc_Cool", SoundType.Voice, Color.white);
+			audRolling = this.GetSound("acRolling.wav", "Vfx_JerryAc_Rolling", SoundType.Effect, Color.white);
+			audActive = this.GetSound("acRunning.wav", "Vfx_JerryAc_Cool", SoundType.Effect, Color.white);
 
 			var sprs = this.GetSpriteSheet(4, 2, 25f, "jerry.png");
 			spriteRenderer[0].CreateAnimatedSpriteRotator(

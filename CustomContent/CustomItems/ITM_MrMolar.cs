@@ -14,8 +14,8 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			audMan = gameObject.CreatePropagatedAudioManager(115f, 145f);
 			audWind = GenericExtensions.FindResourceObject<ITM_AlarmClock>().audWind;
-			audActive = this.GetSound("Molar_Loop.wav", "Vfx_MrMolar_Active", SoundType.Voice, Color.white);
-			audBite = this.GetSound("Molar_Bite.wav", "Vfx_MrMolar_Bite", SoundType.Voice, Color.white);
+			audActive = this.GetSound("Molar_Loop.wav", "Vfx_MrMolar_Active", SoundType.Effect, Color.white);
+			audBite = this.GetSound("Molar_Bite.wav", "Vfx_MrMolar_Bite", SoundType.Effect, Color.white);
 
 			var sprs = this.GetSpriteSheet(12, 1, 45f, "molarEntity.png");
 			var renderBase = ObjectCreationExtensions.CreateSpriteBillboard(sprs[0]).AddSpriteHolder(out var render, 0f);

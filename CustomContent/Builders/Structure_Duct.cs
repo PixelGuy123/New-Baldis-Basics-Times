@@ -48,10 +48,10 @@ namespace BBTimes.CustomContent.Builders
 			v.ventTexs = texs;
 			v.normalVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f); // Two propagated audio managers
 			v.gasLeakVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f);
-			v.ventAudios = [this.GetSoundNoSub("vent_normal.wav", SoundType.Voice), 
-				this.GetSound("vent_gasleak_start.wav", "Vfx_VentGasLeak", SoundType.Voice, Color.white),
-				this.GetSound("vent_gasleak_loop.wav", "Vfx_VentGasLeak", SoundType.Voice, Color.white),
-				this.GetSound("vent_gasleak_end.wav", "Vfx_VentGasLeak", SoundType.Voice, Color.white)];
+			v.ventAudios = [this.GetSoundNoSub("vent_normal.wav", SoundType.Effect), 
+				this.GetSound("vent_gasleak_start.wav", "Vfx_VentGasLeak", SoundType.Effect, Color.white),
+				this.GetSound("vent_gasleak_loop.wav", "Vfx_VentGasLeak", SoundType.Effect, Color.white),
+				this.GetSound("vent_gasleak_end.wav", "Vfx_VentGasLeak", SoundType.Effect, Color.white)];
 			v.colliders = [box2];
 
 			visual.transform.SetParent(vent.transform);

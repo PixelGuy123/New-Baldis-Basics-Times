@@ -14,7 +14,7 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("Earthquake.wav", "Event_PastHolograms0", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("Earthquake.wav", "Event_PastHolograms0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [new() { key = "Event_Earthquake1", time = 1.115f }, new() { key = "Event_Earthquake2", time = 3.165f }];
 
 			// Particles

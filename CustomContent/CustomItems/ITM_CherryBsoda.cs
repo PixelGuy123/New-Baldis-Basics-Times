@@ -19,7 +19,7 @@ namespace BBTimes.CustomContent.CustomItems
 			time = nbsoda.time;
 			moveMod = nbsoda.moveMod;
 			audMan = gameObject.CreatePropagatedAudioManager(65, 125);
-			audHit = this.GetSoundNoSub("hit.wav", SoundType.Voice);
+			audHit = this.GetSoundNoSub("hit.wav", SoundType.Effect);
 
 			spriteRenderer.sprite = this.GetSprite(spriteRenderer.sprite.pixelsPerUnit, "CherrySpray.png");
 			speed = 45f;

@@ -11,7 +11,7 @@ namespace BBTimes.CustomContent.CustomItems
 		public void SetupPrefab() 
 		{
 			audMan = gameObject.CreatePropagatedAudioManager(65f, 85f);
-			audHit = this.GetSound("pan_hit.wav", "BB_Hit", SoundType.Voice, Color.white);
+			audHit = this.GetSound("pan_hit.wav", "BB_Hit", SoundType.Effect, Color.white);
 		}
 		public void SetupPrefabPost() { }
 

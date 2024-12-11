@@ -20,7 +20,7 @@ namespace BBTimes.CustomContent.Builders
 			alarmObj.gameObject.ConvertToPrefab(true);
 			alarmPre = alarmObj.gameObject.AddComponent<ItemAlarm>();
 			alarmPre.audMan = alarmObj.gameObject.CreatePropagatedAudioManager(125f, 185f);
-			alarmPre.audAlarm = this.GetSound("itemDetectorAlarmNoise.wav", "Vfx_ItemAlarm_Alarm", SoundType.Voice, Color.white);
+			alarmPre.audAlarm = this.GetSound("itemDetectorAlarmNoise.wav", "Vfx_ItemAlarm_Alarm", SoundType.Effect, Color.white);
 			alarmPre.renderer = renderer.transform;
 
 			return new() { prefab = this, parameters = new() { minMax = [new(2, 5)] } }; // minMax amount
@@ -54,9 +54,11 @@ namespace BBTimes.CustomContent.Builders
 				if (potentialPickups.Count == 0)
 					return;
 
-				var alarm = Instantiate(alarmPre, transform);
-
 				int idx = lg.controlledRNG.Next(potentialPickups.Count);
+				var alarm = Instantiate(alarmPre, 
+					ec.CellFromPosition(potentialPickups[idx].transform.position).ObjectBase);
+
+				
 				alarm.AttachToPickup(potentialPickups[idx]);
 				alarm.Ec = ec;
 

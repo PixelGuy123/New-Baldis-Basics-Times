@@ -25,7 +25,7 @@ namespace BBTimes.CustomContent.NPCs
 			audActivate = this.GetSound("tic_wanderStart.ogg", "Vfx_TickTock_WanderStart", SoundType.Voice, Color.blue);
 			audDing = this.GetSound("tic_ding.ogg", "Vfx_TickTock_Ding", SoundType.Voice, Color.blue);
 			audGoSleep = this.GetSound("tic_finishRing.ogg", "Vfx_TickTock_GoSleep", SoundType.Voice, Color.blue);
-			audRing = this.GetSound("tic_ring.ogg", "Vfx_TickTock_Ring", SoundType.Voice, Color.blue);
+			audRing = this.GetSound("tic_ring.ogg", "Vfx_TickTock_Ring", SoundType.Effect, Color.blue);
 			audSleeping = this.GetSound("tic_sleepLoop.ogg", "Vfx_TickTock_Sleeping", SoundType.Voice, Color.blue);
 
 			anim.animation = sprSleeping;

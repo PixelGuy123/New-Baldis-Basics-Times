@@ -29,9 +29,9 @@ namespace BBTimes.CustomContent.Builders
 			squishBase.blockCollider = collider;
 
 			squishBase.audMan = squishBase.gameObject.CreatePropagatedAudioManager(100f, 105f);
-			squishBase.audHit = this.GetSound("squishHit.wav", "Sfx_Doors_StandardShut", SoundType.Voice, Color.white);
-			squishBase.audRun = this.GetSound("squishSquishing.wav", "Vfx_Squish_Running", SoundType.Voice, Color.white);
-			squishBase.audPrepare = this.GetSound("squisherPrepare.wav", "Vfx_Squish_Running", SoundType.Voice, Color.white);
+			squishBase.audHit = this.GetSound("squishHit.wav", "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
+			squishBase.audRun = this.GetSound("squishSquishing.wav", "Vfx_Squish_Running", SoundType.Effect, Color.white);
+			squishBase.audPrepare = this.GetSound("squisherPrepare.wav", "Vfx_Squish_Running", SoundType.Effect, Color.white);
 
 			// Head
 			var squishHead = ObjectCreationExtension.CreateCube(this.GetTexture("squisherHead.png"));

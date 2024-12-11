@@ -15,7 +15,7 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("hologramEv.wav", "Event_PastHolograms0", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("hologramEv.wav", "Event_PastHolograms0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [new() { time = 2.168f, key = "Event_PastHolograms1" },
 				new() { time = 6.584f, key = "Event_PastHolograms2" },
 				new() { time = 11.379f, key = "Event_PastHolograms3" },
@@ -39,7 +39,7 @@ namespace BBTimes.CustomContent.Events
 			
 			for (int i = 0; i < ec.Npcs.Count; i++)
 			{
-				if (ec.Npcs[i].Navigator.isActiveAndEnabled && ec.Npcs[i].GetMeta().flags.HasFlag(NPCFlags.Standard))
+				if (ec.Npcs[i].Navigator.isActiveAndEnabled && ec.Npcs[i].spriteRenderer.Length != 0 && ec.Npcs[i].spriteRenderer[0] && ec.Npcs[i].GetMeta().flags.HasFlag(NPCFlags.Standard))
 				{
 					for (int d = 1; d <= pastLayers; d++) 
 					{
@@ -64,8 +64,12 @@ namespace BBTimes.CustomContent.Events
 		public override void End()
 		{
 			base.End();
-			holos.ForEach(x => Destroy(x.gameObject));
-			holos.Clear();
+			while (holos.Count != 0)
+			{
+				if (holos[0])
+					Destroy(holos[0].gameObject);
+				holos.RemoveAt(0);
+			}
 		}
 
 		readonly List<Hologram> holos = [];

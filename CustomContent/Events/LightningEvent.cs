@@ -14,14 +14,14 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("Lightning.wav", "Event_Lightning1", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("Lightning.wav", "Event_Lightning1", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
 				new() {time = 2.718f, key = "Event_Lightning2"}
 				];
 
 			audMan = gameObject.CreateAudioManager(85, 105)
 				.MakeAudioManagerNonPositional();
-			audThunderstorm = this.GetSoundNoSub("thunderLoop.wav", SoundType.Music);
+			audThunderstorm = this.GetSoundNoSub("thunderLoop.wav", SoundType.Effect);
 			audThunder = this.GetSoundNoSub("thunder.wav", SoundType.Effect);
 			eletricityPre = BBTimesManager.man.Get<Eletricity>("EletricityPrefab");
 

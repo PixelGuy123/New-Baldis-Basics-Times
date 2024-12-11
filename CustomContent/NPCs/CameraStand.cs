@@ -170,7 +170,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		Coroutine picTimer;
 		PlayerManager lastPlayer;
-
+		
 		public static List<KeyValuePair<CameraStand, PlayerManager>> affectedByCamStand = [];
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.7f);

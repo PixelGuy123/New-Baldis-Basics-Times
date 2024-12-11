@@ -47,8 +47,8 @@ namespace BBTimes.CustomContent.NPCs
 			];
 
 			audClaps = [
-			this.GetSound("DRI_Clap1.wav", "Vfx_Dribble_Clap", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f)),
-			this.GetSound("DRI_Clap2.wav", "Vfx_Dribble_Clap", SoundType.Voice, new(0.99609375f, 0.609375f, 0.3984375f))
+			this.GetSound("DRI_Clap1.wav", "Vfx_Dribble_Clap", SoundType.Effect, new(0.99609375f, 0.609375f, 0.3984375f)),
+			this.GetSound("DRI_Clap2.wav", "Vfx_Dribble_Clap", SoundType.Effect, new(0.99609375f, 0.609375f, 0.3984375f))
 			];
 
 			audMan = GetComponent<PropagatedAudioManager>();

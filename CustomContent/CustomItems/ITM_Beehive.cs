@@ -22,8 +22,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 			audMan = gameObject.CreatePropagatedAudioManager(75, 105);
 			stungAudMan = gameObject.CreatePropagatedAudioManager(95, 125);
-			audBees = this.GetSound("bees.wav", "Beehive_bee", SoundType.Voice, Color.white);
-			audStung = this.GetSound("poke.wav", "Beehive_Sting", SoundType.Voice, Color.white);
+			audBees = this.GetSound("bees.wav", "Beehive_bee", SoundType.Effect, Color.white);
+			audStung = this.GetSound("poke.wav", "Beehive_Sting", SoundType.Effect, Color.white);
 
 			renderer = rendererBase;
 		}

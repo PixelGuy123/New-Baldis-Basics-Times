@@ -15,8 +15,8 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			audMan = GetComponent<AudioManager>();
 
-			audFlying = this.GetSound("Quiker_Sound.wav", "Vfx_Quiker_Noises", SoundType.Voice, new(0.1f, 0.1f, 0.1f));
-			audBlind = this.GetSoundNoSub("Quiker_Caught.wav", SoundType.Voice);
+			audFlying = this.GetSound("Quiker_Sound.wav", "Vfx_Quiker_Noises", SoundType.Effect, new(0.1f, 0.1f, 0.1f));
+			audBlind = this.GetSoundNoSub("Quiker_Caught.wav", SoundType.Effect);
 
 			flyingAudMan = gameObject.CreatePropagatedAudioManager(175f, 255f);
 

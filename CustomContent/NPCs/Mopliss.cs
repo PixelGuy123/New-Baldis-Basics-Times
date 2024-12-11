@@ -202,6 +202,9 @@ namespace BBTimes.CustomContent.NPCs
 		public override void DestinationEmpty()
 		{
 			base.DestinationEmpty();
+			if (spotToGo == null)
+				return; // Should avoid exceptions below
+
 			if (mop.ec.CellFromPosition(mop.transform.position) != spotToGo)
 				ChangeNavigationState(tar);
 			else

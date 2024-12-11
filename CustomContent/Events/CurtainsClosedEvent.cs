@@ -16,13 +16,13 @@ namespace BBTimes.CustomContent.Events
 		public void SetupPrefab()
 		{
 
-			eventIntro = this.GetSound("baldi_curtains.wav", "Event_CurtClosed0", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("baldi_curtains.wav", "Event_CurtClosed0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [new() { time = 6.267f, key = "Event_CurtClosed1" }, new() { time = 9.597f, key = "Event_CurtClosed2" }];
 
 			var curt = new GameObject("Curtain").AddComponent<Curtains>();
 			curt.gameObject.ConvertToPrefab(true);
-			curt.audClose = this.GetSound("curtainClose.wav", "Vfx_Curtain_Slide", SoundType.Voice, Color.white);
-			curt.audOpen = this.GetSound("curtainOpen.wav", "Vfx_Curtain_Slide", SoundType.Voice, Color.white);
+			curt.audClose = this.GetSound("curtainClose.wav", "Vfx_Curtain_Slide", SoundType.Effect, Color.white);
+			curt.audOpen = this.GetSound("curtainOpen.wav", "Vfx_Curtain_Slide", SoundType.Effect, Color.white);
 
 			var storedSprites = this.GetSpriteSheet(2, 1, 26f, "curtains.png");
 			curt.sprClosed = storedSprites[0];

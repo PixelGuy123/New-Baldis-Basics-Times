@@ -14,7 +14,7 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("SkateboardDay.wav", "Event_SkateboardDay1", SoundType.Effect, Color.green);
+			eventIntro = this.GetSound("SkateboardDay.wav", "Event_SkateboardDay1", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [new() { time = 3.156f, key = "Event_SkateboardDay2" }];
 
 			var skRender = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(out var skRenderer, 0f);
@@ -26,7 +26,7 @@ namespace BBTimes.CustomContent.Events
 			((CapsuleCollider)sk.entity.collider).height = 10f; // Should stop it from going below anything
 			sk.name = "Skateboard";
 			sk.audMan = sk.gameObject.CreatePropagatedAudioManager(45f, 65f);
-			sk.audRoll = this.GetSound("skateNoises.wav", "Vfx_Ska_Noise", SoundType.Voice, Color.white);
+			sk.audRoll = this.GetSound("skateNoises.wav", "Vfx_Ska_Noise", SoundType.Effect, Color.white);
 
 			skatePre = sk;
 

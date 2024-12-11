@@ -20,8 +20,8 @@ namespace BBTimes.CustomContent.Builders
 
 			doorPre = templateDoor.gameObject.AddComponent<SmallDoor>();
 			doorPre.audMan = templateDoor.audMan;
-			doorPre.audOpen = this.GetSound("smallDoorOpen.wav", "Sfx_Doors_StandardOpen", SoundType.Voice, Color.white);
-			doorPre.audClose = this.GetSound("smallDoorShut.wav", "Sfx_Doors_StandardShut", SoundType.Voice, Color.white);
+			doorPre.audOpen = this.GetSound("smallDoorOpen.wav", "Sfx_Doors_StandardOpen", SoundType.Effect, Color.white);
+			doorPre.audClose = this.GetSound("smallDoorShut.wav", "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
 
 			doorPre.colliders = templateDoor.colliders;
 			Texture2D activeTex = this.GetTexture("smallDoorMask.png");

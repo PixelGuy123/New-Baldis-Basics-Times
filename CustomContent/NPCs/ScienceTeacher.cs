@@ -41,18 +41,18 @@ namespace BBTimes.CustomContent.NPCs
 
 			// -------------- POTIONS CREATION --------------------
 
-			var spillingNoise = this.GetSound("Potion_Spilling.wav", "Vfx_SciTeacher_spills", SoundType.Voice, Color.white);
+			var spillingNoise = this.GetSound("Potion_Spilling.wav", "Vfx_SciTeacher_spills", SoundType.Effect, Color.white);
 			Sprite potionDefaultVisual = this.GetSprite(30f, "unknownPotion.png"); // temp
 
 			int potIdx = 0;
 			Sprite[] potDesings = this.GetSpriteSheet(2, 2, 25f, "pots.png");
 			potionsPre = new Potion[3];
 
-			CreatePotion<AcidPotion>("Acid", potDesings[0]).audAcidicEffect = this.GetSoundNoSub("acid.wav", SoundType.Voice);
+			CreatePotion<AcidPotion>("Acid", potDesings[0]).audAcidicEffect = this.GetSoundNoSub("acid.wav", SoundType.Effect);
 
 			var speedingPot = CreatePotion<SpeedingOrSlowingPotion>("SpeedOrSlow", potDesings[1]);
-			speedingPot.audSpeedBuff = this.GetSoundNoSub("speedup.wav", SoundType.Voice);
-			speedingPot.audSpeedNerf = this.GetSoundNoSub("slowdown.wav", SoundType.Voice);
+			speedingPot.audSpeedBuff = this.GetSoundNoSub("speedup.wav", SoundType.Effect);
+			speedingPot.audSpeedNerf = this.GetSoundNoSub("slowdown.wav", SoundType.Effect);
 			speedingPot.sprFast = potDesings[2];
 			speedingPot.sprSlow = potDesings[1];
 
