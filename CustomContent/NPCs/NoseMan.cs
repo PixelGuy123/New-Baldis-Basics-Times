@@ -68,6 +68,11 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.maxSpeed = speed;
 			navigator.SetSpeed(speed);
 		}
+		public override void Despawn()
+		{
+			base.Despawn();
+			lastPm?.Am.moveMods.Remove(freezeMod);
+		}
 		public void Hide(bool hide) =>
 			renderer.enabled = !hide;
 		public void Annoy()
@@ -121,6 +126,8 @@ namespace BBTimes.CustomContent.NPCs
 		
 		IEnumerator SneezeSequence(PlayerManager pm)
 		{
+			lastPm = pm;
+			pm.Am.moveMods.Add(freezeMod);
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audReward);
 			Singleton<CoreGameManager>.Instance.AddPoints(Random.Range(minYtpAmount, maxYtpAmount), pm.playerNumber, true);
@@ -130,6 +137,7 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.QueueAudio(audSneeze);
 			renderer.sprite = sprSneeze;
 
+			pm.Am.moveMods.Remove(freezeMod);
 			float verySmallDelay = 0.595f;
 			while (verySmallDelay > 0f)
 			{
@@ -148,6 +156,8 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		Coroutine sneezeCor;
+		PlayerManager lastPm;
+		readonly MovementModifier freezeMod = new(Vector3.zero, 0f);
 	}
 
 	internal class NoseMan_StateBase(NoseMan nos) : NpcState(nos)
