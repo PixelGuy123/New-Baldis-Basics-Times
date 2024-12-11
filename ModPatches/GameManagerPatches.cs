@@ -50,7 +50,7 @@ namespace BBTimes.ModPatches
 				core.audMan.FlushQueue(true);
 				return;
 			}
-			if (!__instance.name.StartsWith("Lvl3")) // Not F3
+			if (!__instance.Ec.timeOut && !__instance.name.StartsWith("Lvl3")) // Not F3
 				Singleton<MusicManager>.Instance.PlayMidi("Level_1_End", true); // Music
 		}
 
@@ -197,13 +197,19 @@ namespace BBTimes.ModPatches
 			return false;
 		}
 
+		// Time Out patch here because it's related to below
+		[HarmonyPatch(typeof(TimeOut), "Begin")]
+		[HarmonyPostfix]
+		static void FixMusicSpeed() =>
+			Singleton<MusicManager>.Instance.SetSpeed(1f);
+
 		// ******* Base Game Manager *******
 
 		[HarmonyPatch(typeof(BaseGameManager), "ElevatorClosed")]
 		[HarmonyPostfix]
 		private static void REDAnimation(Elevator elevator, BaseGameManager __instance, int ___elevatorsClosed, EnvironmentController ___ec)
 		{
-			if (__instance is not MainGameManager || __instance.GetType().BaseType != typeof(BaseGameManager) || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free) // MainGameManager expected
+			if (___ec.timeOut || __instance is not MainGameManager || __instance.GetType().BaseType != typeof(BaseGameManager) || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free) // MainGameManager expected
 				return;
 
 			if (___elevatorsClosed == 1)

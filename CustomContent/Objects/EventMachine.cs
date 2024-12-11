@@ -7,7 +7,7 @@ namespace BBTimes.CustomContent.Objects
 	public class EventMachine : EnvironmentObject, IItemAcceptor
 	{
 		public bool ItemFits(Items item) =>
-			!_isDead && ec.CurrentEventTypes.Count != 0 && ec.CurrentEventTypes[0] != RandomEventType.TimeOut && _itemsToAccept.Contains(item);
+			!_isDead && ec.CurrentEventTypes.Count != 0 && !ec.timeOut && _itemsToAccept.Contains(item);
 
 		public void InsertItem(PlayerManager pm, EnvironmentController ec)
 		{
@@ -26,7 +26,7 @@ namespace BBTimes.CustomContent.Objects
 		void Update()
 		{
 			if (!_isDead)
-				spriteToChange.sprite = ec.CurrentEventTypes.Count != 0 && ec.CurrentEventTypes[0] != RandomEventType.TimeOut ? sprWorking : sprNoEvents;
+				spriteToChange.sprite = ec.CurrentEventTypes.Count != 0 && !ec.timeOut ? sprWorking : sprNoEvents;
 		}
 		
 

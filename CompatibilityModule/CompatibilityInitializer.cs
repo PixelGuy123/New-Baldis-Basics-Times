@@ -23,7 +23,7 @@ namespace BBTimes.CompatibilityModule
 				CustomMusicsCompat.Loadup();
 			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.customvendingmachines"))
 				CustomVendingMachinesCompat.Loadup();
-			if (Chainloader.PluginInfos.ContainsKey("io.github.luisrandomness.bbp_custom_posters"))
+			if (Chainloader.PluginInfos.ContainsKey("io.github.uncertainluei.baldiplus.customposters"))
 				CustomPostersCompat.Loadup();
 			if (Chainloader.PluginInfos.ContainsKey("baldi.basics.plus.advanced.mod"))
 				AdvancedEditionCompat.Loadup();
