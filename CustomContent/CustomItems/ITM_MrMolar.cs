@@ -21,8 +21,8 @@ namespace BBTimes.CustomContent.CustomItems
 			var renderBase = ObjectCreationExtensions.CreateSpriteBillboard(sprs[0]).AddSpriteHolder(out var render, 0f);
 			renderBase.name = "MolarRenderBase";
 			render.name = "MolarRenderer";
-			render.transform.SetParent(transform);
-			render.transform.localPosition = Vector3.zero;
+			renderBase.transform.SetParent(transform);
+			renderBase.transform.localPosition = Vector3.zero;
 
 			gameObject.layer = LayerStorage.standardEntities;
 			entity = gameObject.CreateEntity(2f, 2f, renderBase.transform);
