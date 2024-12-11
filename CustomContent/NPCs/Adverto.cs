@@ -140,20 +140,23 @@ namespace BBTimes.CustomContent.NPCs
 				adCooldown -= ad.TimeScale * Time.deltaTime;
 			else
 			{
-				foreach (NPC npc in ad.ec.Npcs)
+				if (!ad.Blinded)
 				{
-					if (npc != ad && npc.looker.enabled)
+					foreach (NPC npc in ad.ec.Npcs)
 					{
-						ad.looker.Raycast(npc.transform, Mathf.Min(
-					(ad.transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,
-					ad.looker.distance,
-					npc.ec.MaxRaycast
-						), out bool flag);
-						if (flag)
+						if (npc != ad && npc.looker.enabled)
 						{
-							adCooldown += ad.timeBeforeAdvertisement;
-							ad.AdNPC(npc);
-							break;
+							ad.looker.Raycast(npc.transform, Mathf.Min(
+						(ad.transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,
+						ad.looker.distance,
+						npc.ec.MaxRaycast
+							), out bool flag);
+							if (flag)
+							{
+								adCooldown += ad.timeBeforeAdvertisement;
+								ad.AdNPC(npc);
+								break;
+							}
 						}
 					}
 				}

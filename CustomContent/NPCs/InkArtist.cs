@@ -7,6 +7,7 @@ using System.Collections;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Components;
+using System.Collections.Generic;
 
 namespace BBTimes.CustomContent.NPCs
 {
@@ -66,6 +67,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal float maxInkCooldown = 12f;
 
 		Coroutine uiInkCooldown;
+		readonly List<KeyValuePair<NPCAttributesContainer ,ValueModifier>> affectedNpcs = [];
 
 		public override void Initialize()
 		{
@@ -98,8 +100,10 @@ namespace BBTimes.CustomContent.NPCs
 		IEnumerator InkNPC(GameObject selfDestruct, NPC e)
 		{
 			var cont = e.GetNPCContainer();
-			var looker = new ValueModifier(0f);
-			cont.AddLookerMod(looker);
+			var valMod = new ValueModifier(0f);
+
+			cont.AddLookerMod(valMod);
+			affectedNpcs.Add(new(cont, valMod));
 
 			float delay = maxInkCooldown * 0.95f;
 			while (delay > 0f)
@@ -108,11 +112,22 @@ namespace BBTimes.CustomContent.NPCs
 				yield return null;
 			}
 
-			cont.RemoveLookerMod(looker);
+			cont.RemoveLookerMod(valMod);
+			affectedNpcs.RemoveAll(x => x.Key == cont);
 
 			Destroy(selfDestruct);
 			yield break;
 
+		}
+
+		public override void Despawn()
+		{
+			base.Despawn();
+			while (affectedNpcs.Count != 0)
+			{
+				affectedNpcs[0].Key?.RemoveLookerMod(affectedNpcs[0].Value);
+				affectedNpcs.RemoveAt(0);
+			}
 		}
 
 		IEnumerator InkCamera(Camera target)

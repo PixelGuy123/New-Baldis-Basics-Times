@@ -276,13 +276,16 @@ namespace BBTimes.CustomContent.NPCs
 			if (sightDelay <= 0f)
 			{
 				cs.TakePictureOfPlayer(player);
-				foreach (var npc in cs.ec.Npcs)
+				if (!cs.Blinded)
 				{
-					if (npc != cs)
+					foreach (var npc in cs.ec.Npcs)
 					{
-						cs.looker.Raycast(npc.transform, cs.looker.distance, LayerStorage.principalLookerMask, out bool sighted);
-						 if (sighted)
-							cs.TakePicture(npc.Navigator.Entity);
+						if (npc != cs)
+						{
+							cs.looker.Raycast(npc.transform, cs.looker.distance, LayerStorage.principalLookerMask, out bool sighted);
+							if (sighted)
+								cs.TakePicture(npc.Navigator.Entity);
+						}
 					}
 				}
 				cs.behaviorStateMachine.ChangeState(new CameraStand_WaitToRespawn(cs));

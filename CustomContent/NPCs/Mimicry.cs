@@ -299,17 +299,20 @@ namespace BBTimes.CustomContent.NPCs
 				mimi.Undisguise(false);
 				return;
 			}
-			
-			for (int i = 0; i < mimi.ec.Npcs.Count; i++)
+
+			if (!mimi.Blinded)
 			{
-				if (mimi != mimi.ec.Npcs[i] && mimi.ec.Npcs[i].Navigator.isActiveAndEnabled)
+				for (int i = 0; i < mimi.ec.Npcs.Count; i++)
 				{
-					mimi.looker.Raycast(mimi.ec.Npcs[i].transform, Mathf.Min(mimi.looker.distance, mimi.ec.MaxRaycast), out bool flag);
-					if (flag)
+					if (mimi != mimi.ec.Npcs[i] && mimi.ec.Npcs[i].Navigator.isActiveAndEnabled)
 					{
-						mimi.JumpscareNPC(mimi.ec.Npcs[i]);
-						return;
-					}	
+						mimi.looker.Raycast(mimi.ec.Npcs[i].transform, Mathf.Min(mimi.looker.distance, mimi.ec.MaxRaycast), out bool flag);
+						if (flag)
+						{
+							mimi.JumpscareNPC(mimi.ec.Npcs[i]);
+							return;
+						}
+					}
 				}
 			}
 		}

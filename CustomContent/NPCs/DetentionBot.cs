@@ -208,20 +208,23 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			foreach (NPC npc in bot.ec.Npcs)
+			if (!bot.Blinded)
 			{
-				if (npc != bot && npc.Disobeying)
+				foreach (NPC npc in bot.ec.Npcs)
 				{
-					bot.looker.Raycast(npc.transform, Mathf.Min(
-				(bot.transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,
-				bot.looker.distance,
-				npc.ec.MaxRaycast
-					), out bool flag);
-					if (flag)
+					if (npc != bot && npc.Disobeying)
 					{
-						bot.TroubleMakerDetected();
-						bot.behaviorStateMachine.ChangeState(new DetentionBot_GoAfterNPC(bot, npc));
-						break;
+						bot.looker.Raycast(npc.transform, Mathf.Min(
+					(bot.transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,
+					bot.looker.distance,
+					npc.ec.MaxRaycast
+						), out bool flag);
+						if (flag)
+						{
+							bot.TroubleMakerDetected();
+							bot.behaviorStateMachine.ChangeState(new DetentionBot_GoAfterNPC(bot, npc));
+							break;
+						}
 					}
 				}
 			}
