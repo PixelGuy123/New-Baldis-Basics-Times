@@ -297,6 +297,7 @@ namespace BBTimes.ModPatches
 					}
 				}
 
+				___ec.SetTimeLimit(9999f);
 				___ec.StartCoroutine(SpawnFires());
 			}
 

@@ -101,27 +101,33 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			if (!subject)
 				return;
+			
 
 			if (blind)
 			{
 				subject.ExternalActivity.moveMods.Add(moveMod);
 				if (!isPlayer)
 				{
-					subject.GetComponent<NPCAttributesContainer>().AddLookerMod(lookerMod);
+					var comp = subject.GetComponent<NPCAttributesContainer>();
+					if (comp)
+						comp.AddLookerMod(lookerMod);
 					activeStar = Instantiate(stars);
 					activeStar.gameObject.SetActive(true);
 					activeStar.SetTarget(subject);
 				}
 				else
 				{
-					stunlyCanvas.gameObject.SetActive(true);
 					var pm = subject.GetComponent<PlayerManager>();
-					stunlyCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
-					if (stunCor != null)
-						StopCoroutine(stunCor);
+					if (pm)
+					{
+						stunlyCanvas.gameObject.SetActive(true);
+						stunlyCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
+						if (stunCor != null)
+							StopCoroutine(stunCor);
 
-					stunCor = StartCoroutine(FadeInAndOutBlindness());
-					affectedByStunly.Add(new(this, pm));
+						stunCor = StartCoroutine(FadeInAndOutBlindness());
+						affectedByStunly.Add(new(this, pm));
+					}
 				}
 			}
 			else
@@ -129,8 +135,11 @@ namespace BBTimes.CustomContent.NPCs
 				subject.ExternalActivity.moveMods.Remove(moveMod);
 				if (!isPlayer)
 				{
-					subject.GetComponent<NPCAttributesContainer>().RemoveLookerMod(lookerMod);
-					Destroy(activeStar.gameObject);
+					var comp = subject.GetComponent<NPCAttributesContainer>();
+					if (comp)
+						comp.RemoveLookerMod(lookerMod);
+					if (activeStar)
+						Destroy(activeStar.gameObject);
 				}
 			}
 		}
@@ -399,6 +408,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Exit();
 			map.Deactivate();
+			stunly.stunlyState = null;
 		}
 
 

@@ -86,9 +86,6 @@ namespace BBTimes.CustomContent.Events
 			foreach (var cam in data.Cameras)
 				cam.TurnMe(on);
 
-			foreach (var l in data.LightSwitches)
-				l.DisableMe(!on);
-
 			foreach (var soda in FindObjectsOfType<SodaMachine>())
 				soda.GetComponent<MeshRenderer>().materials[1].SetTexture("_LightGuide", on ? sodaMachineLight : null); // Switches the texture from the material to make it not glow
 			

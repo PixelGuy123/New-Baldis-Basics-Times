@@ -287,6 +287,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			mimi.DisguiseAsRandomItem();
+			mimi.Navigator.Entity.SetFrozen(true);
 			ChangeNavigationState(new NavigationState_DoNothing(mimi, 0));
 		}
 
@@ -315,6 +316,12 @@ namespace BBTimes.CustomContent.NPCs
 					}
 				}
 			}
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			mimi.Navigator.Entity.SetFrozen(false);
 		}
 	}
 

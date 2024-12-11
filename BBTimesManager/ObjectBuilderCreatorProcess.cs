@@ -26,7 +26,7 @@ namespace BBTimes.Manager
 			// Wall Bell Builder
 			vent = CreatorExtensions.CreateObjectBuilder<RandomForcedPostersBuilder>("ForcedPosterBuilder", out var forcedPosterBuilder);
 			forcedPosterBuilder.allowedShape = TileShapeMask.Single | TileShapeMask.Corner;
-			vent.parameters.chance[0] = 0.6f;
+			vent.parameters.chance[0] = 0.35f;
 			forcedPosterBuilder.posters = [
 				new WeightedPosterObject() {selection = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("wallbell.png")))]), weight = 100}
 				];

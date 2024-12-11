@@ -22,7 +22,7 @@ namespace BBTimes.CustomContent.Builders
 
 			var room = lg.Ec.mainHall;
 
-			foreach (var c in room.GetTilesOfShape(allowedShape, false))
+			foreach (var c in room.GetTilesOfShape(allowedShape, true))
 				if (c.HasAllFreeWall && rng.NextDouble() <= parameters.chance[0])
 					ec.BuildPoster(WeightedPosterObject.ControlledRandomSelection(posters, rng), c, c.RandomUncoveredDirection(rng));
 
