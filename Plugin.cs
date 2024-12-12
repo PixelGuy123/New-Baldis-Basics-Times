@@ -450,7 +450,7 @@ namespace BBTimes
 						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
 						floordata.ShopItems.RemoveAt(i--);
 
-				ld.shopItems = ld.shopItems.AddRangeToArray([.. floordata.ShopItems]);
+				sco.shopItems = sco.shopItems.AddRangeToArray([.. floordata.ShopItems]);
 
 				//List<WeightedRandomEvent> events = new(floordata.Events);
 				for (int i = 0; i < floordata.Events.Count; i++)
