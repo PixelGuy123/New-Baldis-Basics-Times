@@ -31,7 +31,7 @@ namespace BBTimes.Manager
 	{
 		static void CreateCustomRooms()
 		{
-			var lightPre = new WeightedTransform() { selection = GenericExtensions.FindResourceObjects<RoomAsset>().First(x => x.category == RoomCategory.Class).lightPre };
+			var lightPre = new WeightedTransform() { selection = Resources.FindObjectsOfTypeAll<RoomAsset>().Last(x => x.category == RoomCategory.Class).lightPre }; // Last because it should be the original asset
 			var carpet = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("Carpet") };
 			var ceiling = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("CeilingNoLight") };
 			var saloonWall = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("SaloonWall") };

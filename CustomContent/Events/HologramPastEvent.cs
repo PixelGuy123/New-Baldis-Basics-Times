@@ -55,7 +55,7 @@ namespace BBTimes.CustomContent.Events
 				for (int d = 1; d <= pastLayers; d++)
 				{
 					var pre = Instantiate(hologramPre);
-					pre.Initialize(player.GetComponent<SpriteRenderer>(), d * timeOffset, ec, 1f / (d * 0.95f));
+					pre.Initialize(player.GetComponentInChildren<SpriteRenderer>(), d * timeOffset, ec, 1f / (d * 0.95f));
 					holos.Add(pre);
 				}
 			}

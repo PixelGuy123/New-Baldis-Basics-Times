@@ -233,6 +233,8 @@ namespace BBTimes
 			ModdedSaveGame.AddSaveHandler(Info);
 
 			_modPath = AssetLoader.GetModPath(this);
+
+
 			AssetLoader.LoadLocalizationFolder(Path.Combine(ModPath, "Language", "English"), Language.English);
 			BBTimesManager.plug = this;
 

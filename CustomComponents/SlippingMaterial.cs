@@ -33,7 +33,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			var pm = e.GetComponent<PlayerManager>();
 			if (e.Grounded && !float.IsNaN(e.Velocity.x) && (!pm || !pm.GetAttribute().HasAttribute("boots")))
 			{
-				e.AddForce(new(e.Velocity.normalized, force + e.Velocity.magnitude, e.Velocity.magnitude + acceleration));
+				float maxMagnitude = Mathf.Min(100f, Mathf.Abs(e.Velocity.magnitude));
+				e.AddForce(new(e.Velocity.normalized, Mathf.Abs(force + maxMagnitude), -(maxMagnitude + Mathf.Abs(acceleration))));
 				return true;
 			}
 			return false;

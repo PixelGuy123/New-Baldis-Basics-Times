@@ -75,7 +75,7 @@ namespace BBTimes.CustomContent.Builders
 			doorPre.gameObject.AddComponent<RendererContainer>().renderers = doorPre.doors;
 			doorPre.doorIcon = this.GetSprite(ObjectCreationExtension.defaultMapIconPixelsPerUnit, "smallDoorIcon.png");
 
-			return new() { prefab = this, parameters = new() { chance = [0.55f] } }; // Chance = factor to multiply with the amount of rooms in a level (determines the amount of small doors)
+			return new() { prefab = this, parameters = new() { chance = [0.35f] } }; // Chance = factor to multiply with the amount of rooms in a level (determines the amount of small doors)
 		}
 		public void SetupPrefab() { }
 		public void SetupPrefabPost() { }
