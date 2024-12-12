@@ -104,7 +104,8 @@ namespace BBTimes.CustomContent.NPCs
 					rooms.RemoveAll(x => 
 					x.type == RoomType.Hall ||
 					roomFound == x || 
-					accessedRooms.Contains(x));
+					accessedRooms.Contains(x) ||
+					x.entitySafeCells.Count == 0);
 				}
 
 				if (rooms.Count == 0)

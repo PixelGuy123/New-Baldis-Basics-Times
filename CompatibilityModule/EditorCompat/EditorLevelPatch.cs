@@ -75,6 +75,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			MarkObject(man.Get<GameObject>("editorPrefab_SensitiveVase"), Vector3.up * 4.2f);
 			MarkObject(man.Get<GameObject>("editorPrefab_TimesItemDescriptor"), Vector3.up * 5f);
 
+			// Secret stuff
 			//MarkObject(man.Get<GameObject>("editorPrefab_Times_SecretBaldi"), Vector3.up * 5f);
 			//MarkRotatingObject(man.Get<GameObject>("editorPrefab_Times_InvisibleWall"), Vector3.up * 5f);
 			//MarkRotatingObject(man.Get<GameObject>("editorPrefab_Times_CanBeDisabledInvisibleWall"), Vector3.up * 5f);
