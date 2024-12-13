@@ -302,7 +302,6 @@ namespace BBTimes
 					ld.minHallsToRemove += 1;
 					ld.minSize += new IntVector2(3, 1);
 					ld.timeBonusLimit *= 1.8f;
-					ld.timeLimit *= 1.2f;
 					return;
 				}
 
@@ -333,7 +332,6 @@ namespace BBTimes
 					ld.specialRoomsStickToEdge = false;
 					ld.maxLightDistance += 2;
 					ld.timeBonusLimit *= 1.8f;
-					ld.timeLimit *= 1.45f;
 					return;
 				}
 
@@ -364,7 +362,6 @@ namespace BBTimes
 						.Where(x => x.name.StartsWith("Playground"))
 						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
 					ld.timeBonusLimit *= 1.8f;
-					ld.timeLimit *= 1.9f;
 					return;
 				}
 

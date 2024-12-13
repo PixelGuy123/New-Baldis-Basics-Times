@@ -1,8 +1,8 @@
 ﻿using MTM101BaldAPI.AssetTools;
 using System.IO;
-using BBTimes.ModPatches.GeneratorPatches;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.Helpers;
+using BBTimes.ModPatches.EnvironmentPatches;
 
 namespace BBTimes.Manager
 {
@@ -24,7 +24,7 @@ namespace BBTimes.Manager
 			tex = brokenTex;
 			window = CreatorExtensions.CreateWindow("RoundWindow", tex, brokenTex, AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("roundWindowMask.png"))), true);
 
-			PostRoomCreation.window = window; // Set the metal window, as it is unbreakable
+			EnvironmentControllerMakeBeautifulOutside.window = window; // Set the metal window, as it is unbreakable
 
 			
 		}

@@ -293,6 +293,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Exit();
 			pm?.ExternalActivity.moveMods.Remove(hugMod);
 			mu.DisablePlayerHug();
+			mu.NormalState();
 		}
 	}
 

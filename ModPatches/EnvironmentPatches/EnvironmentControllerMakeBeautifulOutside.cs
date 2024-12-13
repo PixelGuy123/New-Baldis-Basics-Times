@@ -6,7 +6,6 @@ using HarmonyLib;
 using PixelInternalAPI.Classes;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using static UnityEngine.Object;
 
@@ -15,17 +14,66 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 	[HarmonyPatch(typeof(EnvironmentController), "BuildNavMesh")]
 	internal class EnvironmentControllerMakeBeautifulOutside
 	{
+		public static WindowObject window;
+
 		[HarmonyPostfix]
 		private static void CoverEmptyWallsFromOutside(EnvironmentController __instance)
 		{
+			var lg = LevelGeneratorInstanceGrabber.i;
 
-			if ((bool)BBTimesManager.plug.disableOutside.BoxedValue || PostRoomCreation.i == null) // Make sure this only happens in generated maps
+			if ((bool)BBTimesManager.plug.disableOutside.BoxedValue || lg == null) // Make sure this only happens in generated maps
 				return;
+
+			Debug.Log("TIMES: Creating windows for outside...");
+
+			List<Window> spawnedWindows = [];
+			Dictionary<Cell, Direction[]> tiles = [];
+			var cells = __instance.mainHall.GetNewTileList();
+
+			for (int i = 0; i < __instance.rooms.Count; i++)
+				cells.AddRange(__instance.rooms[i].GetNewTileList());
+
+			foreach (var t in cells)
+			{
+				if (t.Hidden || t.offLimits || !t.HasAllFreeWall) // No elevator tiles or invalid tiles
+					continue;
+				// A quick fix for the walls
+
+
+				var dirs = Directions.All();
+				dirs.RemoveAll(x => !__instance.CellFromPosition(t.position + x.ToIntVector2()).Null || t.WallAnyCovered(x));
+
+				if (dirs.Count > 0)
+					tiles.Add(t, [.. dirs]);
+				lg.FrameShouldEnd(); // fail safe to not crash for no f reason
+			}
+
+			if (tiles.Count == 0)
+				return;
+
+
+
+			foreach (var tile in tiles)
+			{
+				if (lg.controlledRNG.NextDouble() >= 0.95f)
+				{
+					var dir = tile.Value[lg.controlledRNG.Next(tile.Value.Length)];
+					var w = __instance.ForceBuildWindow(tile.Key, dir, window);
+					if (w != null)
+					{
+						w.aTile.AddRenderer(w.windows[0]); // A small optimization
+						spawnedWindows.Add(w);
+					}
+				}
+				lg.FrameShouldEnd();
+			}
+
 
 			Debug.Log("TIMES: Creating outside...");
 
+
 			List<KeyValuePair<IntVector2, KeyValuePair<Direction, Renderer>>> availableMeshes = []; // Has direction as well to avoid renderers that are adjacent to a visible window, which still makes them impossible to be seen
-			// Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
+																									// Color color = Singleton<BaseGameManager>.Instance.GetComponent<MainGameManagerExtraComponent>()?.outsideLighting ?? Color.white; // Get the lighting
 
 			var plane = Instantiate(BBTimesManager.man.Get<GameObject>("PlaneTemplate"));
 			var renderer = plane.GetComponent<MeshRenderer>();
@@ -92,7 +140,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			// Make new instance to not mess up walls
 			renderer.material = mats[0];
 			plane.name = "GrassPlane";
-			System.Random rng = new(PostRoomCreation.i.controlledRNG.Next());
+			System.Random rng = new(lg.controlledRNG.Next());
 
 			foreach (var t in __instance.AllExistentCells())
 			{
@@ -115,7 +163,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					}
 				}
 
-				
+
 			}
 
 			renderer.material = mats[1];
@@ -146,13 +194,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			List<KeyValuePair<Cell, Renderer>> visibleRenderers = [];
 			var nullCull = __instance.CullingManager.GetComponent<NullCullingManager>(); // Get the NullCullingManager
 
-			PostRoomCreation.spawnedWindows.ForEach(window => {
+			spawnedWindows.ForEach(window =>
+			{
 				Cell normCell = window.aTile.Null ? window.bTile : window.aTile;
 				Cell oppoCell = !window.aTile.Null ? window.bTile : window.aTile;
 
 				BreastFirstSearch(normCell, oppoCell.position, window.direction.GetOpposite(),
 				oppoCell, __instance.CellFromPosition(oppoCell.position + window.direction.ToIntVector2()));
-				});
+			});
 
 
 			for (int i = 0; i < availableMeshes.Count; i++)
@@ -212,7 +261,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 					accessedTiles.Add(curPos); // Accessed that tile then
 				}
-				
+
 			}
 
 			bool Raycast(Vector3 startCell, Vector3 targetCell) // Not using Physics.Raycast because collision isn't really trustful

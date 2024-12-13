@@ -33,7 +33,7 @@ namespace BBTimes.CustomContent.CustomItems
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;
-			entity.Initialize(pm.ec, pm.transform.position);
+			entity.Initialize(pm.ec, pm.ec.CellFromPosition(pm.transform.position).FloorWorldPosition);
 			pm.RuleBreak("littering", 5f, 0.8f);
 			owner = pm.gameObject;
 

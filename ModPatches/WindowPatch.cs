@@ -4,7 +4,6 @@ using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using System;
 using System.Linq;
-using System.Runtime.Remoting;
 
 namespace BBTimes.ModPatches
 {
@@ -29,10 +28,11 @@ namespace BBTimes.ModPatches
 
 		[HarmonyPatch("Initialize")]
 		[HarmonyPostfix]
-		private static void NaturalSpawnWindows(Window __instance,ref WindowObject ___windowObject)
+		private static void NaturalSpawnWindows(Window __instance, ref WindowObject ___windowObject)
 		{
+			var lg = LevelGeneratorInstanceGrabber.i;
 			var wComp = __instance.GetComponent<CustomWindowComponent>();
-			if (PostRoomCreation.i == null || wComp != null)
+			if (lg == null || wComp != null)
 				return;
 
 			var data = BBTimesManager.CurrentFloorData;
@@ -40,14 +40,14 @@ namespace BBTimes.ModPatches
 			if (data == null) return;
 
 
-			
+
 
 			var objs = data.WindowObjects;
 			objs.RemoveAll(x => !x.SelectionLimiters.Contains(__instance.aTile.room.category) && !x.SelectionLimiters.Contains(__instance.bTile.room.category));
-			
-			if (objs.Count == 0 || PostRoomCreation.i.controlledRNG.NextDouble() >= 0.45d) return;
 
-			___windowObject = WeightedSelection<WindowObject>.ControlledRandomSelectionList(objs.ConvertAll(x => x.Selection), PostRoomCreation.i.controlledRNG);
+			if (objs.Count == 0 || lg.controlledRNG.NextDouble() >= 0.45d) return;
+
+			___windowObject = WeightedSelection<WindowObject>.ControlledRandomSelectionList(objs.ConvertAll(x => x.Selection), lg.controlledRNG);
 
 			if (wComp == null)
 			{
@@ -55,7 +55,7 @@ namespace BBTimes.ModPatches
 				var compI = ___windowObject.windowPre.GetComponent<CustomWindowComponent>();
 				wComp.unbreakable = compI.unbreakable;
 			}
-			
+
 
 			__instance.UpdateTextures();
 		}
