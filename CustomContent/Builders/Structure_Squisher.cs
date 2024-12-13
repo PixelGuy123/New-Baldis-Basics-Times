@@ -82,6 +82,7 @@ namespace BBTimes.CustomContent.Builders
 			if (spots.Count == 0)
 			{
 				Debug.LogWarning("SquisherBuilder has failed to find a good spot for the Squishers.");
+				Finished();
 				return;
 			}
 

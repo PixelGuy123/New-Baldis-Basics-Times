@@ -18,7 +18,10 @@ namespace BBTimes.CustomContent.Builders
 		{
 			base.Generate(lg, rng);
 			if (posters.Length == 0)
+			{
+				Finished();
 				return;
+			}
 
 			var room = lg.Ec.mainHall;
 

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using BBTimes.Extensions;
+using UnityEngine.UIElements;
+using System.Reflection;
 
 
 namespace BBTimes.CustomContent.Builders
@@ -66,7 +68,7 @@ namespace BBTimes.CustomContent.Builders
 			fake.gameObject.CreatePropagatedAudioManager(35f, 45f);
 			trapdoorholder.fakeTrapdoorPre = fake.transform;
 
-			return new() { prefab = this, parameters = null };
+			return new() { prefab = this, parameters = new() { minMax = [new(3, 6)], chance = [0.55f] } };
 		}
 
 		public void SetupPrefabPost() { }
@@ -83,49 +85,45 @@ namespace BBTimes.CustomContent.Builders
 		{
 			base.PostOpenCalcGenerate(lg, rng);
 
-			var room = lg.Ec.mainHall;
-			builtTraps = [];
-
 			map = new(ec, PathType.Const, []);
 
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
 
-			var t = room.AllTilesNoGarbage(false, false);
-			int allTilesCount = t.Count;
-			for (int i = 0; i < t.Count; i++)
-				if (t[i].open || (!t[i].shape.HasFlag(TileShapeMask.Corner) && !t[i].shape.HasFlag(TileShapeMask.End)))
-					t.RemoveAt(i--);
+			var tiles = ec.mainHall.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.End, false);
+			for (int i = 0; i < tiles.Count; i++)
+				if (tiles[i].offLimits || !tiles[i].HardCoverageFits(CellCoverage.Up | CellCoverage.Center | CellCoverage.Down))
+					tiles.RemoveAt(i--);
 
-
-			if (t.Count == 0)
+			if (tiles.Count == 0)
 			{
-				Debug.LogWarning("No initial spots found for the Structure_Trapdoor");
+				Debug.LogWarning("Structure_Trapdoor failed to find any good spots for trapdoors.");
+				Finished();
 				return;
 			}
 
-			List<WeightedSelection<Cell>> intVectors = t.ConvertAll(x => new WeightedSelection<Cell>() { selection = x, weight = 100 });
-			int max = allTilesCount / intVectors.Count / 3;
+			List<WeightedSelection<Cell>> weightedCells = tiles.ConvertAll(x => new WeightedSelection<Cell>() { selection = x, weight = 100 });
+			List<IntVector2> positionsToAvoid = [];
 
-			for (int i = 0; i < max; i++)
+			int amount = rng.Next(parameters.minMax[0].x, parameters.minMax[0].z + 1);
+			for (int i = 0; i < amount; i++)
 			{
-				if (t.Count == 0 || intVectors.Count == 0)
+				if (weightedCells.Count == 0)
 					break;
-				int idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, rng);
-				var trap = CreateTrapDoor(intVectors[idx].selection, ec, ecData);
-				t.Remove(intVectors[idx].selection);
-				intVectors.RemoveAt(idx);
 
-				if (t.Count != 0 && intVectors.Count != 0 && max - i > 1 && rng.NextDouble() >= 0.55) // Linked trapdoor
+				
+				var trap = CreateTrapDoor(GetCell(), ec, ecData);
+				
+
+				if (weightedCells.Count >= 1 && rng.NextDouble() <= parameters.chance[0]) // Checks 1 in the count because every GetCell() removes an item from this list
 				{
-					idx = WeightedSelection<Cell>.ControlledRandomIndexList(intVectors, rng);
-					t.Remove(intVectors[idx].selection);
+					var strap = CreateTrapDoor(GetCell(), ec, ecData);
 
-					var strap = CreateTrapDoor(intVectors[idx].selection, ec, ecData);
 					trap.SetLinkedTrapDoor(strap);
 					strap.SetLinkedTrapDoor(trap);
 
 					trap.renderer.sprite = openSprites[1];
 					strap.renderer.sprite = openSprites[1];
+
 					trap.sprites = [closedSprites[1], openSprites[1]];
 					strap.sprites = [closedSprites[1], openSprites[1]];
 				}
@@ -134,19 +132,39 @@ namespace BBTimes.CustomContent.Builders
 					trap.renderer.sprite = openSprites[0]; // Random trapdoor
 					trap.sprites = [closedSprites[0], openSprites[0]];
 				}
-
-				intVectors.Clear();
-				map.Calculate([.. builtTraps.ConvertAll(x => ec.CellFromPosition(x.transform.position).position)]);
-				for (int x = 0; x < t.Count; x++)
-				{
-					int val = map.Value(t[x].position);
-					if (val >= minimumDistanceFromATrapDoor)
-						intVectors.Add(new WeightedSelection<Cell>() { selection = t[x], weight = val });
-				}
 			}
 
 			Finished();
 
+			void UpdateWeightsBasedOnDistances()
+			{
+				if (weightedCells.Count == 0)
+					return;
+
+				map.Calculate([.. positionsToAvoid]);
+				for (int x = 0; x < weightedCells.Count; x++)
+				{
+					int val = map.Value(weightedCells[x].selection.position);
+					if (val < minimumDistanceFromATrapDoor)
+						weightedCells.RemoveAt(x--);
+					else
+						weightedCells[x].weight = val;
+				}
+			}
+
+			Cell GetCell()
+			{
+				int index = WeightedSelection<Cell>.ControlledRandomIndexList(weightedCells, rng);
+				var cell = weightedCells[index].selection;
+
+				positionsToAvoid.Add(cell.position);
+
+				weightedCells.RemoveAt(index);
+
+				UpdateWeightsBasedOnDistances();
+				
+				return cell;
+			}
 		}
 
 		public override void Load(List<StructureData> data)
@@ -222,8 +240,6 @@ namespace BBTimes.CustomContent.Builders
 
 			dat.Trapdoors.Add(trapdoor);
 
-			builtTraps?.Add(trapdoor);
-
 			return trapdoor;
 		}
 
@@ -238,8 +254,6 @@ namespace BBTimes.CustomContent.Builders
 
 		[SerializeField]
 		public Sprite[] openSprites;
-
-		List<Trapdoor> builtTraps;
 
 		internal static MapIcon icon;
 		DijkstraMap map;

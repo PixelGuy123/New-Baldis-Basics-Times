@@ -144,7 +144,12 @@ namespace BBTimes.CustomContent.Builders
 			var room = lg.Ec.mainHall;
 
 			List<Cell> halls = room.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single, false);
-			if (halls.Count == 0) return;
+			if (halls.Count == 0)
+			{
+				Debug.LogWarning("Structure_Duct failed to find any good spots to spawn them.");
+				Finished();
+				return;
+			}
 
 			int ventAmount = lg.levelSize.x * lg.levelSize.z / 4;
 
@@ -173,7 +178,12 @@ namespace BBTimes.CustomContent.Builders
 					break;
 			}
 
-			if (vents.Count == 0) return;
+			if (vents.Count == 0)
+			{
+				Debug.LogWarning("Structure_Duct failed to find any good spots to spawn them.");
+				Finished();
+				return;
+			}
 
 			Dictionary<IntVector2, GameObject> connectionpos = [];
 

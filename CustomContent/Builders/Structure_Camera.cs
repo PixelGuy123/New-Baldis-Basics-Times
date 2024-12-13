@@ -64,6 +64,7 @@ namespace BBTimes.CustomContent.Builders
 
 			if (spots.Count == 0)
 			{
+				Finished();
 				Debug.LogWarning("CameraBuilder has failed to find a good spot for the Security Camera.");
 				return;
 			}
@@ -73,7 +74,7 @@ namespace BBTimes.CustomContent.Builders
 			for (int i = 0; i < amount; i++)
 			{
 				if (spots.Count == 0)
-					return;
+					break;
 
 				int s = rng.Next(spots.Count);
 				var cam = Instantiate(camPre, spots[s].ObjectBase).GetComponentInChildren<SecurityCamera>();

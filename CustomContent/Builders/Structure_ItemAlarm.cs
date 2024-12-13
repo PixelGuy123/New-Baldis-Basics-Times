@@ -44,6 +44,7 @@ namespace BBTimes.CustomContent.Builders
 			if (potentialPickups.Count == 0)
 			{
 				Debug.LogWarning("Structure_ItemAlarm failed to find any good spots for alarms");
+				Finished();
 				return;
 			}
 
@@ -52,7 +53,7 @@ namespace BBTimes.CustomContent.Builders
 			for (int i = 0; i < amount; i++)
 			{
 				if (potentialPickups.Count == 0)
-					return;
+					break;
 
 				int idx = lg.controlledRNG.Next(potentialPickups.Count);
 				var alarm = Instantiate(alarmPre, 

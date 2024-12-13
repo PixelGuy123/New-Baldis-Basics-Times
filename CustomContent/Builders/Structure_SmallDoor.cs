@@ -114,12 +114,19 @@ namespace BBTimes.CustomContent.Builders
 				}
 			}
 
+			if (availableCells.Count == 0)
+			{
+				Debug.LogWarning("Structure_SmallDoors failed to find any good spots for small doors.");
+				Finished();
+				return;
+			}
+
 			int max = Mathf.FloorToInt(ec.rooms.Count * parameters.chance[0]);
 
 			for (int i = 0; i < max; i++)
 			{
 				if (availableCells.Count == 0) // Reminder that the cells here are all from the mainHall, the direction is the one that tells what room it is aiming to
-					return;
+					break;
 
 				int index = rng.Next(availableCells.Count);
 				var cellPair = availableCells[index];
