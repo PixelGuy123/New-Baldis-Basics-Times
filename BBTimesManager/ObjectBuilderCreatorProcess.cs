@@ -35,8 +35,14 @@ namespace BBTimes.Manager
 			// Trapdoor Builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_Trapdoor>("Structure_Trapdoor", out _, "Trapdoor");
 			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
-			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 55 });
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 75 });
+
+			vent = CloneParameter(vent);
+			vent.parameters.minMax[0] = new(6, 9);
+			vent.parameters.chance[0] = 0.35f;
+
+			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 55 });
+			
 
 			// Camera Builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_Camera>("Structure_Camera", out _, "SecurityCamera");
