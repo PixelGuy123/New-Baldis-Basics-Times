@@ -475,16 +475,16 @@ namespace BBTimes.Manager
 			var snowyTree = Object.Instantiate(GenericExtensions.FindResourceObjectByName<RendererContainer>("TreeCG"));
 			snowyTree.name = "SnowyPlaygroundTree";
 			snowyTree.gameObject.AddObjectToEditor();
-			var snowyTreeRenderer = (SpriteRenderer)snowyTree.renderers[0];
-			snowyTreeRenderer.sprite = AssetLoader.SpriteFromFile(GetRoomAsset("SnowyPlayground", "snowyTreeCG.png"), Vector2.one * 0.5f, snowyTreeRenderer.sprite.pixelsPerUnit);
+			var snowyTreeRenderer = (MeshRenderer)snowyTree.renderers[0];
+			snowyTreeRenderer.material.SetTexture("_MainTex", AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowyTreeCG.png")));
 
 			var snowPile = new OBJLoader().Load(
 				GetRoomAsset("SnowyPlayground", "SnowPile.obj"),
 				GetRoomAsset("SnowyPlayground", "SnowPile.mtl"),
 				ObjectCreationExtension.defaultMaterial);
 			snowPile.name = "SnowPile";
-			snowPile.AddBoxCollider(Vector3.up * 5f, new(3f, 5f, 3f), false);
-			SetupObjCollisionAndScale(snowPile, new(5f, 10f, 5f), 1f, true);
+			snowPile.AddBoxCollider(Vector3.up * 5f, new(5f, 10f, 5f), false);
+			SetupObjCollisionAndScale(snowPile, new(5f, 10f, 5f), 0.2f, true);
 
 			snowPile.AddObjectToEditor();
 
@@ -885,7 +885,7 @@ namespace BBTimes.Manager
 
 			// SNOWY PLAYGROUND
 
-			var playgroundRoomRef = GenericExtensions.FindResourceObjects<RoomAsset>().First(x => x.name.StartsWith("Room_Playground"));
+			var playgroundRoomRef = GenericExtensions.FindResourceObjects<RoomAsset>().First(x => x.name.StartsWith("Playground"));
 			var playgroundClonedRoomContainer = Object.Instantiate(playgroundRoomRef.roomFunctionContainer);
 			playgroundClonedRoomContainer.name = "SnowPlayground_Container";
 
@@ -899,9 +899,9 @@ namespace BBTimes.Manager
 			//{
 			//	x.selection.basicSwaps.Add(swap);
 			//	x.selection.keepTextures = true;
-			//	x.selection.florTex = grass;
-			//	x.selection.wallTex = floorTex;
-			//	x.selection.ceilTex = ObjectCreationExtension.transparentTex;
+			//	x.selection.florTex = floorTex;
+			//	x.selection.wallTex = playgroundRoomRef.wallTex;
+			//	x.selection.ceilTex = playgroundRoomRef.ceilTex;
 			//});
 
 			//sets.container = room[0].selection.roomFunctionContainer;
@@ -1187,7 +1187,7 @@ namespace BBTimes.Manager
 
 				var childRef = new GameObject(obj.name + "_Renderer");
 				childRef.transform.SetParent(obj.transform);
-				childRef.transform.localPosition = -0.258f * newScale * Vector3.forward;
+				childRef.transform.localPosition = Vector3.zero;
 
 				var childs = obj.transform.AllChilds();
 				childs.ForEach(c =>

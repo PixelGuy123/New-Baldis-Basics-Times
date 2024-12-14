@@ -39,7 +39,7 @@ namespace BBTimes.CustomContent.Events
 			
 			for (int i = 0; i < ec.Npcs.Count; i++)
 			{
-				if (ec.Npcs[i].Navigator.isActiveAndEnabled && ec.Npcs[i].spriteRenderer.Length != 0 && ec.Npcs[i].spriteRenderer[0] && ec.Npcs[i].GetMeta().flags.HasFlag(NPCFlags.Standard))
+				if (ec.Npcs[i].Navigator.isActiveAndEnabled && ec.Npcs[i].spriteRenderer != null && ec.Npcs[i].spriteRenderer.Length != 0 && ec.Npcs[i].spriteRenderer[0])
 				{
 					for (int d = 1; d <= pastLayers; d++) 
 					{
@@ -55,7 +55,7 @@ namespace BBTimes.CustomContent.Events
 				for (int d = 1; d <= pastLayers; d++)
 				{
 					var pre = Instantiate(hologramPre);
-					pre.Initialize(player.GetComponentInChildren<SpriteRenderer>(), d * timeOffset, ec, 1f / (d * 0.95f));
+					pre.Initialize(player.GetComponentInChildren<SpriteRenderer>(), d * timeOffset, ec, 1f / d * 0.95f);
 					holos.Add(pre);
 				}
 			}
