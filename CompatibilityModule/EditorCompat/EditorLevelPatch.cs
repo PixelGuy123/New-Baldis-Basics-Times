@@ -75,6 +75,9 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			MarkObject(man.Get<GameObject>("editorPrefab_SensitiveVase"), Vector3.up * 4.2f);
 			MarkObject(man.Get<GameObject>("editorPrefab_TimesItemDescriptor"), Vector3.up * 5f);
 
+			MarkObject(man.Get<GameObject>("editorPrefab_SnowyPlaygroundTree"), Vector3.up * 5f);
+			MarkObject(man.Get<GameObject>("editorPrefab_SnowPile"), Vector3.up * 5f);
+
 			// Secret stuff
 			//MarkObject(man.Get<GameObject>("editorPrefab_Times_SecretBaldi"), Vector3.up * 5f);
 			//MarkRotatingObject(man.Get<GameObject>("editorPrefab_Times_InvisibleWall"), Vector3.up * 5f);
@@ -272,6 +275,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			__instance.defaultTextures.Add("FocusRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
 			__instance.defaultTextures.Add("SuperMystery", new TextureContainer("redCeil", "redWall", "redFloor"));
 			__instance.defaultTextures.Add("ExibitionRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
+			__instance.defaultTextures.Add("SnowyPlayground", new TextureContainer("snowyPlaygroundFloor", "Fence", "None"));
 		}
 
 		[HarmonyPatch(typeof(PlusLevelEditor), "Initialize")]
@@ -314,7 +318,8 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				new TimesRoom("Kitchen"),
 				new TimesRoom("FocusRoom"),
 				new TimesRoom("SuperMystery"),
-				new TimesRoom("ExibitionRoom")
+				new TimesRoom("ExibitionRoom"),
+				new TimesRoom("SnowyPlayground")
 			]);
 		}
 

@@ -29,10 +29,10 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\BaldiLevelEditor.dll</HintPath>
     </Reference>
     <Reference Include="BaldisBasicsPlusAdvanced">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BaldisBasicsPlusAdvanced.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\ModReferences\BaldisBasicsPlusAdvanced.dll</HintPath>
     </Reference>
     <Reference Include="BBE">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBE.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\ModReferences\BBE.dll</HintPath>
     </Reference>
     <Reference Include="BBPlusAnimations">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBPlusAnimations.dll</HintPath>

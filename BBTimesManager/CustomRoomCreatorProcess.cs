@@ -24,6 +24,7 @@ using UnityEngine.AI;
 using NewPlusDecorations;
 using BBTimes.Plugin;
 using TMPro;
+using MTM101BaldAPI.OBJImporter;
 
 namespace BBTimes.Manager
 {
@@ -465,6 +466,28 @@ namespace BBTimes.Manager
 			trap.sprOpen = trapRender.sprite;
 			trap.renderer = trapRender;
 
+			// ********************************************************
+			// ********************************************************
+			// ******************* SNOWY PLAYGROUND *******************
+			// ********************************************************
+			// ********************************************************
+
+			var snowyTree = Object.Instantiate(GenericExtensions.FindResourceObjectByName<RendererContainer>("TreeCG"));
+			snowyTree.name = "SnowyPlaygroundTree";
+			snowyTree.gameObject.AddObjectToEditor();
+			var snowyTreeRenderer = (SpriteRenderer)snowyTree.renderers[0];
+			snowyTreeRenderer.sprite = AssetLoader.SpriteFromFile(GetRoomAsset("SnowyPlayground", "snowyTreeCG.png"), Vector2.one * 0.5f, snowyTreeRenderer.sprite.pixelsPerUnit);
+
+			var snowPile = new OBJLoader().Load(
+				GetRoomAsset("SnowyPlayground", "SnowPile.obj"),
+				GetRoomAsset("SnowyPlayground", "SnowPile.mtl"),
+				ObjectCreationExtension.defaultMaterial);
+			snowPile.name = "SnowPile";
+			snowPile.AddBoxCollider(Vector3.up * 5f, new(3f, 5f, 3f), false);
+			SetupObjCollisionAndScale(snowPile, new(5f, 10f, 5f), 1f, true);
+
+			snowPile.AddObjectToEditor();
+
 			// ======================== Focus Room ===========================
 			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
 			var student = ObjectCreationExtensions.CreateSpriteBillboard(studentSprs[0]);
@@ -860,6 +883,32 @@ namespace BBTimes.Manager
 
 			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(60));
 
+			// SNOWY PLAYGROUND
+
+			var playgroundRoomRef = GenericExtensions.FindResourceObjects<RoomAsset>().First(x => x.name.StartsWith("Room_Playground"));
+			var playgroundClonedRoomContainer = Object.Instantiate(playgroundRoomRef.roomFunctionContainer);
+			playgroundClonedRoomContainer.name = "SnowPlayground_Container";
+
+			sets = RegisterSpecialRoom("SnowyPlayground", Color.cyan);
+
+			//room = GetAllAssets(GetRoomAsset("SnowyPlayground"), 100, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snowPlay.png")) : null, squaredShape: true);
+			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowyPlaygroundFloor.png"));
+			AddTextureToEditor("snowyPlaygroundFloor", floorTex);
+
+			//room.ForEach(x =>
+			//{
+			//	x.selection.basicSwaps.Add(swap);
+			//	x.selection.keepTextures = true;
+			//	x.selection.florTex = grass;
+			//	x.selection.wallTex = floorTex;
+			//	x.selection.ceilTex = ObjectCreationExtension.transparentTex;
+			//});
+
+			//sets.container = room[0].selection.roomFunctionContainer;
+
+			//floorDatas[0].SpecialRooms.AddRange(room);
+			//floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(65));
+			//floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(25));
 
 			// ================================================ Base Game Room Variants ====================================================
 
@@ -1029,7 +1078,7 @@ namespace BBTimes.Manager
 			for (int i = 0; i < floorDatas.Count; i++)
 				floorDatas[i].Halls.AddRange(room.FilterRoomAssetsByFloor(i).ConvertAll<KeyValuePair<WeightedRoomAsset, bool>>(x => new(x, true)));
 
-			//Special Rooms
+			//================================ Special Rooms ========================================
 
 			AddSpecialRoomCollectionWithName("Cafeteria");
 			AddSpecialRoomCollectionWithName("Playground");
@@ -1128,6 +1177,34 @@ namespace BBTimes.Manager
 					
 				}
 				return null;
+			}
+
+			GameObject SetupObjCollisionAndScale(GameObject obj, Vector3 navMeshSize, float newScale, bool automaticallyContainer)
+			{
+				obj.transform.localScale = Vector3.one;
+				if (navMeshSize != null)
+					obj.gameObject.AddNavObstacle(navMeshSize);
+
+				var childRef = new GameObject(obj.name + "_Renderer");
+				childRef.transform.SetParent(obj.transform);
+				childRef.transform.localPosition = -0.258f * newScale * Vector3.forward;
+
+				var childs = obj.transform.AllChilds();
+				childs.ForEach(c =>
+				{
+					if (c == childRef.transform)
+						return;
+					c.SetParent(childRef.transform);
+					c.transform.localPosition = Vector3.zero;
+					c.transform.localScale = Vector3.one * newScale;
+					c.gameObject.AddComponent<MeshCollider>();
+				});
+
+				if (automaticallyContainer)
+					obj.AddContainer(obj.GetComponentsInChildren<MeshRenderer>());
+
+
+				return obj;
 			}
 
 		}
