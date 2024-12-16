@@ -962,7 +962,7 @@ namespace BBTimes.Manager
 
 			var slipFunc = playgroundClonedRoomContainer.gameObject.AddComponent<SlipperyMaterialFunction>();
 			slipFunc.slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
-			((SpriteRenderer)slipFunc.slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = AssetLoader.SpriteFromFile(GetRoomAsset("SnowyPlayground", "icePatch.png"), Vector2.one * 0.5f, 25.5f);
+			((SpriteRenderer)slipFunc.slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = AssetLoader.SpriteFromFile(GetRoomAsset("SnowyPlayground", "icePatch.png"), Vector2.one * 0.5f, 22f);
 			slipFunc.slipMatPre.force = 65f;
 			slipFunc.slipMatPre.antiForceReduceFactor = 0.75f;
 			slipFunc.slipMatPre.name = "SnowyIcePatch";
