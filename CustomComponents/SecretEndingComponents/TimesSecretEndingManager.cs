@@ -10,6 +10,9 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 		{
 			base.BeginPlay();
 			Singleton<CoreGameManager>.Instance.disablePause = true;
+			audMan.maintainLoop = true;
+			audMan.SetLoop(true);
+			audMan.QueueAudio(audHummmmm);
 		}
 
 		public override void Initialize()
@@ -54,6 +57,7 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 			Singleton<CoreGameManager>.Instance.GetPlayer(0).transform.position = new(999f, 5f, 999f); // Far away from any audio manager
 
 			Singleton<CoreGameManager>.Instance.audMan.FlushQueue(true);
+			audMan.FlushQueue(true);
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audSlap);
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(
 				WeightedSoundObject.RandomSelection(audLoseSounds) // Buzz noises
@@ -66,6 +70,7 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 				yield return null;
 			}
 
+			
 			Singleton<CoreGameManager>.Instance.audMan.FlushQueue(true);
 
 			delay = 2f; // Normal delay
@@ -75,7 +80,7 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 				yield return null;
 			}
 
-			Singleton<CoreGameManager>.Instance.audMan.QueueAudio(audSeeYaSoon);
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audSeeYaSoon);
 
 			activeImage.sprite = timesScreen;
 
@@ -93,7 +98,7 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 		}
 
 		[SerializeField]
-		internal SoundObject audSlap, audSeeYaSoon;
+		internal SoundObject audSlap, audSeeYaSoon, audHummmmm;
 
 		[SerializeField]
 		internal WeightedSoundObject[] audLoseSounds;
@@ -106,6 +111,9 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 
 		[SerializeField]
 		internal Sprite timesScreen;
+
+		[SerializeField]
+		internal AudioManager audMan;
 
 		bool startedTheEnd = false;
 	}

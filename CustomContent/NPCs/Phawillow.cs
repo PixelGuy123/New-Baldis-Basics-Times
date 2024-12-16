@@ -430,7 +430,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			if (pickup.gameObject.activeSelf || pickup.item.itemType != Items.None)
+			if (pickup && (pickup.gameObject.activeSelf || pickup.item.itemType != Items.None))
 				wi.behaviorStateMachine.ChangeState(new Phawillow_WanderScared(wi, this));
 		}
 
@@ -445,7 +445,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Exit()
 		{
 			base.Exit();
-			target.priority = 0;
+			if (target != null)
+				target.priority = 0;
 		}
 
 	}

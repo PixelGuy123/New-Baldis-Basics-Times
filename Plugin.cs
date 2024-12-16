@@ -201,6 +201,10 @@ namespace BBTimes
 			newManager.spawnNpcsOnInit = false;
 			newManager.managerNameKey = "???";
 
+			newManager.audMan = newManager.gameObject.CreateAudioManager(15f, 25f).MakeAudioManagerNonPositional();
+			newManager.audHummmmm = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "spookyNoisesForEnding.mp3")), string.Empty, SoundType.Music, Color.white);
+			newManager.audHummmmm.subtitle = false;
+
 			sceneObjectClone.manager = newManager;
 			MainGameManagerPatches.secretEndingObj = sceneObjectClone;
 
