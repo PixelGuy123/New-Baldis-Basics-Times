@@ -18,7 +18,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		{
 			if (attached) return;
 
-			att.AttachTo(attachReference);
+			att.AttachTo(attachReference, true);
 			img.sprite = advertisements[Random.Range(0, advertisements.Length)];
 			canvas.worldCamera = cam;
 			canvas.gameObject.SetActive(true);
@@ -31,7 +31,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			if (attached) return;
 
 			attachedNPC = npc;
-			att.AttachTo(npc.transform);
+			att.AttachTo(npc.transform, true);
 			npc.GetNPCContainer().AddLookerMod(blindMod);
 
 			attached = true;

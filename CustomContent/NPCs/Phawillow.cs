@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Phawillow : NPC, IClickable<int>, INPCPrefab
+	public class Phawillow : NPC, IClickable<int>, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -39,7 +39,8 @@ namespace BBTimes.CustomContent.NPCs
 			col.radius = myCol.radius;
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
 		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
@@ -50,13 +51,13 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Initialize();
 			rendererPos = floatingRenderer.transform.localPosition;
-			behaviorStateMachine.ChangeState(new Phawillow_Wandering(this, null));
+			behaviorStateMachine.ChangeState(new Phawillow_Wandering(this));
 		}
 
 		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
-			floatingRenderer.transform.localPosition = rendererPos + Vector3.up * Mathf.Cos(Time.fixedTime * TimeScale * 0.5f * navigator.speed) * 0.88f;
+			floatingRenderer.transform.localPosition = rendererPos + (Vector3.up * Mathf.Cos(Time.fixedTime * TimeScale * 0.5f * navigator.speed) * 0.88f);
 			itemRenderHolder.transform.localPosition = floatingRenderer.transform.localPosition;
 			itemRender.transform.localPosition = floatingRenderer.GetRotationalPosFrom(new(3f, -0.8f));
 			floatingRenderer.GetPropertyBlock(block);
@@ -75,10 +76,10 @@ namespace BBTimes.CustomContent.NPCs
 		public void UpdateRenderer(ItemObject item)
 		{
 			holdingItem = item;
-			itemRender.sprite = item.itemSpriteLarge;
+			itemRender.sprite = !item ? null : item.itemSpriteLarge;
 		}
 
-		public void Clicked(int player) 
+		public void Clicked(int player)
 		{
 			if (holdingItem == null) return;
 
@@ -86,7 +87,7 @@ namespace BBTimes.CustomContent.NPCs
 			holdingItem = null;
 			itemRender.sprite = null;
 			if (behaviorStateMachine.CurrentState is not Phawillow_Disable)
-				behaviorStateMachine.ChangeState(new Phawillow_Wandering(this, null));
+				behaviorStateMachine.ChangeState(new Phawillow_Wandering(this, false));
 		}
 		public void ClickableUnsighted(int player) { }
 		public void ClickableSighted(int player) { }
@@ -103,13 +104,11 @@ namespace BBTimes.CustomContent.NPCs
 					behaviorStateMachine.ChangeState(new Phawillow_Disable(this, behaviorStateMachine.CurrentState));
 				}
 			}
-
-			
 		}
 
 
 		Vector3 rendererPos;
-		MaterialPropertyBlock block = new();
+		readonly MaterialPropertyBlock block = new();
 
 		[SerializeField]
 		internal Transform itemRenderHolder;
@@ -126,9 +125,12 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
 
+		[SerializeField]
+		internal float delayBeforeCatchAgain = 15f;
+
 		ItemObject holdingItem;
 
-		const float normSpeed = 10f, fleeSpeed = 18f;
+		const float normSpeed = 10f, fleeSpeed = 23.5f;
 	}
 
 	internal class Phawillow_StateBase(Phawillow wi) : NpcState(wi)
@@ -154,11 +156,10 @@ namespace BBTimes.CustomContent.NPCs
 		protected Phawillow wi = wi;
 	}
 
-	internal class Phawillow_Wandering(Phawillow wi, ItemObject prevItem) : Phawillow_StateBase(wi)
+	internal class Phawillow_Wandering(Phawillow wi, bool pickDelay = true) : Phawillow_StateBase(wi)
 	{
-		float wanderCooldown = 15f;
-
 		NavigationState_WanderRandom wander;
+		float delay = pickDelay ? wi.delayBeforeCatchAgain : 0f;
 		public override void Enter()
 		{
 			base.Enter();
@@ -166,23 +167,64 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(wander);
 
 			wi.SetSpeed(false);
-			wi.floatingRenderer.sprite = !prevItem || prevItem.itemType == Items.None ? wi.sprNormal : wi.sprActive;
+			wi.floatingRenderer.sprite = wi.sprNormal;
+			wi.UpdateRenderer(null);
 		}
 
 		public override void Update()
 		{
 			base.Update();
-			wanderCooldown -= wi.TimeScale * Time.deltaTime;
-			if (wanderCooldown <= 0f)
-				wi.behaviorStateMachine.ChangeState(new Phawillow_TargetItem(wi, this, prevItem));
+			if (delay > 0f)
+				delay -= wi.TimeScale * Time.deltaTime;
 		}
 
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			if (!prevItem || player.Tagged) return;
 
-			wi.behaviorStateMachine.ChangeState(new Phawillow_FleeFromPlayer(wi, this, player));
+			if (delay <= 0f && !player.Tagged && player.itm.HasItem())
+				wi.behaviorStateMachine.ChangeState(new Phawillow_TargetPlayer(wi, player));
+		}
+	}
+
+	internal class Phawillow_TargetPlayer(Phawillow wi, PlayerManager pm) : Phawillow_StateBase(wi)
+	{
+		NavigationState_TargetPlayer pTar;
+		public override void Enter()
+		{
+			base.Enter();
+			pTar = new(wi, 63, pm.transform.position);
+			ChangeNavigationState(pTar);
+		}
+
+		public override void PlayerInSight(PlayerManager player)
+		{
+			base.PlayerInSight(player);
+			if (player == pm && player.itm.HasItem())
+				pTar.UpdatePosition(player.transform.position);
+		}
+
+		public override void OnStateTriggerEnter(Collider other)
+		{
+			base.OnStateTriggerEnter(other);
+			if (other.gameObject == pm.gameObject)
+				wi.behaviorStateMachine.ChangeState(new Phawillow_TargetItem
+					(wi,
+					pm.itm.RemoveRandomItemAndReturnIt()
+					));
+
+		}
+
+		public override void DestinationEmpty()
+		{
+			base.DestinationEmpty();
+			wi.behaviorStateMachine.ChangeState(new Phawillow_Wandering(wi, false));
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			pTar.priority = 0;
 		}
 	}
 
@@ -190,11 +232,13 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		float escapeCooldown = 5f;
 		bool samePlayerInSight = false;
+		NavigationState_WanderFlee fleeNav;
 
 		public override void Enter()
 		{
 			base.Enter();
-			ChangeNavigationState(new NavigationState_WanderFlee(wi, 63, pm.DijkstraMap));
+			fleeNav = new(wi, 63, pm.DijkstraMap);
+			ChangeNavigationState(fleeNav);
 			wi.SetSpeed(true);
 		}
 
@@ -226,6 +270,11 @@ namespace BBTimes.CustomContent.NPCs
 					wi.behaviorStateMachine.ChangeState(prevState);
 			}
 		}
+		public override void Exit()
+		{
+			base.Exit();
+			fleeNav.priority = 0;
+		}
 	}
 
 	internal class Phawillow_Disable(Phawillow wi, NpcState prevState) : Phawillow_SubStateBase(wi)
@@ -249,7 +298,7 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				if (!wi.audMan.QueuedAudioIsPlaying)
 					wi.behaviorStateMachine.ChangeState(prevState);
-				
+
 				return;
 			}
 
@@ -268,33 +317,85 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-	internal class Phawillow_TargetItem(Phawillow wi, Phawillow_StateBase prevState, ItemObject previousItem) : Phawillow_StateBase(wi)
+	internal class Phawillow_WanderScared(Phawillow wi, Phawillow_TargetItem tarItemPrev) : Phawillow_StateBase(wi)
 	{
-		NavigationState_TargetPosition target;
-		Pickup pickup;
+		float checkForPickupsDelay = 15f;
 		public override void Enter()
 		{
 			base.Enter();
+			wi.SetSpeed(false);
+			ChangeNavigationState(new NavigationState_WanderRandom(wi, 0));
+		}
 
-			List<Pickup> pickups = new(wi.ec.items);
-			if (previousItem == null)
+		public override void Update()
+		{
+			base.Update();
+			checkForPickupsDelay -= wi.TimeScale * Time.deltaTime;
+			if (checkForPickupsDelay <= 0f)
 			{
+				var pickups = wi.ec.items;
+
 				for (int i = 0; i < pickups.Count; i++)
 				{
-					if (!pickups[i].gameObject.activeSelf || wi.ec.CellFromPosition(pickups[i].transform.position).room.category == RoomCategory.Store)
-						pickups.RemoveAt(i--);
-					else
+					if ((!pickups[i].gameObject.activeSelf || pickups[i].item.itemType == Items.None) && wi.ec.CellFromPosition(pickups[i].transform.position).room.category == RoomCategory.Store)
 					{
-						wi.ec.FindPath(wi.ec.CellFromPosition(wi.transform.position), wi.ec.CellFromPosition(pickups[i].transform.position), PathType.Nav, out _, out bool success);
-						if (!success)
-							pickups.RemoveAt(i--);
+						wi.behaviorStateMachine.ChangeState(tarItemPrev);
+						return;
 					}
+				}
+
+				checkForPickupsDelay += 15f;
+			}
+		}
+
+		public override void PlayerInSight(PlayerManager player)
+		{
+			base.PlayerInSight(player);
+			if (player.Tagged) return;
+
+			wi.behaviorStateMachine.ChangeState(new Phawillow_FleeFromPlayer(wi, this, player));
+		}
+	}
+
+	internal class Phawillow_TargetItem(Phawillow wi, ItemObject previousItem) : Phawillow_StateBase(wi)
+	// Note for this christmas update:
+	/*
+	 * Tweaked the code a bit, so instead of targetting active pickups, he'll go for any disabled pickups (those that the player just picked items on).
+	 * */
+	{
+		NavigationState_TargetPosition target;
+		Pickup pickup;
+		public override void Initialize()
+		{
+			base.Initialize();
+			wi.audMan.FlushQueue(true);
+			wi.audMan.QueueAudio(wi.audLaugh); // Will laugh once he steals the item
+		}
+
+		public override void Enter()
+		{
+			base.Enter();
+			wi.UpdateRenderer(previousItem);
+			wi.SetSpeed(false);
+
+			List<Pickup> pickups = new(wi.ec.items);
+
+			for (int i = 0; i < pickups.Count; i++)
+			{
+				if (pickups[i].gameObject.activeSelf || pickups[i].item.itemType != Items.None || wi.ec.CellFromPosition(pickups[i].transform.position).room.category == RoomCategory.Store)
+					pickups.RemoveAt(i--);
+				else
+				{
+					wi.ec.FindPath(wi.ec.CellFromPosition(wi.transform.position), wi.ec.CellFromPosition(pickups[i].transform.position), PathType.Nav, out _, out bool success);
+					if (!success)
+						pickups.RemoveAt(i--);
 				}
 			}
 
+
 			if (pickups.Count == 0)
 			{
-				wi.behaviorStateMachine.ChangeState(prevState);
+				wi.behaviorStateMachine.ChangeState(new Phawillow_WanderScared(wi, this));
 				return;
 			}
 
@@ -308,24 +409,13 @@ namespace BBTimes.CustomContent.NPCs
 			base.DestinationEmpty();
 			if ((pickup.transform.position - wi.transform.position).magnitude <= 5f)
 			{
-				wi.audMan.FlushQueue(true);
-				wi.audMan.QueueAudio(wi.audLaugh);
-				wi.UpdateRenderer(pickup.item);
-				wi.behaviorStateMachine.ChangeState(new Phawillow_Wandering(wi, pickup.item));
+				wi.behaviorStateMachine.ChangeState(new Phawillow_Wandering(wi));
 
-				if (previousItem == null)
-				{
-					pickup.gameObject.SetActive(false);
-					if (pickup.icon != null)
-						pickup.icon.spriteRenderer.enabled = false;
-				}
-				else
-				{
-					pickup.AssignItem(previousItem); // Silently changing the item/No Collect() trigger
-					pickup.gameObject.SetActive(true);
-					if (pickup.icon != null)
-						pickup.icon.spriteRenderer.enabled = true;
-				}
+				pickup.AssignItem(previousItem);
+				pickup.gameObject.SetActive(true);
+				if (pickup.icon != null)
+					pickup.icon.spriteRenderer.enabled = true;
+
 				return;
 			}
 			wi.ec.FindPath(wi.ec.CellFromPosition(wi.transform.position), wi.ec.CellFromPosition(pickup.transform.position), PathType.Nav, out _, out bool success);
@@ -340,16 +430,22 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			if (!pickup.gameObject.activeSelf)
-				wi.behaviorStateMachine.ChangeState(prevState);
+			if (pickup.gameObject.activeSelf || pickup.item.itemType != Items.None)
+				wi.behaviorStateMachine.ChangeState(new Phawillow_WanderScared(wi, this));
 		}
 
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			if (previousItem == null || player.Tagged) return;
+			if (player.Tagged) return;
 
 			wi.behaviorStateMachine.ChangeState(new Phawillow_FleeFromPlayer(wi, this, player));
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			target.priority = 0;
 		}
 
 	}

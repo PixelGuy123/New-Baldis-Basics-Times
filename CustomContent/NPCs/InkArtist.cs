@@ -92,7 +92,8 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.PlaySingle(audSplash);
 
 			var att = Instantiate(attPre);
-			att.AttachTo(ent.transform);
+			att.AttachTo(ent.transform, true);
+			att.SetOwnerRefToSelfDestruct(gameObject);
 
 			att.StartCoroutine(InkNPC(att.gameObject, ent));
 		}
@@ -115,7 +116,8 @@ namespace BBTimes.CustomContent.NPCs
 			cont.RemoveLookerMod(valMod);
 			affectedNpcs.RemoveAll(x => x.Key == cont);
 
-			Destroy(selfDestruct);
+			if (selfDestruct)
+				Destroy(selfDestruct);
 			yield break;
 
 		}

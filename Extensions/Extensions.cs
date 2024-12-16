@@ -14,6 +14,22 @@ namespace BBTimes.Extensions
 {
 	public static class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
 	{
+		public static ItemObject RemoveRandomItemAndReturnIt(this ItemManager itm)
+		{
+			ItemObject selectedItm = itm.nothing;
+			if (itm.HasItem())
+			{
+				int num = Random.Range(0, itm.maxItem + 1);
+				while (itm.items[num] == itm.nothing && !itm.slotLocked[num])
+				{
+					num = Random.Range(0, itm.maxItem + 1);
+				}
+				selectedItm = itm.items[num];
+				itm.RemoveItem(num);
+			}
+
+			return selectedItm;
+		}
 		public static Sprite[] TakeAPair(this Sprite[] sprs, int index, int count)
 		{
 			Sprite[] newSprs = new Sprite[count];

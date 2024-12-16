@@ -533,7 +533,6 @@ namespace BBTimes.Manager
 
 			var snowShovel = shovel.AddComponent<SnowShovel>();
 			snowShovel.normalRender = snowShovel.transform.GetChild(0).gameObject;
-			snowShovel.meshes = [.. snowShovel.transform.GetChild(0).AllChilds()]; // child 0 is what holds the meshes
 			snowShovel.clickableCollision = shovel.AddBoxCollider(Vector3.up * 5f, new(5f, 10f, 2.5f), true);
 
 			snowShovel.holdRender = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromFile(GetRoomAsset("SnowyPlayground", "shovelRender.png"), Vector2.one * 0.5f, 23f)).gameObject;

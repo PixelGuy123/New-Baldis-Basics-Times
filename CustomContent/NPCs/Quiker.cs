@@ -1,6 +1,7 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using MTM101BaldAPI;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
@@ -39,17 +40,17 @@ namespace BBTimes.CustomContent.NPCs
 			main.startLifetimeMultiplier = 0.6f;
 			main.startSpeedMultiplier = 2f;
 			main.simulationSpace = ParticleSystemSimulationSpace.World;
-			main.startSize = new(1f, 2f);
+			main.startSize = new(1.25f, 3.75f);
 
 			var emission = system.emission;
-			emission.rateOverTimeMultiplier = 16f;
+			emission.rateOverTimeMultiplier = 32.5f;
 
 			var vel = system.velocityOverLifetime;
 			vel.enabled = true;
 			vel.space = ParticleSystemSimulationSpace.World;
-			vel.x = new(-8f, 8f);
-			vel.y = new(-8f, 8f);
-			vel.z = new(-8f, 8f);
+			vel.x = new(-10f, 10f);
+			vel.y = new(-10f, 10f);
+			vel.z = new(-10f, 10f);
 
 			var an = system.textureSheetAnimation;
 			an.enabled = true;
@@ -60,7 +61,30 @@ namespace BBTimes.CustomContent.NPCs
 			an.timeMode = ParticleSystemAnimationTimeMode.FPS;
 			an.cycleCount = 1;
 
+			var collider = system.collision;
+			collider.enabled = true;
+			collider.enableDynamicColliders = false;
+			collider.type = ParticleSystemCollisionType.World;
+
 			parts = system;
+
+			var visualParts = Instantiate(parts);
+			visualParts.name = "QuikerBlindingParticles";
+			visualParts.gameObject.ConvertToPrefab(true);
+
+			main = visualParts.main;
+			main.startSize = new(0.85f, 1.25f);
+			main.gravityModifierMultiplier = 1.25f;
+
+			vel = visualParts.velocityOverLifetime;
+			vel.x = new(-2f, 2f);
+			vel.y = new(-0.25f, 4.5f);
+			vel.z = new(-2f, 2f);
+
+			emission = visualParts.emission;
+			emission.rateOverTimeMultiplier = 30f;
+
+			blindingNpcPre = visualParts.gameObject.AddComponent<VisualAttacher>();
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
@@ -85,6 +109,9 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal ParticleSystem parts;
+
+		[SerializeField]
+		internal VisualAttacher blindingNpcPre;
 
 		public override void Initialize()
 		{
@@ -181,6 +208,10 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator AffectNPC(NPC npc)
 		{
+			var attacher = Instantiate(blindingNpcPre);
+			attacher.AttachTo(npc.transform, true);
+			attacher.SetOwnerRefToSelfDestruct(gameObject);
+
 			var cont = npc.GetNPCContainer();
 			var att = new ValueModifier(0);
 			cont.AddLookerMod(att);
@@ -197,6 +228,9 @@ namespace BBTimes.CustomContent.NPCs
 			affectedNpcs.Remove(npc);
 			cont.RemoveLookerMod(att);
 
+			if (attacher)
+				Destroy(attacher.gameObject);
+
 			yield break;
 		}
 
@@ -204,6 +238,9 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			pm.Am.moveMods.Add(moveMod);
 			ec.AddFog(fog);
+			var attacher = Instantiate(blindingNpcPre);
+			attacher.AttachTo(pm.transform, true);
+			attacher.SetOwnerRefToSelfDestruct(gameObject);
 
 			float delay = 15f;
 			while (delay > 0f)
@@ -215,6 +252,9 @@ namespace BBTimes.CustomContent.NPCs
 			pm.Am.moveMods.Remove(moveMod);
 			affectedPlayers.RemoveAll(x => x.Key.Key == pm);
 			ec.RemoveFog(fog);
+
+			if (attacher)
+				Destroy(attacher.gameObject);
 
 			yield break;
 		}
@@ -263,6 +303,8 @@ namespace BBTimes.CustomContent.NPCs
 						pm.plm.Entity.AddForce(new(Quaternion.AngleAxis(Random.Range(-0.7854f, 0.7854f), Vector3.up) * (qu.Navigator.NextPoint - qu.transform.position).normalized, 
 							qu.Navigator.Speed, -qu.Navigator.Speed * 0.85f)); // 0.7854 radians = 45° degrees
 						qu.BlindPlayer(pm);
+
+						qu.behaviorStateMachine.ChangeState(new Quiker_HideBelow(qu));
 					}
 					return;
 				}

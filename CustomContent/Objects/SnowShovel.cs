@@ -23,9 +23,6 @@ namespace BBTimes.CustomContent.Objects
 		internal float forwardOffset = 6f, offsetAngle = 25f, yOffset = -1.5f, defaultPickupCooldown = 30f, layOnFloorYOffset = 0.1f;
 
 		[SerializeField]
-		internal Transform[] meshes;
-
-		[SerializeField]
 		internal LayerMask overlayMask = LayerMask.NameToLayer("Overlay");
 
 		Vector3 lastPosition;
@@ -84,9 +81,7 @@ namespace BBTimes.CustomContent.Objects
 		public void ClickableUnsighted(int player) { }
 		void SetLayerOfRenderers(bool overlay)
 		{
-			for (int i = 0; i < meshes.Length; i++)
-				meshes[i].gameObject.layer = overlay ? overlayMask : 0;
-
+			holdRender.layer = overlay ? overlayMask : 0;
 			holdRender.SetActive(overlay);
 			normalRender.SetActive(!overlay);
 		}
