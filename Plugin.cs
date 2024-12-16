@@ -62,6 +62,7 @@ namespace BBTimes
 			// Other stuff to setup
 			yield return "Setup the rest of the assets...";
 			BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
+			SnowPile.SetupItemRandomization();
 			yield return "Creating post assets...";
 			GameExtensions.TryRunMethod(SetupPostAssets);
 			yield break;

@@ -212,11 +212,14 @@ namespace BBTimes.Extensions
 			return inst;
 		}
 
-		public static void RotateSmoothlyToNextPoint(this Transform transform, Vector3 nextPoint, float speed)
+		public static bool RotateSmoothlyToNextPoint(this Transform transform, Vector3 nextPoint, float speed)
 		{
-			Vector3 vector = Vector3.RotateTowards(transform.forward, (nextPoint - transform.position).normalized, Time.deltaTime * 2f * Mathf.PI * speed, 0f);
+			Vector3 rot = (nextPoint - transform.position).normalized;
+			Vector3 vector = Vector3.RotateTowards(transform.forward, rot, Time.deltaTime * 2f * Mathf.PI * speed, 0f);
 			if (vector != Vector3.zero)
 				transform.rotation = Quaternion.LookRotation(vector, Vector3.up);
+
+			return transform.forward == rot;
 		}
 
 		public static void SendToDetention(this PlayerManager pm, float time, int detentionNoise = defaultDetentionNoise)

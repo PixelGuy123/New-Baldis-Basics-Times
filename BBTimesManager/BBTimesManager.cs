@@ -18,6 +18,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace BBTimes.Manager
@@ -189,8 +190,7 @@ namespace BBTimes.Manager
 			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("mainMenu.png"))), 1f);
 			var mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
 			mainSpeech.additionalKeys = [
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 5.56f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_3", time = 11.718f }
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 4.708f }
 				];
 			MainMenuPatch.aud_welcome = mainSpeech;
 
@@ -206,7 +206,7 @@ namespace BBTimes.Manager
 
 			// Math Machine new Nums
 
-			var machines = GenericExtensions.FindResourceObjects<MathMachine>();
+			var machines = Resources.FindObjectsOfTypeAll<MathMachine>();
 
 			var numList = machines[0].numberPres;
 			var numPrefab = numList[0];
@@ -276,6 +276,7 @@ namespace BBTimes.Manager
 			man.Add("whiteScreen", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, Color.white), 1f));
 			man.Add("whitePix", AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(1, 1, Color.white), 1f));
 			man.Add("fieldTripBucket", AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("fieldTripBucket.png"))), 25f)); // PixelsPerUnit for world size
+			man.Add("genericTextMesh", GenericExtensions.FindResourceObjectByName<TextMeshPro>("TotalDisplay")); // That text that advanced uses lol
 			var sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("throw.wav"))), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
 			man.Add("audGenericThrow", sd);

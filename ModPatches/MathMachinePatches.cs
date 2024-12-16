@@ -3,6 +3,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using TMPro;
+using UnityEngine;
 
 namespace BBTimes.ModPatches
 {
@@ -13,7 +14,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPatch("Start")]
 		private static void RightIcon(Notebook ___notebook) =>
 			___notebook.icon.spriteRenderer.sprite = rightSprite;
-		
+
 
 		[HarmonyPostfix]
 		[HarmonyPatch("Completed", [typeof(int)])]
@@ -22,7 +23,7 @@ namespace BBTimes.ModPatches
 			var t = __instance.transform.Find("Answer").GetComponent<TextMeshPro>();
 			t.autoSizeTextContainer = false;
 			t.autoSizeTextContainer = true; // 10+ answers don't look ugly
-			// Must be exactly after completing, so it actually adapts
+											// Must be exactly after completing, so it actually adapts
 		}
 
 		[HarmonyPatch("ReInit")]
@@ -31,9 +32,14 @@ namespace BBTimes.ModPatches
 			new CodeMatcher(instructions)
 			.MatchForward(true,
 				new(OpCodes.Ldloc_2),
-				new(OpCodes.Ldc_I4_S, name:"10") // Never use a number to check a value, you don't know if it is an integer, short, whatever the compiler did to optimize it
+				new(OpCodes.Ldc_I4_S, name: "10") // Never use a number to check a value, you don't know if it is an integer, short, whatever the compiler did to optimize it
 				)
-			.SetInstruction(Transpilers.EmitDelegate(() => BBTimesManager.CurrentFloorData == null ? BBTimesManager.MaximumNumballs + 1 : UnityEngine.Random.Range(BBTimesManager.CurrentFloorData.MinNumberBallAmount, BBTimesManager.CurrentFloorData.MaxNumberBallAmount + 1) + 1))
+			.SetInstruction(Transpilers.EmitDelegate(() =>
+			{
+				int amount = BBTimesManager.CurrentFloorData == null ? BBTimesManager.MaximumNumballs + 1 : Random.Range(BBTimesManager.CurrentFloorData.MinNumberBallAmount, BBTimesManager.CurrentFloorData.MaxNumberBallAmount + 1) + 1;
+				//Debug.LogWarning($"Math machine instance initiated with {amount} numballs");
+				return amount;
+			}))
 			.InstructionEnumeration();
 
 		[HarmonyPatch("NewProblem")]
@@ -52,6 +58,6 @@ namespace BBTimes.ModPatches
 			
 			.InstructionEnumeration();
 
-		internal static UnityEngine.Sprite rightSprite;
+		internal static Sprite rightSprite;
 	}
 }

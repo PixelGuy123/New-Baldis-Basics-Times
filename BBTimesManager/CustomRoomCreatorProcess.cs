@@ -25,6 +25,7 @@ using NewPlusDecorations;
 using BBTimes.Plugin;
 using TMPro;
 using MTM101BaldAPI.OBJImporter;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 
 namespace BBTimes.Manager
 {
@@ -483,10 +484,73 @@ namespace BBTimes.Manager
 				GetRoomAsset("SnowyPlayground", "SnowPile.mtl"),
 				ObjectCreationExtension.defaultMaterial);
 			snowPile.name = "SnowPile";
-			snowPile.AddBoxCollider(Vector3.up * 5f, new(5f, 10f, 5f), false);
-			SetupObjCollisionAndScale(snowPile, new(5f, 10f, 5f), 0.2f, true);
+			SetupObjCollisionAndScale(snowPile, new(9.7f, 10f, 9.7f), 0.2f);
 
 			snowPile.AddObjectToEditor();
+
+			var snowPileComp = snowPile.AddComponent<SnowPile>();
+			snowPileComp.collider = snowPile.AddBoxCollider(Vector3.up * 7.5f, new(5f, 10f, 5f), true);
+			snowPileComp.mainRenderer = snowPile.transform.GetChild(0).gameObject; // The renderer
+
+			snowPileComp.audMan = snowPile.CreatePropagatedAudioManager(55f, 75f);
+			snowPileComp.audPop = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("SnowyPlayground", "lowPop.wav")), "Sfx_Effects_Pop", SoundType.Effect, Color.white);
+
+			var system = new GameObject("snowPileParticles").AddComponent<ParticleSystem>();
+			system.transform.SetParent(snowPileComp.transform);
+			system.transform.localPosition = Vector3.up * 1.25f;
+			system.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "blueSnowBall.png")) };
+
+			var main = system.main;
+			main.gravityModifierMultiplier = 0.95f;
+			main.startLifetimeMultiplier = 9f;
+			main.startSpeedMultiplier = 4f;
+			main.simulationSpace = ParticleSystemSimulationSpace.World;
+			main.startSize = new(0.5f, 2f);
+
+			var emission = system.emission;
+			emission.enabled = false;
+
+			var vel = system.velocityOverLifetime;
+			vel.enabled = true;
+			vel.space = ParticleSystemSimulationSpace.Local;
+			vel.x = new(-15f, 15f);
+			vel.y = new(25f, 35f);
+			vel.z = new(-15f, 15f);
+
+			snowPileComp.snowPopParts = system;
+
+			// ********** Shovel Code ************
+
+			var shovel = new OBJLoader().Load(
+				GetRoomAsset("SnowyPlayground", "shovel.obj"),
+				GetRoomAsset("SnowyPlayground", "shovel.mtl"),
+				ObjectCreationExtension.defaultMaterial
+				);
+			shovel.name = "Shovel_ForSnowPile";
+			SetupObjCollisionAndScale(shovel, default, 0.2f, false, false);
+
+			shovel.AddObjectToEditor();
+
+			var snowShovel = shovel.AddComponent<SnowShovel>();
+			snowShovel.normalRender = snowShovel.transform.GetChild(0).gameObject;
+			snowShovel.meshes = [.. snowShovel.transform.GetChild(0).AllChilds()]; // child 0 is what holds the meshes
+			snowShovel.clickableCollision = shovel.AddBoxCollider(Vector3.up * 5f, new(5f, 10f, 2.5f), true);
+
+			snowShovel.holdRender = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromFile(GetRoomAsset("SnowyPlayground", "shovelRender.png"), Vector2.one * 0.5f, 23f)).gameObject;
+			snowShovel.holdRender.transform.SetParent(snowShovel.transform);
+			snowShovel.holdRender.transform.localPosition = Vector3.zero;
+			snowShovel.holdRender.name = "SnowShovel2DRender";
+			snowShovel.holdRender.gameObject.SetActive(false);
+
+			var snowShovel_timerOffsetObj = new GameObject("Timer_OffsetHolder");
+			snowShovel_timerOffsetObj.transform.SetParent(snowShovel.transform);
+			snowShovel_timerOffsetObj.transform.localPosition = Vector3.up * 5f;
+
+			snowShovel.timer = Object.Instantiate(man.Get<TextMeshPro>("genericTextMesh"));
+			snowShovel.timer.name = "Timer";
+			snowShovel.timer.transform.SetParent(snowShovel_timerOffsetObj.transform);
+			snowShovel.timer.color = Color.white;
+			snowShovel.timer.gameObject.SetActive(false);
 
 			// ======================== Focus Room ===========================
 			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
@@ -888,27 +952,43 @@ namespace BBTimes.Manager
 			var playgroundRoomRef = GenericExtensions.FindResourceObjects<RoomAsset>().First(x => x.name.StartsWith("Playground"));
 			var playgroundClonedRoomContainer = Object.Instantiate(playgroundRoomRef.roomFunctionContainer);
 			playgroundClonedRoomContainer.name = "SnowPlayground_Container";
+			playgroundClonedRoomContainer.gameObject.ConvertToPrefab(true);
+
+			var snowFunc = playgroundClonedRoomContainer.gameObject.AddComponent<FallingParticlesFunction>();
+
+			snowFunc.particleTexture = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowFlake.png"));
+
+			playgroundClonedRoomContainer.AddFunction(snowFunc);
+
+			var slipFunc = playgroundClonedRoomContainer.gameObject.AddComponent<SlipperyMaterialFunction>();
+			slipFunc.slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
+			((SpriteRenderer)slipFunc.slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = AssetLoader.SpriteFromFile(GetRoomAsset("SnowyPlayground", "icePatch.png"), Vector2.one * 0.5f, 25.5f);
+			slipFunc.slipMatPre.force = 65f;
+			slipFunc.slipMatPre.antiForceReduceFactor = 0.75f;
+			slipFunc.slipMatPre.name = "SnowyIcePatch";
+
+			playgroundClonedRoomContainer.AddFunction(slipFunc);
 
 			sets = RegisterSpecialRoom("SnowyPlayground", Color.cyan);
 
-			//room = GetAllAssets(GetRoomAsset("SnowyPlayground"), 100, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snowPlay.png")) : null, squaredShape: true);
+			room = GetAllAssets(GetRoomAsset("SnowyPlayground"), 165, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snow.png")) : null, squaredShape: true);
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowyPlaygroundFloor.png"));
 			AddTextureToEditor("snowyPlaygroundFloor", floorTex);
 
-			//room.ForEach(x =>
-			//{
-			//	x.selection.basicSwaps.Add(swap);
-			//	x.selection.keepTextures = true;
-			//	x.selection.florTex = floorTex;
-			//	x.selection.wallTex = playgroundRoomRef.wallTex;
-			//	x.selection.ceilTex = playgroundRoomRef.ceilTex;
-			//});
+			room.ForEach(x =>
+			{
+				x.selection.keepTextures = true;
+				x.selection.florTex = floorTex;
+				x.selection.wallTex = playgroundRoomRef.wallTex;
+				x.selection.ceilTex = playgroundRoomRef.ceilTex;
+			});
 
-			//sets.container = room[0].selection.roomFunctionContainer;
+			sets.container = playgroundClonedRoomContainer;
 
-			//floorDatas[0].SpecialRooms.AddRange(room);
-			//floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(65));
-			//floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(25));
+			floorDatas[0].SpecialRooms.AddRange(room);
+			floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(65));
+			floorDatas[3].SpecialRooms.AddRange(room);
+			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(25));
 
 			// ================================================ Base Game Room Variants ====================================================
 
@@ -1179,10 +1259,10 @@ namespace BBTimes.Manager
 				return null;
 			}
 
-			GameObject SetupObjCollisionAndScale(GameObject obj, Vector3 navMeshSize, float newScale, bool automaticallyContainer)
+			GameObject SetupObjCollisionAndScale(GameObject obj, Vector3 navMeshSize, float newScale, bool automaticallyContainer = true, bool addMeshCollider = true)
 			{
 				obj.transform.localScale = Vector3.one;
-				if (navMeshSize != null)
+				if (navMeshSize != default)
 					obj.gameObject.AddNavObstacle(navMeshSize);
 
 				var childRef = new GameObject(obj.name + "_Renderer");
@@ -1197,7 +1277,8 @@ namespace BBTimes.Manager
 					c.SetParent(childRef.transform);
 					c.transform.localPosition = Vector3.zero;
 					c.transform.localScale = Vector3.one * newScale;
-					c.gameObject.AddComponent<MeshCollider>();
+					if (addMeshCollider)
+						c.gameObject.AddComponent<MeshCollider>();
 				});
 
 				if (automaticallyContainer)
