@@ -649,7 +649,7 @@ namespace BBTimes.Manager
 				.SetEnum("Winterry")
 				.SetMetaName("PST_Winterry_Name")
 				.SetName("Winterry")
-				.SetMetaTags(["student, Times_SpecialTags_ChristmasSpecial"])
+				.SetMetaTags(["student", "Times_SpecialTags_ChristmasSpecial"])
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0.3984375f, 0.59765625f, 0.99609375f))
 				.AddLooker()
