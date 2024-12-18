@@ -7,6 +7,8 @@ using PixelInternalAPI.Extensions;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Manager;
 using System.Collections;
+using BBTimes.CustomComponents.EventSpecificComponents.FrozenEvent;
+using PixelInternalAPI.Classes;
 
 
 namespace BBTimes.CustomContent.Events
@@ -37,6 +39,33 @@ namespace BBTimes.CustomContent.Events
 			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
 			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(16.5f, "wat.png");
 			slipMatPre.name = "IcePatch";
+
+			const float snowManYOffset = 4.5f;
+
+			var snowManVisuals = this.GetSpriteSheet(2, 2, 25f, "Snowman.png");
+			snowManPre = ObjectCreationExtensions.CreateSpriteBillboard(snowManVisuals[0])
+				.AddSpriteHolder(out var snowManRenderer, snowManYOffset, 0)
+				.gameObject.SetAsPrefab(true)
+				.AddComponent<SnowMan>();
+
+			snowManPre.name = "SnowMan";
+			snowManRenderer.name = "SnowManVisual";
+
+			snowManPre.renderer = snowManRenderer;
+			snowManPre.collider = snowManPre.gameObject.AddBoxCollider(Vector3.up * snowManYOffset, new(5f, 10f, 5f), true);
+			snowManPre.spritesForEachHit = snowManVisuals;
+
+			snowManPre.audMan = snowManPre.gameObject.CreatePropagatedAudioManager(45f, 65f);
+			snowManPre.audHit = this.GetSound("Snowhit.wav", "BB_Hit", SoundType.Effect, Color.white);
+
+			driftPre = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(35f, "snowDrift.png"))
+				.AddSpriteHolder(out var driftRenderer, 1.8f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
+				.AddComponent<SnowDrift>();
+			driftPre.name = "SnowDrift";
+			driftRenderer.name = "SnowDriftRenderer";
+
+			driftPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(4.9f, 10f, 4.9f), true);
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("events", "Textures");
@@ -81,19 +110,19 @@ namespace BBTimes.CustomContent.Events
 			activeFrozenEvents++;
 			if (slipperGenerator != null)
 				StopCoroutine(slipperGenerator);
-			slipperGenerator = StartCoroutine(GenerateSlippers());
+			slipperGenerator = StartCoroutine(GenerateObstacles());
 		}
 
-		IEnumerator GenerateSlippers()
+		IEnumerator GenerateObstacles()
 		{
 			List<Cell> cells = ec.mainHall.AllTilesNoGarbage(false, false);
 			int max = ec.levelSize.x * ec.levelSize.z / (ec.levelSize.x + ec.levelSize.z);
 			int frameSkips = 0;
 
-			for (int i = 0; i < max; i++)
+			for (int i = 0; i < max; i++) // Slippers
 			{
 				if (cells.Count == 0) yield break;
-				int x = Random.Range(0, cells.Count);
+				int x = crng.Next(cells.Count);
 				SpawnSlipper(cells[x]);
 				cells.RemoveAt(x);
 
@@ -102,16 +131,61 @@ namespace BBTimes.CustomContent.Events
 					yield return null;
 					frameSkips = 0;
 				}
-				
+			}
+
+			yield return null;
+			frameSkips = 0;
+
+			for (int i = 0; i < max; i++) // Snowmans
+			{
+				if (cells.Count == 0) yield break;
+				int x = crng.Next(cells.Count);
+				SpawnSnowman(cells[x]);
+				cells.RemoveAt(x);
+
+				if (++frameSkips >= 25)
+				{
+					yield return null;
+					frameSkips = 0;
+				}
+			}
+
+			yield return null;
+			frameSkips = 0;
+
+			for (int i = 0; i < max; i++) // Drifts
+			{
+				if (cells.Count == 0) yield break;
+				int x = crng.Next(cells.Count);
+				SpawnDrift(cells[x]);
+				cells.RemoveAt(x);
+
+				if (++frameSkips >= 25)
+				{
+					yield return null;
+					frameSkips = 0;
+				}
 			}
 		}
 
 		void SpawnSlipper(Cell cell)
 		{
 			var slip = Instantiate(slipMatPre);
-			slip.SetAnOwner(gameObject);
 			slip.transform.position = cell.FloorWorldPosition;
 			slips.Add(slip);
+		}
+		void SpawnSnowman(Cell cell)
+		{
+			var snowMan = Instantiate(snowManPre);
+			snowMan.Ec = ec;
+			snowMan.transform.position = cell.FloorWorldPosition;
+			snowMans.Add(snowMan);
+		}
+		void SpawnDrift(Cell cell)
+		{
+			var drift = Instantiate(driftPre);
+			drift.transform.position = cell.FloorWorldPosition;
+			drifts.Add(drift);
 		}
 
 		void Update()
@@ -183,11 +257,23 @@ namespace BBTimes.CustomContent.Events
 
 			if (slipperGenerator != null)
 				StopCoroutine(slipperGenerator);
+
 			while (slips.Count != 0)
 			{
 				Destroy(slips[0].gameObject);
 				slips.RemoveAt(0);
-			}	
+			}
+			while (snowMans.Count != 0)
+			{
+				if (snowMans[0])
+					Destroy(snowMans[0].gameObject);
+				snowMans.RemoveAt(0);
+			}
+			while (drifts.Count != 0)
+			{
+				Destroy(drifts[0].gameObject);
+				drifts.RemoveAt(0);
+			}
 		}
 		public override void Pause()
 		{
@@ -202,7 +288,6 @@ namespace BBTimes.CustomContent.Events
 
 		void OnDestroy()
 		{
-			canvasToDespawn.ForEach(x => Destroy(x.transform.parent.gameObject));
 			if (active)
 				activeFrozenEvents--;
 		}
@@ -219,7 +304,15 @@ namespace BBTimes.CustomContent.Events
 		[SerializeField]
 		internal SlippingMaterial slipMatPre;
 
+		[SerializeField]
+		internal SnowMan snowManPre;
+
+		[SerializeField]
+		internal SnowDrift driftPre;
+
 		readonly List<SlippingMaterial> slips = [];
+		readonly List<SnowMan> snowMans = [];
+		readonly List<SnowDrift> drifts = [];
 		bool isPaused = false;
 		Coroutine slipperGenerator;
 
@@ -233,7 +326,7 @@ namespace BBTimes.CustomContent.Events
 
 		[SerializeField]
 		[Range(0f, 1f)]
-		internal float maxVel = 0.6f, slowDownMultiplier = 0.35f, speedReduceFactor = 0.085f;
+		internal float maxVel = 0.6f, slowDownMultiplier = 0.25f, speedReduceFactor = 0.152f;
 
 		internal static int activeFrozenEvents = 0;
 	}

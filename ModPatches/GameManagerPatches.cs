@@ -276,22 +276,31 @@ namespace BBTimes.ModPatches
 
 				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(angryBal);
 
+				Baldi baldiToFollow = null;
+
 				for (int i = 0; i < ___ec.Npcs.Count; i++)
 				{
 					var npc = ___ec.Npcs[i];
 					try
 					{
+						if (npc is Baldi bald)
+						{
+							baldiToFollow = bald;
+							bald.StartCoroutine(GameExtensions.InfiniteAnger(bald, 0.6f));
+							continue;
+						}
+
 						if (npc.Character != Character.Baldi)
 						{
 							npc.Despawn();
 							i--;
 						}
-
-						else if (npc.GetType() == typeof(Baldi))
-							npc.StartCoroutine(GameExtensions.InfiniteAnger((Baldi)npc, 0.6f));
 					}
 					catch (System.Exception e)
 					{
+						Object.Destroy(npc.gameObject);
+						___ec.Npcs.RemoveAt(i--);
+
 						Debug.LogWarning($"-------- The NPC {npc.name} failed to be despawned or is not Baldi --------");
 						Debug.LogException(e);
 					}
@@ -299,6 +308,10 @@ namespace BBTimes.ModPatches
 
 				___ec.SetTimeLimit(9999f);
 				___ec.StartCoroutine(SpawnFires());
+				if (baldiToFollow)
+				{
+					// Animation here
+				}
 			}
 
 
