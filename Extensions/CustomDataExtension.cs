@@ -30,6 +30,17 @@ namespace BBTimes.Extensions
 		public static Sprite[] GetSpriteSheet(this IPrefab pr, int horizontalTiles, int verticalTiles, float pixelsPerUnit, string texName) =>
 			pr.GetSpriteSheet(horizontalTiles, verticalTiles, pixelsPerUnit, new Vector2(0.5f, 0.5f), texName);
 
+		public static Sprite[] ExcludeNumOfSpritesFromSheet(this Sprite[] array, int spritesToRemove)
+		{
+			if (spritesToRemove >= array.Length)
+				throw new System.ArgumentException($"spritesToRemove ({spritesToRemove}) is higher than the array length ({array.Length})");
+
+			Sprite[] newAr = new Sprite[array.Length - spritesToRemove];
+			for (int i = 0; i < newAr.Length; i++)
+				newAr[i] = array[i];
+			return newAr;
+		}
+
 		public static SoundObject GetSound(this IPrefab pr, string audioName, string subtitle, SoundType soundType, Color color) =>
 			ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(pr.SoundPath, BBTimesManager.GetAssetName(audioName))), subtitle, soundType, color);
 

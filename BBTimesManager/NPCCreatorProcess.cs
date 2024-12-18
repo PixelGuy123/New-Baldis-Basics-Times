@@ -629,6 +629,38 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 20 });
+
+			// Pran the Dancer
+			npc = new NPCBuilder<PranTheDancer>(plug.Info)
+				.SetMinMaxAudioDistance(165f, 170f)
+				.AddSpawnableRoomCategories(RoomCategory.Hall)
+				.SetEnum("Pran")
+				.SetMetaName("PST_Pran_Name")
+				.SetName("Pran")
+				.AddTrigger()
+				.Build()
+				.SetupNPCData("Pran", "PST_Pran_Name", "PST_Pran_Desc", 0f);
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
+
+			// Winterry
+			npc = new NPCBuilder<Winterry>(plug.Info)
+				.SetMinMaxAudioDistance(165f, 175f)
+				.SetEnum("Winterry")
+				.SetMetaName("PST_Winterry_Name")
+				.SetName("Winterry")
+				.SetMetaTags(["student, Times_SpecialTags_ChristmasSpecial"])
+				.AddTrigger()
+				.SetForcedSubtitleColor(new(0.3984375f, 0.59765625f, 0.99609375f))
+				.AddLooker()
+				.SetMaxSightDistance(55f)
+				.Build()
+				.SetupNPCData("Winterry", "PST_Winterry_Name", "PST_Winterry_Desc", -0f);
+
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 20 });
 		}
 	}
 }

@@ -56,7 +56,7 @@ namespace BBTimes.CustomContent.Events
 			snowManPre.spritesForEachHit = snowManVisuals;
 
 			snowManPre.audMan = snowManPre.gameObject.CreatePropagatedAudioManager(45f, 65f);
-			snowManPre.audHit = this.GetSound("Snowhit.wav", "BB_Hit", SoundType.Effect, Color.white);
+			snowManPre.audHit = BBTimesManager.man.Get<SoundObject>("audGenericSnowHit");
 
 			driftPre = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(35f, "snowDrift.png"))
 				.AddSpriteHolder(out var driftRenderer, 1.8f, LayerStorage.ignoreRaycast)

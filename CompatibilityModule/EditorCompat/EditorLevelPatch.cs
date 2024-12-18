@@ -176,6 +176,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("pencilBoy", "PencilBoy");
 			AddNPC("phawillow", "Phawillow");
 			AddNPC("penny", "Penny");
+			AddNPC("pran", "Pran");
 			AddNPC("pix", "Pix");
 			AddNPC("quiker", "Quiker");
 			AddNPC("rollBot", "Rollingbot");
@@ -187,6 +188,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("tickTock", "TickTock");
 			AddNPC("watcher", "Watcher");
 			AddNPC("VacuumCleaner", "VacuumCleaner");
+			AddNPC("winTerry", "Winterry");
 			AddNPC("ZapZap", "ZapZap");
 
 			// ************* Local Methods ***************

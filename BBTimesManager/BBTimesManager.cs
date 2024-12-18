@@ -289,6 +289,9 @@ namespace BBTimes.Manager
 			sd.subtitle = false;
 			man.Add("audGenericStaminaYTPGrab", sd);
 
+			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("Snowhit.wav"))), "BB_Hit", SoundType.Effect, Color.white);
+			man.Add("audGenericSnowHit", sd);
+
 			// Eletricity Prefab
 			Sprite[] anim = TextureExtensions.LoadSpriteSheet(2, 2, 25f, GlobalAssetsPath, GetAssetName("shock.png"));
 			var eleRender = ObjectCreationExtensions.CreateSpriteBillboard(anim[0], false).AddSpriteHolder(out var eleRenderer, 0.1f, LayerStorage.ignoreRaycast);
