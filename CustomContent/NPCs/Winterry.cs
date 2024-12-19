@@ -17,9 +17,11 @@ namespace BBTimes.CustomContent.NPCs
 			audSpit = this.GetSound("winterrySpit.wav", "Vfx_Winterry_Spit", SoundType.Voice, Color.white);
 			audBlow = this.GetSound("winterryBlowing.wav", "Vfx_Winterry_Blow", SoundType.Voice, Color.white);
 
-			walkAnim = this.GetSpriteSheet(4, 4, 25f, "WinterryWalk.png");
-			blowAnim = this.GetSpriteSheet(4, 3, 25f, "WinterryInhale.png").ExcludeNumOfSpritesFromSheet(1);
-			spitAnim = this.GetSpriteSheet(4, 2, 25f, "WinterrySpit.png").ExcludeNumOfSpritesFromSheet(1);
+			const float pixsPerUnit = 35f;
+
+			walkAnim = this.GetSpriteSheet(4, 4, pixsPerUnit, "WinterryWalk.png");
+			blowAnim = this.GetSpriteSheet(4, 3, pixsPerUnit, "WinterryInhale.png").ExcludeNumOfSpritesFromSheet(1);
+			spitAnim = this.GetSpriteSheet(4, 2, pixsPerUnit, "WinterrySpit.png").ExcludeNumOfSpritesFromSheet(1);
 
 			spriteRenderer[0].sprite = walkAnim[0];
 
@@ -89,7 +91,7 @@ namespace BBTimes.CustomContent.NPCs
 			animComp.ResetFrame(true);
 			animComp.StopLastFrameMode();
 			if (target)
-				Instantiate(snowPre).Spawn(gameObject, transform.position, (target.position - transform.position).normalized, Random.Range(minShootForce, maxShootForce), shootYVelocity, ec);
+				Instantiate(snowPre).Spawn(gameObject, transform.position, (target.position - transform.position).normalized, Random.Range(minShootForce, maxShootForce), shootYVelocity, ec, 2.75f);
 
 			while (!animComp.Paused || audMan.QueuedAudioIsPlaying)
 				yield return null;

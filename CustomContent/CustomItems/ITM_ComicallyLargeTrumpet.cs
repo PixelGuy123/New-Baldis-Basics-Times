@@ -46,6 +46,13 @@ namespace BBTimes.CustomContent.CustomItems
 						entity.Navigator.Entity.AddForce(new((entity.transform.position - pm.transform.position).normalized, force, -force * pushForceDecrement));
 				}
 			}
+
+			foreach (var window in FindObjectsOfType<Window>())
+			{
+				float dist = pushForce - (Vector3.Distance(window.transform.position, pm.transform.position) * pushDistance);
+				if (dist > 10f)
+					window.Break(false);
+			}
 		}
 
 		void OnDestroy() =>

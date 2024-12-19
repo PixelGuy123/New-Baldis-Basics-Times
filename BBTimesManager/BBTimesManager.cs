@@ -331,7 +331,9 @@ namespace BBTimes.Manager
 
 			// Slippery Water Prefab
 
-			var watRender = ObjectCreationExtensions.CreateSpriteBillboard(null, false).AddSpriteHolder(out var waterRenderer, 0.1f, 0);
+			var watRender = ObjectCreationExtensions.CreateSpriteBillboard(null, false)
+				.AddSpriteHolder(out var waterRenderer, 0.1f, LayerStorage.ignoreRaycast);
+
 			watRender.name = "SlippingWater";
 			watRender.gameObject.ConvertToPrefab(true);
 
@@ -341,7 +343,7 @@ namespace BBTimes.Manager
 			var slipMatPre = watRender.gameObject.AddComponent<SlippingMaterial>();
 			slipMatPre.audMan = slipMatPre.gameObject.CreatePropagatedAudioManager(45f, 60f);
 			slipMatPre.audSlip = man.Get<SoundObject>("slipAud");
-			slipMatPre.gameObject.AddBoxCollider(Vector3.zero, new(9.9f, 10f, 9.9f), true);
+			slipMatPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(9.9f, 10f, 9.9f), true);
 			man.Add("SlipperyMatPrefab", slipMatPre);
 
 			// ********************************************************** Secret Ending Setup ***************************************************************************

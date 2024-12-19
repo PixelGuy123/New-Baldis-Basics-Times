@@ -4,35 +4,30 @@ using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
 {
-	public class SnowBall : EnvironmentObject, IEntityTrigger
+	public class Snowflake : EnvironmentObject, IEntityTrigger
 	{
-		public void Spawn(GameObject owner, Vector3 pos, Vector3 dir, float speed, float ySpeed, EnvironmentController ec, float startingHeight = 5f)
+		public void Spawn(GameObject owner, Vector3 pos, Vector3 dir, float speed, EnvironmentController ec)
 		{
 			initialized = true;
-			entity.Initialize(ec, pos);
-			entity.OnEntityMoveInitialCollision += (hit) => { if (!hidden) Destroy(gameObject); };
+			this.ec = ec;
 			moveMod.movementMultiplier = slowFactor;
 
-			this.ec = ec;
+			entity.Initialize(ec, pos);
+			entity.OnEntityMoveInitialCollision += (hit) =>
+			{
+				this.dir = Vector3.Reflect(this.dir, hit.normal);
+				lifeTime -= 0.5f;
+			};
 
 			this.dir = dir;
 			this.speed = speed;
-			yVelocity = ySpeed;
 
 			this.owner = owner;
-			height = startingHeight;
 		}
-
-		const float heightOffset = -5f;
-		float yVelocity = 5f, speed = 0f, height;
-		GameObject owner;
-		Vector3 dir;
-		bool initialized = false, hidden = false;
 
 		void Update()
 		{
-			if (!initialized)
-				return;
+			if (!initialized) return;
 
 			if (hidden)
 			{
@@ -42,18 +37,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 			entity.UpdateInternalMovement(dir * speed * ec.EnvironmentTimeScale);
 
-			renderer.localPosition = Vector3.up * (height + heightOffset);
-			yVelocity -= ec.EnvironmentTimeScale * Time.deltaTime;
-
-			height += yVelocity * Time.deltaTime * 1.5f;
-
-			if (height > 9.35f)
-			{
-				yVelocity = 0f;
-				height = 9.35f;
-			}
-
-			if (height <= 0f)
+			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
+			if (lifeTime < 0f)
 				Destroy(gameObject);
 		}
 
@@ -67,7 +52,6 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 				var e = other.GetComponent<Entity>();
 				if (e)
 				{
-					e.AddForce(new((e.transform.position - transform.position).normalized, hitForce, -hitForce));
 					audMan.PlaySingle(audHit);
 					StartCoroutine(SlowDown(e, other.GetComponent<PlayerManager>()));
 				}
@@ -76,16 +60,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		public void EntityTriggerStay(Collider other) { }
 
-		public void EntityTriggerExit(Collider other) 
-		{
-			if (other.gameObject == owner)
-				owner = null;
-		}
+		public void EntityTriggerExit(Collider other) { }
 
 		IEnumerator SlowDown(Entity e, PlayerManager pm = null)
 		{
 			hidden = true;
-			renderer.gameObject.SetActive(false);
+			renderer.SetActive(false);
 			e.ExternalActivity.moveMods.Add(moveMod);
 			targettedMod = e.ExternalActivity;
 			PlayerAttributesComponent pmm = null;
@@ -95,6 +75,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			while (freezeCooldown > 0f)
 			{
 				freezeCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+
 				if (pmm && pmm.HasAttribute("boots"))
 					break;
 				yield return null;
@@ -106,12 +87,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		void OnDestroy() =>
 			targettedMod?.moveMods.Remove(moveMod);
 
-
 		[SerializeField]
 		internal Entity entity;
-
-		[SerializeField]
-		internal Transform renderer;
 
 		[SerializeField]
 		internal AudioManager audMan;
@@ -120,14 +97,22 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		internal SoundObject audHit;
 
 		[SerializeField]
-		internal float freezeCooldown = 5f, hitForce = 25.5f;
+		internal GameObject renderer;
 
 		[SerializeField]
 		[Range(0f, 1f)]
-		internal float slowFactor = 0.05f;
+		internal float slowFactor = 0.65f;
 
+		[SerializeField]
+		internal float freezeCooldown = 15f, lifeTime = 30f;
+
+
+		bool initialized = false, hidden = false;
+		float speed = 2f;
+		Vector3 dir;
+		GameObject owner;
 		ActivityModifier targettedMod;
 
-		readonly MovementModifier moveMod = new(Vector3.zero, 0.05f);
+		readonly MovementModifier moveMod = new(Vector3.zero, 1f);
 	}
 }

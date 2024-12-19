@@ -103,7 +103,7 @@ namespace BBTimes.CustomContent.NPCs
 				new () { key = "Vfx_Spj_FoundLong3", time = 17.911f },
 				new() { key = "Vfx_Spj_FoundLong4", time = 27.379f }
 			];
-			anim = this.GetSpriteSheet(2, 2, 72f, "spj.png");
+			anim = this.GetSpriteSheet(2, 2, 35f, "spj.png");
 			audWarn = soundObjects[0];
 			audWonder = soundObjects[1];
 			audStep1 = soundObjects[2];

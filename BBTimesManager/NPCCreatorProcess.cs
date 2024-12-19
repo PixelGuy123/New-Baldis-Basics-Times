@@ -225,7 +225,7 @@ namespace BBTimes.Manager
 				.SetMetaTags(["faculty"])
 				.SetMaxSightDistance(155)
 				.Build()
-				.SetupNPCData("SuperintendentJr", "PST_Spj_Name", "PST_Spj_Desc", -1.73f);
+				.SetupNPCData("SuperintendentJr", "PST_Spj_Name", "PST_Spj_Desc", -1f);
 
 			npc.Navigator.SetRoomAvoidance(false);
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
@@ -635,6 +635,7 @@ namespace BBTimes.Manager
 				.SetMinMaxAudioDistance(165f, 170f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Pran")
+				.SetMetaTags(["neither"])
 				.SetMetaName("PST_Pran_Name")
 				.SetName("Pran")
 				.AddTrigger()
@@ -655,12 +656,28 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetMaxSightDistance(55f)
 				.Build()
-				.SetupNPCData("Winterry", "PST_Winterry_Name", "PST_Winterry_Desc", -0f);
+				.SetupNPCData("Winterry", "PST_Winterry_Name", "PST_Winterry_Desc", -1.4f)
+				.MarkAsReplacement(65, Character.Beans);
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 40 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 20 });
+
+			// Snowfolke
+			npc = new NPCBuilder<Snowfolke>(plug.Info)
+				.SetMinMaxAudioDistance(135f, 175f)
+				.SetEnum("Snowfolke")
+				.SetMetaName("PST_Snowfolke_Name")
+				.SetName("Snowfolke")
+				.SetMetaTags(["student", "Times_SpecialTags_ChristmasSpecial"])
+				.AddTrigger()
+				.SetForcedSubtitleColor(new(0.69921875f, 0.796875f, 0.99609375f))
+				.Build()
+				.SetupNPCData("Snowfolke", "PST_Snowfolke_Name", "PST_Snowfolke_Desc", 0f);
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 32 });
 		}
 	}
 }
