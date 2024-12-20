@@ -64,6 +64,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		IEnumerator SlowDown(Entity e, PlayerManager pm = null)
 		{
+			AffectEntity(e, pm);
 			hidden = true;
 			renderer.SetActive(false);
 			e.ExternalActivity.moveMods.Add(moveMod);
@@ -76,7 +77,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			{
 				freezeCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 
-				if (pmm && pmm.HasAttribute("boots"))
+				if (!ignoreBootAttribute && pmm && pmm.HasAttribute("boots"))
 					break;
 				yield return null;
 			}
@@ -84,8 +85,14 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			Destroy(gameObject);
 		}
 
-		void OnDestroy() =>
+		void OnDestroy()
+		{
+			Despawn();
 			targettedMod?.moveMods.Remove(moveMod);
+		}
+
+		protected virtual void AffectEntity(Entity e, PlayerManager pm) { }
+		protected virtual void Despawn() { }
 
 		[SerializeField]
 		internal Entity entity;
@@ -105,6 +112,9 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		[SerializeField]
 		internal float freezeCooldown = 15f, lifeTime = 30f;
+
+		[SerializeField]
+		internal bool ignoreBootAttribute = false;
 
 
 		bool initialized = false, hidden = false;

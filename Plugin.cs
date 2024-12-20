@@ -16,7 +16,6 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using MTM101BaldAPI.SaveSystem;
-using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using PlusLevelFormat;
 using PlusLevelLoader;
@@ -269,8 +268,10 @@ namespace BBTimes
 
 			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, sco) =>
 			{
-				var ld = sco.levelObject;
-				if (ld == null)
+				var nld = sco.levelObject;
+				if (nld == null)
+					return;
+				if (nld is not CustomLevelObject ld)
 					return;
 
 #if CHEAT
@@ -279,7 +280,7 @@ namespace BBTimes
 				Debug.Log("Floor " + floorName);
 				ld.shopItems.Do(x => Debug.Log($"{x.selection.itemType} >> {x.selection.price} || weight: {x.weight} || cost: {x.selection.value}"));
 #endif
-
+				ld.SetCustomModValue(Info, "Times_GenConfig_DisableOutside", false);
 				ld.MarkAsNeverUnload(); // Maybe?
 
 				RoomGroup[] groups = [ld.roomGroup.First(x => x.name == "Class"), ld.roomGroup.First(x => x.name == "Faculty"), ld.roomGroup.First(x => x.name == "Office")];

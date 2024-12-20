@@ -42,12 +42,12 @@ namespace BBTimes.Manager
 			MainGameManagerPatches.fire = fire.gameObject;
 
 			// Elevator exit signs
-			GenericExtensions.FindResourceObjects<Elevator>().Do((x) =>
-			{
-				var exit = Object.Instantiate(GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_ExitSign"));
-				exit.transform.SetParent(x.transform);
-				exit.transform.localPosition = x.transform.forward * LayerStorage.TileBaseOffset + Vector3.up * 10f;
-			});
+			//GenericExtensions.FindResourceObjects<Elevator>().Do((x) =>
+			//{
+			//	var exit = Object.Instantiate(GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_ExitSign"));
+			//	exit.transform.SetParent(x.transform);
+			//	exit.transform.localPosition = x.transform.forward * LayerStorage.TileBaseOffset + Vector3.up * 10f;
+			//});
 
 			// Hanging ceiling light for cafeteria
 			var hangingLight = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("cafeHangingLight.png"))), 25f)).AddSpriteHolder(out _, 40f);

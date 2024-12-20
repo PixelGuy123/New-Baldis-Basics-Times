@@ -307,7 +307,10 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					if (mimi != mimi.ec.Npcs[i] && mimi.ec.Npcs[i].Navigator.isActiveAndEnabled)
 					{
-						mimi.looker.Raycast(mimi.ec.Npcs[i].transform, Mathf.Min(mimi.looker.distance, mimi.ec.MaxRaycast), out bool flag);
+						mimi.looker.Raycast(mimi.ec.Npcs[i].transform, 
+							Mathf.Min((mimi.transform.position - mimi.ec.Npcs[i].transform.position).magnitude + mimi.ec.Npcs[i].Navigator.Velocity.magnitude, 
+							mimi.looker.distance, 
+							mimi.ec.MaxRaycast), out bool flag);
 						if (flag)
 						{
 							mimi.JumpscareNPC(mimi.ec.Npcs[i]);

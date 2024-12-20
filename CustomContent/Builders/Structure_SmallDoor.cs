@@ -86,9 +86,9 @@ namespace BBTimes.CustomContent.Builders
 
 
 		// Prefab stuff above ^^
-		public override void Generate(LevelGenerator lg, System.Random rng)
+		public override void PostOpenCalcGenerate(LevelGenerator lg, System.Random rng)
 		{
-			base.Generate(lg, rng);
+			base.PostOpenCalcGenerate(lg, rng);
 
 			var room = lg.Ec.mainHall;
 			var cells = room.AllTilesNoGarbage(false, false);

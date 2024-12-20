@@ -3,6 +3,7 @@ using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
+using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,11 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 			if ((bool)BBTimesManager.plug.disableOutside.BoxedValue || lg == null) // Make sure this only happens in generated maps
 				return;
+			if (lg.ld is CustomLevelObject cld)
+			{
+				if ((bool)cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_GenConfig_DisableOutside"))
+					return;
+			}
 
 			Debug.Log("TIMES: Creating windows for outside...");
 

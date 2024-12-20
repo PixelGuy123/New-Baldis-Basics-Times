@@ -678,6 +678,25 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 32 });
+
+			// Everett Treewood
+			npc = new NPCBuilder<EverettTreewood>(plug.Info)
+				.SetMinMaxAudioDistance(125f, 155f)
+				.SetEnum("EverettTreewood")
+				.SetMetaName("PST_Everett_Name")
+				.SetName("EverettTreewood")
+				.SetMetaTags(["neither", "Times_SpecialTags_ChristmasSpecial"])
+				.AddTrigger()
+				.SetForcedSubtitleColor(new(0f, 0.5f, 0.16796875f))
+				.AddLooker()
+				.SetMaxSightDistance(110f)
+				.Build()
+				.SetupNPCData("EverettTreewood", "PST_Everett_Name", "PST_Everett_Desc", -0.5f);
+
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 10 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
 		}
 	}
 }

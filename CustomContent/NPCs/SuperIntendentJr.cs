@@ -202,7 +202,7 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					if (npc.Disobeying)
 					{
-						looker.Raycast(npc.transform, Mathf.Min((transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude, looker.distance, npc.ec.MaxRaycast), out bool flag);
+						looker.Raycast(npc.transform, Mathf.Min((transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude, looker.distance, ec.MaxRaycast), out bool flag);
 						if (flag)
 						{
 							npc.SetGuilt(brokenRuleTimer, npc.BrokenRule);

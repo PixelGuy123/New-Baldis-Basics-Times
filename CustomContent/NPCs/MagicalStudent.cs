@@ -67,7 +67,7 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.QueueAudio(audPrepare);
 			navigator.maxSpeed = 0f;
 			navigator.SetSpeed(0f);
-			float cool = 4.5f;
+			float cool = throwMagicDelay;
 			renderer.sprite = throwSprites[1];
 			float shakeness = 0f;
 			Vector3 pos = renderer.transform.localPosition;
@@ -95,7 +95,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			navigator.maxSpeed = speed;
 			navigator.SetSpeed(speed);
-			behaviorStateMachine.ChangeState(new MagicalStudent_Wander(this, Random.Range(15f, 25f)));
+			behaviorStateMachine.ChangeState(new MagicalStudent_Wander(this, Random.Range(minThrowCooldown, maxThrowCooldown)));
 
 			yield break;
 		}
@@ -116,6 +116,9 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal SoundObject audThrow, audPrepare;
+
+		[SerializeField]
+		internal float minThrowCooldown = 15f, maxThrowCooldown = 25f, throwMagicDelay = 1.5f;
 
 		const float speed = 15f;
 	}
