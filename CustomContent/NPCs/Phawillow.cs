@@ -87,7 +87,7 @@ namespace BBTimes.CustomContent.NPCs
 			holdingItem = null;
 			itemRender.sprite = null;
 			if (behaviorStateMachine.CurrentState is not Phawillow_Disable)
-				behaviorStateMachine.ChangeState(new Phawillow_Wandering(this, false));
+				behaviorStateMachine.ChangeState(new Phawillow_Wandering(this, delayAfterLosingItem));
 		}
 		public void ClickableUnsighted(int player) { }
 		public void ClickableSighted(int player) { }
@@ -126,7 +126,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal PropagatedAudioManager audMan;
 
 		[SerializeField]
-		internal float delayBeforeCatchAgain = 15f;
+		internal float delayBeforeCatchAgain = 15f, delayAfterLosingItem = 3.5f;
 
 		ItemObject holdingItem;
 
@@ -156,10 +156,10 @@ namespace BBTimes.CustomContent.NPCs
 		protected Phawillow wi = wi;
 	}
 
-	internal class Phawillow_Wandering(Phawillow wi, bool pickDelay = true) : Phawillow_StateBase(wi)
+	internal class Phawillow_Wandering(Phawillow wi, float pickDelay = 0f) : Phawillow_StateBase(wi)
 	{
 		NavigationState_WanderRandom wander;
-		float delay = pickDelay ? wi.delayBeforeCatchAgain : 0f;
+		float delay = pickDelay;
 		public override void Enter()
 		{
 			base.Enter();
@@ -218,7 +218,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void DestinationEmpty()
 		{
 			base.DestinationEmpty();
-			wi.behaviorStateMachine.ChangeState(new Phawillow_Wandering(wi, false));
+			wi.behaviorStateMachine.ChangeState(new Phawillow_Wandering(wi));
 		}
 
 		public override void Exit()
@@ -409,7 +409,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.DestinationEmpty();
 			if ((pickup.transform.position - wi.transform.position).magnitude <= 5f)
 			{
-				wi.behaviorStateMachine.ChangeState(new Phawillow_Wandering(wi));
+				wi.behaviorStateMachine.ChangeState(new Phawillow_Wandering(wi, wi.delayBeforeCatchAgain));
 
 				pickup.AssignItem(previousItem);
 				pickup.gameObject.SetActive(true);

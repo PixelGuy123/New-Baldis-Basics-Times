@@ -30,7 +30,12 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 			base.Initialize(room);
 			originalCeilTex = room.ceilTex;
+
+			ogCellBins.Clear();
 			room.cells.ForEach(c => ogCellBins.Add(c, c.ConstBin));
+
+			if (tilePrefabRef)
+				DestroyImmediate(tilePrefabRef.gameObject);
 
 			tilePrefabRef = new GameObject("TileRef").AddComponent<MeshFilter>();
 			var renderer = tilePrefabRef.gameObject.AddComponent<MeshRenderer>();

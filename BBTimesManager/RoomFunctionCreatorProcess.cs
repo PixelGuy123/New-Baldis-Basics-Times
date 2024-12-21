@@ -52,45 +52,10 @@ namespace BBTimes.Manager
 
 
 			// Random Corner Object
-			List<WeightedTransform> transformsList = [
-				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lamp.png"))), 25f))
-				.AddSpriteHolder(out _, 2.9f, LayerStorage.ignoreRaycast)
-				.gameObject.SetAsPrefab(true)
-				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 75 },
-
-				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lightBulb.png"))), 65f))
-				.AddSpriteHolder(out _, 5.1f, LayerStorage.ignoreRaycast)
-				.gameObject.SetAsPrefab(true)
-				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 35 },
-
-				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lampShaped.png"))), 25f))
-				.AddSpriteHolder(out _, 3.1f, LayerStorage.ignoreRaycast)
-				.gameObject.SetAsPrefab(true)
-				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 55 },
-				];
-
-
-			TextureExtensions.LoadSpriteSheet(3, 1, 40f, MiscPath, TextureFolder, GetAssetName("SugaLamps.png")).Do(x =>
-			{
-				transformsList.Add(new()
-				{
-					selection = ObjectCreationExtensions.CreateSpriteBillboard(x)
-				.AddSpriteHolder(out _, 3.1f, LayerStorage.ignoreRaycast)
-				.gameObject.SetAsPrefab(true)
-				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform,
-					weight = 38
-				});
-			});
-
-			for (int i = 0; i < transformsList.Count; i++)
-			{
-				transformsList[i].selection.name = "TimesGenericCornerLamp_" + (i + 1);
-				transformsList[i].selection.gameObject.AddObjectToEditor();
-			}
 
 			// -------------------- DUST SHROOM CREATION ----------------------------
 
-			WeightedTransform[] transforms = [.. transformsList];
+			WeightedTransform[] transforms = [.. man.Get<List<WeightedTransform>>("prefabs_cornerLamps")];
 
 			var cos = AddFunctionToEveryRoom<CornerObjectSpawner>(FacultyPrefix);
 			cos.lightPower = 0;

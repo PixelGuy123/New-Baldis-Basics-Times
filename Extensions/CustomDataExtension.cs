@@ -30,14 +30,29 @@ namespace BBTimes.Extensions
 		public static Sprite[] GetSpriteSheet(this IPrefab pr, int horizontalTiles, int verticalTiles, float pixelsPerUnit, string texName) =>
 			pr.GetSpriteSheet(horizontalTiles, verticalTiles, pixelsPerUnit, new Vector2(0.5f, 0.5f), texName);
 
-		public static Sprite[] ExcludeNumOfSpritesFromSheet(this Sprite[] array, int spritesToRemove)
+		public static Sprite[] ExcludeNumOfSpritesFromSheet(this Sprite[] array, int spritesToRemove, bool fromEnd = true)
 		{
 			if (spritesToRemove >= array.Length)
 				throw new System.ArgumentException($"spritesToRemove ({spritesToRemove}) is higher than the array length ({array.Length})");
 
 			Sprite[] newAr = new Sprite[array.Length - spritesToRemove];
+			int z = fromEnd ? 0 : spritesToRemove; // If fromEnd = false, it should ignore the first sprites, so starting from Start
 			for (int i = 0; i < newAr.Length; i++)
+				newAr[i] = array[z++];
+
+			return newAr;
+		}
+
+		public static Sprite[] MirrorSprites(this Sprite[] array)
+		{
+			Sprite[] newAr = new Sprite[array.Length * 2];
+			
+			for (int i = 0; i < array.Length; i++)
 				newAr[i] = array[i];
+
+			for (int i = 0; i < array.Length; i++)
+				newAr[i] = array[array.Length - 1 - i]; // Mirror sprites!!!
+
 			return newAr;
 		}
 

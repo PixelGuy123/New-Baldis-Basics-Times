@@ -179,24 +179,33 @@ namespace BBTimes.CustomContent.NPCs
 	internal class MagicalStudent_ThrowPrep(MagicalStudent mgs, PlayerManager pm) : MagicalStudent_StateBase(mgs)
 	{
 		readonly PlayerManager player = pm;
+		Vector3 nextPoint = mgs.transform.position;
 		public override void Enter()
 		{
 			base.Enter();
 			mgs.Navigator.FindPath(mgs.transform.position, player.transform.position);
-			ChangeNavigationState(new NavigationState_TargetPosition(mgs, 63, mgs.Navigator.NextPoint));
+			nextPoint = mgs.Navigator.NextPoint;
+			ChangeNavigationState(new NavigationState_TargetPosition(mgs, 63, nextPoint));
 		}
 
 		public override void DestinationEmpty()
 		{
-			if (mgs.looker.PlayerInSight() && !player.Tagged)
+			base.DestinationEmpty();
+			if (mgs.looker.PlayerInSight(player) && !player.Tagged)
 			{
-				base.DestinationEmpty();
 				ChangeNavigationState(new NavigationState_DoNothing(mgs, 0));
 				mgs.ThrowMagic(player);
 				mgs.behaviorStateMachine.ChangeState(new MagicalStudent_StateBase(mgs)); // Who will change state now is Mgs himself
 				return;
 			}
 			mgs.behaviorStateMachine.ChangeState(new MagicalStudent_Wander(mgs, 0f));
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			if (Vector3.Distance(nextPoint, mgs.transform.position) > 10f)
+				mgs.behaviorStateMachine.ChangeState(new MagicalStudent_Wander(mgs, 0f));
 		}
 	}
 }

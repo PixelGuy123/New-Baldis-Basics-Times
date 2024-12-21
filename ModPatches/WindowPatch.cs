@@ -1,8 +1,11 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Manager;
+using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
+using MTM101BaldAPI;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BBTimes.ModPatches
@@ -35,14 +38,14 @@ namespace BBTimes.ModPatches
 			if (lg == null || wComp != null)
 				return;
 
-			var data = BBTimesManager.CurrentFloorData;
+			var dataLvl = Singleton<CoreGameManager>.Instance.sceneObject.levelObject;
 
-			if (data == null) return;
-
-
+			if (dataLvl == null || dataLvl is not CustomLevelObject data) return;
 
 
-			var objs = data.WindowObjects;
+
+
+			var objs = (List<WindowObjectHolder>)data.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
 			objs.RemoveAll(x => !x.SelectionLimiters.Contains(__instance.aTile.room.category) && !x.SelectionLimiters.Contains(__instance.bTile.room.category));
 
 			if (objs.Count == 0 || lg.controlledRNG.NextDouble() >= 0.45d) return;

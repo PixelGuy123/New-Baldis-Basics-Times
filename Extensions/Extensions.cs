@@ -14,6 +14,14 @@ namespace BBTimes.Extensions
 {
 	public static class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
 	{
+		public static bool RaycastNPC(this Looker looker, NPC npc)
+		{
+			looker.Raycast(npc.transform,
+						Mathf.Min((looker.transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,
+						looker.distance,
+						looker.npc.ec.MaxRaycast), out bool flag);
+			return flag;
+		}
 		public static ItemObject RemoveRandomItemAndReturnIt(this ItemManager itm)
 		{
 			ItemObject selectedItm = itm.nothing;

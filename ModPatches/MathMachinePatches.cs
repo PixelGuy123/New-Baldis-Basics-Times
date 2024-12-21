@@ -1,5 +1,6 @@
 ﻿using BBTimes.Manager;
 using HarmonyLib;
+using MTM101BaldAPI;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using TMPro;
@@ -36,9 +37,18 @@ namespace BBTimes.ModPatches
 				)
 			.SetInstruction(Transpilers.EmitDelegate(() =>
 			{
-				int amount = BBTimesManager.CurrentFloorData == null ? BBTimesManager.MaximumNumballs + 1 : Random.Range(BBTimesManager.CurrentFloorData.MinNumberBallAmount, BBTimesManager.CurrentFloorData.MaxNumberBallAmount + 1) + 1;
-				//Debug.LogWarning($"Math machine instance initiated with {amount} numballs");
-				return amount;
+				var ld = Singleton<CoreGameManager>.Instance.sceneObject.levelObject;
+				if (ld == null || ld is not CustomLevelObject cld)
+					return BBTimesManager.MaximumNumballs + 1;
+
+				var minMaxObj = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_MathMachineNumballsMinMax");
+
+				if (minMaxObj == null)
+					return BBTimesManager.MaximumNumballs + 1;
+
+				IntVector2 minMax = (IntVector2)minMaxObj;
+
+				return Random.Range(minMax.x, minMax.z + 1) + 1;
 			}))
 			.InstructionEnumeration();
 

@@ -23,6 +23,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			this.speed = speed;
 
 			this.owner = owner;
+			Initialized();
 		}
 
 		void Update()
@@ -52,6 +53,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 				var e = other.GetComponent<Entity>();
 				if (e)
 				{
+					audMan.FlushQueue(true);
 					audMan.PlaySingle(audHit);
 					StartCoroutine(SlowDown(e, other.GetComponent<PlayerManager>()));
 				}
@@ -93,6 +95,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		protected virtual void AffectEntity(Entity e, PlayerManager pm) { }
 		protected virtual void Despawn() { }
+
+		protected virtual void Initialized() { }
 
 		[SerializeField]
 		internal Entity entity;

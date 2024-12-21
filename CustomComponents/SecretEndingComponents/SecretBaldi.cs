@@ -25,7 +25,7 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 
 		[SerializeField]
 		internal SoundObject audMeetMe1, audMeetMe2, audMeetMe3, audMeetMe4,
-			audAngry1, audAngry2, audAngry3, audAngry4, audAngry5, audAngry6, audAngry7, audAngry8, audAngry9, audAngry10, audAngry11, audAngry12, audAngry13;
+			audAngry1, audAngry2, audAngry3, audAngry4, audAngry5, audAngry6, audAngry7, audAngry8, audAngry9;
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
@@ -142,7 +142,7 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 
 		IEnumerator EndSequence(PlayerManager pm)
 		{
-			UpdateSpriteTo(sprAngryBal);
+			UpdateSpriteTo(sprAngryHappyBal);
 			pm.plm.Entity.SetFrozen(true);
 			Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).SetControllable(false);
 			audMan.FlushQueue(true);
@@ -157,54 +157,34 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 				yield return null;
 			}
 
+			UpdateSpriteTo(sprAngryBal);
 			audMan.QueueAudio(audAngry3);
-			UpdateSpriteTo(sprThinkingBal);
 
 			while (audMan.QueuedAudioIsPlaying)
 				yield return null;
 
 			audMan.QueueAudio(audAngry4);
-			UpdateSpriteTo(sprAngryHappyBal);
+			UpdateSpriteTo(sprThinkingBal);
+
 			while (audMan.QueuedAudioIsPlaying)
 				yield return null;
 
 			audMan.QueueAudio(audAngry5);
-			UpdateSpriteTo(sprAngryBal);
+			UpdateSpriteTo(sprAngryHappyBal);
 			while (audMan.QueuedAudioIsPlaying)
 				yield return null;
 
 			audMan.QueueAudio(audAngry6);
-			UpdateSpriteTo(sprAngryHappyBal);
+			UpdateSpriteTo(sprAngryBal);
 			while (audMan.QueuedAudioIsPlaying)
 				yield return null;
 
 			audMan.QueueAudio(audAngry7);
-			UpdateSpriteTo(sprAngryBal);
-			while (audMan.QueuedAudioIsPlaying)
-				yield return null;
-
-			audMan.QueueAudio(audAngry8);
 			UpdateSpriteTo(sprAngryHappySideEyeBal);
 			while (audMan.QueuedAudioIsPlaying)
 				yield return null;
 
-
-			audMan.QueueAudio(audAngry9);
-			UpdateSpriteTo(sprAngryHappyBal);
-			while (audMan.QueuedAudioIsPlaying)
-				yield return null;
-
-			audMan.QueueAudio(audAngry10);
-			UpdateSpriteTo(sprAngryBal);
-			while (audMan.QueuedAudioIsPlaying)
-				yield return null;
-
-			audMan.QueueAudio(audAngry11);
-			UpdateSpriteTo(sprAngryHappyBal);
-			while (audMan.QueuedAudioIsPlaying)
-				yield return null;
-
-			audMan.QueueAudio(audAngry12);
+			audMan.QueueAudio(audAngry8);
 			UpdateSpriteTo(sprAngryBal);
 			while (audMan.QueuedAudioIsPlaying)
 				yield return null;
@@ -220,7 +200,7 @@ namespace BBTimes.CustomComponents.SecretEndingComponents
 				yield return null; // 6 frames one frame
 			}
 
-			audMan.QueueAudio(audAngry13);
+			audMan.QueueAudio(audAngry9);
 			UpdateSpriteTo(sprWithRulerBal);
 			while (audMan.QueuedAudioIsPlaying)
 				yield return null;

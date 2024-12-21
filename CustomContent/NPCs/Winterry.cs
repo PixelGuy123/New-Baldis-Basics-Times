@@ -1,15 +1,15 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
-using PixelInternalAPI.Extensions;
-using PixelInternalAPI.Classes;
-using UnityEngine;
 using BBTimes.Manager;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using System.Collections;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Winterry : NPC, INPCPrefab
+	public class Winterry : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -44,7 +44,8 @@ namespace BBTimes.CustomContent.NPCs
 			snowPre.renderer = snowBallRenderer.transform;
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
 		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
@@ -118,7 +119,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] walkAnim, spitAnim, blowAnim;
 
 		[SerializeField]
-		internal float minShootForce = 25f, maxShootForce = 35f, shootYVelocity = 6f, waitNextSpitCooldown = 1.15f;
+		internal float minShootForce = 25f, maxShootForce = 35f, shootYVelocity = 6f, waitNextSpitCooldown = 10f;
 
 		Coroutine shootAwaitCor;
 	}
@@ -145,20 +146,16 @@ namespace BBTimes.CustomContent.NPCs
 
 		public override void Update()
 		{
-			base.Update(); 
+			base.Update();
 
 			if (!w.Blinded)
 			{
 				for (int i = 0; i < w.ec.Npcs.Count; i++)
 				{
-					if (w != w.ec.Npcs[i] && w.ec.Npcs[i].Navigator.isActiveAndEnabled)
+					if (w != w.ec.Npcs[i] && w.ec.Npcs[i].Navigator.isActiveAndEnabled && w.looker.RaycastNPC(w.ec.Npcs[i]))
 					{
-						w.looker.Raycast(w.ec.Npcs[i].transform, Mathf.Min(w.looker.distance, w.ec.MaxRaycast), out bool flag);
-						if (flag)
-						{
-							w.Shoot(w.ec.Npcs[i].transform);
-							return;
-						}
+						w.Shoot(w.ec.Npcs[i].transform);
+						return;
 					}
 				}
 			}

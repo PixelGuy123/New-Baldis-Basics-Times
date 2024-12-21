@@ -15,7 +15,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			base.VirtualUpdate();
 			if (++frameDelay >= 3)
 			{
-				moveMod.movementAddend = new(Random.Range(-eletricityForce, eletricityForce), 0f, Random.Range(-eletricityForce, eletricityForce));
+				moveMod.movementAddend.x = Random.Range(-eletricityForce, eletricityForce);
+				moveMod.movementAddend.z = Random.Range(-eletricityForce, eletricityForce);
 				frameDelay = 0;
 			}
 		}

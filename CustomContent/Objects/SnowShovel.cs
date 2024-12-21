@@ -29,7 +29,7 @@ namespace BBTimes.CustomContent.Objects
 		RoomController home;
 
 
-		public bool IsOnCooldown => pickCooldown > 0f;
+		public bool IsOnCooldown => pickCooldown > 1f;
 		float pickCooldown = 0f;
 		GameCamera camToFollow;
 		PlayerManager playerToFollow;
@@ -89,10 +89,10 @@ namespace BBTimes.CustomContent.Objects
 		{
 			if (!camToFollow)
 			{
-				if (pickCooldown > 0f)
+				if (pickCooldown > 1f)
 				{
-					pickCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 					timer.text = Mathf.FloorToInt(pickCooldown).ToString();
+					pickCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 				}
 				else timer.gameObject.SetActive(false);
 

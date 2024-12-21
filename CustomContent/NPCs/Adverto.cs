@@ -2,14 +2,14 @@
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
-using PixelInternalAPI.Extensions;
 using MTM101BaldAPI;
-using UnityEngine;
+using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Adverto : NPC, INPCPrefab
+	public class Adverto : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -56,6 +56,9 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void AdPlayer(PlayerManager pm)
 		{
+			if (pm.plm.Entity.Blinded)
+				return;
+
 			CreateAd().AttachToCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam,
 				Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform);
 			affectedPlayers.Add(new(this, pm));
@@ -144,19 +147,11 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					foreach (NPC npc in ad.ec.Npcs)
 					{
-						if (npc != ad && npc.looker.enabled)
+						if (npc != ad && npc.looker.enabled && !npc.Blinded && ad.looker.RaycastNPC(npc))
 						{
-							ad.looker.Raycast(npc.transform, Mathf.Min(
-						(ad.transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,
-						ad.looker.distance,
-						npc.ec.MaxRaycast
-							), out bool flag);
-							if (flag)
-							{
-								adCooldown += ad.timeBeforeAdvertisement;
-								ad.AdNPC(npc);
-								break;
-							}
+							adCooldown += ad.timeBeforeAdvertisement;
+							ad.AdNPC(npc);
+							break;
 						}
 					}
 				}

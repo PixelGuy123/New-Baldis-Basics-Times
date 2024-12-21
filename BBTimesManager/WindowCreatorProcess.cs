@@ -3,6 +3,7 @@ using System.IO;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.Helpers;
 using BBTimes.ModPatches.EnvironmentPatches;
+using System.Collections.Generic;
 
 namespace BBTimes.Manager
 {
@@ -15,9 +16,9 @@ namespace BBTimes.Manager
 			var tex = brokenTex;
 			var window = CreatorExtensions.CreateWindow("MetalWindow", tex, brokenTex, unbreakable:true);
 			var windowSel = new WindowObjectHolder(window, 75, [RoomCategory.Office]);
-			floorDatas[1].WindowObjects.Add(windowSel);
-			floorDatas[2].WindowObjects.Add(windowSel);
-			floorDatas[3].WindowObjects.Add(windowSel);
+			((List<WindowObjectHolder>)floorDatas[1].levelObject.GetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn")).Add(windowSel);
+			((List<WindowObjectHolder>)floorDatas[2].levelObject.GetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn")).Add(windowSel);
+			((List<WindowObjectHolder>)floorDatas[3].levelObject.GetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn")).Add(windowSel);
 
 			// Round Window
 			brokenTex = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("roundWindow.png")));

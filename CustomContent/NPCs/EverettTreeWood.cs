@@ -56,15 +56,15 @@ namespace BBTimes.CustomContent.NPCs
 				];
 
 
-			var ballSprite = this.GetSprite(40f, "EverettTreewood_projectile.png");
+			var decorSprites = this.GetSpriteSheet(1, 2, 50f, "christmasDecoration.png");
 
-			decorPre = ObjectCreationExtensions.CreateSpriteBillboard(ballSprite).AddSpriteHolder(out var decorRenderer, 0.5f, LayerStorage.ignoreRaycast).
+			decorPre = ObjectCreationExtensions.CreateSpriteBillboard(decorSprites[0]).AddSpriteHolder(out var decorRenderer, 1.6f, LayerStorage.ignoreRaycast).
 				gameObject.SetAsPrefab(true).AddComponent<ChristmasDecoration>();
 			decorPre.name = "Decoration";
 			decorRenderer.name = "DecorationRenderer";
 
 			decorPre.renderer = decorRenderer;
-			decorPre.sprBroken = ballSprite;
+			decorPre.sprBroken = decorSprites[1];
 			decorPre.audMan = decorPre.gameObject.CreatePropagatedAudioManager(55f, 75f);
 			decorPre.audBreak = this.GetSound("wood_ultimateBreak.wav", "Vfx_EverettTree_DecorBreak", SoundType.Effect, Color.white);
 			decorPre.collider = decorPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(4.75f, 10f, 4.75f), true);
@@ -74,7 +74,7 @@ namespace BBTimes.CustomContent.NPCs
 			animComp.speed = 14f;
 			animComp.animation = walkAnim;
 
-			snowPre = ObjectCreationExtensions.CreateSpriteBillboard(ballSprite)
+			snowPre = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(40f, "EverettTreewood_projectile.png"))
 				.AddSpriteHolder(out var snowBallRenderer, 0f, LayerStorage.standardEntities)
 				.gameObject.SetAsPrefab(true)
 				.AddComponent<ChristmasBall>();
@@ -83,6 +83,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			snowPre.entity = snowPre.gameObject.CreateEntity(1.5f, 1.5f, snowBallRenderer.transform);
 			snowPre.audMan = snowPre.gameObject.CreatePropagatedAudioManager(35f, 60f);
+			snowPre.audWoosh = this.GetSound("christmasBallWoosh.wav", "Sfx_Ben_Gum_Whoosh", SoundType.Effect, Color.white);
 			snowPre.audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
 			snowPre.slowFactor = 0.48f;
 

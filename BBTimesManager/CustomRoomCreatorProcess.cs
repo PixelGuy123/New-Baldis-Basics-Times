@@ -583,6 +583,46 @@ namespace BBTimes.Manager
 			vaseObj.renderer = vaseRenderer;
 			vaseObj.sprBroken = vaseSprs[1];
 
+			// ================================================ Misc Assets to Load =======================================================
+			// Corner Lamps
+			List<WeightedTransform> transformsList = [
+				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lamp.png"))), 25f))
+				.AddSpriteHolder(out _, 2.9f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
+				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 75 },
+
+				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lightBulb.png"))), 65f))
+				.AddSpriteHolder(out _, 5.1f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
+				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 35 },
+
+				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lampShaped.png"))), 25f))
+				.AddSpriteHolder(out _, 3.1f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
+				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 55 },
+				];
+
+
+			TextureExtensions.LoadSpriteSheet(3, 1, 40f, MiscPath, TextureFolder, GetAssetName("SugaLamps.png")).Do(x =>
+			{
+				transformsList.Add(new()
+				{
+					selection = ObjectCreationExtensions.CreateSpriteBillboard(x)
+				.AddSpriteHolder(out _, 3.1f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
+				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform,
+					weight = 38
+				});
+			});
+
+			for (int i = 0; i < transformsList.Count; i++)
+			{
+				transformsList[i].selection.name = "TimesGenericCornerLamp_" + (i + 1);
+				transformsList[i].selection.gameObject.AddObjectToEditor();
+			}
+
+			man.Add("prefabs_cornerLamps", transformsList);
+
 			// ================================================ Modded Room Generator Application ==========================================
 			// Bathrooms
 			var sets = RegisterRoom("Bathroom", new(0.85f, 0.85f, 0.85f, 1f),
@@ -988,6 +1028,7 @@ namespace BBTimes.Manager
 			floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(65));
 			floorDatas[3].SpecialRooms.AddRange(room);
 			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(25));
+
 
 			// ================================================ Base Game Room Variants ====================================================
 

@@ -1,12 +1,12 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
-using PixelInternalAPI.Extensions;
-using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class NavigationState_FollowToSpot(NPC npc, Cell target, float speedMultiplier = 8f) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
+	public class NavigationState_FollowToSpot(NPC npc, Cell target, float speedMultiplier = 8f) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
 	{
 		readonly Cell tar = target;
 		readonly MovementModifier moveMod = new(Vector3.zero, speedMultiplier);
@@ -116,7 +116,8 @@ namespace BBTimes.CustomContent.NPCs
 			spriteRenderer[0].sprite = anim[0];
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
 		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
@@ -196,19 +197,15 @@ namespace BBTimes.CustomContent.NPCs
 
 			stopStep = false;
 
-			if (noticeCooldown <= 0f)
+			if (!Blinded && noticeCooldown <= 0f)
 			{
 				foreach (NPC npc in ec.Npcs)
 				{
-					if (npc.Disobeying)
+					if (npc.Disobeying && looker.RaycastNPC(npc))
 					{
-						looker.Raycast(npc.transform, Mathf.Min((transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude, looker.distance, ec.MaxRaycast), out bool flag);
-						if (flag)
-						{
-							npc.SetGuilt(brokenRuleTimer, npc.BrokenRule);
-							CallPrincipals();
-							break;
-						}
+						npc.SetGuilt(brokenRuleTimer, npc.BrokenRule);
+						CallPrincipals();
+						break;
 					}
 				}
 			}

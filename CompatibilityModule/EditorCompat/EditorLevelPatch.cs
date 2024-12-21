@@ -171,6 +171,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("MGS", "Magicalstudent");
 			AddNPC("mopliss", "Mopliss");
 			AddNPC("mimiCry", "Mimicry");
+			AddNPC("mrKreye", "MrKreye");
 			AddNPC("Mugh", "Mugh");
 			AddNPC("noseMan", "NoseMan");
 			AddNPC("officeChair", "OfficeChair");

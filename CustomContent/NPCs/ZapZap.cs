@@ -4,6 +4,10 @@ using BBTimes.Extensions;
 using BBTimes.Manager;
 using System.Collections.Generic;
 using UnityEngine;
+using PixelInternalAPI.Extensions;
+using BBTimes.CustomComponents.NpcSpecificComponents.ZapZap;
+using PixelInternalAPI.Classes;
+using BBTimes.Extensions.ObjectCreationExtensions;
 
 namespace BBTimes.CustomContent.NPCs
 {
@@ -27,7 +31,76 @@ namespace BBTimes.CustomContent.NPCs
 			audDeactivating = this.GetSound("zap_deactivating.wav", "Vfx_ZapZap_Deactivate", SoundType.Voice, new(0f, 0.55f, 0.75f));
 			audHacked = this.GetSound("zap_hacked.wav", "Vfx_ZapZap_Hacked", SoundType.Voice, new(0f, 0.55f, 0.75f));
 
-			eletricityPre = BBTimesManager.man.Get<Eletricity>("DoorEletricityPrefab");
+			var elePre = BBTimesManager.man.Get<Eletricity>("EletricityPrefab");
+
+			elePre = elePre.SafeDuplicatePrefab(true);
+			eletricityPre = elePre.gameObject.AddComponent<ZapZapEletricity>();
+			eletricityPre.affectOwnerAfterExit = elePre.affectOwnerAfterExit;
+			eletricityPre.ani = elePre.ani;
+			eletricityPre.collider = elePre.collider;
+			eletricityPre.eletricityForce = elePre.eletricityForce;
+			eletricityPre.ignoreBootsAttribute = elePre.ignoreBootsAttribute;
+
+			Destroy(elePre); // Destroy this component now
+			eletricityPre.collider.size = new(eletricityPre.collider.size.x, 1.5f, eletricityPre.collider.size.z);
+
+			var eleRenderer = ObjectCreationExtensions.CreateSpriteBillboard(elePre.ani.animation[0], false);
+			eleRenderer.transform.SetParent(eletricityPre.transform);
+			eleRenderer.transform.localPosition = new(0f, -0.1f, 0f);
+			eleRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			eleRenderer.name = "SpriteBackwards";
+
+			eletricityPre.ani.renderers = eletricityPre.GetComponentsInChildren<SpriteRenderer>();
+			eletricityPre.name = "ZapZapDoorEletricity";
+
+			// EletrecutationComponent Setup
+			eletricityPre.compPre = new GameObject("ZapZapEletricity").SetAsPrefab(true).AddComponent<ZapZapEletrecutationComponent>();
+			eletricityPre.compPre.gameObject.layer = LayerStorage.ignoreRaycast;
+
+			eletricityPre.compPre.audMan = eletricityPre.compPre.gameObject.CreatePropagatedAudioManager(35f, 65f);
+			eletricityPre.compPre.audEletrecute = eletricityPre.GetComponent<AudioManager>().soundOnStart[0]; // Shock audio
+			eletricityPre.compPre.eleCompPre = eletricityPre.compPre;
+
+			var zapCol = eletricityPre.compPre.gameObject.AddComponent<CapsuleCollider>();
+			zapCol.isTrigger = true;
+			zapCol.radius = 9f;
+			zapCol.height = 10f;
+
+			var system = eletricityPre.compPre.gameObject.AddComponent<ParticleSystem>();
+			system.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = this.GetTexture("zapParticles.png") };
+
+			var main = system.main;
+			main.gravityModifierMultiplier = 1.75f;
+			main.startLifetimeMultiplier = 1.8f;
+			main.startSpeedMultiplier = 2f;
+			main.simulationSpace = ParticleSystemSimulationSpace.World;
+			main.startSize = new(0.5f, 1f);
+
+			var emission = system.emission;
+			emission.rateOverTimeMultiplier = 65f;
+			emission.enabled = true;
+
+			var vel = system.velocityOverLifetime;
+			vel.enabled = true;
+			vel.space = ParticleSystemSimulationSpace.World;
+			vel.x = new(-15f, 15f);
+			vel.y = new(-4.5f, 4.5f);
+			vel.z = new(-15f, 15f);
+
+			var an = system.textureSheetAnimation;
+			an.enabled = true;
+			an.numTilesX = 2;
+			an.numTilesY = 2;
+			an.animation = ParticleSystemAnimationType.WholeSheet;
+			an.fps = 21f;
+			an.timeMode = ParticleSystemAnimationTimeMode.FPS;
+			an.cycleCount = 16;
+			an.startFrame = new(0, 3); // 2x2
+
+			var col = system.collision;
+			col.enabled = true;
+			col.type = ParticleSystemCollisionType.World;
+			col.enableDynamicColliders = false;
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
@@ -51,39 +124,39 @@ namespace BBTimes.CustomContent.NPCs
 		internal AnimationComponent anim;
 
 		[SerializeField]
-		internal float minWaitCooldown = 30f, maxWaitCooldown = 60f, minActiveCooldown = 40f, maxActiveCooldown = 80f, eletricityDestructionDelay = 15f;
+		internal float minWaitCooldown = 30f, maxWaitCooldown = 60f, minActiveCooldown = 40f, maxActiveCooldown = 80f, eletricityPretricityDestructionDelay = 45f;
 
 		[SerializeField]
-		internal Eletricity eletricityPre;
+		internal ZapZapEletricity eletricityPre;
 
-		readonly List<Transform> eletricities = [];
+		readonly List<Transform> eletricityPretricities = [];
 		Cell home;
-		float eletrictyDestructionCooldown = 0f;
+		float eletricityPretrictyDestructionCooldown = 0f;
 
 		public override void Initialize()
 		{
 			base.Initialize();
-			eletrictyDestructionCooldown = eletricityDestructionDelay;
+			eletricityPretrictyDestructionCooldown = eletricityPretricityDestructionDelay;
 			anim.Initialize(ec);
 			home = ec.CellFromPosition(transform.position);
 			behaviorStateMachine.ChangeState(new ZapZap_WaitDeactivated(this, false));
 		}
 
-		internal void SpawnEletricity(StandardDoor door)
+		internal void SpawneletricityPretricity(StandardDoor door)
 		{
-			var eletricity = Instantiate(eletricityPre);
-			eletricity.Initialize(gameObject, door.doors[0].transform.position, 0.25f, ec);
-			eletricity.transform.rotation = Quaternion.Euler(0f, door.direction.PerpendicularList()[0].ToRotation().eulerAngles.y, 90f);
-			eletricities.Add(eletricity.transform);
+			var eletricityPretricity = Instantiate(eletricityPre);
+			eletricityPretricity.Initialize(gameObject, door.doors[0].transform.position, 0.25f, ec);
+			eletricityPretricity.transform.rotation = Quaternion.Euler(0f, door.direction.PerpendicularList()[0].ToRotation().eulerAngles.y, 90f);
+			eletricityPretricities.Add(eletricityPretricity.transform);
 		}
 
 		public override void Despawn()
 		{
 			base.Despawn();
-			while (eletricities.Count != 0)
+			while (eletricityPretricities.Count != 0)
 			{
-				Destroy(eletricities[0].gameObject);
-				eletricities.RemoveAt(0);
+				Destroy(eletricityPretricities[0].gameObject);
+				eletricityPretricities.RemoveAt(0);
 			}
 
 		}
@@ -91,18 +164,18 @@ namespace BBTimes.CustomContent.NPCs
 		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
-			if (eletricities.Count == 0)
+			if (eletricityPretricities.Count == 0)
 			{
-				eletrictyDestructionCooldown = eletricityDestructionDelay;
+				eletricityPretrictyDestructionCooldown = eletricityPretricityDestructionDelay;
 				return;
 			}
 
-			eletrictyDestructionCooldown -= TimeScale * Time.deltaTime;
-			if (eletrictyDestructionCooldown < 0f)
+			eletricityPretrictyDestructionCooldown -= TimeScale * Time.deltaTime;
+			if (eletricityPretrictyDestructionCooldown < 0f)
 			{
-				Destroy(eletricities[0].gameObject);
-				eletricities.RemoveAt(0);
-				eletrictyDestructionCooldown += eletricityDestructionDelay;
+				Destroy(eletricityPretricities[0].gameObject);
+				eletricityPretricities.RemoveAt(0);
+				eletricityPretrictyDestructionCooldown += eletricityPretricityDestructionDelay;
 			}
 		}
 
@@ -156,7 +229,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.DoorHit(door);
 			if (zap.IsActivated)
-				zap.SpawnEletricity(door);
+				zap.SpawneletricityPretricity(door);
 		}
 	}
 

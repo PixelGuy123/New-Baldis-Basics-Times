@@ -4,6 +4,13 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.EverettTreewood
 {
 	internal class ChristmasBall : Snowflake
 	{
+		protected override void Initialized()
+		{
+			base.Initialized();
+			audMan.maintainLoop = true;
+			audMan.SetLoop(true);
+			audMan.QueueAudio(audWoosh);
+		}
 		protected override void AffectEntity(Entity e, PlayerManager pm)
 		{
 			base.AffectEntity(e, pm);
@@ -16,5 +23,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.EverettTreewood
 
 		[SerializeField]
 		internal Canvas canvas;
+
+		[SerializeField]
+		internal SoundObject audWoosh;
 	}
 }

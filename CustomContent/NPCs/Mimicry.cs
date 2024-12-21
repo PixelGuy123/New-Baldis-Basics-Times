@@ -56,7 +56,8 @@ namespace BBTimes.CustomContent.NPCs
 			col.radius = myCol.radius;
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
 		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
@@ -268,7 +269,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.DestinationEmpty();
 			if (mimi.transform.position.x == spotToGo.x && mimi.transform.position.z == spotToGo.z)
-				mimi.behaviorStateMachine.ChangeState(new Mimicry_Disguise(mimi)); 
+				mimi.behaviorStateMachine.ChangeState(new Mimicry_Disguise(mimi));
 			else
 				ChangeNavigationState(tarPos);
 		}
@@ -305,17 +306,10 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				for (int i = 0; i < mimi.ec.Npcs.Count; i++)
 				{
-					if (mimi != mimi.ec.Npcs[i] && mimi.ec.Npcs[i].Navigator.isActiveAndEnabled)
+					if (mimi != mimi.ec.Npcs[i] && mimi.ec.Npcs[i].Navigator.isActiveAndEnabled && mimi.looker.RaycastNPC(mimi.ec.Npcs[i]))
 					{
-						mimi.looker.Raycast(mimi.ec.Npcs[i].transform, 
-							Mathf.Min((mimi.transform.position - mimi.ec.Npcs[i].transform.position).magnitude + mimi.ec.Npcs[i].Navigator.Velocity.magnitude, 
-							mimi.looker.distance, 
-							mimi.ec.MaxRaycast), out bool flag);
-						if (flag)
-						{
-							mimi.JumpscareNPC(mimi.ec.Npcs[i]);
-							return;
-						}
+						mimi.JumpscareNPC(mimi.ec.Npcs[i]);
+						return;
 					}
 				}
 			}

@@ -7,6 +7,7 @@ using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
 using BBTimes.Manager;
+using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches;
 using BepInEx;
 using BepInEx.Bootstrap;
@@ -308,6 +309,9 @@ namespace BBTimes
 					ld.minHallsToRemove += 1;
 					ld.minSize += new IntVector2(3, 1);
 					ld.timeBonusLimit *= 1.8f;
+
+					// Custom datas
+					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 9));
 					return;
 				}
 
@@ -338,6 +342,9 @@ namespace BBTimes
 					ld.specialRoomsStickToEdge = false;
 					ld.maxLightDistance += 2;
 					ld.timeBonusLimit *= 1.8f;
+
+					// Custom datas
+					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 12));
 					return;
 				}
 
@@ -368,12 +375,15 @@ namespace BBTimes
 						.Where(x => x.name.StartsWith("Playground"))
 						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
 					ld.timeBonusLimit *= 1.8f;
+
+					// Custom datas
+					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(12, BBTimesManager.MaximumNumballs));
 					return;
 				}
 
 				if (floorName == "END")
 				{
-					ld.minSpecialRooms = 1; // Chance to have no special room
+					ld.minSpecialRooms = 1;
 					ld.maxSpecialRooms = 2;
 					ld.deadEndBuffer = 3;
 					sco.additionalNPCs += 4;
@@ -398,6 +408,9 @@ namespace BBTimes
 					groups[1].maxRooms += 5;
 					groups[0].minRooms = 7;
 					groups[0].maxRooms = 9;
+
+					// Custom datas
+					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 14));
 					return;
 				}
 

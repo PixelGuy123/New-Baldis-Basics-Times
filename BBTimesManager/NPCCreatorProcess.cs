@@ -348,6 +348,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("CameraStand", "PST_CamSt_Name", "PST_CamSt_Desc", -0.75f);
 
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 66 });
 
@@ -697,6 +698,25 @@ namespace BBTimes.Manager
 
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 10 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+
+			// Mr. Kreye
+			npc = new NPCBuilder<MrKreye>(plug.Info)
+				.SetMinMaxAudioDistance(175f, 200f)
+				.SetEnum("MrKreye")
+				.SetMetaName("PST_Kreye_Name")
+				.SetName("MrKreye")
+				.SetMetaTags(["faculty"])
+				.AddTrigger()
+				.SetForcedSubtitleColor(new(0.44140625f, 0.078125f, 0.0234375f))
+				.AddLooker()
+				.Build()
+				.SetupNPCData("MrKreye", "PST_Kreye_Name", "PST_Kreye_Desc", -0.8f)
+				.MarkAsReplacement(25, Character.Principal);
+
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
+
+			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 40 });
 		}
 	}
 }
