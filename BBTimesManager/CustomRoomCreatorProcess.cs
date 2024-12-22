@@ -551,6 +551,89 @@ namespace BBTimes.Manager
 			snowShovel.timer.color = Color.white;
 			snowShovel.timer.gameObject.SetActive(false);
 
+			// ******** MTM101 machine ********
+
+			var mtm101 = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromFile(GetRoomAsset("SnowyPlayground", "mtm101.png"), Vector2.one * 0.5f, 23f)).AddSpriteHolder(out var mtm101renderer, 5.5f, LayerStorage.iClickableLayer);
+			mtm101.name = "MysteryTresentMaker";
+			mtm101renderer.name = "MysteryTresentMakerRenderer";
+			mtm101.gameObject.AddBoxCollider(Vector3.up * 5f, new(3.5f, 10f, 3.5f), true);
+			mtm101.gameObject.AddObjectToEditor();
+
+			var mtm = mtm101.gameObject.AddComponent<MysteryTresentMaker>();
+			mtm.audMan = mtm101.gameObject.CreatePropagatedAudioManager(66f, 100f);
+			mtm.audInsert = GenericExtensions.FindResourceObject<MathMachine>().audWin;
+
+			var treSprites = TextureExtensions.LoadSpriteSheet(4, 3, 17f, GetRoomAsset("SnowyPlayground", "tresentSheet.png"));
+
+			mtm.tresentPre = ObjectCreationExtensions.CreateSpriteBillboard(treSprites[0]).AddSpriteHolder(out var tresentRender, 1.5f, LayerStorage.standardEntities)
+				.gameObject.SetAsPrefab(true).AddComponent<Tresent>();
+			mtm.tresentPre.name = "Tresent";
+			tresentRender.name = "TresentRenderer";
+			var tresentRenderbase = tresentRender.AddSpriteHolder(out _, 1.9f).transform;
+			tresentRenderbase.SetParent(mtm.tresentPre.transform);
+			tresentRenderbase.localPosition = Vector3.down * 5f;
+
+			mtm.tresentPre.renderer = tresentRender;
+			mtm.tresentPre.sprsPrepareExplosion = [.. treSprites.Take(9)];
+			mtm.tresentPre.sprsExploding = [.. treSprites.Skip(9).Take(3)];
+
+			mtm.tresentPre.bonkerPre = (ITM_Hammer)man.Get<Item>("times_itemPrefab_Hammer");
+
+			mtm.tresentPre.audMan = mtm.tresentPre.gameObject.CreatePropagatedAudioManager(35f, 65f);
+			mtm.tresentPre.audThrow = man.Get<SoundObject>("audGenericThrow");
+			mtm.tresentPre.audExplode = man.Get<SoundObject>("audPop");
+
+			mtm.tresentPre.audPrepExplode = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("SnowyPlayground", "tresent_prepBreak.wav")), string.Empty, SoundType.Effect, Color.white);
+			mtm.tresentPre.audPrepExplode.subtitle = false;
+
+			mtm.tresentPre.text = Object.Instantiate(man.Get<TextMeshPro>("genericTextMesh"), mtm.tresentPre.transform);
+			mtm.tresentPre.text.name = "TresentText";
+
+			mtm.tresentPre.text.color = Color.white;
+			mtm.tresentPre.text.fontSize = 7f;
+			mtm.tresentPre.text.gameObject.SetActive(false);
+			
+
+			mtm.tresentPre.entity = mtm.tresentPre.gameObject.CreateEntity(1f, rendererBase: tresentRenderbase);
+
+			// Tresent particles
+			mtm.tresentPre.confettiParts = new GameObject("TresentConfetti").AddComponent<ParticleSystem>();
+			mtm.tresentPre.confettiParts.transform.SetParent(tresentRenderbase);
+			mtm.tresentPre.confettiParts.transform.localPosition = Vector3.zero;
+			mtm.tresentPre.confettiParts.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "numberFettis.png")) };
+
+			main = mtm.tresentPre.confettiParts.main;
+			main.gravityModifierMultiplier = 0.35f;
+			main.startLifetimeMultiplier = 12f;
+			main.startSpeedMultiplier = 2f;
+			main.simulationSpace = ParticleSystemSimulationSpace.World;
+			main.startSize = new(0.8f, 1.5f);
+
+			emission = mtm.tresentPre.confettiParts.emission;
+			emission.enabled = false;
+
+			vel = mtm.tresentPre.confettiParts.velocityOverLifetime;
+			vel.enabled = true;
+			vel.space = ParticleSystemSimulationSpace.Local;
+			vel.x = new(-12f, 12f);
+			vel.y = new(6f, 14f);
+			vel.z = new(-12f, 12f);
+
+			var an = mtm.tresentPre.confettiParts.textureSheetAnimation;
+			an.enabled = true;
+			an.numTilesX = 4;
+			an.numTilesY = 4;
+			an.animation = ParticleSystemAnimationType.WholeSheet;
+			an.fps = 0f;
+			an.timeMode = ParticleSystemAnimationTimeMode.FPS;
+			an.cycleCount = 1;
+			an.startFrame = new(0, 15); // 2x2
+
+			var col = mtm.tresentPre.confettiParts.collision;
+			col.enabled = true;
+			col.type = ParticleSystemCollisionType.World;
+			col.enableDynamicColliders = false;
+
 			// ======================== Focus Room ===========================
 			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
 			var student = ObjectCreationExtensions.CreateSpriteBillboard(studentSprs[0]);
@@ -998,6 +1081,11 @@ namespace BBTimes.Manager
 			snowFunc.particleTexture = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowFlake.png"));
 
 			playgroundClonedRoomContainer.AddFunction(snowFunc);
+
+			var objCornerSpawn = playgroundClonedRoomContainer.gameObject.AddComponent<CornerObjectSpawner>();
+			objCornerSpawn.randomObjs = [new() { selection = mtm.transform, weight = 100 }];
+
+			playgroundClonedRoomContainer.AddFunction(objCornerSpawn);
 
 			var slipFunc = playgroundClonedRoomContainer.gameObject.AddComponent<SlipperyMaterialFunction>();
 			slipFunc.slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);

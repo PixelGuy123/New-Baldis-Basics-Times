@@ -24,17 +24,13 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 
 		void OnTriggerStay(Collider other)
 		{
-			if (!initialized || target.gameObject == other.gameObject || eletricity.EletrecutationComponents.Exists(el => el.Overrider.gameObject == other.gameObject)) return;
+			if (!initialized || target.gameObject == other.gameObject || eletricity.EletrecutationComponents.Exists(el => el.Overrider?.gameObject == other.gameObject)) return;
 
 			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
 			{
 				var e = other.GetComponent<Entity>();
 				if (e)
-				{
-					var ele = Instantiate(eleCompPre);
-					eletricity.EletrecutationComponents.Add(ele);
-					ele.AttachTo(e.ExternalActivity, ec, eletricity);
-				}
+					eletricity.CreateEletricity(e.ExternalActivity);
 			}
 		}
 
@@ -43,7 +39,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 			if (!initialized)
 				return;
 
-			if (!target || !eletricity)
+			if (!target)
 			{
 				Despawn();
 				return;
@@ -63,7 +59,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		public void Despawn()
 		{
 			target?.moveMods.Remove(moveMod);
-			eletricity?.EletrecutationComponents.Remove(this);
+			eletricity.EletrecutationComponents.Remove(this);
 			Destroy(gameObject);
 		}
 
@@ -79,9 +75,6 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		[SerializeField]
 		[Range(0f, 1f)]
 		internal float slowFactor = 0.65f;
-
-		[SerializeField]
-		internal ZapZapEletrecutationComponent eleCompPre;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 1f);
 

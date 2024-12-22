@@ -40,7 +40,7 @@ namespace BBTimes.CustomContent.NPCs
 			hookPre.lineRenderer.material.SetColor("_TextureColor", new(0.44140625f, 0.078125f, 0.0234375f));
 			hookPre.lineRenderer.widthMultiplier = 0.75f;
 
-			hookPre.entity = hookPre.gameObject.CreateEntity(2f, 2f, hookRenderer.transform);
+			hookPre.entity = hookPre.gameObject.CreateEntity(2.5f, 3f, hookRenderer.transform);
 			hookPre.audMan = hookPre.gameObject.CreatePropagatedAudioManager(35f, 85f);
 			hookPre.audGrab = this.GetSound("hookGrab.wav", "Vfx_Kreye_Grab", SoundType.Effect, Color.white);
 
@@ -84,6 +84,10 @@ namespace BBTimes.CustomContent.NPCs
 				audMan.maintainLoop = true;
 				audMan.SetLoop(true);
 				audMan.QueueAudio(audStatic);
+			}
+			else
+			{
+				audMan.FlushQueue(true);
 			}
 		}
 

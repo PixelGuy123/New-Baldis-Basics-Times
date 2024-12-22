@@ -65,7 +65,11 @@ namespace BBTimes.CustomComponents
 				mods[0].moveMods.Remove(moveMod);
 				mods.RemoveAt(0);
 			}
+
+			Despawn();
 		}
+
+		protected virtual void Despawn() { }
 
 		void Update()
 		{

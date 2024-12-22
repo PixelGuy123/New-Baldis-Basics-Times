@@ -13,8 +13,8 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
-			var mopAnim = this.GetSpriteSheet(3, 1, 24f, "coolMop.png");
-			spriteRenderer[0].sprite = mopAnim[0];
+			var mopAnim = this.GetSpriteSheet(5, 1, 24f, "coolMop.png");
+			spriteRenderer[0].sprite = mopAnim[2];
 			var subColor = new Color(0.99609375f, 0.5f, 0.5f);
 
 			audMan = GetComponent<PropagatedAudioManager>();
@@ -34,8 +34,8 @@ namespace BBTimes.CustomContent.NPCs
 			wetSign.name = "WetFloorSign";
 			wetSign.gameObject.ConvertToPrefab(true);
 
-			idle = [mopAnim[0]];
-			moving = [mopAnim[1], mopAnim[2]];
+			idle = [mopAnim[2]];
+			moving = mopAnim.MirrorSprites();
 
 			animComp = gameObject.AddComponent<AnimationComponent>();
 			animComp.renderers = spriteRenderer;

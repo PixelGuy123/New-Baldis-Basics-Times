@@ -10,11 +10,24 @@ namespace BBTimes.CustomComponents
 			entity.Initialize(ec, transform.position);
 			entity.SetHeight(defaultHeight);
 			entity.SetActive(false);
-			entity.OnEntityMoveInitialCollision += (hit) => CancelThrow();
+			entity.OnEntityMoveInitialCollision += (hit) =>
+			{
+				if (!thrown) return;
+				dir = Vector3.Reflect(dir, hit.normal);
+
+				positionArray[++hits] = transform.position;
+				lineRenderer.SetPositions(positionArray);
+
+				if (hits > hitsBeforeDespawning)
+					CancelThrow();
+			};
 
 			this.ec = ec;
 			this.owner = owner;
-			positions = [owner.transform.position, transform.position];
+
+			positionArray = new Vector3[hitsBeforeDespawning + 2];
+
+			lineRenderer.positionCount = positionArray.Length;
 
 			initialized = true;
 		}
@@ -28,6 +41,8 @@ namespace BBTimes.CustomComponents
 			thrown = true;
 			disabled = false;
 			targettedEntity = target;
+
+			hits = 0;
 		}
 
 		void Despawn()
@@ -71,7 +86,15 @@ namespace BBTimes.CustomComponents
 			}
 
 			if (returning)
-				dir = (owner.transform.position - transform.position).normalized;
+			{
+				dir = (positionArray[hits] - transform.position).normalized;
+				if (Vector3.Distance(transform.position, positionArray[hits]) <= backWayDistanceCheck)
+				{
+					if (hits > 0)
+						hits--;
+				}
+
+			}
 
 			moveMod.movementAddend = dir * speed * ec.EnvironmentTimeScale;
 			entity.UpdateInternalMovement(moveMod.movementAddend);
@@ -80,10 +103,12 @@ namespace BBTimes.CustomComponents
 		void LateUpdate()
 		{
 			if (!initialized) return;
-			positions[0] = owner.transform.position;
-			positions[1] = transform.position;
+			positionArray[0] = owner.transform.position;
+			for (int i = hits + 1; i < positionArray.Length; i++)
+				positionArray[i] = transform.position;
 
-			lineRenderer.SetPositions(positions);
+
+			lineRenderer.SetPositions(positionArray);
 		}
 
 		void OnDestroy() =>
@@ -117,9 +142,10 @@ namespace BBTimes.CustomComponents
 				CancelThrow();
 		}
 
-		Vector3[] positions;
+		Vector3[] positionArray = [];
 		Vector3 dir;
 		float speed;
+		int hits = 0;
 		Entity targettedEntity = null;
 		MrKreye owner;
 
@@ -136,7 +162,10 @@ namespace BBTimes.CustomComponents
 		internal SoundObject audGrab;
 
 		[SerializeField]
-		internal float defaultHeight = 5f;
+		internal float defaultHeight = 5f, backWayDistanceCheck = 5f;
+
+		[SerializeField]
+		internal int hitsBeforeDespawning = 3;
 
 
 		EnvironmentController ec;

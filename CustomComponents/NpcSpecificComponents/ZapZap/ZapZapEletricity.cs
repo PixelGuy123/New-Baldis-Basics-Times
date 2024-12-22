@@ -11,9 +11,23 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 			if (eles.Exists(el => el.Overrider == actMod))
 				return;
 
+			CreateEletricity(actMod);
+		}
+
+		public void CreateEletricity(ActivityModifier actMod)
+		{
 			var ele = Instantiate(compPre);
+			ele.name = compPre.name;
 			ele.AttachTo(actMod, ec, this);
 			eles.Add(ele);
+		}
+
+		protected override void Despawn()
+		{
+			base.Despawn();
+			for (int i = 0; i < eles.Count; i++)
+				if (eles[i])
+					eles[i--].Despawn();
 		}
 
 		[SerializeField]

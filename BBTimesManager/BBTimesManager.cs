@@ -217,6 +217,23 @@ namespace BBTimes.Manager
 				];
 			MainMenuPatch.aud_welcome_endless = mainSpeech;
 
+			MainMenuPatch.mainMenuChristmas = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("BBTChristmasV2.png"))), 1f);
+			mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_timesChristmas.wav")), "Vfx_BAL_BalMainMenuSpeech_Christmas_1", SoundType.Voice, Color.green);
+			mainSpeech.additionalKeys = [
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_1", time = 2.341f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_2", time = 7.097f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_3", time = 9.294f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_4", time = 10.049f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_5", time = 10.479f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_6", time = 10.768f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_7", time = 11.357f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_8", time = 11.506f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_9", time = 11.652f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_10", time = 13.397f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_11", time = 15.698f },
+				];
+			MainMenuPatch.aud_welcome_christmas = mainSpeech;
+
 			// Math Machine new Nums
 
 			var machines = Resources.FindObjectsOfTypeAll<MathMachine>();

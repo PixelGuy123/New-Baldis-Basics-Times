@@ -1,9 +1,6 @@
-﻿using BBTimes.CustomComponents;
-using BBTimes.Manager;
+﻿using BBTimes.Manager;
+using BBTimes.Plugin;
 using HarmonyLib;
-using MTM101BaldAPI;
-using MTM101BaldAPI.AssetTools;
-using MTM101BaldAPI.UI;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
@@ -20,10 +17,16 @@ namespace BBTimes.ModPatches
 		{
 			MainGameManagerPatches.allowEndingToBePlayed = false; // Reset
 
+			if (BBTimesManager.plug.disableTimesMainMenu.Value)
+				return;
+
+
 			// Main Menu itself
 			bool hasInfiniteFloors = BBTimesManager.plug.HasInfiniteFloors;
 
-			__instance.transform.Find("Image").GetComponent<Image>().sprite = hasInfiniteFloors ? mainMenuEndless : mainMenu;
+			__instance.transform.Find("Image").GetComponent<Image>().sprite =
+				BooleanStorage.IsChristmas ? mainMenuChristmas :
+				hasInfiniteFloors ? mainMenuEndless : mainMenu;
 
 			var emptMono = new GameObject("TimesWelcomer").AddComponent<EmptyMonoBehaviour>();
 			var newSrc = emptMono.gameObject.CreateAudioManager(65, 75).MakeAudioManagerNonPositional();
@@ -33,7 +36,11 @@ namespace BBTimes.ModPatches
 			if (aud_superSecretOnlyReservedForThoseIselect && !File.Exists(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "ShouldNeverBePlayedAgain.timesMarker")))
 				emptMono.StartCoroutine(ForcefullyWaitForAudioToPlay(newSrc));
 			else
-				emptMono.StartCoroutine(WaitForAudioPlay(newSrc, hasInfiniteFloors ? aud_welcome_endless : aud_welcome, __instance.gameObject));
+				emptMono.StartCoroutine(WaitForAudioPlay(newSrc,
+					BooleanStorage.IsChristmas ? aud_welcome_christmas :
+					hasInfiniteFloors ? aud_welcome_endless : aud_welcome,
+
+				__instance.gameObject));
 
 			if (!string.IsNullOrEmpty(newMidi))
 				__instance.transform.GetComponentInChildren<MusicPlayer>().track = newMidi;
@@ -78,9 +85,9 @@ namespace BBTimes.ModPatches
 
 		const int seconds = 4;
 
-		public static Sprite mainMenu, mainMenuEndless;
+		public static Sprite mainMenu, mainMenuEndless, mainMenuChristmas;
 
-		public static SoundObject aud_welcome, aud_welcome_endless, aud_superSecretOnlyReservedForThoseIselect; // this is NOT lore btw, it's more of a personal thing lol
+		public static SoundObject aud_welcome, aud_welcome_endless, aud_welcome_christmas, aud_superSecretOnlyReservedForThoseIselect; // this is NOT lore btw, it's more of a personal thing lol
 
 		public static string newMidi = string.Empty;
 	}

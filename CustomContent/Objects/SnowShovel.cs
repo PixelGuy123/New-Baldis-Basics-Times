@@ -91,7 +91,13 @@ namespace BBTimes.CustomContent.Objects
 			{
 				if (pickCooldown > 1f)
 				{
-					timer.text = Mathf.FloorToInt(pickCooldown).ToString();
+					string newStr = string.Empty;
+					string text = Mathf.FloorToInt(pickCooldown).ToString();
+
+					for (int i = 0; i < text.Length; i++)
+						newStr += $"<sprite={text[i]}>";
+
+					timer.text = newStr;
 					pickCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 				}
 				else timer.gameObject.SetActive(false);

@@ -78,6 +78,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			MarkObject(man.Get<GameObject>("editorPrefab_SnowyPlaygroundTree"), Vector3.zero);
 			MarkObject(man.Get<GameObject>("editorPrefab_SnowPile"), Vector3.zero);
 			MarkObject(man.Get<GameObject>("editorPrefab_Shovel_ForSnowPile"), Vector3.up * 0.1f);
+			MarkObject(man.Get<GameObject>("editorPrefab_MysteryTresentMaker"), Vector3.zero);
 
 			// Secret stuff
 			//MarkObject(man.Get<GameObject>("editorPrefab_Times_SecretBaldi"), Vector3.up * 5f);

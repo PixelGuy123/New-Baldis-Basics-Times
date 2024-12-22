@@ -59,11 +59,10 @@ namespace BBTimes.CustomContent.NPCs
 
 			eletricityPre.compPre.audMan = eletricityPre.compPre.gameObject.CreatePropagatedAudioManager(35f, 65f);
 			eletricityPre.compPre.audEletrecute = eletricityPre.GetComponent<AudioManager>().soundOnStart[0]; // Shock audio
-			eletricityPre.compPre.eleCompPre = eletricityPre.compPre;
 
 			var zapCol = eletricityPre.compPre.gameObject.AddComponent<CapsuleCollider>();
 			zapCol.isTrigger = true;
-			zapCol.radius = 9f;
+			zapCol.radius = 14f;
 			zapCol.height = 10f;
 
 			var system = eletricityPre.compPre.gameObject.AddComponent<ParticleSystem>();

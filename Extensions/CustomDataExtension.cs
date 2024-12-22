@@ -45,13 +45,19 @@ namespace BBTimes.Extensions
 
 		public static Sprite[] MirrorSprites(this Sprite[] array)
 		{
-			Sprite[] newAr = new Sprite[array.Length * 2];
-			
-			for (int i = 0; i < array.Length; i++)
-				newAr[i] = array[i];
+			if (array.Length <= 2)
+				throw new System.ArgumentException($"Array is too small to be mirrored (size: {array.Length})");
 
-			for (int i = 0; i < array.Length; i++)
-				newAr[i] = array[array.Length - 1 - i]; // Mirror sprites!!!
+			Sprite[] newAr = new Sprite[array.Length * 2 - 1];
+			int i = 0;
+			for (; i < array.Length; i++)
+				newAr[i] = array[i];
+			int z = 1;
+			for (; i < newAr.Length; i++)
+			{
+				newAr[i] = array[array.Length - (1 + z)]; // Mirror sprites!!!
+				z++;
+			}
 
 			return newAr;
 		}

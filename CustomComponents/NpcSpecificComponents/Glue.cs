@@ -42,11 +42,11 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			if (cooldown < 0f)
 			{
 				despawning = true;
-				StartCoroutine(Despawn());
+				StartCoroutine(DespawnAnim());
 			}
 		}
 
-		IEnumerator Despawn()
+		IEnumerator DespawnAnim()
 		{
 			float sizeMult = 1f;
 			Vector3 ogSize = render.localScale;

@@ -119,7 +119,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] walkAnim, spitAnim, blowAnim;
 
 		[SerializeField]
-		internal float minShootForce = 25f, maxShootForce = 35f, shootYVelocity = 6f, waitNextSpitCooldown = 10f;
+		internal float minShootForce = 25f, maxShootForce = 35f, shootYVelocity = 6f, waitNextSpitCooldown = 3.5f;
 
 		Coroutine shootAwaitCor;
 	}

@@ -51,14 +51,16 @@ namespace BBTimes.CustomComponents
 
 		public void StopLastFrameMode() =>
 			lastFrameMode = true;
-
 		public void ResetFrame() =>
 			ResetFrame(false);
 		public void ResetFrame(bool resetPause)
 		{
 			frame = 0f;
 			if (resetPause)
+			{
+				lastFrameMode = false;
 				pause = 0;
+			}
 		}
 
 		public bool Paused => pause != 0;

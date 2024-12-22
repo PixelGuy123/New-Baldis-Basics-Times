@@ -1,14 +1,12 @@
 ﻿using BBTimes.CompatibilityModule;
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.SecretEndingComponents;
-using BBTimes.CustomContent.Builders;
 using BBTimes.CustomContent.Events;
 using BBTimes.CustomContent.Objects;
-using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
 using BBTimes.Manager;
-using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches;
+using BBTimes.Plugin;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
@@ -63,6 +61,7 @@ namespace BBTimes
 			yield return "Setup the rest of the assets...";
 			BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
 			SnowPile.SetupItemRandomization();
+			Tresent.GatherShopItems();
 			yield return "Creating post assets...";
 			GameExtensions.TryRunMethod(SetupPostAssets);
 			yield break;
@@ -218,8 +217,8 @@ namespace BBTimes
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
-		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode;
-		internal Dictionary<string, ConfigEntry<bool>> enabledCharacters = [], enabledItems = [], enabledStructures = [];
+		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, disableTimesMainMenu, forceChristmasMode;
+		internal List<string> disabledCharacters = [], disabledItems = [], disabledEvents = [], disabledBuilders = [];
 		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") || 
 			Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
 
@@ -229,7 +228,9 @@ namespace BBTimes
 			disableHighCeilings = Config.Bind("Environment Settings", "Disable high ceilings", false, "Setting this \"true\" will completely disable the high ceilings from existing in pre-made levels (that includes the ones made with the Level Editor).");
 			enableBigRooms = Config.Bind("Environment Settings", "Enable big rooms", false, "Setting this \"true\" will add the rest of the layouts Times also comes with. WARNING: These layouts completely unbalance the game, making it a lot harder than the usual.");
 			enableReplacementNPCsAsNormalOnes = Config.Bind("NPC Settings", "Disable replacement feature", false, "Setting this \"true\" will allow replacement npcs to spawn as normal npcs instead, making the game considerably harder in some ways.");
-			enableYoutuberMode = Config.Bind("Misc Settings", "Enable youtuber mode", false, "Wanna get some exclusive content easily? Turn this on and *everything* will have the weight of 9999.");
+			enableYoutuberMode = Config.Bind("Misc Settings", "Enable youtuber mode", false, "Wanna get some exclusive content easily? Set this to \"true\" on and *everything* will have the weight of 9999.");
+			disableTimesMainMenu = Config.Bind("Misc Settings", "Disable Times main menu", false, "Does the Times menu bother you? Set this to \"true\" to disable it!");
+			forceChristmasMode = Config.Bind("Specials Settings", "Force enable christmas special", false, "Setting this to \"true\" will force the christmas special to be enabled.");
 
 
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
@@ -294,7 +295,6 @@ namespace BBTimes
 					//for (int i = 0; i < 5; i++)
 					//	ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddToArray(builder);
 
-					ld.minSpecialRooms = 0; // Chance to have no special room
 					sco.additionalNPCs += 2;
 					ld.additionTurnChance += 10;
 					ld.bridgeTurnChance += 4;
@@ -434,6 +434,7 @@ namespace BBTimes
 					if (!Config.Bind("NPC Settings", $"Enable {floordata.NPCs[i].selection.name}", true, "If set to true, this character will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
 					{
 						floordata.NPCs.RemoveAt(i--);
+						disabledCharacters.Add(floordata.NPCs[i].selection.name);
 						continue;
 					}
 
@@ -446,48 +447,84 @@ namespace BBTimes
 
 				//List<WeightedItemObject> acceptableItems = floordata.Items;
 				for (int i = 0; i < floordata.Items.Count; i++)
-					if (!Config.Bind("Item Settings", $"Enable {(floordata.Items[i].selection.itemType == Items.Points ? floordata.Items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.Items[i].selection.itemType))}",
+				{
+					string itemName = floordata.Items[i].selection.itemType == Items.Points ? floordata.Items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.Items[i].selection.itemType);
+					if (!Config.Bind("Item Settings", $"Enable {itemName}",
 						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					{
+						disabledItems.Add(itemName);
 						floordata.Items.RemoveAt(i--);
+					}
+				}
 
 
 				ld.potentialItems = ld.potentialItems.AddRangeToArray([.. floordata.Items]);
 
 				//List<ItemObject> items = floordata.ForcedItems;
 				for (int i = 0; i < floordata.ForcedItems.Count; i++)
-					if (!Config.Bind("Item Settings", $"Enable {(floordata.ForcedItems[i].itemType == Items.Points ? floordata.ForcedItems[i].nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.ForcedItems[i].itemType))}",
+				{
+					string itemName = floordata.ForcedItems[i].itemType == Items.Points ? floordata.ForcedItems[i].nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.ForcedItems[i].itemType);
+					if (!Config.Bind("Item Settings", $"Enable {itemName}",
 						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					{
+						if (!disabledItems.Contains(itemName))
+							disabledItems.Add(itemName);
 						floordata.ForcedItems.RemoveAt(i--);
+					}
+				}
 				ld.forcedItems.AddRange(floordata.ForcedItems);
 
 				//acceptableItems = new(floordata.ShopItems);
 				for (int i = 0; i < floordata.ShopItems.Count; i++)
-					if (!Config.Bind("Item Settings", $"Enable {(floordata.ShopItems[i].selection.itemType == Items.Points ? floordata.ShopItems[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.ShopItems[i].selection.itemType))}",
+				{
+					string itemName = floordata.ShopItems[i].selection.itemType == Items.Points ? floordata.ShopItems[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.ShopItems[i].selection.itemType);
+					if (!Config.Bind("Item Settings", $"Enable {itemName}",
 						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					{
+						if (!disabledItems.Contains(itemName))
+							disabledItems.Add(itemName);
 						floordata.ShopItems.RemoveAt(i--);
+					}
+				}
 
 				sco.shopItems = sco.shopItems.AddRangeToArray([.. floordata.ShopItems]);
 
 				//List<WeightedRandomEvent> events = new(floordata.Events);
 				for (int i = 0; i < floordata.Events.Count; i++)
+				{
 					if (!Config.Bind("Random Event Settings", $"Enable {floordata.Events[i].selection.name}", true, "If set to true, this random event will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					{
+						disabledEvents.Add(floordata.Events[i].selection.name);
 						floordata.Events.RemoveAt(i--);
+					}
+				}
 
 				ld.randomEvents.AddRange(floordata.Events);
 
 				//List<ObjectBuilder> objBlds = new(floordata.ForcedObjectBuilders);
 				for (int i = 0; i < floordata.ForcedObjectBuilders.Count; i++)
+				{
 					if (!Config.Bind("Structure Settings", $"Enable {floordata.ForcedObjectBuilders[i].prefab.name}", true,
 						"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					{
+						disabledBuilders.Add(floordata.ForcedObjectBuilders[i].prefab.name);
 						floordata.ForcedObjectBuilders.RemoveAt(i--);
+					}
+				}
 
 				ld.forcedStructures = ld.forcedStructures.AddRangeToArray([.. floordata.ForcedObjectBuilders]);
 
 				//List<WeightedObjectBuilder> rngObjBlds = new(floordata.WeightedObjectBuilders);
 				for (int i = 0; i < floordata.WeightedObjectBuilders.Count; i++)
-					if (!Config.Bind("Structure Settings", $"Enable {floordata.WeightedObjectBuilders[i].selection.prefab.name}", true, 
+				{
+					if (!Config.Bind("Structure Settings", $"Enable {floordata.WeightedObjectBuilders[i].selection.prefab.name}", true,
 						"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					{
+						if (!disabledBuilders.Contains(floordata.WeightedObjectBuilders[i].selection.prefab.name))
+							disabledBuilders.Add(floordata.WeightedObjectBuilders[i].selection.prefab.name);
 						floordata.WeightedObjectBuilders.RemoveAt(i--);
+					}
+				}
 
 				ld.potentialStructures = ld.potentialStructures.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
 
@@ -582,6 +619,53 @@ namespace BBTimes
 
 		internal static List<IObjectPrefab> _cstData = [];
 
+	}
+
+	public class TimesHandler(BepInEx.PluginInfo info) : ModdedSaveGameIOBinary // Dummy class structure from the api
+	{
+		readonly private BepInEx.PluginInfo _info = info;
+		public override BepInEx.PluginInfo pluginInfo => _info;
+
+		public override void Save(BinaryWriter writer)
+		{
+			writer.Write((byte)0);
+		}
+
+		public override void Load(BinaryReader reader)
+		{
+			reader.ReadByte();
+		}
+
+		public override void Reset() { }
+
+		public override string[] GenerateTags()
+		{
+			List<string> tags = [];
+			var plug = (BasePlugin)_info.Instance;
+
+			plug.disabledCharacters.ForEach(x => tags.Add($"Times_DisabledCharacterTag_{x}"));
+			plug.disabledBuilders.ForEach(x => tags.Add($"Times_DisabledBuilderTag_{x}"));
+			plug.disabledEvents.ForEach(x => tags.Add($"Times_DisabledEventTag_{x}"));
+			plug.disabledItems.ForEach(x => tags.Add($"Times_DisabledItemTag_{x}"));
+
+
+			if (plug.disableHighCeilings.Value)
+				tags.Add("Times_Config_DisableHighCeilingsFunction");
+
+			if (plug.enableBigRooms.Value)
+				tags.Add("Times_Config_EnableBigRoomsMode");
+
+			if (plug.enableReplacementNPCsAsNormalOnes.Value)
+				tags.Add("Times_Config_ReplacementDisable");
+
+			if (plug.enableYoutuberMode.Value)
+				tags.Add("Times_Config_YoutuberMode");
+
+			if (BooleanStorage.IsChristmas)
+				tags.Add("Times_Specials_Christmas");
+
+			return [.. tags];
+		}
 	}
 
 	static class ModInfo
