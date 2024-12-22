@@ -14,6 +14,25 @@ namespace BBTimes.Extensions
 {
 	public static class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
 	{
+		public static string CreateSpriteNumbersFromString(this int num)
+		{
+			if (cachedNumbers.TryGetValue(num, out var str))
+				return str;
+
+			string number = num.ToString();
+
+			for (int i = 0; i < number.Length; i++)
+				bld.Append($"<sprite={number[i]}>");
+
+			string strFound = bld.ToString();
+			cachedNumbers.Add(num, strFound);
+			bld.Clear();
+
+			return strFound;
+		}
+		readonly static Dictionary<int, string> cachedNumbers = new(capacity:300); // naturally it'd never need to have the whole set of int.MaxValue/int.MinValue
+		static readonly StringBuilder bld = new();
+
 		public static bool RaycastNPC(this Looker looker, NPC npc)
 		{
 			looker.Raycast(npc.transform,

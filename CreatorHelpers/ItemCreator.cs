@@ -28,6 +28,7 @@ namespace BBTimes.Helpers
 			actualItem.item.gameObject.GetComponent<IItemPrefab>().SetupItemData(name, actualItem);
 
 			BBTimesManager.man.Add("times_itemPrefab_" + name, actualItem.item);
+			BBTimesManager.man.Add("times_itemObject_" + name, actualItem);
 
 			return actualItem;
 		}

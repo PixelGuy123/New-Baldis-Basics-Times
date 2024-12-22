@@ -86,6 +86,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		{
 			hidden = true;
 			renderer.gameObject.SetActive(false);
+			entity.collider.enabled = false;
 			e.ExternalActivity.moveMods.Add(moveMod);
 			targettedMod = e.ExternalActivity;
 			PlayerAttributesComponent pmm = null;

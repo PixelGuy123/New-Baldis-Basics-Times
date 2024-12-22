@@ -15,6 +15,7 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using MTM101BaldAPI.SaveSystem;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using PlusLevelFormat;
 using PlusLevelLoader;
@@ -64,6 +65,11 @@ namespace BBTimes
 			Tresent.GatherShopItems();
 			yield return "Creating post assets...";
 			GameExtensions.TryRunMethod(SetupPostAssets);
+			yield return "Forcing API to regenerate tags for Times...";
+			IsModLoaded = true;
+			Logger.LogDebug("Calling the api file manager to reload tags!");
+			ModdedFileManager.Instance.RegenerateTags();
+
 			yield break;
 		}
 
@@ -210,6 +216,55 @@ namespace BBTimes
 			//var scene = GenericExtensions.FindResourceObjects<SceneObject>().First(x => x.levelTitle == "F1");
 			//scene.nextLevel = sceneObjectClone;
 			//scene.levelObject.finalLevel = true;
+
+			// ********************************************************** Christmas Baldi Setup ***************************************************************************
+
+			if (BooleanStorage.IsChristmas)
+			{
+				var baldiSPrites = TextureExtensions.LoadSpriteSheet(6, 1, 30f, BBTimesManager.MiscPath, BBTimesManager.TextureFolder, BBTimesManager.GetAssetName("christmasBaldi.png"));
+				var chBaldi = ObjectCreationExtensions.CreateSpriteBillboard(baldiSPrites[0])
+					.AddSpriteHolder(out var chBaldiRenderer, 4f, LayerStorage.iClickableLayer); // Baldo offset should be exactly 5f + hisDefaultoffset
+				chBaldi.gameObject.AddBoxCollider(Vector3.up * 5f, new(2.5f, 10f, 2.5f), true);
+				chBaldi.name = "Times_ChristmasBaldi";
+				chBaldiRenderer.name = "Times_ChristmasBaldi_Renderer";
+
+				chBaldi.gameObject.ConvertToPrefab(true); // He won't be in the editor, he's made specifically for christmas mode
+
+				var christmasBaldi = chBaldi.gameObject.AddComponent<ChristmasBaldi>();
+
+				christmasBaldi.audMan = christmasBaldi.gameObject.CreatePropagatedAudioManager(45f, 175f);
+				christmasBaldi.present = BBTimesManager.man.Get<ItemObject>("times_itemObject_Present");
+				christmasBaldi.audIntro = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_PresentIntro.wav")), "Vfx_BAL_Pitstop_PresentIntro_1", SoundType.Voice, Color.green);
+				christmasBaldi.audIntro.additionalKeys = [
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_2", time = 3.458f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_3", time = 4.75f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_4", time = 5.688f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_5", time = 8.183f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_6", time = 12.213f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_7", time = 14.681f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_8", time = 17.321f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_9", time = 18.964f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_10", time = 21.978f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_11", time = 22.707f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_12", time = 26.128f }
+					];
+
+				christmasBaldi.audBuyItem = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_buypresent.wav")), "Vfx_BAL_Pitstop_MerryChristmas", SoundType.Voice, Color.green);
+
+				christmasBaldi.audNoYtps = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_needYtpsForPresent.wav")), "Vfx_BAL_Pitstop_Nopresent_1", SoundType.Voice, Color.green);
+				christmasBaldi.audNoYtps.additionalKeys = [
+					new() { key = "Vfx_BAL_Pitstop_Nopresent_2", time = 3.766f }
+					];
+
+				var volumeAnimator = christmasBaldi.gameObject.AddComponent<SpriteVolumeAnimator>();
+				volumeAnimator.audMan = christmasBaldi.audMan;
+				volumeAnimator.renderer = chBaldiRenderer;
+				volumeAnimator.volumeMultipler = 1.2f;
+				volumeAnimator.sprites = baldiSPrites;
+
+				var pitstopAsset = GenericExtensions.FindResourceObjectByName<LevelAsset>("Pitstop"); // Find shop pitstop here
+				pitstopAsset.tbos.Add(new() { direction = Direction.North, position = new(30, 11), prefab = christmasBaldi });
+			}
 		}
 
 
@@ -219,7 +274,7 @@ namespace BBTimes
 
 		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, disableTimesMainMenu, forceChristmasMode;
 		internal List<string> disabledCharacters = [], disabledItems = [], disabledEvents = [], disabledBuilders = [];
-		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") || 
+		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") ||
 			Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
 
 		private void Awake()
@@ -236,7 +291,7 @@ namespace BBTimes
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
 			harmony.PatchAllConditionals();
 
-			ModdedSaveGame.AddSaveHandler(Info);
+			ModdedSaveGame.AddSaveHandler(new TimesHandler(Info, this));
 
 			_modPath = AssetLoader.GetModPath(this);
 
@@ -429,6 +484,8 @@ namespace BBTimes
 					return;
 				}
 
+				bool isChristmas = BooleanStorage.IsChristmas;
+
 				for (int i = 0; i < floordata.NPCs.Count; i++)
 				{
 					if (!Config.Bind("NPC Settings", $"Enable {floordata.NPCs[i].selection.name}", true, "If set to true, this character will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
@@ -440,9 +497,19 @@ namespace BBTimes
 
 					var dat = floordata.NPCs[i].selection.GetComponent<INPCPrefab>();
 					if (enableReplacementNPCsAsNormalOnes.Value || dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
+					{
+						if (isChristmas && floordata.NPCs[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+							floordata.NPCs[i].weight = Mathf.FloorToInt(floordata.NPCs[i].weight * 1.45f);
+
 						sco.potentialNPCs.Add(floordata.NPCs[i]); // Only non-replacement Npcs
+					}
 					else
+					{
+						if (isChristmas && floordata.NPCs[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+							dat.ReplacementWeight = Mathf.FloorToInt(dat.ReplacementWeight * 1.45f);
+
 						sco.forcedNpcs = sco.forcedNpcs.AddToArray(floordata.NPCs[i].selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
+					}
 				}
 
 				//List<WeightedItemObject> acceptableItems = floordata.Items;
@@ -454,7 +521,11 @@ namespace BBTimes
 					{
 						disabledItems.Add(itemName);
 						floordata.Items.RemoveAt(i--);
+						continue;
 					}
+
+					if (isChristmas && floordata.Items[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+						floordata.Items[i].weight = Mathf.FloorToInt(floordata.Items[i].weight * 1.95f);
 				}
 
 
@@ -496,7 +567,11 @@ namespace BBTimes
 					{
 						disabledEvents.Add(floordata.Events[i].selection.name);
 						floordata.Events.RemoveAt(i--);
+						continue;
 					}
+
+					if (isChristmas && floordata.Events[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+						floordata.Events[i].weight = Mathf.FloorToInt(floordata.Events[i].weight * 1.5f);
 				}
 
 				ld.randomEvents.AddRange(floordata.Events);
@@ -619,12 +694,16 @@ namespace BBTimes
 
 		internal static List<IObjectPrefab> _cstData = [];
 
+		public bool IsModLoaded { get; private set; } = false;
+
 	}
 
-	public class TimesHandler(BepInEx.PluginInfo info) : ModdedSaveGameIOBinary // Dummy class structure from the api
+	public class TimesHandler(BepInEx.PluginInfo info, BasePlugin plug) : ModdedSaveGameIOBinary // Dummy class structure from the api
 	{
 		readonly private BepInEx.PluginInfo _info = info;
 		public override BepInEx.PluginInfo pluginInfo => _info;
+
+		readonly BasePlugin plug = plug;
 
 		public override void Save(BinaryWriter writer)
 		{
@@ -641,7 +720,6 @@ namespace BBTimes
 		public override string[] GenerateTags()
 		{
 			List<string> tags = [];
-			var plug = (BasePlugin)_info.Instance;
 
 			plug.disabledCharacters.ForEach(x => tags.Add($"Times_DisabledCharacterTag_{x}"));
 			plug.disabledBuilders.ForEach(x => tags.Add($"Times_DisabledBuilderTag_{x}"));
@@ -666,6 +744,10 @@ namespace BBTimes
 
 			return [.. tags];
 		}
+
+		public override bool TagsReady() =>
+			plug.IsModLoaded;
+
 	}
 
 	static class ModInfo

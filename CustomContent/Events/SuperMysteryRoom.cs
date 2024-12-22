@@ -12,7 +12,7 @@ namespace BBTimes.CustomContent.Events
 		public void SetupPrefab()
 		{
 			eventIntro = this.GetSound("SuperMysteryRoom.wav", "Event_SuperMystery", SoundType.Voice, Color.green);
-			eventIntro.additionalKeys = [new() { time = 4.092f, key = "Vfx_BAL_Event_MysteryRoom_2" }];
+			eventIntro.additionalKeys = [new() { time = 4.478f, key = "Vfx_BAL_Event_MysteryRoom_2" }];
 
 			mysteryDoorPre = GenericExtensions.FindResourceObject<MysteryDoor>();
 		}

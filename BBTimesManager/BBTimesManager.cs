@@ -2,11 +2,13 @@
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomComponents.SecretEndingComponents;
+using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches;
 using BBTimes.ModPatches.NpcPatches;
+using BBTimes.Plugin;
 using BepInEx.Bootstrap;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -352,6 +354,7 @@ namespace BBTimes.Manager
 			slipMatPre.audSlip = man.Get<SoundObject>("slipAud");
 			slipMatPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(9.9f, 10f, 9.9f), true);
 			man.Add("SlipperyMatPrefab", slipMatPre);
+
 
 			// ********************************************************** Secret Ending Setup ***************************************************************************
 

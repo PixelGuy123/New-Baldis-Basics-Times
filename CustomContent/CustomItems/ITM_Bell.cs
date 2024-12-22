@@ -13,7 +13,7 @@ namespace BBTimes.CustomContent.CustomItems
 		public void SetupPrefab()
 		{
 			var storedSprites = this.GetSpriteSheet(2, 1, 25f, "bellWorld.png");
-			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]).AddSpriteHolder(out var rendererBell, -4f);
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]).AddSpriteHolder(out var rendererBell, 1f);
 
 			renderer.transform.SetParent(transform);
 			renderer.transform.localPosition = Vector3.zero;

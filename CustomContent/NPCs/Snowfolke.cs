@@ -111,7 +111,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Snowflake snowPre;
 
 		[SerializeField]
-		internal float throwSpeed = 30f, minCooldownPerThrow = 30f, maxCooldownPerThrow = 50f, delayBeforeHit = 5f, maxShakeForce = 1.5f;
+		internal float throwSpeed = 30f, minCooldownPerThrow = 20f, maxCooldownPerThrow = 45f, delayBeforeHit = 5f, maxShakeForce = 1.5f;
 
 		[SerializeField]
 		internal int dirsToThrow = 8;

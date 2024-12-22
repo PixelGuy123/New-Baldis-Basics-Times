@@ -5,6 +5,7 @@ using BBTimes.CustomContent.Misc;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Helpers;
+using BBTimes.Plugin;
 using BepInEx;
 using MTM101BaldAPI;
 using MTM101BaldAPI.ObjectCreation;
@@ -31,6 +32,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_Hammer>()
 				.SetGeneratorCost(30)
 				.SetShopPrice(200)
+				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
 				.SetNameAndDescription("HAM_Name", "HAM_Desc")
 				.Build("Hammer");
 			//CreatorExtensions.CreateItem<ITM_Hammer, CustomItemData>("Hammer", "HAM_Name", "HAM_Desc", 125, 30).AddMeta(plug, ItemFlags.None).value;
@@ -50,16 +52,16 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_Present>()
 				.SetGeneratorCost(0)
 				.SetShopPrice(950)
+				.SetMeta(ItemFlags.None, [ConstantStorage.ChristmasSpecial_TimesTag])
 				.SetNameAndDescription("PRS_Name", "PRS_Desc")
 				.Build("Present");
 
 			// CreatorExtensions.CreateItem<ITM_Present, PresentCustomData>("Present", "PRS_Name", "PRS_Desc", 245, 0).AddMeta(plug, ItemFlags.None).value;
 
-			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 15 });
-			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
-			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
-			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 45 });
-			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[0].Items.Add(new() { selection = item, weight = 5 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 10 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 15 });
 
 			// GUM
 			item = new ItemBuilder(plug.Info)

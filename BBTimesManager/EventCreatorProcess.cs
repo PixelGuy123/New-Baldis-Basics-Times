@@ -1,7 +1,8 @@
 ﻿using BBTimes.CustomContent.Events;
 using BBTimes.Helpers;
-using BepInEx;
+using MTM101BaldAPI.Registers;
 using MTM101BaldAPI.ObjectCreation;
+using BBTimes.Plugin;
 
 namespace BBTimes.Manager
 {
@@ -19,6 +20,7 @@ namespace BBTimes.Manager
 			e = new RandomEventBuilder<PrincipalOut>(plug.Info)
 				.SetEnum("Principalout")
 				.SetMinMaxTime(40f, 80f)
+				.SetMeta(RandomEventFlags.CharacterSpecific)
 				.AddRequiredCharacters([Character.Principal, ..GetReplacementNPCs(Character.Principal)])
 				.SetName("Principalout")
 				.Build()
@@ -44,6 +46,7 @@ namespace BBTimes.Manager
 				.SetEnum("Frozenschool")
 				.SetMinMaxTime(85f, 110f)
 				.SetName("FrozenEvent")
+				.SetMeta(RandomEventFlags.None, ConstantStorage.ChristmasSpecial_TimesTag)
 				.Build()
 				.SetupEvent();
 
@@ -59,6 +62,7 @@ namespace BBTimes.Manager
 				.SetEnum("Curtainsclosed")
 				.SetMinMaxTime(60f, 80f)
 				.SetName("CurtainsClosed")
+				.SetMeta(RandomEventFlags.Permanent | RandomEventFlags.AffectsGenerator)
 				.Build()
 				.SetupEvent();
 
@@ -124,6 +128,7 @@ namespace BBTimes.Manager
 				.SetEnum("Superfans")
 				.SetMinMaxTime(75f, 100f)
 				.SetName("SuperFans")
+				.SetMeta(RandomEventFlags.Permanent | RandomEventFlags.AffectsGenerator)
 				.Build()
 				.SetupEvent();
 
@@ -150,6 +155,7 @@ namespace BBTimes.Manager
 				.SetEnum("SuperMysteryRoom")
 				.SetMinMaxTime(60f, 120f)
 				.SetName("SuperMysteryRoom")
+				.SetMeta(RandomEventFlags.Permanent | RandomEventFlags.AffectsGenerator | RandomEventFlags.RoomSpecific)
 				.Build()
 				.SetupEvent();
 
@@ -163,6 +169,7 @@ namespace BBTimes.Manager
 				.SetEnum("NatureEvent")
 				.SetMinMaxTime(60f, 90f)
 				.SetName("NatureEvent")
+				.SetMeta(RandomEventFlags.Permanent | RandomEventFlags.AffectsGenerator)
 				.Build()
 				.SetupEvent();
 

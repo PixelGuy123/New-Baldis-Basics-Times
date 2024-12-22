@@ -91,13 +91,7 @@ namespace BBTimes.CustomContent.Objects
 			{
 				if (pickCooldown > 1f)
 				{
-					string newStr = string.Empty;
-					string text = Mathf.FloorToInt(pickCooldown).ToString();
-
-					for (int i = 0; i < text.Length; i++)
-						newStr += $"<sprite={text[i]}>";
-
-					timer.text = newStr;
+					timer.text = Mathf.FloorToInt(pickCooldown).CreateSpriteNumbersFromString();
 					pickCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 				}
 				else timer.gameObject.SetActive(false);
@@ -120,7 +114,6 @@ namespace BBTimes.CustomContent.Objects
 				(forwardOffset * camToFollow.transform.forward.RotateAroundAxis(pickupAxisOffset, offsetAngle)) +
 				(yOffset * Vector3.up);
 		}
-
 
 		readonly static Dictionary<PlayerManager, SnowShovel> activeShovels = [];
 

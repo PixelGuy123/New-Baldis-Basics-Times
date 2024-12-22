@@ -1098,7 +1098,9 @@ namespace BBTimes.Manager
 
 			sets = RegisterSpecialRoom("SnowyPlayground", Color.cyan);
 
-			room = GetAllAssets(GetRoomAsset("SnowyPlayground"), 165, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snow.png")) : null, squaredShape: true);
+			int snowyWeight = BooleanStorage.IsChristmas ? 165 : 75;
+
+			room = GetAllAssets(GetRoomAsset("SnowyPlayground"), snowyWeight, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snow.png")) : null, squaredShape: true);
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowyPlaygroundFloor.png"));
 			AddTextureToEditor("snowyPlaygroundFloor", floorTex);
 
@@ -1113,9 +1115,9 @@ namespace BBTimes.Manager
 			sets.container = playgroundClonedRoomContainer;
 
 			floorDatas[0].SpecialRooms.AddRange(room);
-			floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(65));
+			floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.85f)));
 			floorDatas[3].SpecialRooms.AddRange(room);
-			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(25));
+			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.65f)));
 
 
 			// ================================================ Base Game Room Variants ====================================================

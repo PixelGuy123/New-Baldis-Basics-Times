@@ -255,7 +255,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			if (cooldown <= 0f && !player.Tagged && player.itm.items.Any(x => x.GetMeta().tags.Any(x => { string n = x.ToLower(); return n == "food" || n == "drink"; }))) // player.itm.HasItem()
+			if (cooldown <= 0f && !player.Tagged && player.itm.items.Any(x => x.GetMeta()?.tags.Any(x => { string n = x.ToLower(); return n == "food" || n == "drink"; }) ?? false)) // player.itm.HasItem()
 				or.behaviorStateMachine.ChangeState(new Oran_ChasePlayer(or, player, this));
 		}
 

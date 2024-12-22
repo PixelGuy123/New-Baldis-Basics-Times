@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomContent.NPCs;
 using BBTimes.Helpers;
+using BBTimes.Plugin;
 using MTM101BaldAPI;
 using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
@@ -651,7 +652,7 @@ namespace BBTimes.Manager
 				.SetEnum("Winterry")
 				.SetMetaName("PST_Winterry_Name")
 				.SetName("Winterry")
-				.SetMetaTags(["student", "Times_SpecialTags_ChristmasSpecial"])
+				.SetMetaTags(["student", ConstantStorage.ChristmasSpecial_TimesTag])
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0.3984375f, 0.59765625f, 0.99609375f))
 				.AddLooker()
@@ -671,7 +672,7 @@ namespace BBTimes.Manager
 				.SetEnum("Snowfolke")
 				.SetMetaName("PST_Snowfolke_Name")
 				.SetName("Snowfolke")
-				.SetMetaTags(["student", "Times_SpecialTags_ChristmasSpecial"])
+				.SetMetaTags(["student", ConstantStorage.ChristmasSpecial_TimesTag])
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0.69921875f, 0.796875f, 0.99609375f))
 				.Build()
@@ -686,7 +687,7 @@ namespace BBTimes.Manager
 				.SetEnum("EverettTreewood")
 				.SetMetaName("PST_Everett_Name")
 				.SetName("EverettTreewood")
-				.SetMetaTags(["neither", "Times_SpecialTags_ChristmasSpecial"])
+				.SetMetaTags(["neither", ConstantStorage.ChristmasSpecial_TimesTag])
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0f, 0.5f, 0.16796875f))
 				.AddLooker()
