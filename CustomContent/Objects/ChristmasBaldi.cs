@@ -5,7 +5,6 @@ namespace BBTimes.CustomContent.Objects
 {
 	public class ChristmasBaldi : TileBasedObject, IClickable<int>
 	{
-
 		void Start()
 		{
 			var room = ec.CellFromPosition(position).room;
@@ -25,12 +24,27 @@ namespace BBTimes.CustomContent.Objects
 				pickup.OnItemPurchased += BuyPresent;
 				pickup.OnItemDenied += DenyPresent;
 			}
+
+			func = ec.CellFromPosition(position).room.functionObject.GetComponent<StoreRoomFunction>();
+		}
+
+		public void SayMerryChristmas()
+		{
+			if (!merryChristmased)
+			{
+				merryChristmased = true;
+
+				audMan.FlushQueue(true);
+				audMan.QueueAudio(audBuyItem);
+			}
 		}
 
 		void BuyPresent(Pickup p, int player)
 		{
-			audMan.FlushQueue(true);
-			audMan.QueueAudio(audBuyItem);
+			if (func)
+				func.itemPurchased = true;
+
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audBell);
 		}
 
 		void DenyPresent(Pickup p, int player)
@@ -61,12 +75,13 @@ namespace BBTimes.CustomContent.Objects
 		internal AudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject audIntro, audNoYtps, audBuyItem;
+		internal SoundObject audIntro, audNoYtps, audBuyItem, audBell;
 
 		[SerializeField]
 		internal ItemObject present;
 
+		StoreRoomFunction func;
 		readonly List<Pickup> generatedPickups = [];
-		bool interactedWith = false;
+		bool interactedWith = false, merryChristmased = false; // yes, I made this word up lol
 	}
 }

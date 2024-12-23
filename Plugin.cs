@@ -232,8 +232,9 @@ namespace BBTimes
 
 				var christmasBaldi = chBaldi.gameObject.AddComponent<ChristmasBaldi>();
 
-				christmasBaldi.audMan = christmasBaldi.gameObject.CreatePropagatedAudioManager(45f, 175f);
+				christmasBaldi.audMan = christmasBaldi.gameObject.CreatePropagatedAudioManager(95f, 175f);
 				christmasBaldi.present = BBTimesManager.man.Get<ItemObject>("times_itemObject_Present");
+				christmasBaldi.audBell = BBTimesManager.man.Get<SoundObject>("audRing");
 				christmasBaldi.audIntro = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_PresentIntro.wav")), "Vfx_BAL_Pitstop_PresentIntro_1", SoundType.Voice, Color.green);
 				christmasBaldi.audIntro.additionalKeys = [
 					new() { key = "Vfx_BAL_Pitstop_PresentIntro_2", time = 3.458f },
