@@ -14,8 +14,8 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefab()
 		{
 			audMan = GetComponent<PropagatedAudioManager>();
-			audSpit = this.GetSound("winterrySpit.wav", "Vfx_Winterry_Spit", SoundType.Voice, Color.white);
-			audBlow = this.GetSound("winterryBlowing.wav", "Vfx_Winterry_Blow", SoundType.Voice, Color.white);
+			audSpit = this.GetSound("winterrySpit.wav", "Vfx_Winterry_Spit", SoundType.Voice, audMan.subtitleColor);
+			audBlow = this.GetSound("winterryBlowing.wav", "Vfx_Winterry_Blow", SoundType.Voice, audMan.subtitleColor);
 
 			const float pixsPerUnit = 35f;
 

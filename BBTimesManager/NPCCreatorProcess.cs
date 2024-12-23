@@ -685,7 +685,7 @@ namespace BBTimes.Manager
 			npc = new NPCBuilder<EverettTreewood>(plug.Info)
 				.SetMinMaxAudioDistance(125f, 155f)
 				.SetEnum("EverettTreewood")
-				.SetMetaName("PST_Everett_Name")
+				.SetMetaName("PST_EverettTree_Name")
 				.SetName("EverettTreewood")
 				.SetMetaTags(["neither", ConstantStorage.ChristmasSpecial_TimesTag])
 				.AddTrigger()
@@ -693,7 +693,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetMaxSightDistance(110f)
 				.Build()
-				.SetupNPCData("EverettTreewood", "PST_Everett_Name", "PST_Everett_Desc", -0.5f);
+				.SetupNPCData("EverettTreewood", "PST_EverettTree_Name", "PST_EverettTree_Desc", -0.5f);
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 

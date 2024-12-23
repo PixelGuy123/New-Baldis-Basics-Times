@@ -48,7 +48,7 @@ namespace BBTimes.Extensions
 			if (array.Length <= 2)
 				throw new System.ArgumentException($"Array is too small to be mirrored (size: {array.Length})");
 
-			Sprite[] newAr = new Sprite[array.Length * 2 - 1];
+			Sprite[] newAr = new Sprite[array.Length * 2 - 2];
 			int i = 0;
 			for (; i < array.Length; i++)
 				newAr[i] = array[i];

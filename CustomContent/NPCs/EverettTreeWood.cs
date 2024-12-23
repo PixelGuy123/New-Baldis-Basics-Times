@@ -28,15 +28,15 @@ namespace BBTimes.CustomContent.NPCs
 			angryAnim = angryAnimSprs.ExcludeNumOfSpritesFromSheet(2);
 			spitAnim = [angryAnimSprs[angryAnimSprs.Length - 2]];
 
-			audWalking = this.GetSound("christmasornament_loop.wav", "Vfx_EverettTree_TreeNoises", SoundType.Effect, Color.white);
-			audDecorate = this.GetSound("EverettTreewood_decorations.wav", "Vfx_EverettTree_Decoration", SoundType.Voice, Color.white);
-			audFinishDecor = this.GetSound("EverettTreewood_finishdecorating.wav", "Vfx_EverettTree_FinishDecor", SoundType.Voice, Color.white);
-			audMad = this.GetSound("EverettTreewood_mad.wav", "Vfx_EverettTree_Mad_1", SoundType.Voice, Color.white);
+			audWalking = this.GetSound("christmasornament_loop.wav", "Vfx_EverettTree_TreeNoises", SoundType.Effect, audMan.subtitleColor);
+			audDecorate = this.GetSound("EverettTreewood_decorations.wav", "Vfx_EverettTree_Decoration", SoundType.Voice, audMan.subtitleColor);
+			audFinishDecor = this.GetSound("EverettTreewood_finishdecorating.wav", "Vfx_EverettTree_FinishDecor", SoundType.Voice, audMan.subtitleColor);
+			audMad = this.GetSound("EverettTreewood_mad.wav", "Vfx_EverettTree_Mad_1", SoundType.Voice, audMan.subtitleColor);
 			audMad.additionalKeys = [
 				new() { key = "Vfx_EverettTree_Mad_2", time = 3.125f },
 				new() { key = "Vfx_EverettTree_Mad_3", time = 7.36f }
 				];
-			audIdle = [this.GetSound("EverettTreewood_idle1.wav", "Vfx_EverettTree_Idle1_0", SoundType.Voice, Color.white)];
+			audIdle = [this.GetSound("EverettTreewood_idle1.wav", "Vfx_EverettTree_Idle1_0", SoundType.Voice, audMan.subtitleColor)];
 			audIdle[0].additionalKeys = [
 				new() { key = "Vfx_EverettTree_Idle1_1", time = 0.469f },
 				new() { key = "Vfx_EverettTree_Idle1_2", time = 1.032f },
@@ -46,9 +46,9 @@ namespace BBTimes.CustomContent.NPCs
 				new() { key = "Vfx_EverettTree_Idle1_2", time = 5.879f },
 				];
 
-			audSpit = this.GetSound("EverettTreewoodmad_spitornament.wav", "Vfx_EverettTree_Spit", SoundType.Effect, Color.white);
+			audSpit = this.GetSound("EverettTreewoodmad_spitornament.wav", "Vfx_EverettTree_Spit", SoundType.Effect, audMan.subtitleColor);
 
-			audDestroyedDecor = this.GetSound("EverettTreewood_destroydecoration.wav", "Vfx_EverettTree_AngryAtBrokenDecor_0", SoundType.Effect, Color.white);
+			audDestroyedDecor = this.GetSound("EverettTreewood_destroydecoration.wav", "Vfx_EverettTree_AngryAtBrokenDecor_0", SoundType.Effect, audMan.subtitleColor);
 			audDestroyedDecor.additionalKeys = [
 				new() { key = "Vfx_EverettTree_AngryAtBrokenDecor_1", time = 0.81f },
 				new() { key = "Vfx_EverettTree_AngryAtBrokenDecor_2", time = 2.267f },
@@ -66,7 +66,7 @@ namespace BBTimes.CustomContent.NPCs
 			decorPre.renderer = decorRenderer;
 			decorPre.sprBroken = decorSprites[1];
 			decorPre.audMan = decorPre.gameObject.CreatePropagatedAudioManager(55f, 75f);
-			decorPre.audBreak = this.GetSound("wood_ultimateBreak.wav", "Vfx_EverettTree_DecorBreak", SoundType.Effect, Color.white);
+			decorPre.audBreak = this.GetSound("wood_ultimateBreak.wav", "Vfx_EverettTree_DecorBreak", SoundType.Effect, audMan.subtitleColor);
 			decorPre.collider = decorPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(4.75f, 10f, 4.75f), true);
 
 			animComp = gameObject.AddComponent<AnimationComponent>();
@@ -83,7 +83,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			snowPre.entity = snowPre.gameObject.CreateEntity(1.5f, 1.5f, snowBallRenderer.transform);
 			snowPre.audMan = snowPre.gameObject.CreatePropagatedAudioManager(35f, 60f);
-			snowPre.audWoosh = this.GetSound("christmasBallWoosh.wav", "Sfx_Ben_Gum_Whoosh", SoundType.Effect, Color.white);
+			snowPre.audWoosh = this.GetSound("christmasBallWoosh.wav", "Sfx_Ben_Gum_Whoosh", SoundType.Effect, audMan.subtitleColor);
 			snowPre.audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
 			snowPre.slowFactor = 0.48f;
 

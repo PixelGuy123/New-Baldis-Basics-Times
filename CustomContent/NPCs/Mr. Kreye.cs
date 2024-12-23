@@ -13,8 +13,8 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			
 			audMan = GetComponent<PropagatedAudioManager>();
-			audStatic = this.GetSound("active.wav", "Sfx_Crafters_Intro", SoundType.Effect, Color.white);
-			audOpenChest = this.GetSound("open.wav", "Sfx_Effects_Pop", SoundType.Effect, Color.white);
+			audStatic = this.GetSound("active.wav", "Sfx_Crafters_Intro", SoundType.Effect, audMan.subtitleColor);
+			audOpenChest = this.GetSound("open.wav", "Sfx_Effects_Pop", SoundType.Effect, audMan.subtitleColor);
 
 			var sprs = this.GetSpriteSheet(3, 3, 36f, "kreye.png");
 
@@ -42,7 +42,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			hookPre.entity = hookPre.gameObject.CreateEntity(2.5f, 3f, hookRenderer.transform);
 			hookPre.audMan = hookPre.gameObject.CreatePropagatedAudioManager(35f, 85f);
-			hookPre.audGrab = this.GetSound("hookGrab.wav", "Vfx_Kreye_Grab", SoundType.Effect, Color.white);
+			hookPre.audGrab = this.GetSound("hookGrab.wav", "Vfx_Kreye_Grab", SoundType.Effect, audMan.subtitleColor);
 
 			animComp = gameObject.AddComponent<AnimationComponent>();
 			animComp.speed = 9f;

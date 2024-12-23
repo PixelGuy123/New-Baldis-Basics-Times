@@ -14,7 +14,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			spriteRenderer[0].sprite = this.GetSprite(30f, "snowFlake.png");
 			audMan = GetComponent<PropagatedAudioManager>();
-			audThrow = this.GetSound("snowfolke_Throw.wav", "Vfx_Snowfolke_Hit", SoundType.Voice, Color.white);
+			audThrow = this.GetSound("snowfolke_Throw.wav", "Vfx_Snowfolke_Throw", SoundType.Voice, audMan.subtitleColor);
 
 			floatingRenderer = spriteRenderer[0].transform;
 
@@ -27,7 +27,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			snowPre.entity = snowPre.gameObject.CreateEntity(1f, 1f, snowBallRenderer.transform);
 			snowPre.audMan = snowPre.gameObject.CreatePropagatedAudioManager(35f, 55f);
-			snowPre.audHit = this.GetSound("snowfolke_freeze.wav", "Vfx_Snowfolke_Hit", SoundType.Effect, Color.white);
+			snowPre.audHit = this.GetSound("snowfolke_freeze.wav", "Vfx_Snowfolke_Hit", SoundType.Effect, audMan.subtitleColor);
 
 			snowPre.renderer = snowBallRenderer.gameObject;
 		}
