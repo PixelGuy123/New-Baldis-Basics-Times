@@ -61,7 +61,8 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Initialize();
 
-			spotsToGo = ec.mainHall.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single | TileShapeMask.End, false);
+			spotsToGo = ec.mainHall.GetNewTileList();
+			spotsToGo.RemoveAll(x => (TileShapeMask.Corner | TileShapeMask.Single | TileShapeMask.End & x.shape) == 0);
 
 			hook = Instantiate(hookPre);
 			hook.Initialize(ec, this);

@@ -91,6 +91,7 @@ namespace BBTimes.CustomContent.Objects
 
 			transform.rotation = Quaternion.Euler(0f, nextDirections[dirIndex].ToDegrees(), 0f);
 			IntVector2 pos = basePos;
+			RoomController myRoom = ec.CellFromPosition(pos).room;
 			int size = 0;
 			for (int i = 0; i < maxDistance; i++)
 			{
@@ -106,7 +107,7 @@ namespace BBTimes.CustomContent.Objects
 				size++;
 
 				if (cell.HasWallInDirection(nextDirections[dirIndex]) || 
-					ec.CellFromPosition(pos + nextDirections[dirIndex].ToIntVector2()).Null)
+					!ec.CellFromPosition(pos + nextDirections[dirIndex].ToIntVector2()).TileMatches(myRoom))
 					break;
 			}
 
