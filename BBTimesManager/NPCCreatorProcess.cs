@@ -44,7 +44,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_HapH_Name")
 				.AddTrigger()
 				.AddLooker()
-				.SetMetaTags(["neither"])
+				.SetMetaTags(["neither", ConstantStorage.ChristmasSpecial_TimesTag])
 				.SetMaxSightDistance(125)
 				.Build()
 				.SetupNPCData("HappyHolidays", "PST_HapH_Name", "PST_HapH_Desc", -2f);
@@ -671,6 +671,7 @@ namespace BBTimes.Manager
 				.SetMinMaxAudioDistance(135f, 175f)
 				.SetEnum("Snowfolke")
 				.SetMetaName("PST_Snowfolke_Name")
+				.SetAirborne()
 				.SetName("Snowfolke")
 				.SetMetaTags(["student", ConstantStorage.ChristmasSpecial_TimesTag])
 				.AddTrigger()

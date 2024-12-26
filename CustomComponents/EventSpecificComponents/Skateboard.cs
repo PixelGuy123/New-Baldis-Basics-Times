@@ -58,7 +58,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 
 			tar.Teleport(transform.position);
 
-			if (pushDelay <= 0f)
+			if (pushDelay <= 0f && !entity.Frozen)
 			{
 				Vector3 vel = overridingNavigator ? navRef.velocity : tar.InternalMovement;
 

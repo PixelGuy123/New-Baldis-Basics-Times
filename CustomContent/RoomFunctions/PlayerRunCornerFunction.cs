@@ -6,9 +6,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 {
 	public class PlayerRunCornerFunction : RoomFunction
 	{
-		public override void OnGenerationFinished()
+		public override void Initialize(RoomController room)
 		{
-			base.OnGenerationFinished();
+			base.Initialize(room);
 			IntVector2 pos = default;
 			Direction dirToFollow = Direction.Null;
 

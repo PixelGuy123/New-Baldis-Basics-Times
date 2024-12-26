@@ -1094,6 +1094,8 @@ namespace BBTimes.Manager
 			slipFunc.slipMatPre.antiForceReduceFactor = 0.75f;
 			slipFunc.slipMatPre.name = "SnowyIcePatch";
 
+			slipFunc.minMax = new(3, 5);
+
 			playgroundClonedRoomContainer.AddFunction(slipFunc);
 
 			sets = RegisterSpecialRoom("SnowyPlayground", Color.cyan);

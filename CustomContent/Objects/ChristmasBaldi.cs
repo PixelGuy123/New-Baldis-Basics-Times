@@ -23,6 +23,7 @@ namespace BBTimes.CustomContent.Objects
 				generatedPickups.Add(pickup);
 				pickup.OnItemPurchased += BuyPresent;
 				pickup.OnItemDenied += DenyPresent;
+				pickup.OnItemCollected += CollectPresent;
 			}
 
 			func = ec.CellFromPosition(position).room.functionObject.GetComponent<StoreRoomFunction>();
@@ -39,12 +40,22 @@ namespace BBTimes.CustomContent.Objects
 			}
 		}
 
+		void CollectPresent(Pickup p, int player)
+		{
+			p.free = true;
+			p.price = 0;
+			p.showDescription = false;
+		}
+
 		void BuyPresent(Pickup p, int player)
 		{
 			if (func)
 				func.itemPurchased = true;
 
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audBell);
+
+			if (!audMan.QueuedUp)
+				audMan.QueueRandomAudio(audCollectingPresent);
 		}
 
 		void DenyPresent(Pickup p, int player)
@@ -76,6 +87,9 @@ namespace BBTimes.CustomContent.Objects
 
 		[SerializeField]
 		internal SoundObject audIntro, audNoYtps, audBuyItem, audBell;
+
+		[SerializeField]
+		internal SoundObject[] audCollectingPresent;
 
 		[SerializeField]
 		internal ItemObject present;

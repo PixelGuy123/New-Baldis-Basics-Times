@@ -20,7 +20,6 @@ namespace BBTimes.ModPatches
 			if (BBTimesManager.plug.disableTimesMainMenu.Value)
 				return;
 
-
 			// Main Menu itself
 			bool hasInfiniteFloors = BBTimesManager.plug.HasInfiniteFloors;
 
@@ -36,7 +35,7 @@ namespace BBTimes.ModPatches
 			if (aud_superSecretOnlyReservedForThoseIselect && !File.Exists(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "ShouldNeverBePlayedAgain.timesMarker")))
 				emptMono.StartCoroutine(ForcefullyWaitForAudioToPlay(newSrc));
 			else
-				emptMono.StartCoroutine(WaitForAudioPlay(newSrc,
+				emptMono.StartCoroutine(WaitForAudioPlay(__instance.audioSource, newSrc,
 					BooleanStorage.IsChristmas ? aud_welcome_christmas :
 					hasInfiniteFloors ? aud_welcome_endless : aud_welcome,
 
@@ -46,7 +45,7 @@ namespace BBTimes.ModPatches
 				__instance.transform.GetComponentInChildren<MusicPlayer>().track = newMidi;
 		}
 
-		static IEnumerator WaitForAudioPlay(AudioManager source, SoundObject audio, GameObject menuReference)
+		static IEnumerator WaitForAudioPlay(AudioSource menuAud, AudioManager source, SoundObject audio, GameObject menuReference)
 		{
 			yield return null;
 			yield return new WaitForSeconds(seconds); // Music manager makes this pain
@@ -55,7 +54,7 @@ namespace BBTimes.ModPatches
 
 			while (source.AnyAudioIsPlaying)
 			{
-				if (!menuReference.activeSelf)
+				if (!menuReference.activeSelf || menuAud.isPlaying)
 					source.FlushQueue(true);
 				yield return null;
 			}

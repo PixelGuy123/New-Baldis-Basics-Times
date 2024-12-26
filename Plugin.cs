@@ -257,6 +257,11 @@ namespace BBTimes
 					new() { key = "Vfx_BAL_Pitstop_Nopresent_2", time = 3.766f }
 					];
 
+				christmasBaldi.audCollectingPresent = [
+					ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_Pitstop_Thanks1.wav")), "Vfx_BAL_Pitstop_Thanks1", SoundType.Voice, Color.green),
+					ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_Pitstop_Thanks2.wav")), "Vfx_BAL_Pitstop_Thanks2", SoundType.Voice, Color.green)
+					];
+
 				var volumeAnimator = christmasBaldi.gameObject.AddComponent<SpriteVolumeAnimator>();
 				volumeAnimator.audMan = christmasBaldi.audMan;
 				volumeAnimator.renderer = chBaldiRenderer;
@@ -273,7 +278,7 @@ namespace BBTimes
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
-		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, disableTimesMainMenu, forceChristmasMode;
+		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, disableTimesMainMenu, forceChristmasMode, disableArcadeRennovationsSupport;
 		internal List<string> disabledCharacters = [], disabledItems = [], disabledEvents = [], disabledBuilders = [];
 		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") ||
 			Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
@@ -287,6 +292,7 @@ namespace BBTimes
 			enableYoutuberMode = Config.Bind("Misc Settings", "Enable youtuber mode", false, "Wanna get some exclusive content easily? Set this to \"true\" on and *everything* will have the weight of 9999.");
 			disableTimesMainMenu = Config.Bind("Misc Settings", "Disable Times main menu", false, "Does the Times menu bother you? Set this to \"true\" to disable it!");
 			forceChristmasMode = Config.Bind("Specials Settings", "Force enable christmas special", false, "Setting this to \"true\" will force the christmas special to be enabled.");
+			disableArcadeRennovationsSupport = Config.Bind("Misc Settings", "Disable arcade rennovations support", false, "Setting this to \"true\" disable any checks for arcade rennovations. This can be useful for RNG Floors, if you\'re having any issues.");
 
 
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
@@ -742,6 +748,9 @@ namespace BBTimes
 
 			if (BooleanStorage.IsChristmas)
 				tags.Add("Times_Specials_Christmas");
+
+			if (plug.HasInfiniteFloors && plug.disableArcadeRennovationsSupport.Value)
+				tags.Add("Times_Config_DisableArcadeRennovationsSupport");
 
 			return [.. tags];
 		}

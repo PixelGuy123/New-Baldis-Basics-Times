@@ -8,6 +8,7 @@ using BBTimes.CustomComponents;
 using HarmonyLib;
 using PixelInternalAPI.Extensions;
 using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
 
 
 namespace BBTimes.CustomContent.NPCs
@@ -29,11 +30,9 @@ namespace BBTimes.CustomContent.NPCs
 			spriteRenderer[0].sprite = allClockSprites[0];
 
 			spriteRenderer[0].material = new(ObjectCreationExtensions.NonBillBoardPrefab.material);
-			baseTrigger.Do(x => x.enabled = false);
 			audMan = GetComponent<AudioManager>();
-			Navigator.enabled = false; // It's a static npc
-			Navigator.Entity.SetActive(false);
-			Navigator.Entity.enabled = false;
+
+			this.MakeCharacterChalklesLike();
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");

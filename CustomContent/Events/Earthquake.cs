@@ -79,7 +79,7 @@ namespace BBTimes.CustomContent.Events
 			{
 				if (ec.Npcs[i].Navigator.isActiveAndEnabled && ec.Npcs[i].GetMeta().flags.HasFlag(NPCFlags.Standard))
 				{
-					var moveMod = new MovementModifier(Vector3.zero, 1f) { forceTrigger = true };
+					var moveMod = new MovementModifier(Vector3.zero, 1f) { forceTrigger = true, ignoreAirborne = true };
 					ec.Npcs[i].Navigator.Am.moveMods.Add(moveMod);
 					actMods.Add(new(ec.Npcs[i].Navigator.Am, moveMod));
 				}
@@ -89,7 +89,7 @@ namespace BBTimes.CustomContent.Events
 			{
 				if (ec.Players[i] != null)
 				{
-					var moveMod = new MovementModifier(Vector3.zero, 1f) { forceTrigger = true };
+					var moveMod = new MovementModifier(Vector3.zero, 1f) { forceTrigger = true, ignoreAirborne = true };
 					ec.Players[i].Am.moveMods.Add(moveMod);
 					actMods.Add(new(ec.Players[i].Am, moveMod));
 				}
