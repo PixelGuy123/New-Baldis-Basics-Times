@@ -267,7 +267,7 @@ namespace BBTimes.CustomContent.NPCs
 				return;
 			}
 			var dist = mu.transform.position - pm.transform.position;
-			hugMod.movementAddend = dist * 135f * Time.deltaTime * mu.TimeScale;
+			hugMod.movementAddend = dist * 212f * Time.deltaTime * mu.TimeScale;
 
 			if (dist.magnitude >= hugTolerance)
 				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 30f, true));

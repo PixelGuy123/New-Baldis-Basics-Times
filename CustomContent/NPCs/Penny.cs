@@ -19,11 +19,20 @@ namespace BBTimes.CustomContent.NPCs
 			audMan = GetComponent<PropagatedAudioManager>();
 			stepAudMan = gameObject.CreatePropagatedAudioManager(115, 125);
 
-			var sprites = this.GetSpriteSheet(7, 1, 28f, "penny.png");
-			idleSprs = [sprites[0], sprites[1], sprites[2]];
-			spriteRenderer[0].sprite = idleSprs[0];
-			normStepSprs = [sprites[3], sprites[4]];
-			angryStepSprs = [sprites[5], sprites[6]];
+			var sprites = this.GetSpriteSheet(4, 3, 34f, "penny.png").ExcludeNumOfSpritesFromSheet(1);
+			talkHappySprs = sprites.TakeAPair(0, 2);
+			talkSadSprs = sprites.TakeAPair(2, 2);
+			madTalkSprs = sprites.TakeAPair(4, 2);
+			screamSprs = [sprites[6]];
+			idleWalkSprs = sprites.TakeAPair(7, 2);
+			madWalkSprs = sprites.TakeAPair(9, 2);
+
+			spriteRenderer[0].sprite = talkHappySprs[0];
+
+			animator = gameObject.AddComponent<SpriteVolumeAnimator>();
+			animator.audMan = audMan;
+			animator.renderer = spriteRenderer[0];
+			animator.sprites = talkHappySprs;
 
 			audSteps = [this.GetSound("highHeels0.wav", "Vfx_Spj_Step", SoundType.Effect, new(1f, 0.15f, 0f)), this.GetSound("highHeels1.wav", "Vfx_Spj_Step", SoundType.Voice, new(1f, 0.15f, 0f))];
 			audSpellTheWord = this.GetSound("SpellTheWord.wav", "Vfx_Pen_Spell", SoundType.Voice, new(1f, 0.15f, 0f));
@@ -158,13 +167,18 @@ namespace BBTimes.CustomContent.NPCs
 		internal SpriteRenderer renderer;
 
 		[SerializeField]
-		internal Sprite[] normStepSprs, angryStepSprs, idleSprs;
+		internal Sprite[] talkHappySprs, talkSadSprs, madTalkSprs, screamSprs, idleWalkSprs, madWalkSprs;
 
 		[SerializeField]
 		internal FloatingLetter[] letters;
 
 		[SerializeField]
 		internal TextMeshPro aboveText;
+
+		[SerializeField]
+		internal SpriteVolumeAnimator animator;
+
+		internal readonly MovementModifier moveMod = new(Vector3.zero, 1f);
 
 		public override void Initialize()
 		{
@@ -202,7 +216,14 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.maxSpeed = 0f;
 			navigator.SetSpeed(0f);
 
-			renderer.sprite = idleSprs[state == 0 && angry ? 1 : state];
+			animator.sprites = state switch
+			{
+				1 => talkSadSprs,
+				2 => madTalkSprs,
+				3 => screamSprs,
+				_ => talkHappySprs
+			};
+			renderer.sprite = animator.sprites[0];
 			// 0 => normal, 1 => angry, 2 => screaming
 		}
 
@@ -220,6 +241,7 @@ namespace BBTimes.CustomContent.NPCs
 					Singleton<CoreGameManager>.Instance.AddPoints(guesses * 25, chosenPlayer.playerNumber, true);
 					SetAngry(false);
 					SetIdleOnMood(0);
+					moveMod.movementMultiplier = 1f;
 					behaviorStateMachine.ChangeState(new Penny_Wandering(this, 60f));
 					StartCoroutine(FadeAboveTextOut());
 
@@ -228,10 +250,16 @@ namespace BBTimes.CustomContent.NPCs
 
 				ScrambleLetters(chosenWord[wordIndex]);
 				stepAudMan.PlaySingle(audCorrectRing);
+				if (!angry)
+				{
+					SetIdleOnMood(0);
+				}
 				return;
 			}
 			stepAudMan.PlaySingle(audBuzz);
-			audMan.PlayRandomAudio(audIncorrectLetterChoice);
+			audMan.FlushQueue(true);
+			audMan.QueueRandomAudio(audIncorrectLetterChoice);
+			SetIdleOnMood(1);
 
 			if (--guesses <= 1)
 				guesses = 1;
@@ -247,12 +275,15 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					stepAudMan.PlaySingle(audSteps[step ? 1 : 0]);
 					step = !step;
-					renderer.sprite = step ? (angry ? angryStepSprs[1] : normStepSprs[1]) : (angry ? angryStepSprs[0] : normStepSprs[0]);
+					renderer.sprite = step ? (angry ? madWalkSprs[1] : idleWalkSprs[1]) : (angry ? madWalkSprs[0] : idleWalkSprs[0]);
 					stepDelay += stepMax;
 				}
 			}
 			stopStep = false;
 		}
+
+		public void MakePunishmentWorse() =>
+			moveMod.movementMultiplier *= 0.5f;
 
 		void Teleport(Vector3 v) =>
 			stopStep = true;
@@ -279,6 +310,8 @@ namespace BBTimes.CustomContent.NPCs
 		IEnumerator Minigame() 
 		{
 			audMan.FlushQueue(true);
+			if (angry)
+				SetIdleOnMood(2);
 			audMan.QueueAudio(angry ? audAngrySpellTheWord : audSpellTheWord);
 
 			while (audMan.QueuedAudioIsPlaying) yield return null;
@@ -456,14 +489,16 @@ namespace BBTimes.CustomContent.NPCs
 	internal class Penny_ClassTime(Penny pen, PlayerManager pm) : Penny_StateBase(pen)
 	{
 		readonly PlayerManager pm = pm;
-		readonly MovementModifier moveMod = new(Vector3.zero, 0.4f);
 
 		public override void Enter()
 		{
 			base.Enter();
 			pen.SetIdleOnMood(0);
 			if (pen.IsAngry)
-				pm.Am.moveMods.Add(moveMod);
+			{
+				pen.MakePunishmentWorse();
+				pm.Am.moveMods.Add(pen.moveMod);
+			}
 			pen.InitiateMinigame(pm);
 		}
 
@@ -477,7 +512,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Exit()
 		{
 			base.Exit();
-			pm.Am.moveMods.Remove(moveMod);
+			pm.Am.moveMods.Remove(pen.moveMod);
 			pen.StopMinigame();
 		}
 	}
@@ -489,7 +524,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			pen.SetIdleOnMood(2);
+			pen.SetIdleOnMood(3);
 			pen.ScreamOnPlayer();
 			pen.SetAngry(true);
 			pen.HideAboveText();
@@ -499,7 +534,10 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 			if (!pen.audMan.AnyAudioIsPlaying)
+			{
+				pen.SetIdleOnMood(2);
 				pen.behaviorStateMachine.ChangeState(new Penny_NoticeChase(pen, pm, new Penny_Wandering(pen, calmDownCooldown: 120f, target: pm)));
+			}
 		}
 	}
 

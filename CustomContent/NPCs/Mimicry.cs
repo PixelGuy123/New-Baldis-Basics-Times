@@ -129,7 +129,10 @@ namespace BBTimes.CustomContent.NPCs
 			disguised = false;
 			behaviorStateMachine.ChangeState(new Mimicry_Wander(this));
 			if (laugh)
+			{
+				SetGuilt(5f, "Bullying");
 				StartCoroutine(LaughterDelay());
+			}
 		}
 
 		public bool ClickableHidden() => !disguised;

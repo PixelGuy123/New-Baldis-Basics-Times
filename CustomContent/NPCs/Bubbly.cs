@@ -36,7 +36,7 @@ namespace BBTimes.CustomContent.NPCs
 			visual.transform.localPosition = Vector3.zero;
 			visual.gameObject.AddComponent<BillboardRotator>().invertFace = true;
 
-			visual.transform.localPosition = Vector3.forward * 0.5f;
+			bubbleVisual.transform.localPosition = Vector3.forward * 0.5f;
 
 			bubble.renderer = bubbleVisual;
 			bubble.gameObject.layer = LayerStorage.standardEntities;

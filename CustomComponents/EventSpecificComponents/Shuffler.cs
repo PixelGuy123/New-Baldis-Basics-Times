@@ -1,9 +1,7 @@
-﻿using BBTimes.CustomContent.Objects;
-using MTM101BaldAPI.Registers;
+﻿using MTM101BaldAPI.Registers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents
 {
@@ -42,10 +40,10 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 			}
 			parts.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 
+			PostTeleportProcedure();
 			while (audMan.AnyAudioIsPlaying) yield return null;
 
-			PostTeleportProcedure();
-
+			
 			yield break;
 		}
 
@@ -88,7 +86,9 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 			StartCoroutine(TeleportDelay(next));
 		IEnumerator TeleportDelay(Entity next)
 		{
-			target.IgnoreEntity(next, true);
+			target.SetInteractionState(false);
+			next.SetInteractionState(false);
+
 			yield return null;
 			Vector3 pos = ((MonoBehaviour)next).transform.position;
 			next.Teleport(((MonoBehaviour)target).transform.position);
@@ -96,13 +96,14 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 
 			yield return null;
 
-			target.IgnoreEntity(next, false);
+			StartCoroutine(ImmunityTimer());
+			target.SetInteractionState(true);
+			next.SetInteractionState(true);
 
 			yield break;
 		}
 
-		protected override void PostTeleportProcedure() =>
-			StartCoroutine(ImmunityTimer());
+		protected override void PostTeleportProcedure() { }
 
 		IEnumerator ImmunityTimer()
 		{

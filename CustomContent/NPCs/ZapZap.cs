@@ -62,7 +62,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			var zapCol = eletricityPre.compPre.gameObject.AddComponent<CapsuleCollider>();
 			zapCol.isTrigger = true;
-			zapCol.radius = 14f;
+			zapCol.radius = 20f;
 			zapCol.height = 10f;
 
 			var system = eletricityPre.compPre.gameObject.AddComponent<ParticleSystem>();
@@ -128,7 +128,7 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal ZapZapEletricity eletricityPre;
 
-		readonly List<Transform> eletricityPretricities = [];
+		readonly List<ZapZapEletricity> eletricityPretricities = [];
 		Cell home;
 		float eletricityPretrictyDestructionCooldown = 0f;
 
@@ -143,10 +143,15 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal void SpawneletricityPretricity(StandardDoor door)
 		{
+			if (AffectedDoors.Contains(door))
+				return;
+
 			var eletricityPretricity = Instantiate(eletricityPre);
 			eletricityPretricity.Initialize(gameObject, door.doors[0].transform.position, 0.25f, ec);
 			eletricityPretricity.transform.rotation = Quaternion.Euler(0f, door.direction.PerpendicularList()[0].ToRotation().eulerAngles.y, 90f);
-			eletricityPretricities.Add(eletricityPretricity.transform);
+			eletricityPretricity.AffectedDoor = door;
+			eletricityPretricities.Add(eletricityPretricity);
+			AffectedDoors.Add(door);
 		}
 
 		public override void Despawn()
@@ -172,6 +177,7 @@ namespace BBTimes.CustomContent.NPCs
 			eletricityPretrictyDestructionCooldown -= TimeScale * Time.deltaTime;
 			if (eletricityPretrictyDestructionCooldown < 0f)
 			{
+				AffectedDoors.Remove(eletricityPretricities[0].AffectedDoor);
 				Destroy(eletricityPretricities[0].gameObject);
 				eletricityPretricities.RemoveAt(0);
 				eletricityPretrictyDestructionCooldown += eletricityPretricityDestructionDelay;
@@ -218,6 +224,7 @@ namespace BBTimes.CustomContent.NPCs
 		public float DeactivatedCooldown => Random.Range(minWaitCooldown, maxWaitCooldown);
 		public float ActiveCooldown => Random.Range(minActiveCooldown, maxActiveCooldown);
 		public Cell Home => home;
+		public HashSet<Door> AffectedDoors { get; } = [];
 	}
 
 	internal class ZapZap_StateBase(ZapZap zap) : NpcState(zap)

@@ -379,7 +379,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.AddTrigger()
 				.Build()
-				.SetupNPCData("Penny", "PST_PEN_Name", "PST_PEN_Desc", -0.525f)
+				.SetupNPCData("Penny", "PST_PEN_Name", "PST_PEN_Desc", -1.35f)
 				.MarkAsReplacement(30, Character.DrReflex);
 
 			npc.Navigator.SetRoomAvoidance(false);

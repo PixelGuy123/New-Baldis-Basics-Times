@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PixelInternalAPI.Extensions;
 using PixelInternalAPI.Classes;
+using UnityEngine.Yoga;
 
 namespace BBTimes.CustomContent.NPCs
 {
@@ -68,6 +69,9 @@ namespace BBTimes.CustomContent.NPCs
 			hook.Initialize(ec, this);
 			animComp.Initialize(ec);
 
+			reverseSpeedDelay = 1 + noMoveDelaySpeed;
+
+			ResetWatch();
 			WanderAgain();
 		}
 
@@ -104,6 +108,9 @@ namespace BBTimes.CustomContent.NPCs
 			animComp.ResetFrame(true);
 			animComp.animation = sprChestOpen;
 			animComp.StopLastFrameMode();
+
+			throwHookState = true;
+			ResetWatch();
 		}
 
 		public void SendToDetention(Entity entity)
@@ -128,8 +135,11 @@ namespace BBTimes.CustomContent.NPCs
 			WanderAgain();
 		}
 
-		public void WanderAgain() =>
-			behaviorStateMachine.ChangeState(new MrKreye_TargetSpot(this));
+		public void WanderAgain()
+		{
+			behaviorStateMachine.ChangeState(throwHookState ? new MrKreye_Watch(this) : new MrKreye_TargetSpot(this));
+			throwHookState = false;
+		}
 
 		public override void Despawn()
 		{
@@ -137,8 +147,29 @@ namespace BBTimes.CustomContent.NPCs
 			Destroy(hook.gameObject);
 		}
 
+		public void WatchEntity(Entity e)
+		{
+			watchingEntities.Add(e);
+
+			hooKDelay -= TimeScale * Time.deltaTime * reverseSpeedDelay;
+			if (hooKDelay <= 0f)
+				behaviorStateMachine.ChangeState(new MrKreye_ThrowHook(this, e));
+		}
+
+		public override void VirtualUpdate()
+		{
+			base.VirtualUpdate();
+			hooKDelay += TimeScale * Time.deltaTime * noMoveDelaySpeed;
+			if (hooKDelay > maxDelayBeforeHookThrow)
+				hooKDelay = maxDelayBeforeHookThrow;
+		}
+
+		public void ResetWatch() =>
+			hooKDelay = maxDelayBeforeHookThrow;
+
 
 		KreyeHook hook;
+		internal HashSet<Entity> watchingEntities = [];
 
 		[SerializeField]
 		internal SoundObject audStatic, audOpenChest;
@@ -156,7 +187,10 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] sprWalk, sprOpenEye, sprChestOpen;
 
 		[SerializeField]
-		internal float speed = 20f, hookSpeed = 46f, watchTime = 15f, detentionTime = 30f;
+		internal float speed = 20f, hookSpeed = 46f, watchTime = 15f, detentionTime = 15f, maxDelayBeforeHookThrow = 1f, noMoveDelaySpeed = 0.65f;
+
+		float hooKDelay, reverseSpeedDelay;
+		bool throwHookState = false;
 
 		Cell previousCell = null;
 
@@ -219,6 +253,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			kre.Walk(false);
+			kre.ResetWatch();
 			ChangeNavigationState(new NavigationState_DoNothing(kre, 0));
 		}
 
@@ -236,13 +271,13 @@ namespace BBTimes.CustomContent.NPCs
 
 			for (int i = 0; i < kre.ec.Npcs.Count; i++)
 			{
-				if (kre != kre.ec.Npcs[i] && kre.ec.Npcs[i].Disobeying && kre.ec.Npcs[i].Navigator.isActiveAndEnabled)
+				if (kre != kre.ec.Npcs[i] && kre.ec.Npcs[i].Navigator.Entity.Velocity.magnitude > 0f && kre.ec.Npcs[i].Navigator.isActiveAndEnabled)
 				{
 					if (kre.looker.RaycastNPC(kre.ec.Npcs[i]))
-					{
-						kre.behaviorStateMachine.ChangeState(new MrKreye_ThrowHook(kre, kre.ec.Npcs[i].Navigator.Entity));
-						return;
-					}
+						kre.WatchEntity(kre.ec.Npcs[i].Navigator.Entity);
+					
+					else if (kre.watchingEntities.Contains(kre.ec.Npcs[i].Navigator.Entity))
+						TryCancelWatch(kre.ec.Npcs[i].Navigator.Entity);
 				}
 			}
 		}
@@ -250,8 +285,28 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			if (!player.Tagged && player.Disobeying)
-				kre.behaviorStateMachine.ChangeState(new MrKreye_ThrowHook(kre, player.plm.Entity));
+			if (!player.Tagged && !float.IsNaN(player.plm.RealVelocity) && player.plm.RealVelocity > 0f)
+				kre.WatchEntity(player.plm.Entity);
+		}
+
+		public override void PlayerLost(PlayerManager player)
+		{
+			base.PlayerLost(player);
+			TryCancelWatch(player.plm.Entity);
+		}
+
+		void TryCancelWatch(Entity cancelledEntity)
+		{
+			kre.watchingEntities.Remove(cancelledEntity);
+
+			if (kre.watchingEntities.Count == 0)
+				kre.ResetWatch();
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			kre.watchingEntities.Clear();
 		}
 	}
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PixelInternalAPI.Classes;
+using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 {
@@ -24,13 +25,18 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 
 		void OnTriggerStay(Collider other)
 		{
-			if (!initialized || target.gameObject == other.gameObject || eletricity.EletrecutationComponents.Exists(el => el.Overrider?.gameObject == other.gameObject)) return;
+			if (!initialized || target.gameObject == other.gameObject) return;
 
 			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
 			{
 				var e = other.GetComponent<Entity>();
 				if (e)
-					eletricity.CreateEletricity(e.ExternalActivity);
+				{
+					ray.origin = transform.position;
+					ray.direction = (other.transform.position - transform.position).normalized;
+					if (Physics.Raycast(ray, out hit, rayCastRadius, raycastLayer, QueryTriggerInteraction.Ignore) && hit.transform == other.transform)
+						eletricity.CreateEletricity(e.ExternalActivity);
+				}
 			}
 		}
 
@@ -70,11 +76,14 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		internal SoundObject audEletrecute;
 
 		[SerializeField]
-		internal float timer = 15f, eletricityForce = 16f;
+		internal float timer = 15f, eletricityForce = 16f, rayCastRadius = 50f;
 
 		[SerializeField]
 		[Range(0f, 1f)]
 		internal float slowFactor = 0.65f;
+
+		[SerializeField]
+		internal LayerMask raycastLayer = LayerStorage.principalLookerMask;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 1f);
 
@@ -85,5 +94,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		public ActivityModifier Overrider => target;
 
 		EnvironmentController ec;
+		Ray ray = new();
+		RaycastHit hit;
 	}
 }

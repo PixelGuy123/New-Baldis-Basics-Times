@@ -8,17 +8,18 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		protected override void ActivityEnter(ActivityModifier actMod)
 		{
 			base.ActivityEnter(actMod);
-			if (eles.Exists(el => el.Overrider == actMod))
-				return;
-
 			CreateEletricity(actMod);
 		}
 
 		public void CreateEletricity(ActivityModifier actMod)
 		{
+			if (AffectedEntities.Contains(actMod))
+				return;
+
 			var ele = Instantiate(compPre);
 			ele.name = compPre.name;
 			ele.AttachTo(actMod, ec, this);
+			AffectedEntities.Add(actMod);
 			eles.Add(ele);
 		}
 
@@ -33,6 +34,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		[SerializeField]
 		internal ZapZapEletrecutationComponent compPre;
 
+		public Door AffectedDoor { get; set; }
+		public HashSet<ActivityModifier> AffectedEntities { get; } = [];
 
 		readonly List<ZapZapEletrecutationComponent> eles = [];
 		public List<ZapZapEletrecutationComponent> EletrecutationComponents => eles;

@@ -52,7 +52,7 @@ namespace BBTimes.CustomComponents
 			if (sprites == null || sprites.Length == 0)
 				return;
 
-			if (sprites.Length != 1 && audioSource.isPlaying) // != because it shouldn't even have 0 sprites in the first place lol
+			if (sprites.Length != 1 && audioSource.clip && audioSource.isPlaying) // != because it shouldn't even have 0 sprites in the first place lol
 			{
 				if (audioSource.clip != currentClip)
 				{

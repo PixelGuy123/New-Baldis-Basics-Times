@@ -54,8 +54,11 @@ namespace BBTimes.CustomContent.Objects
 
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audBell);
 
-			if (!audMan.QueuedUp)
+			if (!audMan.QueuedAudioIsPlaying || audMan.audioDevice.clip == audIntro)
+			{
+				audMan.FlushQueue(true);
 				audMan.QueueRandomAudio(audCollectingPresent);
+			}
 		}
 
 		void DenyPresent(Pickup p, int player)

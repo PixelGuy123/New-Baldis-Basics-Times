@@ -47,6 +47,7 @@ namespace BBTimes.CustomComponents
 
 		void Despawn()
 		{
+			entity.SetActive(false);
 			thrown = false;
 			returning = false;
 			disabled = true;
@@ -56,7 +57,6 @@ namespace BBTimes.CustomComponents
 
 		void CancelThrow()
 		{
-			entity.SetActive(false);
 			Despawn();
 			owner.WanderAgain();
 		}

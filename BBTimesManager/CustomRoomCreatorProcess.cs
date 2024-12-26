@@ -96,7 +96,7 @@ namespace BBTimes.Manager
 			bathSinkFunction.renderer = bathSinkRenderer;
 			bathSinkFunction.sprEnabled = bathSprites[0];
 			bathSinkFunction.sprDisabled = bathSprites[1];
-			bathSinkFunction.refillValue = 7.5f;
+			bathSinkFunction.refillValue = 15f;
 
 			bathSinkFunction.gameObject.layer = LayerStorage.iClickableLayer;
 			bathSinkFunction.gameObject.AddBoxCollider(Vector3.zero, new(0.8f, 10f, 0.8f), true);
@@ -334,8 +334,14 @@ namespace BBTimes.Manager
 
 			var hoop = Object.Instantiate(GenericExtensions.FindResourceObjectByName<RendererContainer>("HoopBase"));
 			hoop.transform.localScale = Vector3.one * 3f;
-			hoop.GetComponent<CapsuleCollider>().radius = 1;
-			hoop.GetComponent<NavMeshObstacle>().radius = 1;
+			var hoopCapsuleCollider = hoop.GetComponent<CapsuleCollider>();
+			hoopCapsuleCollider.radius = 0.35f;
+			hoopCapsuleCollider.center = new(0, 4.751f, 3.5f);
+
+			var hoopNavObstacle = hoop.GetComponent<NavMeshObstacle>();
+			hoopNavObstacle.radius = 0.75f;
+			hoopNavObstacle.center = new(0f, 4.751f, 3.5f);
+
 			hoop.name = "BasketHoop";
 			hoop.gameObject.AddObjectToEditor();
 
