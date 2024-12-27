@@ -109,19 +109,20 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal void TargetRandomSpot()
 		{
-			List<Cell> spotsToGo = new(ec.mainHall.AllTilesNoGarbage(false, false));
+			List<Cell> spotsToGo = new(ec.mainHall.AllTilesNoGarbage(false, true));
 
 			for (int i = 0; i < spotsToGo.Count; i++)
-				if (spotsToGo[i].shape != TileShapeMask.Corner && spotsToGo[i].shape != TileShapeMask.Single) // Filter to the ones that are corners or singles
+				if (spotsToGo[i] == lastSpotGone || (spotsToGo[i].shape != TileShapeMask.Corner && spotsToGo[i].shape != TileShapeMask.Single)) // Filter to the ones that are corners or singles
 					spotsToGo.RemoveAt(i--);
 
-			if (spotsToGo.Count == 0)
+			if (spotsToGo.Count <= 1) // Just one spot is not valid.
 			{
+				lastSpotGone = null;
 				TargetPosition(ec.mainHall.RandomEntitySafeCellNoGarbage().FloorWorldPosition);
 				return;
 			}
-
-			TargetPosition(spotsToGo[Random.Range(0, spotsToGo.Count)].FloorWorldPosition);
+			lastSpotGone = spotsToGo[Random.Range(0, spotsToGo.Count)];
+			TargetPosition(lastSpotGone.FloorWorldPosition);
 		}
 		
 
@@ -144,7 +145,7 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
 
-		
+		Cell lastSpotGone = null;
 		const float speed = 17f;
 	}
 

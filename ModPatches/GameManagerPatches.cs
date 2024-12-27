@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using MTM101BaldAPI;
+using BBTimes.Manager;
 
 namespace BBTimes.ModPatches
 {
@@ -50,7 +51,7 @@ namespace BBTimes.ModPatches
 				core.audMan.FlushQueue(true);
 				return;
 			}
-			if (!__instance.Ec.timeOut && !__instance.name.StartsWith("Lvl3")) // Not F3
+			if (!BBTimesManager.plug.disableSchoolhouseEscape.Value && !__instance.Ec.timeOut && !__instance.name.StartsWith("Lvl3")) // Not F3
 				Singleton<MusicManager>.Instance.PlayMidi("Level_1_End", true); // Music
 		}
 

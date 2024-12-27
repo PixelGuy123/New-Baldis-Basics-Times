@@ -278,7 +278,7 @@ namespace BBTimes
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
-		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, disableTimesMainMenu, forceChristmasMode, disableArcadeRennovationsSupport;
+		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, disableTimesMainMenu, forceChristmasMode, disableArcadeRennovationsSupport, disableSchoolhouseEscape;
 		internal List<string> disabledCharacters = [], disabledItems = [], disabledEvents = [], disabledBuilders = [];
 		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") ||
 			Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
@@ -293,6 +293,7 @@ namespace BBTimes
 			disableTimesMainMenu = Config.Bind("Misc Settings", "Disable Times main menu", false, "Does the Times menu bother you? Set this to \"true\" to disable it!");
 			forceChristmasMode = Config.Bind("Specials Settings", "Force enable christmas special", false, "Setting this to \"true\" will force the christmas special to be enabled.");
 			disableArcadeRennovationsSupport = Config.Bind("Misc Settings", "Disable arcade rennovations support", false, "Setting this to \"true\" disable any checks for arcade rennovations. This can be useful for RNG Floors, if you\'re having any issues.");
+			disableSchoolhouseEscape = Config.Bind("Environment Settings", "Disable schoolhouse escape", false, "Setting this to \"true\" will disable entirely the schoolhouse escape sequence (the only exception is for the red sequence).");
 
 
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
