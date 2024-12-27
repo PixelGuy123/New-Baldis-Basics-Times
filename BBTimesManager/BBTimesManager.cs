@@ -149,6 +149,9 @@ namespace BBTimes.Manager
 					continue;
 
 				var data = floorDatas.FirstOrDefault(x => x.Floor == obj.levelTitle);
+				if (data == null) // Why didn't I add this earlier, bruh
+					continue;
+
 				data.levelObject = ld;
 
 				// Some additional LevelObject
