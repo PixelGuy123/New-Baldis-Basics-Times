@@ -498,8 +498,8 @@ namespace BBTimes
 				{
 					if (!Config.Bind("NPC Settings", $"Enable {floordata.NPCs[i].selection.name}", true, "If set to true, this character will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
 					{
-						floordata.NPCs.RemoveAt(i--);
 						disabledCharacters.Add(floordata.NPCs[i].selection.name);
+						floordata.NPCs.RemoveAt(i--);
 						continue;
 					}
 
