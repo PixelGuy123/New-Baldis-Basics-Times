@@ -4,7 +4,7 @@
     <TargetFramework>net46</TargetFramework>
     <AssemblyName>BBTimes</AssemblyName>
     <Description>Enjoy a grand experience with Baldi's Basics Times!</Description>
-    <Version>1.2.2.4</Version>
+    <Version>1.2.2.5</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;Cheat</Configurations>
@@ -55,6 +55,9 @@
     <Reference Include="InfiniteFloorsRemake">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\InfiniteFloorsRemake.dll</HintPath>
     </Reference>
+    <Reference Include="Infinte floors Hotfix">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\FullyAccessibleEditor\Infinte floors Hotfix.dll</HintPath>
+    </Reference>
     <Reference Include="MTM101BaldAPI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\MTM101BaldAPI.dll</HintPath>
     </Reference>
@@ -81,9 +84,6 @@
     </Reference>
     <Reference Include="PlusLevelLoader">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\PlusLevelLoader.dll</HintPath>
-    </Reference>
-    <Reference Include="Re-Renovated">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\FullyAccessibleEditor\Re-Renovated.dll</HintPath>
     </Reference>
     <Reference Include="StackableItems">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\StackableItems.dll</HintPath>

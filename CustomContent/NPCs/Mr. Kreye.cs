@@ -5,6 +5,7 @@ using UnityEngine;
 using PixelInternalAPI.Extensions;
 using PixelInternalAPI.Classes;
 using UnityEngine.Yoga;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 
 namespace BBTimes.CustomContent.NPCs
 {

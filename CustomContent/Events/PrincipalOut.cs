@@ -78,12 +78,18 @@ namespace BBTimes.CustomContent.Events
 			}
 		}
 
+		public override void Exit()
+		{
+			base.Exit();
+			npc.GetNPCContainer().RemoveLookerMod(blindMod);
+			npc.Navigator.Am.moveMods.Remove(moveMod);
+		}
+
 		public void End()
 		{
 			priority = 0;
 			npc.behaviorStateMachine.RestoreNavigationState();
-			npc.GetNPCContainer().RemoveLookerMod(blindMod);
-			npc.Navigator.Am.moveMods.Remove(moveMod);
+			
 		}
 	}
 }

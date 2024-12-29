@@ -14,6 +14,10 @@ namespace BBTimes.Extensions
 {
 	public static class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
 	{
+		public static bool IsPlayingClip(this AudioManager audMan, SoundObject audio)
+		{
+			return audMan.audioDevice.clip == audio.soundClip; // Might change this later once BB+ implements audios for different languages
+		}
 		public static string CreateSpriteNumbersFromString(this int num)
 		{
 			if (cachedNumbers.TryGetValue(num, out var str))
@@ -359,20 +363,26 @@ namespace BBTimes.Extensions
 
 		public static Vector3 ToVector3(this IntVector2 vec) =>
 			new(vec.x * 10f + 5f, 0f, vec.z * 10f + 5f);
-		public static void CallOutPrincipals(this EnvironmentController ec, Vector3 pos, float speedMultiplier = 8f, bool whistleCall = true) =>
-			ec.CallOutPrincipals(ec.CellFromPosition(pos), speedMultiplier, whistleCall);
-		public static void CallOutPrincipals(this EnvironmentController ec, Cell spot, float speedMultiplier = 8f, bool whistleCall = true)
+		public static void CallOutPrincipals(this EnvironmentController ec, Vector3 pos, float speedMultiplier = 8f, bool whistleCall = true, bool ignoreNormalPrincipal = false) =>
+			ec.CallOutPrincipals(ec.CellFromPosition(pos), speedMultiplier, whistleCall, ignoreNormalPrincipal);
+		public static void CallOutPrincipals(this EnvironmentController ec, Cell spot, float speedMultiplier = 8f, bool whistleCall = true, bool ignoreNormalPrincipal = false)
 		{
 			foreach (var n in ec.Npcs)
 			{
 				if (n.Navigator.enabled && n.IsAPrincipal())
 				{
-					if (whistleCall && n is Principal pr)
+					if (n is Principal pr)
 					{
-						pr.audMan.FlushQueue(true);
-						pr.audMan.PlaySingle(pr.audComing);
+						if (ignoreNormalPrincipal)
+							continue;
+
+						if (whistleCall)
+						{
+							pr.audMan.FlushQueue(true);
+							pr.audMan.PlaySingle(pr.audComing);
+						}
 					}
-					n.behaviorStateMachine.ChangeNavigationState(new NavigationState_FollowToSpot(n, spot, speedMultiplier));
+					n.navigationStateMachine.ChangeState(new NavigationState_FollowToSpot(n, spot, speedMultiplier));
 				}
 			}
 		}

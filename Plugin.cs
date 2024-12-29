@@ -254,7 +254,12 @@ namespace BBTimes
 
 				christmasBaldi.audNoYtps = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_needYtpsForPresent.wav")), "Vfx_BAL_Pitstop_Nopresent_1", SoundType.Voice, Color.green);
 				christmasBaldi.audNoYtps.additionalKeys = [
-					new() { key = "Vfx_BAL_Pitstop_Nopresent_2", time = 3.766f }
+					new() { key = "Vfx_BAL_Pitstop_Nopresent_2", time = 3.72f }
+					];
+
+				christmasBaldi.audGenerous = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_Pitstop_Generous.wav")), "Vfx_BAL_Pitstop_Generous_1", SoundType.Voice, Color.green);
+				christmasBaldi.audGenerous.additionalKeys = [
+					new() { key = "Vfx_BAL_Pitstop_Generous_2", time = 2.328f }
 					];
 
 				christmasBaldi.audCollectingPresent = [
@@ -306,8 +311,15 @@ namespace BBTimes
 
 			AssetLoader.LoadLocalizationFolder(Path.Combine(ModPath, "Language", "English"), Language.English);
 			BBTimesManager.plug = this;
-
-			CompatibilityInitializer.InitializeOnAwake();
+			try
+			{
+				CompatibilityInitializer.InitializeOnAwake();
+			}
+			catch (Exception e)
+			{
+				Debug.LogError("Failed to load compatibility module on Awake(). Printing error:");
+				Debug.LogException(e);
+			}
 			MainMenuPatch.newMidi = AssetLoader.MidiFromMod("timeNewJingle", this, "misc", "Audios", "newJingle.mid");
 
 
@@ -754,6 +766,46 @@ namespace BBTimes
 				tags.Add("Times_Config_DisableArcadeRennovationsSupport");
 
 			return [.. tags];
+		}
+
+		public override string DisplayTags(string[] tags)
+		{
+			for (int i = 0; i < tags.Length; i++)
+			{
+				if (tags[i].StartsWith("Times_DisabledCharacterTag_"))
+				{
+					tags[i] = "Disabled Character: " + tags[i].Split('_')[2]; // The third item from this array should be the Character's name
+					continue;
+				}
+				if (tags[i].StartsWith("Times_DisabledBuilderTag_"))
+				{
+					tags[i] = "Disabled Builder: " + tags[i].Split('_')[2];
+					continue;
+				}
+				if (tags[i].StartsWith("Times_DisabledEventTag_"))
+				{
+					tags[i] = "Disabled Random Event: " + tags[i].Split('_')[2];
+					continue;
+				}
+				if (tags[i].StartsWith("Times_DisabledItemTag_"))
+				{
+					tags[i] = "Disabled Item: " + tags[i].Split('_')[2];
+					continue;
+				}
+
+				tags[i] = tags[i] switch
+				{
+					"Times_Config_DisableHighCeilingsFunction" => "Disabled Highceilings for Special Rooms",
+					"Times_Config_EnableBigRoomsMode" => "Enabled big room layouts",
+					"Times_Config_ReplacementDisable" => "Character replacement feature disabled",
+					"Times_Config_YoutuberMode" => "Youtube Mode enabled",
+					"Times_Specials_Christmas" => "Christmas mode enabled",
+					"Times_Config_DisableArcadeRennovationsSupport" => "No arcade renovations support",
+					_ => tags[i]
+				};
+			}
+
+			return base.DisplayTags(tags);
 		}
 
 		public override bool TagsReady() =>

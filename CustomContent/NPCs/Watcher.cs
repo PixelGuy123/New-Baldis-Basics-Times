@@ -1,5 +1,4 @@
-﻿
-using BBTimes.CustomComponents;
+﻿using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using MTM101BaldAPI;
@@ -64,6 +63,25 @@ namespace BBTimes.CustomContent.NPCs
 			screenAudMan.maintainLoop = true;
 
 			behaviorStateMachine.ChangeState(new Watcher_WaitBelow(this));
+		}
+
+		public void DespawnHallucinations(bool instaDespawn)
+		{
+			while (hallucinations.Count != 0)
+			{
+				if (instaDespawn)
+					hallucinations[0]?.Despawn();
+				else
+					hallucinations[0]?.SetToDespawn();
+
+				hallucinations.RemoveAt(0);
+			}
+		}
+
+		public override void Despawn()
+		{
+			base.Despawn();
+			DespawnHallucinations(true);
 		}
 
 		public void GetAngry()
@@ -139,7 +157,10 @@ namespace BBTimes.CustomContent.NPCs
 			int halls = Random.Range(minHallucinations, maxHallucinations);
 			for (int i = 0; i < halls; i++)
 			{
-				Instantiate(hallPre).AttachToPlayer(pm);
+				var hal = Instantiate(hallPre);
+				hal.AttachToPlayer(pm);
+
+				hallucinations.Add(hal);
 				yield return null;
 			}
 
@@ -154,6 +175,7 @@ namespace BBTimes.CustomContent.NPCs
 			overrider.SetHeight(0f);
 			float curHeight = 0f;
 			float tar = normHeight - 0.05f;
+
 			while (true)
 			{
 				curHeight += (normHeight - curHeight) / 3f * TimeScale * Time.deltaTime * 15f;
@@ -186,6 +208,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal int minHallucinations = 7, maxHallucinations = 9;
+
+		readonly List<Hallucinations> hallucinations = [];
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
 	}
@@ -220,6 +244,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Initialize()
 		{
 			base.Initialize();			
+			w.DespawnHallucinations(false);
 			w.GoToRandomSpot();
 			w.SetFrozen(true);
 			w.Hide(false);
@@ -254,12 +279,17 @@ namespace BBTimes.CustomContent.NPCs
 		public override void InPlayerSight(PlayerManager player)
 		{
 			base.InPlayerSight(player);
+
+			if (!moveMods.TryGetValue(player, out var moveMod))
+				return;
+
 			lastSawPlayer = player;
 			spotStrength += w.TimeScale * Time.deltaTime * 6.5f;
 			if (Time.timeScale > 0)
 				mod.addend = spotStrength * (-1f + Random.value * 2f) * 2f;
 			Vector3 distance = w.transform.position - player.transform.position;
-			moveMods[player].movementAddend = distance.normalized * Mathf.Min(15f, distance.magnitude * 0.6f);
+			moveMod.movementAddend = distance.normalized * Mathf.Min(15f, distance.magnitude * 0.6f);
+
 			player.transform.RotateSmoothlyToNextPoint(w.transform.position, 0.35f);
 			if (spotStrength > strengthLimit)
 			{

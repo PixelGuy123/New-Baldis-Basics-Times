@@ -8,8 +8,11 @@ namespace BBTimes.CustomContent.CustomItems
 {
 	public class ITM_Pencil : Item, IItemPrefab
 	{
-		public void SetupPrefab() =>
+		public void SetupPrefab()
+		{
 			audMan = gameObject.CreatePropagatedAudioManager(65f, 85f);
+			item = ItmObj.itemType;
+		}
 		public void SetupPrefabPost() { }
 
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
@@ -31,7 +34,11 @@ namespace BBTimes.CustomContent.CustomItems
 						this.pm = pm;
 						audMan.PlaySingle(audStab);
 						pm.RuleBreak("stabbing", 2f, 0.6f);
-						e.GetComponent<INPCCustomBehavior>()?.GetStabbed();
+						var acceptor = e.GetComponent<IItemAcceptor>();
+
+						if (acceptor != null && acceptor.ItemFits(item))
+							acceptor.InsertItem(pm, pm.ec);
+
 
 						StartCoroutine(Timer(e));
 						return true;
@@ -61,6 +68,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 			yield break;
 		}
+
+		[SerializeField]
+		internal Items item;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;

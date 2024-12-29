@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using BBTimes.Extensions;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
@@ -35,6 +37,9 @@ namespace BBTimes.CustomContent.Objects
 			{
 				merryChristmased = true;
 
+				if (johnnyResponse != null)
+					StopCoroutine(johnnyResponse);
+
 				audMan.FlushQueue(true);
 				audMan.QueueAudio(audBuyItem);
 			}
@@ -49,12 +54,15 @@ namespace BBTimes.CustomContent.Objects
 
 		void BuyPresent(Pickup p, int player)
 		{
+			if (johnnyResponse != null)
+				StopCoroutine(johnnyResponse);
+
 			if (func)
 				func.itemPurchased = true;
 
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audBell);
 
-			if (!audMan.QueuedAudioIsPlaying || audMan.audioDevice.clip == audIntro)
+			if (!audMan.QueuedAudioIsPlaying || audMan.IsPlayingClip(audIntro))
 			{
 				audMan.FlushQueue(true);
 				audMan.QueueRandomAudio(audCollectingPresent);
@@ -64,6 +72,26 @@ namespace BBTimes.CustomContent.Objects
 		void DenyPresent(Pickup p, int player)
 		{
 			audMan.FlushQueue(true);
+
+			if (johnnyResponse != null)
+				StopCoroutine(johnnyResponse);
+
+			if (!Singleton<CoreGameManager>.Instance.johnnyHelped && feelingGenerous && price - Singleton<CoreGameManager>.Instance.GetPoints(player) <= generousOffset)
+			{
+				feelingGenerous = false;
+				audMan.QueueAudio(audGenerous);
+				p.Collect(player);
+				Singleton<CoreGameManager>.Instance.AddPoints(-Singleton<CoreGameManager>.Instance.GetPoints(player), player, true);
+				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audBell);
+				Singleton<CoreGameManager>.Instance.johnnyHelped = true;
+				if (func)
+				{
+					func.itemPurchased = true;
+					johnnyResponse = StartCoroutine(WaitForJohnnyToRespond());
+				}
+				return;
+			}
+			
 			audMan.QueueAudio(audNoYtps);
 		}
 
@@ -80,16 +108,25 @@ namespace BBTimes.CustomContent.Objects
 		public bool ClickableHidden() => interactedWith;
 		public void ClickableSighted(int player) { }
 		public void ClickableUnsighted(int player) { }
+
+		IEnumerator WaitForJohnnyToRespond()
+		{
+			while (audMan.QueuedAudioIsPlaying)
+				yield return null;
+
+			func.johnnyAudioManager.FlushQueue(true);
+			func.johnnyAudioManager.QueueAudio(func.audHelp);
+		}
 		
 
 		[SerializeField]
-		internal int presents = 3, price = 100;
+		internal int presents = 3, price = 100, generousOffset = 25;
 
 		[SerializeField]
 		internal AudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject audIntro, audNoYtps, audBuyItem, audBell;
+		internal SoundObject audIntro, audNoYtps, audBuyItem, audGenerous, audBell;
 
 		[SerializeField]
 		internal SoundObject[] audCollectingPresent;
@@ -98,7 +135,8 @@ namespace BBTimes.CustomContent.Objects
 		internal ItemObject present;
 
 		StoreRoomFunction func;
+		Coroutine johnnyResponse;
 		readonly List<Pickup> generatedPickups = [];
-		bool interactedWith = false, merryChristmased = false; // yes, I made this word up lol
+		bool interactedWith = false, merryChristmased = false, feelingGenerous = true; // yes, I made this word up lol
 	}
 }

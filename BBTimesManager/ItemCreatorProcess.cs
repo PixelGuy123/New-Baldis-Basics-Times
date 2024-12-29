@@ -6,7 +6,6 @@ using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Helpers;
 using BBTimes.Plugin;
-using BepInEx;
 using MTM101BaldAPI;
 using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
@@ -227,6 +226,7 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 17 });
 			ITM_Pencil.audStab = man.Get<SoundObject>("audPencilStab");
+			PencilBoy.AddStabbingItem(item.itemType);
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 75 });
 
 			// Water Bottle

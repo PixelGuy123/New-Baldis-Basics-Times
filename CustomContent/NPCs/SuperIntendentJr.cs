@@ -6,9 +6,12 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class NavigationState_FollowToSpot(NPC npc, Cell target, float speedMultiplier = 8f) : NavigationState_TargetPosition(npc, 31, target.CenterWorldPosition)
+	public class NavigationState_FollowToSpot(NPC npc, Cell target, float speedMultiplier = 8f) : NavigationState(npc, 31)
 	{
-		readonly Cell tar = target;
+		public NavigationState_FollowToSpot(NPC npc, Cell target, int priority, float speedMultiplier = 8f) : this(npc, target, speedMultiplier) => base.priority = priority;
+		
+
+		Cell tar = target;
 		readonly MovementModifier moveMod = new(Vector3.zero, speedMultiplier);
 		public override void Enter()
 		{
@@ -18,16 +21,35 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public override void DestinationEmpty()
 		{
-			base.DestinationEmpty();
 			if (npc.ec.CellFromPosition(npc.transform.position) != tar)
+			{
 				npc.Navigator.FindPath(tar.CenterWorldPosition);
-			else npc.behaviorStateMachine.RestoreNavigationState();
+				base.DestinationEmpty();
+			}
+			else
+				End();
+		}
+
+		public override void UpdatePosition(Vector3 position)
+		{
+			base.UpdatePosition(position);
+			if (active)
+			{
+				tar = npc.ec.CellFromPosition(position);
+				npc.Navigator.FindPath(tar.CenterWorldPosition);
+			}
 		}
 
 		public override void Exit()
 		{
 			base.Exit();
 			npc.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
+		}
+
+		public void End()
+		{
+			priority = 0;
+			npc.behaviorStateMachine.RestoreNavigationState();
 		}
 
 	}

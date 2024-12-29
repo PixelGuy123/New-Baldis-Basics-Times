@@ -89,6 +89,10 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			timeAlive -= ec.EnvironmentTimeScale * Time.deltaTime;
 		}
 
+		public void SetToDespawn() =>
+			timeAlive = 0f;
+		
+
 		public void Despawn()
 		{
 			activeHallucinations.RemoveAll(x => x.Key == this);

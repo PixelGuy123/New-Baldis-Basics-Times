@@ -1,5 +1,4 @@
-﻿
-using BBTimes.CustomComponents;
+﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
@@ -8,10 +7,11 @@ using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
 using BBTimes.Extensions;
+using System.Collections.Generic;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class PencilBoy : NPC, INPCPrefab, INPCCustomBehavior
+    public class PencilBoy : NPC, INPCPrefab, IItemAcceptor
 	{
 		public void SetupPrefab()
 		{
@@ -35,9 +35,6 @@ namespace BBTimes.CustomContent.NPCs
 			superAngrySprite = storedSprites[3];
 			spriteRenderer[0].sprite = storedSprites[0];
 		}
-
-		public void GetStabbed() =>
-			GetSuperAngry();
 
 		public void SetupPrefabPost() { }
 		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
@@ -67,6 +64,12 @@ namespace BBTimes.CustomContent.NPCs
 			container = this.GetNPCContainer();
 			behaviorStateMachine.ChangeState(new PencilBoy_Wander(this));
 		}
+
+		public bool ItemFits(Items item) =>
+			stabbingItems.Contains(item);
+
+		public void InsertItem(PlayerManager pm, EnvironmentController ec) =>
+			GetSuperAngry();
 
 		internal void AngryWander(bool forced)
 		{
@@ -186,6 +189,11 @@ namespace BBTimes.CustomContent.NPCs
 		const float speed = 15f, foundSpeed = 18f, superAngrySpeed = 38f;
 
 		readonly ValueModifier lookerMod = new(float.MaxValue);
+
+		public static void AddStabbingItem(Items item) =>
+			stabbingItems.Add(item);
+
+		readonly static HashSet<Items> stabbingItems = [];
 
 		NPCAttributesContainer container;
 	}
