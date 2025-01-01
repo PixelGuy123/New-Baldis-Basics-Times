@@ -40,12 +40,18 @@ namespace BBTimes.ModPatches
 
 			var dataLvl = Singleton<CoreGameManager>.Instance.sceneObject.levelObject;
 
-			if (dataLvl == null || dataLvl is not CustomLevelObject data) return;
+			if (dataLvl == null || dataLvl is not CustomLevelObject) return;
 
 
 
 
-			var objs = (List<WindowObjectHolder>)data.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
+			var listObj = ((CustomLevelObject)dataLvl).GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
+
+			if (listObj == null)
+				return;
+
+			var objs = listObj as List<WindowObjectHolder>;
+
 			objs.RemoveAll(x => !x.SelectionLimiters.Contains(__instance.aTile.room.category) && !x.SelectionLimiters.Contains(__instance.bTile.room.category));
 
 			if (objs.Count == 0 || lg.controlledRNG.NextDouble() >= 0.45d) return;

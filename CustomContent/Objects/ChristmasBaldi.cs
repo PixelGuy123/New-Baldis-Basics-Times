@@ -120,7 +120,7 @@ namespace BBTimes.CustomContent.Objects
 		
 
 		[SerializeField]
-		internal int presents = 3, price = 100, generousOffset = 25;
+		internal int presents = 3, price = 100, generousOffset = 50;
 
 		[SerializeField]
 		internal AudioManager audMan;

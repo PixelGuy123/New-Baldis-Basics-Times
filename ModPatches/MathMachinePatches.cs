@@ -38,10 +38,10 @@ namespace BBTimes.ModPatches
 			.SetInstruction(Transpilers.EmitDelegate(() =>
 			{
 				var ld = Singleton<CoreGameManager>.Instance.sceneObject.levelObject;
-				if (ld == null || ld is not CustomLevelObject cld)
+				if (ld == null || ld is not CustomLevelObject)
 					return BBTimesManager.MaximumNumballs + 1;
 
-				var minMaxObj = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_MathMachineNumballsMinMax");
+				var minMaxObj = ((CustomLevelObject)ld).GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_MathMachineNumballsMinMax");
 
 				if (minMaxObj == null)
 					return BBTimesManager.MaximumNumballs + 1;
