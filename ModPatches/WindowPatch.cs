@@ -47,7 +47,7 @@ namespace BBTimes.ModPatches
 
 			var listObj = ((CustomLevelObject)dataLvl).GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
 
-			if (listObj == null)
+			if (listObj == null || listObj is false) // why tf it can return two things lmao
 				return;
 
 			var objs = listObj as List<WindowObjectHolder>;

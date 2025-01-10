@@ -13,10 +13,32 @@ namespace BBTimes.ModPatches
 		static void Prefix(StructureBuilder __instance) =>
 			Debug.LogWarning($"The builder {__instance.GetType().Name} is finished.");
 	}
-
+#pragma warning disable Harmony003 // Harmony non-ref patch parameters modified
 	[HarmonyPatch(typeof(PlayerMovement), "PlayerMove")]
 	internal class PlayerCheatPatch
 	{
+
+		//public static List<string> GetLayerNamesFromMask(LayerMask layerMask)
+		//{
+		//	List<string> layerNames = [];
+
+		//	for (int i = 0; i < 32; i++)
+		//	{
+
+		//		if ((layerMask.value & (1 << i)) != 0)
+		//		{
+		//			string layerName = LayerMask.LayerToName(i);
+		//			if (!string.IsNullOrEmpty(layerName))
+		//			{
+		//				layerNames.Add(layerName);
+		//			}
+		//		}
+
+		//	}
+
+		//	return layerNames;
+		//}
+
 		//static void Prefix(PlayerMovement __instance)
 		//{
 		//	if (Input.GetKeyDown(KeyCode.T))
@@ -75,4 +97,5 @@ namespace BBTimes.ModPatches
 
 
 	//}
+#pragma warning restore Harmony003 // Harmony non-ref patch parameters modified
 }

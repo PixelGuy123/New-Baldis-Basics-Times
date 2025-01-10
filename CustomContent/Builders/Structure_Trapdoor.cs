@@ -1,20 +1,18 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
+using BBTimes.Extensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using BBTimes.Extensions;
-using UnityEngine.UIElements;
-using System.Reflection;
 
 
 namespace BBTimes.CustomContent.Builders
 {
 
-    public class Structure_Trapdoor : StructureBuilder, IBuilderPrefab
+	public class Structure_Trapdoor : StructureBuilder, IBuilderPrefab
 	{
 		public StructureWithParameters SetupBuilderPrefabs()
 		{
@@ -60,7 +58,7 @@ namespace BBTimes.CustomContent.Builders
 
 			trapdoorholder.renderer = trapdoor;
 			trapdoorholder.audMan = trapdoorholder.gameObject.CreatePropagatedAudioManager(35f, 45f);
-			
+
 
 			// Fake trapdoor
 			var fake = trapdoor.SafeDuplicatePrefab(true);
@@ -74,7 +72,8 @@ namespace BBTimes.CustomContent.Builders
 		public void SetupPrefabPost() { }
 		public void SetupPrefab() { }
 
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("objects", "Textures");
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("objects", "Textures");
 		public string SoundPath => this.GenerateDataPath("objects", "Audios");
 
 
@@ -83,6 +82,7 @@ namespace BBTimes.CustomContent.Builders
 		// setup prefab ^^
 		public override void PostOpenCalcGenerate(LevelGenerator lg, System.Random rng)
 		{
+
 			base.PostOpenCalcGenerate(lg, rng);
 
 			map = new(ec, PathType.Const, []);
@@ -110,9 +110,10 @@ namespace BBTimes.CustomContent.Builders
 				if (weightedCells.Count == 0)
 					break;
 
-				
+
 				var trap = CreateTrapDoor(GetCell(), ec, ecData);
-				
+
+				//Debug.Log("weightedCell count: " + weightedCells.Count);
 
 				if (weightedCells.Count >= 1 && rng.NextDouble() <= parameters.chance[0]) // Checks 1 in the count because every GetCell() removes an item from this list
 				{
@@ -136,22 +137,6 @@ namespace BBTimes.CustomContent.Builders
 
 			Finished();
 
-			void UpdateWeightsBasedOnDistances()
-			{
-				if (weightedCells.Count == 0)
-					return;
-
-				map.Calculate([.. positionsToAvoid]);
-				for (int x = 0; x < weightedCells.Count; x++)
-				{
-					int val = map.Value(weightedCells[x].selection.position);
-					if (val < minimumDistanceFromATrapDoor)
-						weightedCells.RemoveAt(x--);
-					else
-						weightedCells[x].weight = val;
-				}
-			}
-
 			Cell GetCell()
 			{
 				int index = WeightedSelection<Cell>.ControlledRandomIndexList(weightedCells, rng);
@@ -161,10 +146,22 @@ namespace BBTimes.CustomContent.Builders
 
 				weightedCells.RemoveAt(index);
 
-				UpdateWeightsBasedOnDistances();
-				
+				if (weightedCells.Count != 0)
+				{
+					map.Calculate([.. positionsToAvoid]); // Update weights on the positions and distances
+					for (int x = 0; x < weightedCells.Count; x++)
+					{
+						int val = Mathf.Min(maximumDistanceFromATrapdoor, map.Value(weightedCells[x].selection.position));
+						if (val < minimumDistanceFromATrapDoor)
+							weightedCells.RemoveAt(x--);
+						else
+							weightedCells[x].weight = val;
+					}
+				}
+
 				return cell;
 			}
+
 		}
 
 		public override void Load(List<StructureData> data)
@@ -214,7 +211,7 @@ namespace BBTimes.CustomContent.Builders
 
 				if (!success) // If no success on finding a linked trapdoor, just assign it as a random one
 					RandomTrapdoor();
-				
+
 
 				void RandomTrapdoor()
 				{
@@ -247,7 +244,7 @@ namespace BBTimes.CustomContent.Builders
 		public Trapdoor trapDoorpre;
 
 		[SerializeField]
-		public int minimumDistanceFromATrapDoor = 10;
+		public int minimumDistanceFromATrapDoor = 10, maximumDistanceFromATrapdoor = 500;
 
 		[SerializeField]
 		public Sprite[] closedSprites;

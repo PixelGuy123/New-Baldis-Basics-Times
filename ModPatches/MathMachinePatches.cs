@@ -43,7 +43,7 @@ namespace BBTimes.ModPatches
 
 				var minMaxObj = ((CustomLevelObject)ld).GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_MathMachineNumballsMinMax");
 
-				if (minMaxObj == null)
+				if (minMaxObj == null || minMaxObj is false)
 					return BBTimesManager.MaximumNumballs + 1;
 
 				IntVector2 minMax = (IntVector2)minMaxObj;

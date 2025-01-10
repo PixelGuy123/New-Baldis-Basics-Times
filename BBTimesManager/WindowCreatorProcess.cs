@@ -14,7 +14,7 @@ namespace BBTimes.Manager
 			// Metal Window
 			var brokenTex = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("MetalWindow.png")));
 			var tex = brokenTex;
-			var window = CreatorExtensions.CreateWindow("MetalWindow", tex, brokenTex, unbreakable:true);
+			var window = CreatorExtensions.CreateWindow("MetalWindow", tex, brokenTex, unbreakable: true);
 			var windowSel = new WindowObjectHolder(window, 75, [RoomCategory.Office]);
 			((List<WindowObjectHolder>)floorDatas[1].levelObject.GetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn")).Add(windowSel);
 			((List<WindowObjectHolder>)floorDatas[2].levelObject.GetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn")).Add(windowSel);
