@@ -210,7 +210,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPostfix]
 		private static void REDAnimation(Elevator elevator, BaseGameManager __instance, int ___elevatorsClosed, EnvironmentController ___ec)
 		{
-			if (___ec.timeOut || __instance is not MainGameManager || __instance.GetType().BaseType != typeof(BaseGameManager) || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free) // MainGameManager expected
+			if (___ec.timeOut || __instance.GetType() == typeof(MainGameManager) || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free) // MainGameManager expected
 				return;
 
 			if (___elevatorsClosed == 1)
