@@ -43,6 +43,9 @@
 
     <!-- Publicize directly when referencing -->
     <Reference Include="C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BALDI_Data\Managed\Assembly-CSharp.dll" Publicize="true" />
+    <Reference Include="CustomMainMenusAPI">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\CustomMainMenusAPI.dll</HintPath>
+    </Reference>
     <Reference Include="CustomVendingMachines">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\CustomVendingMachines.dll</HintPath>
     </Reference>

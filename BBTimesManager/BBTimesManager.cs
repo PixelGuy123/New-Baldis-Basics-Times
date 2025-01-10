@@ -2,7 +2,6 @@
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomComponents.SecretEndingComponents;
-using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Misc.SelectionHolders;
@@ -10,6 +9,7 @@ using BBTimes.ModPatches;
 using BBTimes.ModPatches.NpcPatches;
 using BBTimes.Plugin;
 using BepInEx.Bootstrap;
+using CustomMainMenusAPI;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
@@ -205,27 +205,17 @@ namespace BBTimes.Manager
 
 
 			// Main Menu Stuff
-			MainMenuPatch.mainMenu = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("mainMenu.png"))), 1f);
-			var mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
-			mainSpeech.additionalKeys = [
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 4.708f }
-				];
-			MainMenuPatch.aud_welcome = mainSpeech;
 
-			MainMenuPatch.mainMenuEndless = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("endlessFloors.png"))), 1f);
-			mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_InfFloorSpeech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
-			mainSpeech.additionalKeys = [
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_1", time = 5.961f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_2", time = 9.988f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_3", time = 13.014f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_4", time = 18.108f }
-				];
-			MainMenuPatch.aud_welcome_endless = mainSpeech;
+			Sprite selectedSprite;
+			SoundObject speechMenu;
+			string jingle = AssetLoader.MidiFromMod("timeNewJingle", plug, "misc", "Audios", "newJingle.mid");
 
-			MainMenuPatch.mainMenuChristmas = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("BBTChristmasV2.png"))), 1f);
-			mainSpeech = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_timesChristmas.wav")), "Vfx_BAL_BalMainMenuSpeech_Christmas_1", SoundType.Voice, Color.green);
-			mainSpeech.additionalKeys = [
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_1", time = 2.341f },
+			if (BooleanStorage.IsChristmas)
+			{
+				selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("BBTChristmasV2.png"))), 1f);
+				speechMenu = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_timesChristmas.wav")), "Vfx_BAL_BalMainMenuSpeech_Christmas_1", SoundType.Voice, Color.green);
+				speechMenu.additionalKeys = [
+					new() { key = "Vfx_BAL_BalMainMenuSpeech_1", time = 2.341f },
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_2", time = 7.097f },
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_3", time = 9.294f },
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_4", time = 10.049f },
@@ -237,7 +227,28 @@ namespace BBTimes.Manager
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_10", time = 13.397f },
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_11", time = 15.698f },
 				];
-			MainMenuPatch.aud_welcome_christmas = mainSpeech;
+			}
+			else if (plug.HasInfiniteFloors)
+			{
+				selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("endlessFloors.png"))), 1f);
+				speechMenu = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_InfFloorSpeech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
+				speechMenu.additionalKeys = [
+					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_1", time = 5.961f },
+					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_2", time = 9.988f },
+					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_3", time = 13.014f },
+					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_4", time = 18.108f }
+					];
+			}
+			else
+			{
+				selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("mainMenu.png"))), 1f);
+				speechMenu = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
+				speechMenu.additionalKeys = [
+					new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 4.708f }
+					];
+			}
+
+			MainMenuObject.CreateMenuObject("Men_TimesMainMenu_Name", selectedSprite, speechMenu, jingle);
 
 			// Math Machine new Nums
 
@@ -379,16 +390,16 @@ namespace BBTimes.Manager
 			secBal.sprLookingComputer = [sprs[0]]; // Oh boy, this sprite selection will be a fun ride...
 			secBal.sprOnlyPeek = [sprs[1]];
 			secBal.sprSideEyeBack = sprs.TakeAPair(1, 4);
-			secBal.sprFacingFront =  sprs.TakeAPair(5, 6);
-			secBal.sprFacingFrontNervous =  sprs.TakeAPair(11, 6);
+			secBal.sprFacingFront = sprs.TakeAPair(5, 6);
+			secBal.sprFacingFrontNervous = sprs.TakeAPair(11, 6);
 
 			sprs = TextureExtensions.LoadSpriteSheet(12, 3, 25f, MiscPath, TextureFolder, "SecretEnding", "evilBaldiSheet.png");
-			secBal.sprAngryBal =  sprs.TakeAPair(0, 6);
-			secBal.sprAngryHappyBal =  sprs.TakeAPair(6, 6);
-			secBal.sprAngryHappySideEyeBal =  sprs.TakeAPair(12, 6);
-			secBal.sprThinkingBal =  sprs.TakeAPair(18, 6);
-			secBal.sprTakeRulerAnim =  sprs.TakeAPair(24, 5);
-			secBal.sprWithRulerBal =  sprs.TakeAPair(28, 6);
+			secBal.sprAngryBal = sprs.TakeAPair(0, 6);
+			secBal.sprAngryHappyBal = sprs.TakeAPair(6, 6);
+			secBal.sprAngryHappySideEyeBal = sprs.TakeAPair(12, 6);
+			secBal.sprThinkingBal = sprs.TakeAPair(18, 6);
+			secBal.sprTakeRulerAnim = sprs.TakeAPair(24, 5);
+			secBal.sprWithRulerBal = sprs.TakeAPair(28, 6);
 
 			secBal.sprCatchBal = TextureExtensions.LoadSpriteSheet(3, 2, 27f, MiscPath, TextureFolder, "SecretEnding", "baldiCatchSheet.png");
 
@@ -420,7 +431,7 @@ namespace BBTimes.Manager
 				];
 
 			secBal.audAngry2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence2.wav")), "Vfx_SecBAL_EndSequence_3", SoundType.Voice, Color.green);
-			
+
 
 			secBal.audAngry3 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence3.wav")), "Vfx_SecBAL_EndSequence_4", SoundType.Voice, Color.green);
 			secBal.audAngry3.additionalKeys = [
@@ -435,7 +446,7 @@ namespace BBTimes.Manager
 
 			secBal.audAngry4 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence4.wav")), "Vfx_SecBAL_EndSequence_12", SoundType.Voice, Color.green);
 			secBal.audAngry5 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence5.wav")), "Vfx_SecBAL_EndSequence_13", SoundType.Voice, Color.green);
-			
+
 			secBal.audAngry6 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence6.wav")), "Vfx_SecBAL_EndSequence_14", SoundType.Voice, Color.green);
 			secBal.audAngry6.additionalKeys = [
 				new() { key = "Vfx_SecBAL_EndSequence_15", time = 2.416f },
@@ -502,7 +513,7 @@ namespace BBTimes.Manager
 			generator.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
 			generatorComp.AddObjectToEditor();
 
-			
+
 			var genNoise = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "generatorLoop.wav")), string.Empty, SoundType.Effect, Color.white);
 			genNoise.subtitle = false;
 
@@ -576,7 +587,9 @@ namespace BBTimes.Manager
 
 		public static string CurrentFloor => Singleton<CoreGameManager>.Instance?.sceneObject.levelTitle ?? "None";
 
-		public static FloorData CurrentFloorData { get
+		public static FloorData CurrentFloorData
+		{
+			get
 			{
 				var data = floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
 				if (data != null || !Singleton<CoreGameManager>.Instance)
