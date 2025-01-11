@@ -14,7 +14,7 @@ namespace BBTimes.Plugin
 					return true;
 				var now = DateTime.Now;
 
-				var minDate = new DateTime(now.Year, 12, 22);
+				var minDate = new DateTime(now.Year, 12, 1);
 				var maxDate = new DateTime(now.Year, 12, 31);
 
 				return now >= minDate && now <= maxDate;

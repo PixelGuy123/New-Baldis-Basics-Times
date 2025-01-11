@@ -22,11 +22,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		{
 			var lg = LevelGeneratorInstanceGrabber.i;
 
-			if ((bool)BBTimesManager.plug.disableOutside.BoxedValue || lg == null) // Make sure this only happens in generated maps
+			if (BBTimesManager.plug.disableOutside.Value || lg == null) // Make sure this only happens in generated maps
 				return;
 			if (lg.ld is CustomLevelObject cld)
 			{
-				if ((bool)cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_GenConfig_DisableOutside"))
+				var modVal = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_GenConfig_DisableOutside");
+				if (modVal is null || (bool)modVal)
 					return;
 			}
 
