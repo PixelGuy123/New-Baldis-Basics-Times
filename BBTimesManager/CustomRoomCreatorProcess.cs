@@ -942,14 +942,23 @@ namespace BBTimes.Manager
 
 
 			room = GetAllAssets(GetRoomAsset("Kitchen"), 75, 35, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "MapBG_Kitchen.png")));
-
-			room.ForEach(x => x.selection.basicSwaps.Add(
+			var lunchObj = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Lunch").transform;
+			BasicObjectSwapData[] swaps = [
+				new()
+				{
+					chance = 0.75f,
+					potentialReplacements = [new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_SaltAndHot").transform, weight = 100 }],
+					prefabToSwap = lunchObj
+				},
 				new()
 				{
 					chance = 0.1f,
 					potentialReplacements = [new() { selection = man.Get<GameObject>("editorPrefab_SecretBread").transform, weight = 25 }, new() { selection = man.Get<GameObject>("editorPrefab_TimesKitchenSteak").transform, weight = 100 }],
-					prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Lunch").transform
-				}));
+					prefabToSwap = lunchObj
+				}
+				];
+
+			room.ForEach(x => x.selection.basicSwaps.AddRange(swaps));
 
 			Object.Destroy(room[0].selection.roomFunctionContainer.gameObject); // It doesn't need one, it's empty
 
@@ -1236,6 +1245,21 @@ namespace BBTimes.Manager
 			if (!plug.enableBigRooms.Value)
 				RemoveBigRooms(room, 7.65f);
 
+			var globePrefab = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Globe").transform;
+
+			classWeightPre.selection.basicSwaps.Add(new()
+			{
+				chance = 0.75f,
+				potentialReplacements = [
+							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_SmallPottedPlant").transform },
+							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_TableLightLamp").transform },
+							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_FancyOfficeLamp").transform },
+							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_TheRulesBook").transform },
+							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_BaldiPlush").transform, weight = 5 }
+							],
+				prefabToSwap = globePrefab
+			});
+
 			room.ForEach(x =>
 			{
 				x.selection.posters = classWeightPre.selection.posters;
@@ -1243,42 +1267,28 @@ namespace BBTimes.Manager
 				x.selection.windowChance = classWeightPre.selection.windowChance;
 				x.selection.windowObject = classWeightPre.selection.windowObject;
 				x.selection.lightPre = classWeightPre.selection.lightPre;
-
 				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
-				x.selection.basicSwaps.AddRange([
-					new()
-					{
-						chance = 0.35f,
-						potentialReplacements = [new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_SmallPottedPlant").transform }],
-						prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Globe").transform
-					},
-					new()
-					{
-						chance = 0.55f,
-						potentialReplacements = [new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_TableLightLamp").transform }],
-						prefabToSwap = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Globe").transform
-					}]); 
 			});
 
 			for (int i = 0; i < floorDatas.Count; i++)
 				floorDatas[i].Offices.AddRange(room.FilterRoomAssetsByFloor(i));
 
-			// Hall
-			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPrePlotSpecialHalls.Length != 0).potentialPrePlotSpecialHalls[0];
+			// Hall (PREV HALL DOESN'T EXIST ANYMORE CURRENTLY)
+			//classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPrePlotSpecialHalls.Length != 0).potentialPrePlotSpecialHalls[0];
 
-			room = GetAllAssets(GetRoomAsset("PrevHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: true, isAHallway: true);
+			//room = GetAllAssets(GetRoomAsset("PrevHalls"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: true, isAHallway: true);
 
-			room.ForEach(x =>
-			{
-				x.selection.posters = classWeightPre.selection.posters;
-				x.selection.posterChance = classWeightPre.selection.posterChance;
-				x.selection.windowChance = classWeightPre.selection.windowChance;
-				x.selection.windowObject = classWeightPre.selection.windowObject;
-				x.selection.lightPre = classWeightPre.selection.lightPre;
-			});
+			//room.ForEach(x =>
+			//{
+			//	x.selection.posters = classWeightPre.selection.posters;
+			//	x.selection.posterChance = classWeightPre.selection.posterChance;
+			//	x.selection.windowChance = classWeightPre.selection.windowChance;
+			//	x.selection.windowObject = classWeightPre.selection.windowObject;
+			//	x.selection.lightPre = classWeightPre.selection.lightPre;
+			//});
 
-			for (int i = 0; i < floorDatas.Count; i++)
-				floorDatas[i].Halls.AddRange(room.FilterRoomAssetsByFloor(i).ConvertAll<KeyValuePair<WeightedRoomAsset, bool>>(x => new(x, false))); // Pre halls
+			//for (int i = 0; i < floorDatas.Count; i++)
+			//	floorDatas[i].Halls.AddRange(room.FilterRoomAssetsByFloor(i).ConvertAll<KeyValuePair<WeightedRoomAsset, bool>>(x => new(x, false))); // Pre halls
 
 			classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPostPlotSpecialHalls.Length != 0).potentialPostPlotSpecialHalls[0];
 

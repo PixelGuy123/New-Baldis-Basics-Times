@@ -146,7 +146,7 @@ namespace BBTimes.CustomContent.NPCs
 			pran.PlayGrab();
 			pran.PlaySpinningMusic();
 			pran.SpinningDance();
-			throwDir = (pran.transform.position - pran.Navigator.NextPoint).normalized; // Inverted subtraction to throw backwards
+			throwDir = (pran.Navigator.NextPoint - pran.transform.position).normalized;
 			rotatingReference = pran.transform.forward;
 			target.ExternalActivity.moveMods.Add(stayMod);
 		}
