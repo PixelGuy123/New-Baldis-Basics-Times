@@ -16,8 +16,8 @@ namespace BBTimes.CustomContent.Events
 		public void SetupPrefab()
 		{
 			var tex = this.GetTexture("teleportParticle.png");
-			eventIntro = this.GetSound("ShuffleBal.wav", "Event_ShuffleChaos1", SoundType.Voice, Color.green);
-			eventIntro.additionalKeys = [new() { time = 3.281f, key = "Event_ShuffleChaos2" }];
+			eventIntro = this.GetSound("Bal_shuffleChaos.wav", "Event_ShuffleChaos1", SoundType.Voice, Color.green);
+			eventIntro.additionalKeys = [new() { time = 4.68f, key = "Event_ShuffleChaos2" }];
 
 			var entShuf = new GameObject("EntityShuffler").AddComponent<EntityShuffler>();
 			entShuf.gameObject.ConvertToPrefab(true);

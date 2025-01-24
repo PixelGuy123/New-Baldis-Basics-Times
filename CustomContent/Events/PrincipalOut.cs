@@ -12,10 +12,10 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("baldi_walking.wav", "Event_PriOut0", SoundType.Voice, Color.green);
+			eventIntro = this.GetSound("Bal_PrincipalOut.wav", "Event_PriOut0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
-				new() {time = 1.034f, key = "Event_PriOut1"},
-				new() {time = 3.93f, key = "Event_PriOut2"}
+				new() {time = 1.427f, key = "Event_PriOut1"},
+				new() {time = 4.447f, key = "Event_PriOut2"}
 				];
 		}
 		public void SetupPrefabPost() { }

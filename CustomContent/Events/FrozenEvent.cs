@@ -17,11 +17,11 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("baldi_freeze.wav", "Event_FreezeEvent0", SoundType.Voice, Color.green);
+			eventIntro = this.GetSound("Bal_FrozenEvent.wav", "Event_FreezeEvent0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
-				new() {time = 1.495f, key = "Event_FreezeEvent1"},
-				new() {time = 4.156f, key = "Event_FreezeEvent2"},
-				new() {time = 6.911f, key = "Event_FreezeEvent3"}
+				new() {time = 1.442f, key = "Event_FreezeEvent1"},
+				new() {time = 4.749f, key = "Event_FreezeEvent2"},
+				new() {time = 6.761f, key = "Event_FreezeEvent3"}
 				];
 			audMan = gameObject.CreateAudioManager(65, 85).MakeAudioManagerNonPositional();
 

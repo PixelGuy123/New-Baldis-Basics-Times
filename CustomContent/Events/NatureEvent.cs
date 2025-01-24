@@ -15,12 +15,11 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("NatureEvent.wav", "Event_NatureEvent_1", SoundType.Voice, Color.green);
+			eventIntro = this.GetSound("Bal_Nature.wav", "Event_NatureEvent_1", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
-				new() {time = 1.957f, key = "Event_NatureEvent_2"},
-				new() {time = 4.907f, key = "Event_NatureEvent_3"},
-				new() {time = 7.026f, key = "Event_NatureEvent_4"},
-				new() {time = 9.782f, key = "Event_NatureEvent_5"}
+				new() {time = 2.656f, key = "Event_NatureEvent_2"},
+				new() {time = 7.219f, key = "Event_NatureEvent_3"},
+				new() {time = 9.060f, key = "Event_NatureEvent_4"}
 				];
 
 			List<WeightedSelection<Plant>> flowers = [];

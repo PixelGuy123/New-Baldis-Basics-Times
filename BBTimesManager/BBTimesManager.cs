@@ -215,17 +215,8 @@ namespace BBTimes.Manager
 				selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("BBTChristmasV2.png"))), 1f);
 				speechMenu = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_timesChristmas.wav")), "Vfx_BAL_BalMainMenuSpeech_Christmas_1", SoundType.Voice, Color.green);
 				speechMenu.additionalKeys = [
-					new() { key = "Vfx_BAL_BalMainMenuSpeech_1", time = 2.341f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_2", time = 7.097f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_3", time = 9.294f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_4", time = 10.049f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_5", time = 10.479f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_6", time = 10.768f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_7", time = 11.357f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_8", time = 11.506f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_9", time = 11.652f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_10", time = 13.397f },
-				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_11", time = 15.698f },
+					new() { key = "Vfx_BAL_BalMainMenuSpeech_1", time = 2.269f },
+				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_2", time = 7.146f },
 				];
 			}
 			else if (plug.HasInfiniteFloors)
@@ -233,10 +224,7 @@ namespace BBTimes.Manager
 				selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("endlessFloors.png"))), 1f);
 				speechMenu = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_InfFloorSpeech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
 				speechMenu.additionalKeys = [
-					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_1", time = 5.961f },
-					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_2", time = 9.988f },
-					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_3", time = 13.014f },
-					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_4", time = 18.108f }
+					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_1", time = 5.144f },
 					];
 			}
 			else
@@ -244,7 +232,7 @@ namespace BBTimes.Manager
 				selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("mainMenu.png"))), 1f);
 				speechMenu = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_Speech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
 				speechMenu.additionalKeys = [
-					new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 4.708f }
+					new() { key = "Vfx_BAL_BalMainMenuSpeech_2", time = 5.205f }
 					];
 			}
 
@@ -406,65 +394,58 @@ namespace BBTimes.Manager
 
 			// Audios for Baldi
 			secBal.audMeetMe1 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_MeetBaldi_1.wav")), "Vfx_SecBAL_Meet_1", SoundType.Voice, Color.green);
-			secBal.audMeetMe1.additionalKeys = [new() { key = "Vfx_SecBAL_Meet_2", time = 2.787f }];
+			secBal.audMeetMe1.additionalKeys = [new() { key = "Vfx_SecBAL_Meet_2", time = 2.976f }];
 
 			secBal.audMeetMe2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_MeetBaldi_2.wav")), "Vfx_SecBAL_Meet_3", SoundType.Voice, Color.green);
 
 			secBal.audMeetMe3 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_MeetBaldi_3.wav")), "Vfx_SecBAL_Meet_4", SoundType.Voice, Color.green);
 			secBal.audMeetMe3.additionalKeys = [
-				new() { key = "Vfx_SecBAL_Meet_5", time = 2.431f },
-				new() { key = "Vfx_SecBAL_Meet_6", time = 7.16f },
-				new() { key = "Vfx_SecBAL_Meet_7", time = 10.606f },
-				new() { key = "Vfx_SecBAL_Meet_8", time = 14.334f },
-				new() { key = "Vfx_SecBAL_Meet_9", time = 17.841f },
-				new() { key = "Vfx_SecBAL_Meet_10", time = 20.907f }
+				new() { key = "Vfx_SecBAL_Meet_5", time = 2.266f },
+				new() { key = "Vfx_SecBAL_Meet_6", time = 7.912f },
+				new() { key = "Vfx_SecBAL_Meet_7", time = 12.687f },
+				new() { key = "Vfx_SecBAL_Meet_8", time = 16.249f }
 				];
 
-			secBal.audMeetMe4 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_MeetBaldi_4.wav")), "Vfx_SecBAL_Meet_11", SoundType.Voice, Color.green);
+			secBal.audMeetMe4 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_MeetBaldi_4.wav")), "Vfx_SecBAL_Meet_9", SoundType.Voice, Color.green);
 			secBal.audMeetMe4.additionalKeys = [
-				new() { key = "Vfx_SecBAL_Meet_12", time = 2.406f }
+				new() { key = "Vfx_SecBAL_Meet_10", time = 1.572f }
 				];
 
 			secBal.audAngry1 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence1.wav")), "Vfx_SecBAL_EndSequence_1", SoundType.Voice, Color.green);
-			secBal.audAngry1.additionalKeys = [
-				new() { key = "Vfx_SecBAL_EndSequence_2", time = 3.268f }
-				];
 
-			secBal.audAngry2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence2.wav")), "Vfx_SecBAL_EndSequence_3", SoundType.Voice, Color.green);
+			secBal.audAngry2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence2.wav")), "Vfx_SecBAL_EndSequence_2", SoundType.Voice, Color.green);
 
 
-			secBal.audAngry3 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence3.wav")), "Vfx_SecBAL_EndSequence_4", SoundType.Voice, Color.green);
+			secBal.audAngry3 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence3.wav")), "Vfx_SecBAL_EndSequence_3", SoundType.Voice, Color.green);
 			secBal.audAngry3.additionalKeys = [
-				new() { key = "Vfx_SecBAL_EndSequence_5", time = 3.054f },
-				new() { key = "Vfx_SecBAL_EndSequence_6", time = 6.234f },
-				new() { key = "Vfx_SecBAL_EndSequence_7", time = 9.609f },
-				new() { key = "Vfx_SecBAL_EndSequence_8", time = 12.323f },
-				new() { key = "Vfx_SecBAL_EndSequence_9", time = 14.701f },
-				new() { key = "Vfx_SecBAL_EndSequence_10", time = 18.775f },
-				new() { key = "Vfx_SecBAL_EndSequence_11", time = 20.309f }
+				new() { key = "Vfx_SecBAL_EndSequence_4", time = 2.26f },
+				new() { key = "Vfx_SecBAL_EndSequence_5", time = 5.031f },
+				new() { key = "Vfx_SecBAL_EndSequence_6", time = 8.125f },
+				new() { key = "Vfx_SecBAL_EndSequence_7", time = 10.566f },
+				new() { key = "Vfx_SecBAL_EndSequence_8", time = 12.834f },
+				new() { key = "Vfx_SecBAL_EndSequence_9", time = 15.658f },
+				new() { key = "Vfx_SecBAL_EndSequence_10", time = 18.853f }
 				];
 
-			secBal.audAngry4 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence4.wav")), "Vfx_SecBAL_EndSequence_12", SoundType.Voice, Color.green);
-			secBal.audAngry5 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence5.wav")), "Vfx_SecBAL_EndSequence_13", SoundType.Voice, Color.green);
+			secBal.audAngry4 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence4.wav")), "Vfx_SecBAL_EndSequence_11", SoundType.Voice, Color.green);
+			secBal.audAngry5 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence5.wav")), "Vfx_SecBAL_EndSequence_12", SoundType.Voice, Color.green);
 
-			secBal.audAngry6 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence6.wav")), "Vfx_SecBAL_EndSequence_14", SoundType.Voice, Color.green);
+			secBal.audAngry6 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence6.wav")), "Vfx_SecBAL_EndSequence_13", SoundType.Voice, Color.green);
 			secBal.audAngry6.additionalKeys = [
-				new() { key = "Vfx_SecBAL_EndSequence_15", time = 2.416f },
-				new() { key = "Vfx_SecBAL_EndSequence_16", time = 4.326f },
-				new() { key = "Vfx_SecBAL_EndSequence_17", time = 6.897f },
-				new() { key = "Vfx_SecBAL_EndSequence_18", time = 9.244f },
-				new() { key = "Vfx_SecBAL_EndSequence_19", time = 10.224f },
-				new() { key = "Vfx_SecBAL_EndSequence_20", time = 13.537f }
+				new() { key = "Vfx_SecBAL_EndSequence_14", time = 1.629f },
+				new() { key = "Vfx_SecBAL_EndSequence_15", time = 3.619f },
+				new() { key = "Vfx_SecBAL_EndSequence_16", time = 7.354f },
+				new() { key = "Vfx_SecBAL_EndSequence_17", time = 10.251f },
+				new() { key = "Vfx_SecBAL_EndSequence_18", time = 12.914f }
 				];
 
-			secBal.audAngry7 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence7.wav")), "Vfx_SecBAL_EndSequence_21", SoundType.Voice, Color.green);
-			secBal.audAngry8 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence8.wav")), "Vfx_SecBAL_EndSequence_22", SoundType.Voice, Color.green);
+			secBal.audAngry7 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence7.wav")), "Vfx_SecBAL_EndSequence_19", SoundType.Voice, Color.green);
+			secBal.audAngry8 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence8.wav")), "Vfx_SecBAL_EndSequence_20", SoundType.Voice, Color.green);
 
-			secBal.audAngry9 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence9.wav")), "Vfx_SecBAL_EndSequence_23", SoundType.Voice, Color.green);
+			secBal.audAngry9 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence9.wav")), "Vfx_SecBAL_EndSequence_21", SoundType.Voice, Color.green);
 			secBal.audAngry9.additionalKeys = [
-				new() { key = "Vfx_SecBAL_EndSequence_24", time = 1.469f },
-				new() { key = "Vfx_SecBAL_EndSequence_25", time = 3.992f },
-				new() { key = "Vfx_SecBAL_EndSequence_26", time = 4.909f }
+				new() { key = "Vfx_SecBAL_EndSequence_22", time = 1.804f },
+				new() { key = "Vfx_SecBAL_EndSequence_23", time = 4.561f }
 				];
 
 			secBal.volumeAnimator = secBal.gameObject.AddComponent<SpriteVolumeAnimator>();

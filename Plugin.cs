@@ -238,29 +238,23 @@ namespace BBTimes
 				christmasBaldi.audBell = BBTimesManager.man.Get<SoundObject>("audRing");
 				christmasBaldi.audIntro = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_PresentIntro.wav")), "Vfx_BAL_Pitstop_PresentIntro_1", SoundType.Voice, Color.green);
 				christmasBaldi.audIntro.additionalKeys = [
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_2", time = 3.458f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_3", time = 4.75f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_4", time = 5.688f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_5", time = 8.183f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_6", time = 12.213f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_7", time = 14.681f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_8", time = 17.321f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_9", time = 18.964f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_10", time = 21.978f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_11", time = 22.707f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_12", time = 26.128f }
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_2", time = 2.417f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_3", time = 5.492f },
+					new() { key = "Vfx_BAL_Wow", time = 9.544f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_4", time = 11.029f },
+					new() { key = "Vfx_BAL_Pitstop_PresentIntro_5", time = 14.059f }
 					];
 
 				christmasBaldi.audBuyItem = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_buypresent.wav")), "Vfx_BAL_Pitstop_MerryChristmas", SoundType.Voice, Color.green);
 
 				christmasBaldi.audNoYtps = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_needYtpsForPresent.wav")), "Vfx_BAL_Pitstop_Nopresent_1", SoundType.Voice, Color.green);
 				christmasBaldi.audNoYtps.additionalKeys = [
-					new() { key = "Vfx_BAL_Pitstop_Nopresent_2", time = 3.72f }
+					new() { key = "Vfx_BAL_Pitstop_Nopresent_2", time = 0.818f }
 					];
 
 				christmasBaldi.audGenerous = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_Pitstop_Generous.wav")), "Vfx_BAL_Pitstop_Generous_1", SoundType.Voice, Color.green);
 				christmasBaldi.audGenerous.additionalKeys = [
-					new() { key = "Vfx_BAL_Pitstop_Generous_2", time = 2.328f }
+					new() { key = "Vfx_BAL_Pitstop_Generous_2", time = 2.597f }
 					];
 
 				christmasBaldi.audCollectingPresent = [

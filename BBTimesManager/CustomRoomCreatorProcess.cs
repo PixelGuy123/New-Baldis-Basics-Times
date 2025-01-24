@@ -1254,8 +1254,7 @@ namespace BBTimes.Manager
 							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_SmallPottedPlant").transform },
 							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_TableLightLamp").transform },
 							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_FancyOfficeLamp").transform },
-							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_TheRulesBook").transform },
-							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_BaldiPlush").transform, weight = 5 }
+							new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_TheRulesBook").transform }
 							],
 				prefabToSwap = globePrefab
 			});

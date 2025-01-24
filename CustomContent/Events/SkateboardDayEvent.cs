@@ -14,8 +14,8 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("SkateboardDay.wav", "Event_SkateboardDay1", SoundType.Voice, Color.green);
-			eventIntro.additionalKeys = [new() { time = 3.156f, key = "Event_SkateboardDay2" }];
+			eventIntro = this.GetSound("Bal_Skateboard.wav", "Event_SkateboardDay1", SoundType.Voice, Color.green);
+			eventIntro.additionalKeys = [new() { time = 3.991f, key = "Event_SkateboardDay2" }];
 
 			var skRender = ObjectCreationExtensions.CreateSpriteBillboard(null).AddSpriteHolder(out var skRenderer, 0f);
 			skRender.gameObject.ConvertToPrefab(true);

@@ -14,10 +14,10 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("SuperFans.wav", "Event_PastHolograms0", SoundType.Voice, Color.green);
+			eventIntro = this.GetSound("Bal_SuperFans.wav", "Event_SuperFans1", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
-				new() { time = 1.682f, key = "Event_SuperFans1" },
-			new() { time = 4.653f, key = "Event_SuperFans2" }
+				new() { time = 1.356f, key = "Event_SuperFans2" },
+				new() { time = 3.659f, key = "Event_SuperFans3" }
 			];
 
 			Cumulo cloud = (Cumulo)NPCMetaStorage.Instance.Get(Character.Cumulo).value;

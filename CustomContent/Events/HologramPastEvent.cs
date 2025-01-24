@@ -1,7 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.EventSpecificComponents;
 using BBTimes.ModPatches;
-using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,10 +14,10 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("hologramEv.wav", "Event_PastHolograms0", SoundType.Voice, Color.green);
+			eventIntro = this.GetSound("Bal_Holograms.wav", "Event_PastHolograms0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [new() { time = 2.168f, key = "Event_PastHolograms1" },
-				new() { time = 6.584f, key = "Event_PastHolograms2" },
-				new() { time = 11.379f, key = "Event_PastHolograms3" },
+				new() { time = 6.966f, key = "Event_PastHolograms2" },
+				new() { time = 12.079f, key = "Event_PastHolograms3" },
 				];
 
 			var rend = ObjectCreationExtensions.CreateSpriteBillboard(null);

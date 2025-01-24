@@ -6,8 +6,6 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Audio;
 using PixelInternalAPI.Extensions;
-using BBTimes.CustomComponents;
-using System.Reflection;
 
 namespace BBTimes.Manager
 {
@@ -19,18 +17,24 @@ namespace BBTimes.Manager
 
 			var sound = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_AllNotebooksNormal.wav")), "Vfx_BAL_CongratsNormal_0", SoundType.Effect, Color.green);
 			sound.additionalKeys = [
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_1", time = 2.103f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_2", time = 4.899f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_3", time = 8.174f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_4", time = 12.817f} // Tip: use audacity to know the audio length
+				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_1", time = 2.17f},
+				new SubtitleTimedKey() { key = "Vfx_BAL_AllNotebooks_3", time = 4.89f},
+				new SubtitleTimedKey() { key = "Vfx_BAL_AllNotebooks_4", time = 8.201f},
+				new SubtitleTimedKey() { key = ".", time = 11.337f},
+				new SubtitleTimedKey() { key = "..", time = 12.78f},
+				new SubtitleTimedKey() { key = "...", time = 14.061f},
+				new SubtitleTimedKey() { key = "Vfx_BAL_AllNotebooks_5", time = 14.602f} // Tip: use audacity to know the audio length
 			];
 
 			var soundCRAZY = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_AllNotebooksFinal.wav")), "Vfx_BAL_CongratsNormal_0", SoundType.Effect, Color.green);
 			soundCRAZY.additionalKeys = [
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_1", time = 2.051f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_2", time = 4.842f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsAngry_0", time = 7.185f},
-				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_4", time = 12.694f} // Tip: use audacity to know the audio length
+				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsNormal_1", time = 2.17f},
+				new SubtitleTimedKey() { key = "Vfx_BAL_AllNotebooks_3", time = 4.89f},
+				new SubtitleTimedKey() { key = "Vfx_BAL_CongratsAngry_0", time = 7.233f},
+				new SubtitleTimedKey() { key = ".", time = 12.653f},
+				new SubtitleTimedKey() { key = "..", time = 13.5f},
+				new SubtitleTimedKey() { key = "...", time = 14.302f},
+				new SubtitleTimedKey() { key = "Vfx_BAL_AllNotebooks_5", time = 14.382f} // Tip: use audacity to know the audio length
 			];
 			// Update the all notebooks notification
 			GenericExtensions.FindResourceObjects<MainGameManager>().Do(man => man.allNotebooksNotification = man.name.StartsWith("Lvl3") ? soundCRAZY : sound);

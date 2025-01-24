@@ -11,12 +11,12 @@ namespace BBTimes.CustomContent.Events
 	{
 		public void SetupPrefab()
 		{
-			eventIntro = this.GetSound("baldi_ele.wav", "Event_BlackOut0", SoundType.Voice, Color.green);
+			eventIntro = this.GetSound("Bal_Blackout.wav", "Event_BlackOut0", SoundType.Voice, Color.green);
 			eventIntro.additionalKeys = [
-				new() {time = 1.416f, key = "Event_BlackOut1"},
-				new() {time = 2.735f, key = "Event_BlackOut2"},
-				new() {time = 3.868f, key = "Event_BlackOut3"},
-				new() {time = 5.881f, key = "Event_BlackOut4"}
+				new() {time = 1.696f, key = "Event_BlackOut1"},
+				new() {time = 3.012f, key = "Event_BlackOut2"},
+				new() {time = 4.481f, key = "Event_BlackOut3"},
+				new() {time = 6.550f, key = "Event_BlackOut4"}
 				];
 
 			audMan = gameObject.CreateAudioManager(85, 105)
