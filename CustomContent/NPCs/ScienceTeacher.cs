@@ -79,7 +79,8 @@ namespace BBTimes.CustomContent.NPCs
 
 				potion.entity = potionObj.gameObject.CreateEntity(2f, 2f, potionRendBase.transform);
 				potion.entity.SetGrounded(false);
-				potion.collider = (CapsuleCollider)potion.entity.collider;
+				potion.collider = (CapsuleCollider)potion.entity.Trigger;
+				potion.realCollider = (CapsuleCollider)potion.entity.collider;
 				potion.audMan = potionObj.gameObject.CreatePropagatedAudioManager(45f, 75f);
 				potion.audCrashOnGround = spillingNoise;
 				potion.audThrow = BBTimesManager.man.Get<SoundObject>("audGenericThrow");

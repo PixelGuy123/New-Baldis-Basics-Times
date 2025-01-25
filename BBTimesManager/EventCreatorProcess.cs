@@ -87,7 +87,7 @@ namespace BBTimes.Manager
 			// Skateboard Day
 			e = new RandomEventBuilder<SkateboardDayEvent>(plug.Info)
 				.SetEnum("Skateboardday")
-				.SetMinMaxTime(95f, 120f)
+				.SetMinMaxTime(50f, 75f)
 				.SetName("SkateboardDay")
 				.Build()
 				.SetupEvent();

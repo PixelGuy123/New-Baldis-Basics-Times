@@ -75,6 +75,8 @@ namespace BBTimes.ModPatches
 				player.plm.Entity.SetInteractionState(false);
 				player.plm.Entity.SetFrozen(true);
 			}
+			PlayerVisual.GetPlayerVisual(0).SetEmotion(1); // emotion 1 = sad
+
 			player.Teleport(__instance.Ec.CellFromPosition(player.transform.position).CenterWorldPosition);
 
 			cam.transform.position = player.transform.position;
@@ -190,6 +192,8 @@ namespace BBTimes.ModPatches
 				}
 				Singleton<PlayerFileManager>.Instance.subtitles = subs;
 				Object.Destroy(cam); // Only the camera lol
+
+				PlayerVisual.GetPlayerVisual(0).SetEmotion(0);
 
 				LoadNextLevel(man);
 				yield break;

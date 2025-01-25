@@ -35,6 +35,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 			entity.Teleport(ec.CellFromPosition(transform.position).FloorWorldPosition);
 
 			collider.radius = puddleRadius;
+			realCollider.enabled = false;
 			entity.SetFrozen(true);
 			isAPuddle = true;
 			splashRenderer.enabled = true;
@@ -198,10 +199,10 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 		internal SoundObject audCrashOnGround, audThrow;
 
 		[SerializeField]
-		internal CapsuleCollider collider;
+		internal CapsuleCollider collider, realCollider;
 
 		[SerializeField]
-		internal float gravityConstant = -4f, heightLimit = 9f, puddleRadius = 8f;
+		internal float gravityConstant = -4f, heightLimit = 9f, puddleRadius = 6.5f;
 
 		const float slownessConstant = 0.15f, heightForcedOffset = 5f, puddleSpeed = 2f;
 	}

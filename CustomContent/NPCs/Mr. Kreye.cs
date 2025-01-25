@@ -215,6 +215,21 @@ namespace BBTimes.CustomContent.NPCs
 	internal class MrKreye_StateBase(MrKreye kre) : NpcState(kre)
 	{
 		protected MrKreye kre = kre;
+
+		public override void DoorHit(StandardDoor door)
+		{
+			base.DoorHit(door);
+			door.OpenTimedWithKey(door.DefaultTime, false);
+		}
+
+		public override void OnRoomExit(RoomController room)
+		{
+			base.OnRoomExit(room);
+			if (room.ec.timeOut && room.type == RoomType.Room && !room.HasIncompleteActivity)
+			{
+				room.SetPower(false);
+			}
+		}
 	}
 
 	internal class MrKreye_TargetSpot(MrKreye kre) : MrKreye_StateBase(kre)

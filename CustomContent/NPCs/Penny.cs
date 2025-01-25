@@ -359,9 +359,10 @@ namespace BBTimes.CustomContent.NPCs
 
 		void ScrambleLetters(char expectedChar)
 		{
-			
 			int i = Random.Range(0, letters.Length);
 			letters[i].PickLetter(expectedChar);
+
+			var normalizedChar = char.ToLower(expectedChar);
 
 			for (int z = 0; z < letters.Length; z++)
 			{
@@ -371,7 +372,7 @@ namespace BBTimes.CustomContent.NPCs
 					do
 					{
 						c = allowedCharacters[Random.Range(0, allowedCharacters.Length)];
-					} while (c == expectedChar);
+					} while (c == normalizedChar);
 
 					letters[z].PickLetter(char.IsLower(expectedChar) ? c : char.ToUpper(c));
 				}

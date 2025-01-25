@@ -185,12 +185,12 @@ namespace BBTimes.Manager
 			evMac.sprDead = sprs[0];
 			// Audio Setup from event machine
 			evMac.audBalAngry = [
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "NoEv1.wav")), "Vfx_BAL_NoEvent0_0", SoundType.Voice, Color.green),
-				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "NoEv2.wav")), "Vfx_BAL_NoEvent1_0", SoundType.Voice, Color.green),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "Bal_NoEvent1.wav")), "Vfx_BAL_NoEvent0_0", SoundType.Voice, Color.green),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", "Bal_NoEvent2.wav")), "Vfx_BAL_NoEvent1_0", SoundType.Voice, Color.green),
 				];
 
-			evMac.audBalAngry[0].additionalKeys = [new() { key = "Vfx_BAL_NoEvent0_1", time = 1.403f }, new() { key = "Vfx_BAL_NoEvent0_2", time = 3.584f }];
-			evMac.audBalAngry[1].additionalKeys = [new() { key = "Vfx_BAL_NoEvent1_1", time = 1.458f }, new() { key = "Vfx_BAL_NoEvent1_2", time = 4.841f }];
+			evMac.audBalAngry[0].additionalKeys = [new() { key = "Vfx_BAL_NoEvent0_1", time = 2.556f }];
+			evMac.audBalAngry[1].additionalKeys = [new() { key = "Vfx_BAL_NoEvent1_1", time = 1.841f }];
 
 			machine.gameObject.AddBoxCollider(Vector3.forward * -1.05f, new(6f, 10f, 1f), true);
 
@@ -648,9 +648,9 @@ namespace BBTimes.Manager
 
 			var focusedStudent = student.gameObject.AddComponent<FocusedStudent>();
 			focusedStudent.audMan = student.gameObject.CreatePropagatedAudioManager(95f, 125f);
-			focusedStudent.audAskSilence = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please.wav")), "Vfx_FocusStd_Disturbed1", SoundType.Voice, Color.white);
-			focusedStudent.audAskSilence2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please2.wav")), "Vfx_FocusStd_Disturbed2", SoundType.Voice, Color.white);
-			focusedStudent.audDisturbed = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_scream.wav")), "Vfx_FocusStd_Scream1", SoundType.Voice, Color.white);
+			focusedStudent.audAskSilence = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please.wav")), "Vfx_FocusStd_Disturbed1", SoundType.Voice, new(0f, 0.65f, 0f));
+			focusedStudent.audAskSilence2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please2.wav")), "Vfx_FocusStd_Disturbed2", SoundType.Voice, new(0f, 0.65f, 0f));
+			focusedStudent.audDisturbed = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_scream.wav")), "Vfx_FocusStd_Scream1", SoundType.Voice, new(0f, 0.65f, 0f));
 			focusedStudent.audDisturbed.additionalKeys = [new() { key = "Vfx_FocusStd_Scream2", time = 1.209f }];
 
 			focusedStudent.renderer = student;
@@ -726,6 +726,10 @@ namespace BBTimes.Manager
 			var fun = room[0].selection.AddRoomFunctionToContainer<PosterAsideFromObject>();
 			fun.targetPrefabName = "sink";
 			fun.posterPre = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "mirror.png"))]);
+
+			var cover = room[0].selection.AddRoomFunctionToContainer<CoverRoomFunction>();
+			cover.hardCover = true;
+			cover.coverage = CellCoverage.North | CellCoverage.East | CellCoverage.West | CellCoverage.South;
 
 			room.ForEach(x =>
 			{

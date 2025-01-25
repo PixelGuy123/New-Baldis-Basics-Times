@@ -28,8 +28,10 @@ namespace BBTimes.CustomContent.RoomFunctions
 				int idx = rng.Next(0, tilesOfShape.Count);
 				Cell cell = tilesOfShape[idx];
 				var dir = cell.RandomUnoccupiedDirection(cell.HardWallAvailabilityBin, rng);
-				if (builder.Ec.CellFromPosition(cell.position + dir.ToIntVector2()).WallHardCovered(dir.GetOpposite())) // If it is hard covered at the other side, no window should spawn in there then
-				{
+				if (builder.Ec.CellFromPosition(cell.position + dir.ToIntVector2()).WallHardCovered(dir.GetOpposite()) || // If it is hard covered at the other side, no window should spawn in there then
+					builder.Ec.CellFromPosition(cell.position + dir.ToIntVector2()).TileMatches(room)) // If the other side is still inside the room, it's a wall; should be ignored
+																																																			 
+				{	
 					tilesOfShape.RemoveAt(idx);
 					i--;
 					continue;

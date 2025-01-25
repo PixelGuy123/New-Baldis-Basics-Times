@@ -24,7 +24,7 @@ namespace BBTimes.CustomContent.NPCs
 			sprWalkingAnim = [..sprs.Take(7)];
 			sprPrepareBub = sprs[8];
 			renderer = spriteRenderer[0];
-			audFillUp = this.GetSound("Bubbly_BubbleSpawn.mp3", "Vfx_Bubbly_Fillup", SoundType.Effect, new(0.6f, 0.6f, 0f));
+			audFillUp = this.GetSound("Bubbly_BubbleSpawn.mp3", "Vfx_Bubbly_Fillup", SoundType.Effect, new(1f, 0.345f, 0.886f));
 
 			var bubble = new GameObject("Bubble").AddComponent<Bubble>();
 			bubble.gameObject.ConvertToPrefab(true);
@@ -77,9 +77,22 @@ namespace BBTimes.CustomContent.NPCs
 		internal Bubble SpitBubbleAtDirection(Vector3 dir)
 		{
 			var b = Instantiate(bubPre);
+			bubbles.Add(b);
+
+			for (int i = 0; i < bubbles.Count; i++)
+				if (!bubbles[i])
+					bubbles.RemoveAt(i--); // Bubble is null? Remove it!
+
 			b.Spawn(ec, navigator.Entity, transform.position, dir, Random.Range(16f, 22f));
 			StartCoroutine(FillupBubble(b));
 			return b;
+		}
+
+		public override void Despawn()
+		{
+			base.Despawn();
+			for (int i = 0; i < bubbles.Count; i++)
+				bubbles[i]?.Pop();
 		}
 
 		IEnumerator FillupBubble(Bubble b)
@@ -144,6 +157,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
+
+		readonly List<Bubble> bubbles = [];
 
 		Cell lastSpotGone = null;
 		const float speed = 17f;

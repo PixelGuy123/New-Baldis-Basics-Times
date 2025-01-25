@@ -201,7 +201,7 @@ namespace BBTimes.CustomContent.Builders
 					{
 						if (connectionpos.ContainsKey(t.position)) continue;
 						var c = Instantiate(ventConnectionPrefab, t.ObjectBase); // Connection prefab will be index 1
-						t.HardCover(CellCoverage.Up);
+						//t.HardCover(CellCoverage.Up); Avoid this so lights aren't blocked off
 
 						t.AddRenderer(c.GetComponent<MeshRenderer>());
 

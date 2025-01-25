@@ -162,13 +162,8 @@ namespace BBTimes.CustomContent.NPCs
 		protected DetentionBot bot = bot;
 		public override void DoorHit(StandardDoor door)
 		{
-			if (door.locked)
-			{
-				door.Unlock();
-				door.OpenTimed(5f, false);
-				return;
-			}
 			base.DoorHit(door);
+			door.OpenTimedWithKey(door.DefaultTime, false);
 		}
 
 		public override void OnRoomExit(RoomController room)
@@ -342,6 +337,12 @@ namespace BBTimes.CustomContent.NPCs
 			bot.ReleaseOrNot(entity, false);
 			tarPos = new NavigationState_TargetPosition(bot, 63, office.RandomEntitySafeCellNoGarbage().FloorWorldPosition);
 			ChangeNavigationState(tarPos);
+
+			if (tarNpc && !tarNpc.Navigator.isActiveAndEnabled) // If not enabled, it implies Detention Bot will be permanently stuck, so it'll forcefully teleport the entity
+			{
+				bot.Navigator.Entity.Teleport(tarPos.destination);
+				entity.Teleport(tarPos.destination);
+			}
 		}
 		public override void DestinationEmpty()
 		{

@@ -7,7 +7,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 		protected override void OnEntityStay(Entity entity)
 		{
 			base.OnEntityStay(entity);
-			entity.AddForce(new((entity.transform.position - transform.position).normalized, pushForce, pushAcceleration));
+			entity.AddForce(new((entity.transform.position.ZeroOutY() - transform.position.ZeroOutY()).normalized, pushForce, pushAcceleration));
 		}
 
 		protected override void OnEntityEnter(Entity entity)
@@ -20,6 +20,6 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 		internal SoundObject audAcidicEffect;
 
 		[SerializeField]
-		internal float pushForce = 7f, pushAcceleration = -5f;
+		internal float pushForce = 7f, pushAcceleration = -3f;
 	}
 }

@@ -16,7 +16,7 @@ namespace BBTimes.CustomContent.CustomItems
 			var trapSprs = BBTimesManager.man.Get<Sprite[]>("Beartrap");
 			closedTrap = trapSprs[0];
 
-			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(trapSprs[1]).AddSpriteHolder(out var trapRenderer, -4f);
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(trapSprs[1]).AddSpriteHolder(out var trapRenderer, 0f);
 			renderer.transform.SetParent(transform);
 			renderer.transform.localPosition = Vector3.zero;
 
