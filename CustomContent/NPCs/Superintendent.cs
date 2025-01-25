@@ -111,7 +111,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal AudioManager audMan;
 
 		[SerializeField]
-		internal float dragBreakDistance = 20f, dragMultiplier = 0.15f, dragSpeed = 25f, maxCooldownAfterDuty = 25f, lockTime = 6f;
+		internal float dragBreakDistance = 20f, dragMultiplier = 0.15f, dragSpeed = 25f, maxCooldownAfterDuty = 25f, lockTime = 5f, maxNoticeCooldown = 2.25f;
 
 		const int noiseVal = 107;
 		const float speed = 30f;
@@ -128,12 +128,9 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class Superintendent_WanderAround(Superintendent s, bool hasCooldown = false) : Superintendent_Statebase(s)
 	{
-
-		const float noticeMaxCooldown = 1.25f;
-
 		float cooldown = hasCooldown ? s.maxCooldownAfterDuty : 0f;
 
-		float noticeCooldown = noticeMaxCooldown;
+		float noticeCooldown = s.maxNoticeCooldown;
 
 		bool active = true;
 
@@ -141,7 +138,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerSighted(player);
 			if (active)
-				noticeCooldown = noticeMaxCooldown;
+				noticeCooldown = s.maxNoticeCooldown;
 			
 		}
 
@@ -163,9 +160,9 @@ namespace BBTimes.CustomContent.NPCs
 				}
 				return;
 			}
-			if (noticeCooldown < noticeMaxCooldown)
+			if (noticeCooldown < s.maxNoticeCooldown)
 			{
-				noticeCooldown = noticeMaxCooldown;
+				noticeCooldown = s.maxNoticeCooldown;
 			}
 
 		}
@@ -173,9 +170,9 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerLost(PlayerManager player)
 		{
 			base.PlayerLost(player);
-			if (active && noticeCooldown < noticeMaxCooldown)
+			if (active && noticeCooldown < s.maxNoticeCooldown)
 			{
-				noticeCooldown = noticeMaxCooldown;
+				noticeCooldown = s.maxNoticeCooldown;
 				s.StopOrNot(false);
 			}
 		}
@@ -204,7 +201,7 @@ namespace BBTimes.CustomContent.NPCs
 			else
 			{
 				active = true;
-				noticeCooldown = noticeMaxCooldown;
+				noticeCooldown = s.maxNoticeCooldown;
 			}
 		}
 
