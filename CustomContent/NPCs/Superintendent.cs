@@ -132,7 +132,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		float noticeCooldown = s.maxNoticeCooldown;
 
-		bool active => cooldown > 0f;
+		bool active => cooldown <= 0f;
 
 		public override void PlayerSighted(PlayerManager player)
 		{
