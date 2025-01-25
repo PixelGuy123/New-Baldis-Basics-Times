@@ -132,7 +132,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		float noticeCooldown = s.maxNoticeCooldown;
 
-		bool active = true;
+		bool active => cooldown > 0f;
 
 		public override void PlayerSighted(PlayerManager player)
 		{
@@ -156,7 +156,6 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					s.behaviorStateMachine.ChangeState(new Superintendent_TargetPlayer(s, player));
 					s.CalloutBaldi(player);
-					active = false;
 				}
 				return;
 			}
@@ -192,17 +191,13 @@ namespace BBTimes.CustomContent.NPCs
 
 		public override void Update()
 		{
-			if (active) return;
-
 			base.Update();
+			if (active) return;
 
 			if (cooldown > 0f)
 				cooldown -= s.TimeScale * Time.deltaTime;
 			else
-			{
-				active = true;
 				noticeCooldown = s.maxNoticeCooldown;
-			}
 		}
 
 		
