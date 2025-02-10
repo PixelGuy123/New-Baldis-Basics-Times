@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -12,6 +13,8 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public void SetupPrefab()
 		{
+			gameObject.layer = LayerStorage.standardEntities;
+
 			var storedSprites = this.GetSpriteSheet(3, 2, 35f, "cheese.png");
 			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]);
 			renderer.transform.SetParent(transform);

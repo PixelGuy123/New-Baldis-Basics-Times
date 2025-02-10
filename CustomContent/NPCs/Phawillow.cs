@@ -130,7 +130,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		ItemObject holdingItem;
 
-		const float normSpeed = 10f, fleeSpeed = 23.5f;
+		const float normSpeed = 12.5f, fleeSpeed = 26f;
 	}
 
 	internal class Phawillow_StateBase(Phawillow wi) : NpcState(wi)

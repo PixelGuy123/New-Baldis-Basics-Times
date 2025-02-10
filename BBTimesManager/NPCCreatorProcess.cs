@@ -90,6 +90,7 @@ namespace BBTimes.Manager
 				.SetupNPCData("Superintendent", "PST_SI_Name", "PST_SI_Desc", -0.5f);
 			//CreatorExtensions.CreateNPC<Superintendent, SuperintendentCustomData>("Superintendent", 110f, 140f, [RoomCategory.Office, RoomCategory.Class, RoomCategory.Faculty], [], "PST_SI_Name", "PST_SI_Desc", usesHeatMap:true, lookerDistance: 90f, avoidRooms:false, spriteYOffset: -0.5f).AddMeta(plug, NPCFlags.Standard).value;
 			npc.Navigator.SetRoomAvoidance(false);
+			npc.looker.layerMask = LayerStorage.principalLookerMask;
 			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
 

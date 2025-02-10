@@ -1,21 +1,35 @@
-﻿using BBTimes.Extensions;
-using BBTimes.CustomComponents;
-using PixelInternalAPI.Classes;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using MTM101BaldAPI.Registers;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Superintendent : NPC, INPCPrefab
+	public class Superintendent : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
-			spriteRenderer[0].sprite = this.GetSprite(46f, "Superintendent.png");
+			strikeSprites = this.GetSpriteSheet(4, 1, 46f, "Superintendent.png");
+			spriteRenderer[0].sprite = strikeSprites[0];
+
 			audMan = GetComponent<AudioManager>();
-			audOverHere = this.GetSound("Superintendent.wav", "Vfx_SI_BaldiHere", SoundType.Voice, new(0f, 0f, 0.796875f));
+			audBaldiOverHere = this.GetSound("Superintendent.wav", "Vfx_SI_BaldiHere_1", SoundType.Voice, new(0f, 0f, 0.796875f));
+			audBaldiOverHere.additionalKeys = [
+				new() { key = "Vfx_SI_BaldiHere_2", time = 0.449f },
+				new() { key = "Vfx_SI_BaldiHere_3", time = 1.084f },
+				new() { key = "Vfx_SI_BaldiHere_4", time = 1.515f }
+				];
+			audHere = this.GetSound("Superintendent_Hey.wav", "Vfx_SI_Hey_1", SoundType.Voice, new(0f, 0f, 0.796875f));
+			audHere.additionalKeys = [
+				new() { key = "Vfx_SI_Hey_2", time = 0.431f },
+				];
+
+			renderer = spriteRenderer[0];
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
+		public string Name { get; set; }
+		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
 		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
@@ -36,10 +50,16 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.maxSpeed = stop ? 0f : speed;
 			navigator.SetSpeed(stop ? 0f : speed);
 		}
-		public void CalloutBaldi(PlayerManager p)
+		public void Angry()
 		{
-			audMan.PlaySingle(audOverHere);
-			ec.MakeNoise(p.transform.position, noiseVal);
+			navigator.maxSpeed = angrySpeed;
+			navigator.SetSpeed(angrySpeed);
+		}
+		public void Callout(bool actualCallout, Vector3 position)
+		{
+			audMan.PlaySingle(actualCallout ? audBaldiOverHere : audHere);
+			if (actualCallout)
+				ec.MakeNoise(position, noiseVal);
 		}
 		public RoomController GetCandidateRoom()
 		{
@@ -82,39 +102,78 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			float num = Mathf.Abs((transform.position - entity.transform.position).magnitude);
 			if (num > dragBreakDistance)
-			{
-				moveMod.movementAddend = Vector3.zero;
-				moveMod.movementMultiplier = 1f;
 				return false;
-			}
-			moveMod.movementAddend = (transform.position - entity.transform.position).normalized * (dragSpeed + num) * TimeScale;
-			moveMod.movementMultiplier = dragMultiplier;
+
+			entity.Teleport(transform.position);
 			return true;
 		}
-		public void ReleaseOrNot(Entity entity, bool release)
+
+		public bool TryOverrideEntity(Entity entity)
 		{
-			if (release)
-				entity.ExternalActivity.moveMods.Remove(moveMod);
-			else
-				entity.ExternalActivity.moveMods.Add(moveMod);
+			if (entity.Override(overrider))
+			{
+				overrider.SetInteractionState(false);
+				overrider.SetVisible(false);
+				overrider.SetBlinded(true);
+				overrider.SetHeight(5.75f); // Being grabbed lol
+				return true;
+			}
+
+			return false;
 		}
+
+		public bool GetAStrikeAndTellIfItIsAngry()
+		{
+			bool angry = false;
+			if (++strikeVal >= strikeSprites.Length - 1)
+			{
+				strikeVal = strikeSprites.Length - 1;
+				angry = true;
+			}
+
+			renderer.sprite = strikeSprites[strikeVal];
+
+			return angry;
+		}
+
+		public void FlushStrikeVal()
+		{
+			strikeVal = 0;
+			renderer.sprite = strikeSprites[strikeVal];
+		}
+
+		public void Release() =>
+			overrider.Release();
+
+		readonly EntityOverrider overrider = new();
 
 
 		readonly List<RoomController> _potentialRooms = [];
 		DijkstraMap roomMap;
-		readonly MovementModifier moveMod = new(Vector3.zero, 1f);
+		readonly HashSet<NPC> sawNpcs = [];
+		public void AddNpc(NPC npc) => sawNpcs.Add(npc);
+		public bool HasNpc(NPC npc) => sawNpcs.Contains(npc);
+		public int NpcsSighted => sawNpcs.Count;
+		public void ClearNpcs() => sawNpcs.Clear();
+		public void RemoveNpc(NPC npc) => sawNpcs.Remove(npc);
 
 		[SerializeField]
-		internal SoundObject audOverHere;
+		internal SoundObject audBaldiOverHere, audHere;
 
 		[SerializeField]
 		internal AudioManager audMan;
 
 		[SerializeField]
-		internal float dragBreakDistance = 20f, dragMultiplier = 0.15f, dragSpeed = 25f, maxCooldownAfterDuty = 25f, lockTime = 5f, maxNoticeCooldown = 2.25f;
+		internal SpriteRenderer renderer;
 
+		[SerializeField]
+		internal Sprite[] strikeSprites;
+
+		[SerializeField]
+		internal float dragBreakDistance = 20f, dragMultiplier = 0.15f, dragSpeed = 25f, maxCooldownAfterDuty = 15f, lockTime = 5f, maxNoticeCooldown = 2.25f, speed = 30f, angrySpeed = 55f;
+
+		int strikeVal = 0;
 		const int noiseVal = 107;
-		const float speed = 30f;
 
 		public static void AddAllowedRoom(RoomCategory room) => allowedRooms.Add(room);
 
@@ -132,48 +191,58 @@ namespace BBTimes.CustomContent.NPCs
 
 		float noticeCooldown = s.maxNoticeCooldown;
 
-		bool active => cooldown <= 0f;
+		bool Active => cooldown <= 0f;
+		bool NpcDetected => s.NpcsSighted != 0;
+
+		bool playerDetected = false, stopOrNot = false;
 
 		public override void PlayerSighted(PlayerManager player)
 		{
 			base.PlayerSighted(player);
-			if (active)
+			if (Active)
 				noticeCooldown = s.maxNoticeCooldown;
-			
+
 		}
 
 		public override void InPlayerSight(PlayerManager player)
 		{
 			base.InPlayerSight(player);
-			if (!active)
+			if (!Active)
 				return;
 
 			if (!player.Tagged && !Superintendent.allowedRooms.Contains(player.plm.Entity.CurrentRoom.category))
 			{
-				s.StopOrNot(true);
+				playerDetected = true;
 				noticeCooldown -= s.TimeScale * Time.deltaTime;
 				if (noticeCooldown <= 0f)
 				{
-					s.behaviorStateMachine.ChangeState(new Superintendent_TargetPlayer(s, player));
-					s.CalloutBaldi(player);
+					cooldown = s.maxCooldownAfterDuty;
+					noticeCooldown = s.maxNoticeCooldown;
+					bool angry = s.GetAStrikeAndTellIfItIsAngry();
+					s.Callout(angry, player.transform.position);
+
+
+					if (angry)
+					{
+						s.StopOrNot(false);
+						s.behaviorStateMachine.ChangeState(new Superintendent_TargetPlayer(s, player));
+					}
 				}
 				return;
 			}
-			if (noticeCooldown < s.maxNoticeCooldown)
-			{
-				noticeCooldown = s.maxNoticeCooldown;
-			}
+			playerDetected = false;
 
 		}
 
 		public override void PlayerLost(PlayerManager player)
 		{
 			base.PlayerLost(player);
-			if (active && noticeCooldown < s.maxNoticeCooldown)
+			if (Active && noticeCooldown < s.maxNoticeCooldown)
 			{
 				noticeCooldown = s.maxNoticeCooldown;
-				s.StopOrNot(false);
 			}
+
+			playerDetected = false;
 		}
 
 
@@ -181,6 +250,9 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			ChangeNavigationState(new NavigationState_WanderRounds(s, 0));
+
+			if (hasCooldown)
+				s.FlushStrikeVal();
 		}
 
 		public override void DestinationEmpty()
@@ -192,15 +264,62 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			if (active) return;
 
-			if (cooldown > 0f)
-				cooldown -= s.TimeScale * Time.deltaTime;
-			else
-				noticeCooldown = s.maxNoticeCooldown;
+			bool canStop = Active && (playerDetected || NpcDetected);
+			if (canStop != stopOrNot)
+			{
+				stopOrNot = canStop;
+				s.StopOrNot(canStop);
+			}
+
+			if (!Active)
+			{
+				if (cooldown > 0f)
+					cooldown -= s.TimeScale * Time.deltaTime;
+				return;
+			}
+
+
+			if (!s.Blinded)
+			{
+				foreach (NPC npc in s.ec.Npcs)
+				{
+					if (npc != s && npc.Navigator.isActiveAndEnabled)
+					{
+						var meta = npc.GetMeta();
+						if ((meta == null || meta.tags.Contains("student")) && npc.Navigator.Entity.CurrentRoom && !Superintendent.allowedRooms.Contains(npc.Navigator.Entity.CurrentRoom.category) && s.looker.RaycastNPC(npc))
+						{
+							s.AddNpc(npc);
+
+							noticeCooldown -= s.TimeScale * Time.deltaTime;
+							if (noticeCooldown <= 0f)
+							{
+								cooldown = s.maxCooldownAfterDuty;
+								noticeCooldown = s.maxNoticeCooldown;
+								bool angry = s.GetAStrikeAndTellIfItIsAngry();
+								s.Callout(angry, npc.transform.position);
+								s.ClearNpcs();
+
+								if (angry)
+								{
+									s.StopOrNot(false);
+									s.behaviorStateMachine.ChangeState(new Superintendent_TargetNPC(s, npc));
+								}
+							}
+							break;
+
+						}
+						else if (s.HasNpc(npc))
+						{
+							s.RemoveNpc(npc);
+							noticeCooldown = s.maxNoticeCooldown;
+						}
+					}
+				}
+			}
 		}
 
-		
+
 	}
 
 	internal class Superintendent_TargetPlayer(Superintendent s, PlayerManager pm) : Superintendent_Statebase(s)
@@ -210,7 +329,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			s.StopOrNot(false);
+			s.Angry();
 			tarPlayer = new(s, 63, pm.transform.position);
 			ChangeNavigationState(tarPlayer);
 		}
@@ -234,10 +353,9 @@ namespace BBTimes.CustomContent.NPCs
 		public override void OnStateTriggerStay(Collider other)
 		{
 			base.OnStateTriggerStay(other);
-			if (other.gameObject == pm.gameObject)
-			{
-				s.behaviorStateMachine.ChangeState(new Superintendent_DragPlayerToClass(s, pm));
-			}
+			if (other.gameObject == pm.gameObject && s.TryOverrideEntity(pm.plm.Entity))
+				s.behaviorStateMachine.ChangeState(new Superintendent_DragEntityToClass(s, pm.plm.Entity, pm));
+
 		}
 
 		public override void Exit()
@@ -247,16 +365,71 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-	internal class Superintendent_DragPlayerToClass(Superintendent s, PlayerManager pm) : Superintendent_Statebase(s)
+	internal class Superintendent_TargetNPC(Superintendent s, NPC target) : Superintendent_Statebase(s)
 	{
+		readonly NPC target = target;
+		NavigationState_TargetPlayer tarNpc;
+		public override void Enter()
+		{
+			base.Enter();
+			s.Angry();
+			tarNpc = new(s, 63, target.transform.position);
+			ChangeNavigationState(tarNpc);
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			if (target)
+				tarNpc.UpdatePosition(target.transform.position);
+			else
+				s.behaviorStateMachine.ChangeState(new Superintendent_WanderAround(s));
+		}
+
+		public override void PlayerInSight(PlayerManager player)
+		{
+			base.PlayerInSight(player);
+			if (player == target)
+			{
+				ChangeNavigationState(tarNpc);
+				tarNpc.UpdatePosition(player.transform.position);
+			}
+		}
+
+		public override void DestinationEmpty()
+		{
+			base.DestinationEmpty();
+			ChangeNavigationState(new NavigationState_WanderRounds(s, 0));
+		}
+
+		public override void OnStateTriggerStay(Collider other)
+		{
+			base.OnStateTriggerStay(other);
+			if (other.gameObject == target.gameObject && s.TryOverrideEntity(target.Navigator.Entity))
+				s.behaviorStateMachine.ChangeState(new Superintendent_DragEntityToClass(s, target.Navigator.Entity, npc: target));
+
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			tarNpc.priority = 0;
+		}
+	}
+
+	internal class Superintendent_DragEntityToClass(Superintendent s, Entity e, PlayerManager pm = null, NPC npc = null) : Superintendent_Statebase(s)
+	{
+		readonly Entity e = e;
 		readonly PlayerManager pm = pm;
+		readonly NPC tarNpc = npc;
+
 		readonly RoomController room = s.GetCandidateRoom();
 		NavigationState_TargetPosition tarPos;
 
 		public override void Enter()
 		{
 			base.Enter();
-			s.ReleaseOrNot(pm.plm.Entity, false);
+			s.Angry();
 			tarPos = new(s, 63, room.RandomEventSafeCellNoGarbage().FloorWorldPosition);
 			ChangeNavigationState(tarPos);
 		}
@@ -264,9 +437,12 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			if (!s.Drag(pm.plm.Entity))
+			if (!s.Drag(e))
 			{
-				s.behaviorStateMachine.ChangeState(new Superintendent_TargetPlayer(s, pm));
+				if (pm)
+					s.behaviorStateMachine.ChangeState(new Superintendent_TargetPlayer(s, pm));
+				else
+					s.behaviorStateMachine.ChangeState(new Superintendent_TargetNPC(s, tarNpc));
 			}
 		}
 
@@ -280,7 +456,7 @@ namespace BBTimes.CustomContent.NPCs
 					room.doors[i].Shut();
 					room.doors[i].LockTimed(s.lockTime);
 				}
-				pm.Teleport(tarPos.destination);
+				e.Teleport(tarPos.destination);
 				s.behaviorStateMachine.ChangeState(new Superintendent_WanderAround(s, true));
 			}
 			else
@@ -291,7 +467,8 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Exit();
 			tarPos.priority = 0;
-			s.ReleaseOrNot(pm.plm.Entity, true);
+			s.Release();
+			s.StopOrNot(false);
 		}
 	}
 }

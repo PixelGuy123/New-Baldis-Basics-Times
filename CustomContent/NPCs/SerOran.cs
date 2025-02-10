@@ -448,7 +448,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 			eatCooldown -= or.TimeScale * Time.deltaTime;
-			if (eatCooldown <= 0f)
+			if (eatCooldown <= 0f || or.Navigator.Entity.InteractionDisabled || !or.Navigator.Entity.InBounds)
 				or.TakePlayerOut();
 
 			pm.Teleport(or.transform.position + ((or.Navigator.NextPoint - or.transform.position).normalized * 2f));

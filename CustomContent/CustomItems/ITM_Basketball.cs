@@ -5,6 +5,7 @@ using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -139,6 +140,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Timer(Entity e, bool destroy = true)
 		{
+			affectedEntities.Add(e);
 			e.ExternalActivity.moveMods.Add(moveMod);
 			float cooldown = 15f;
 			while (cooldown > 0)
@@ -147,11 +149,22 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			e?.ExternalActivity.moveMods.Remove(moveMod);
+			if (e)
+			{
+				e.ExternalActivity.moveMods.Remove(moveMod);
+				affectedEntities.Remove(e);
+			}
+			
 			if (destroy)
 				Destroy(gameObject);
 
 			yield break;
+		}
+
+		void OnDestroy()
+		{
+			for (int i = 0; i < affectedEntities.Count; i++)
+				affectedEntities[i]?.ExternalActivity.moveMods.Remove(moveMod);
 		}
 
 		GameObject target = null;
@@ -159,6 +172,7 @@ namespace BBTimes.CustomContent.CustomItems
 		float frame = 0f, lifeTime = 160f;
 		bool hasHit = false;
 		EnvironmentController ec;
+		readonly List<Entity> affectedEntities = [];
 
 		[SerializeField]
 		internal Entity entity;

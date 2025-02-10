@@ -2,6 +2,7 @@
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,8 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public void SetupPrefab()
 		{
+			gameObject.layer = LayerStorage.standardEntities;
+
 			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "telep.png"));
 			renderer.transform.SetParent(transform);
 			renderer.name = "ThrowableTeleporterVisual";

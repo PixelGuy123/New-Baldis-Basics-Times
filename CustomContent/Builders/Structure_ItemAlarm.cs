@@ -39,7 +39,7 @@ namespace BBTimes.CustomContent.Builders
 			base.OnGenerationFinished(lg);
 
 			var potentialPickups = new List<Pickup>(ec.items);
-			potentialPickups.RemoveAll(pic => !pic.free);
+			potentialPickups.RemoveAll(pic => !pic.free || pic.showDescription); // Only store items show description... Hopefully that stays like that
 
 			if (potentialPickups.Count == 0)
 			{

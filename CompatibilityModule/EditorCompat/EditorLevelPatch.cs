@@ -195,6 +195,10 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddNPC("winTerry", "Winterry");
 			AddNPC("ZapZap", "ZapZap");
 
+			string[] files = Directory.GetFiles(Path.Combine(BasePlugin.ModPath, "EditorUI"));
+			for (int i = 0; i < files.Length; i++)
+				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
+
 			// ************* Local Methods ***************
 
 			static void MarkRotatingObject(GameObject obj, Vector3 offset)
@@ -289,9 +293,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 		[HarmonyPostfix]
 		static void InitializeStuff(PlusLevelEditor __instance)
 		{
-			string[] files = Directory.GetFiles(Path.Combine(BasePlugin.ModPath, "EditorUI"));
-			for (int i = 0; i < files.Length; i++)
-				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
+			
 
 			__instance.toolCats.Find(x => x.name == "items").tools.AddRange(itemsToAdd.ConvertAll(x => new TimesItem(x.Key, x.Value)));
 			__instance.toolCats.Find(x => x.name == "characters").tools.AddRange(npcsToAdd.ConvertAll(x => new TimesNPC(x.Key, x.Value)));

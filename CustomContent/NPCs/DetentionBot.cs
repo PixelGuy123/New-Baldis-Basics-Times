@@ -125,7 +125,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void InsertItem(PlayerManager pm, EnvironmentController ec) =>
 			behaviorStateMachine.ChangeState(new DetentionBot_Wandering(this));
-		
+
 
 
 		[SerializeField]
@@ -207,19 +207,11 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				foreach (NPC npc in bot.ec.Npcs)
 				{
-					if (npc != bot && npc.Disobeying)
+					if (npc != bot && npc.Disobeying && bot.looker.RaycastNPC(npc))
 					{
-						bot.looker.Raycast(npc.transform, Mathf.Min(
-					(bot.transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,
-					bot.looker.distance,
-					npc.ec.MaxRaycast
-						), out bool flag);
-						if (flag)
-						{
-							bot.TroubleMakerDetected();
-							bot.behaviorStateMachine.ChangeState(new DetentionBot_GoAfterNPC(bot, npc));
-							break;
-						}
+						bot.TroubleMakerDetected();
+						bot.behaviorStateMachine.ChangeState(new DetentionBot_GoAfterNPC(bot, npc));
+						break;
 					}
 				}
 			}
@@ -366,7 +358,7 @@ namespace BBTimes.CustomContent.NPCs
 				return;
 			}
 
-			
+
 			if (!bot.Drag(entity))
 			{
 				bot.AlarmTroubleMakerEscaping();

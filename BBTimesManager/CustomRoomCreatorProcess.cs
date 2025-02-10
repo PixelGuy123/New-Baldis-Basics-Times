@@ -951,7 +951,7 @@ namespace BBTimes.Manager
 				new()
 				{
 					chance = 0.75f,
-					potentialReplacements = [new() { selection = DecorsPlugin.Get<GameObject>("editorPrefab_SaltAndHot").transform, weight = 100 }],
+					potentialReplacements = [new() { selection = ModifyExistingBillboard(DecorsPlugin.Get<GameObject>("editorPrefab_SaltAndHot"), Vector3.up * 1.2f).transform, weight = 100 }],
 					prefabToSwap = lunchObj
 				},
 				new()
@@ -1437,6 +1437,15 @@ namespace BBTimes.Manager
 
 
 				return obj;
+			}
+
+			RendererContainer ModifyExistingBillboard(GameObject billboard, Vector3 newOffset)
+			{
+				var clone = billboard.GetComponent<RendererContainer>().DuplicatePrefab();
+				clone.name = "Times_Modified_" + billboard.name;
+				foreach (var renderer in clone.renderers)
+					renderer.transform.localPosition = newOffset;
+				return clone;
 			}
 
 		}

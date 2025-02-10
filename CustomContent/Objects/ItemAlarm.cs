@@ -15,9 +15,15 @@ namespace BBTimes.CustomContent.Objects
 
 		void OnItemCollected(Pickup pickup, int player)
 		{
+			if (triggered)
+				return;
+
+			triggered = true;
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audAlarm);
 			ec.MakeNoise(Singleton<CoreGameManager>.Instance.GetPlayer(player).transform.position, noiseValue);
+			ec.GetBaldi()?.GetExtraAnger(angerLevel);
+
 			if (shakeCor != null)
 				StopCoroutine(shakeCor);
 			shakeCor = StartCoroutine(Shake());
@@ -61,8 +67,11 @@ namespace BBTimes.CustomContent.Objects
 		[SerializeField]
 		internal int noiseValue = 48;
 
+		[SerializeField]
+		internal float angerLevel = 2.5f;
+
 		Pickup linkedPickup;
 		public Pickup LinkedPickup => linkedPickup;
-		bool initialized = false;
+		bool initialized = false, triggered = false;
 	}
 }

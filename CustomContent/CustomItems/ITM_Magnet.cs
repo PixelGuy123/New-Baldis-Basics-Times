@@ -4,6 +4,7 @@ using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using BBTimes.Extensions;
 using BBTimes.CustomComponents;
+using PixelInternalAPI.Classes;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -11,6 +12,8 @@ namespace BBTimes.CustomContent.CustomItems
 	{
 		public void SetupPrefab()
 		{
+			gameObject.layer = LayerStorage.standardEntities;
+
 			var storedSprites = this.GetSpriteSheet(2, 2, 35f, "magnet.png");
 			renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]);
 			renderer.transform.SetParent(transform);

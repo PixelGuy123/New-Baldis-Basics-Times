@@ -11,6 +11,8 @@ namespace BBTimes.CustomContent.CustomItems
     {
 		public void SetupPrefab()
 		{
+			gameObject.layer = LayerStorage.standardEntities;
+
 			item = ItmObj.itemType;
 
 			var sprs = this.GetSpriteSheet(7, 1, 25f, "floatingHammer.png");
