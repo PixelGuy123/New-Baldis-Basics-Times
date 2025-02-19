@@ -365,7 +365,7 @@ namespace BBTimes
 					//for (int i = 0; i < 5; i++)
 					//	ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddToArray(builder);
 
-					sco.additionalNPCs += 2;
+					//sco.additionalNPCs += 2;
 					ld.additionTurnChance += 10;
 					ld.bridgeTurnChance += 4;
 					ld.outerEdgeBuffer += 1;
@@ -390,7 +390,7 @@ namespace BBTimes
 					ld.deadEndBuffer = 4;
 					ld.minSpecialRooms = 1;
 					ld.maxSpecialRooms = 2;
-					sco.additionalNPCs += 4;
+					//sco.additionalNPCs += 4;
 					ld.additionTurnChance += 5;
 					ld.bridgeTurnChance += 3;
 					ld.outerEdgeBuffer += 3;
@@ -422,7 +422,7 @@ namespace BBTimes
 				{
 					ld.minSpecialRooms += 1;
 					ld.maxSpecialRooms += 2;
-					sco.additionalNPCs += 4;
+					//sco.additionalNPCs += 4;
 					ld.additionTurnChance += 15;
 					ld.bridgeTurnChance += 6;
 					ld.extraDoorChance = 0.5f;
@@ -456,7 +456,7 @@ namespace BBTimes
 					ld.minSpecialRooms = 1;
 					ld.maxSpecialRooms = 2;
 					ld.deadEndBuffer = 3;
-					sco.additionalNPCs += 4;
+					//sco.additionalNPCs += 4;
 					ld.additionTurnChance += 25;
 					ld.bridgeTurnChance += 6;
 					ld.outerEdgeBuffer += 3;

@@ -34,7 +34,7 @@ namespace BBTimes.CustomContent.Builders
 
 		// Prefab stuff above ^^
 
-		public override void OnGenerationFinished(LevelGenerator lg)
+		public override void OnGenerationFinished(LevelBuilder lg)
 		{
 			base.OnGenerationFinished(lg);
 

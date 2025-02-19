@@ -9,6 +9,7 @@ using System.Reflection.Emit;
 using UnityEngine;
 using BBTimes.CustomComponents;
 using System;
+using System.Reflection;
 
 namespace BBTimes.CompatibilityModule
 {
@@ -16,62 +17,88 @@ namespace BBTimes.CompatibilityModule
 	[ConditionalPatchMod("rost.moment.baldiplus.extramod")]
 	internal static class BBExtraCompat
 	{
-		[HarmonyPatch(typeof(ZeroPrize), "Initialize")]
-		[HarmonyPrefix]
-		static void ZeroPrizeQuantum(ref float ___moveModMultiplier, ref float ___speed, ref float ___minActive, ref float ___maxActive, ref float ___minWait, ref float ___maxWait)
+
+		[HarmonyTargetMethod]
+		static MethodInfo GiveMeQuantumSetting() =>
+			AccessTools.Method("BBE.CustomClasses.QuantumSweepFunSetting:OnNPCSpawn");
+
+		[HarmonyPostfix]
+		static void QuantumNpcSpawnPatch(NPC npc)
 		{
-			if (FunSettingsType.HardMode.IsActive())
+			if (npc is ZeroPrize prize) 
 			{
-				___moveModMultiplier = 0.99f;
+				prize.speed = 250f;
+				prize.minActive = int.MaxValue;
+				prize.maxActive = int.MaxValue;
+				prize.minWait = 1f;
+				prize.maxWait = 1f;
+				return;
 			}
 
-			if (FunSettingsType.QuantumSweep.IsActive())
+			if (npc is CoolMop coolMop)
 			{
-				___speed = 250f;
-				___minActive = int.MaxValue;
-				___maxActive = int.MaxValue;
-				___minWait = 1f;
-				___maxWait = 1f;
+				coolMop.speed = 250f;
+				coolMop.minActive = int.MaxValue;
+				coolMop.maxActive = int.MaxValue;
+				coolMop.minWait = 1f;
+				coolMop.maxWait = 1f;
+				return;
+			}
+
+			if (npc is Mopliss mopliss)
+			{
+				mopliss.speed = 125f;
+				mopliss.minWait = 1f;
+				mopliss.maxWait = 1f;
+				return;
 			}
 		}
 
-		[HarmonyPatch(typeof(CoolMop), "Initialize")]
-		[HarmonyPrefix]
-		static void QuantumMop(ref float ___slipDropCooldown, ref int ___slipsPerTile, ref float ___speed, ref float ___minActive, ref float ___maxActive, ref float ___minWait, ref float ___maxWait)
+		[HarmonyTargetMethod]
+		static MethodInfo GiveMeHardSetting() =>
+			AccessTools.Method("BBE.CustomClasses.HardModeFunSetting:OnNPCSpawn");
+
+		[HarmonyPostfix]
+		static void HardNpcSpawnPatch(NPC npc)
 		{
-			if (FunSettingsType.HardMode.IsActive())
+			if (npc is ZeroPrize prize)
 			{
-				___slipsPerTile = 15;
-				___slipDropCooldown = 0.5f;
+				prize.moveModMultiplier = 0.99f;
+				return;
 			}
 
-			if (FunSettingsType.QuantumSweep.IsActive())
+			if (npc is CoolMop coolMop)
 			{
-				___speed = 250f;
-				___minActive = int.MaxValue;
-				___maxActive = int.MaxValue;
-				___minWait = 1f;
-				___maxWait = 1f;
+				coolMop.slipsPerTile = 15;
+				coolMop.slipDropCooldown = 0.5f;
+				return;
+			}
+
+			if (npc is Mopliss mopliss)
+			{
+				mopliss.roomsPerActivation = mopliss.ec.rooms.Count;
+				mopliss.slipperRadius = 12;
+				return;
 			}
 		}
 
-		[HarmonyPatch(typeof(Mopliss), "Initialize")]
-		[HarmonyPrefix]
-		static void QuantumMopliss(EnvironmentController ___ec, ref int ___roomsPerActivation, ref int ___slipperRadius, ref float ___speed, ref float ___minWait, ref float ___maxWait)
-		{
-			if (FunSettingsType.HardMode.IsActive())
-			{
-				___roomsPerActivation = ___ec.rooms.Count;
-				___slipperRadius = 12;
-			}
+		//[HarmonyPatch(typeof(Mopliss), "Initialize")]
+		//[HarmonyPrefix]
+		//static void QuantumMopliss(EnvironmentController ___ec, ref int ___roomsPerActivation, ref int ___slipperRadius, ref float ___speed, ref float ___minWait, ref float ___maxWait)
+		//{
+		//	if (FunSettingsType.HardMode.IsActive())
+		//	{
+		//		___roomsPerActivation = ___ec.rooms.Count;
+		//		___slipperRadius = 12;
+		//	}
 
-			if (FunSettingsType.QuantumSweep.IsActive())
-			{
-				___speed = 125f;
-				___minWait = 1f;
-				___maxWait = 1f;
-			}
-		}
+		//	if (FunSettingsType.QuantumSweep.IsActive())
+		//	{
+		//		___speed = 125f;
+		//		___minWait = 1f;
+		//		___maxWait = 1f;
+		//	}
+		//}
 	}
 	/* Not needed anymore */
 	//[HarmonyPatch]
