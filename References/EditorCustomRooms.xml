@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EditorCustomRooms</name>
+    </assembly>
+    <members>
+        <member name="T:EditorCustomRooms.RoomFactory">
+            <summary>
+            A builder class to take care of the <see cref="T:RoomAsset"/> creation.
+            </summary>
+        </member>
+        <member name="M:EditorCustomRooms.RoomFactory.CreateAssetFromPath(System.String,System.Int32,System.Boolean,RoomFunctionContainer,System.Boolean,System.Boolean,UnityEngine.Texture2D,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a <see cref="T:RoomAsset"/> object based on the provided .cbld file.
+            </summary>
+            <param name="path">The path to the required .cbld file.</param>
+            <param name="maxItemValue">The maximum starting value of the room to "afford" an item to appear inside the room.</param>
+            <param name="isOffLimits">If the room is off limits (for example, an elevator).</param>
+            <param name="existingContainer">The <see cref="T:RoomFunctionContainer"/> of a RoomAsset. Generally, every BB+ room points to a single Container of their collection, for example, Faculty has a single container shared to every asset that is supposed to be a faculty. Leaving this null will result in the creation of a unique container for the room.
+            <para>If the asset shouldn't have a container, it can be manually destroyed after the creation of the RoomAsset.</para>
+            </param>
+            <param name="isAHallway">If True, the asset will follow specific parameters to match a hallway format.</param>
+            <param name="isASecretRoom">If True, every tile in the room will be marked as secret. Like the Mystery Room.</param>
+            <param name="mapBg">The background image that appears over the room in the Advanced Map. Leaving null will make the asset use the default map material, with no background animation.</param>
+            <param name="keepTextures">If True, when passed to the generator, it won't change its textures if it's a potential classroom/faculty/office type.</param>
+            <param name="squaredShape">If True, the room will (internally) turn into a square shape. This is highly recommended for loading Special Rooms.</param>
+            <returns>A new instance of a <see cref="T:RoomAsset"/></returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:EditorCustomRooms.RoomFactory.CreateAssetsFromPath(System.String,System.Int32,System.Boolean,RoomFunctionContainer,System.Boolean,System.Boolean,UnityEngine.Texture2D,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a collection of <see cref="T:RoomAsset"/> objects based on the .cbld file provided.
+            </summary>
+            <param name="path">The path to the required .cbld file.</param>
+            <param name="maxItemValue">The maximum starting value of the room to "afford" an item to appear inside the room.</param>
+            <param name="isOffLimits">If the room is off limits (for example, an elevator).</param>
+            <param name="existingContainer">The <see cref="T:RoomFunctionContainer"/> of a RoomAsset. Generally, every BB+ room points to a single Container of their collection, for example, Faculty has a single container shared to every asset that is supposed to be a faculty. Leaving this null will result in the creation of a unique container for the room.
+            <para>If the asset shouldn't have a container, it can be manually destroyed after the creation of the RoomAsset.</para>
+            </param>
+            <param name="isAHallway">If True, the asset will follow specific parameters to match a hallway format.</param>
+            <param name="isASecretRoom">If True, every tile in the room will be marked as secret. Like the Mystery Room.</param>
+            <param name="mapBg">The background image that appears over the room in the Advanced Map. Leaving null will make the asset use the default map material, with no background animation.</param>
+            <param name="keepTextures">If True, when passed to the generator, it won't change its textures if it's a potential classroom/faculty/office type.</param>
+            <param name="squaredShape">If True, the room will (internally) turn into a square shape. This is highly recommended for loading Special Rooms.</param>
+            <returns>A new instance of a <see cref="T:RoomAsset"/></returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+    </members>
+</doc>

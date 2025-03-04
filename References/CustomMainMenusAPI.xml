@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CustomMainMenusAPI</name>
+    </assembly>
+    <members>
+        <member name="T:CustomMainMenusAPI.MainMenuObject">
+            <summary>
+            This is the class from the api, which holds the data necessary for the main menu changes. Use its static methods to create an instance of this object.
+            </summary>
+        </member>
+        <member name="M:CustomMainMenusAPI.MainMenuObject.CreateMenuObject(System.String,UnityEngine.Sprite,SoundObject,System.String)">
+            <summary>
+            This method will create an instance of the class and automatically register it to the api.
+            </summary>
+            <param name="localizedName">The *localized* name of the menu to be displayed in the options.</param>
+            <param name="newMenu">The new image that the menu will use.</param>
+            <param name="audSpeech">The speech that the menu will have (like BBCR does).</param>
+            <param name="newMidi">The new song that the menu will have (must be midi).</param>
+        </member>
+        <member name="M:CustomMainMenusAPI.MainMenuObject.CreateMenuObject(System.String,UnityEngine.Sprite,SoundObject)">
+            <summary>
+            This method will create an instance of the class and automatically register it to the api.
+            </summary>
+            <param name="localizedName">The *localized* name of the menu to be displayed in the options.</param>
+            <param name="newMenu">The new image that the menu will use.</param>
+            <param name="audSpeech">The speech that the menu will have (like BBCR does).</param>
+        </member>
+        <member name="M:CustomMainMenusAPI.MainMenuObject.CreateMenuObject(System.String,UnityEngine.Sprite,System.String)">
+            <summary>
+            This method will create an instance of the class and automatically register it to the api.
+            </summary>
+            <param name="localizedName">The *localized* name of the menu to be displayed in the options.</param>
+            <param name="newMenu">The new image that the menu will use.</param>
+            <param name="newMidi">The new song that the menu will have (must be midi).</param>
+        </member>
+        <member name="M:CustomMainMenusAPI.MainMenuObject.CreateMenuObject(System.String,UnityEngine.Sprite)">
+            <summary>
+            This method will create an instance of the class and automatically register it to the api.
+            </summary>
+            <param name="localizedName">The *localized* name of the menu to be displayed in the options.</param>
+            <param name="newMenu">The new image that the menu will use.</param>
+        </member>
+    </members>
+</doc>

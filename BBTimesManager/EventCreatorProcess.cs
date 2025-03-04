@@ -31,16 +31,6 @@ namespace BBTimes.Manager
 			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 50 });
 
-			// BlackOut
-			e = new RandomEventBuilder<BlackOut>(plug.Info)
-				.SetEnum("Blackout")
-				.SetMinMaxTime(55f, 90f)
-				.SetName("Blackout")
-				.Build()
-				.SetupEvent();
-
-			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
-
 			// Freezing Event
 			e = new RandomEventBuilder<FrozenEvent>(plug.Info)
 				.SetEnum("Frozenschool")
@@ -50,8 +40,6 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupEvent();
 
-
-			
 			floorDatas[1].Events.Add(new() { selection = e, weight = 75 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 25 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 35 });
@@ -109,19 +97,6 @@ namespace BBTimes.Manager
 			floorDatas[1].Events.Add(new() { selection = e, weight = 25 });
 			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
 			floorDatas[3].Events.Add(new() { selection = e, weight = 35 });
-
-			// Shuffling Chaos
-			e = new RandomEventBuilder<ShufflingChaos>(plug.Info)
-				.SetEnum("Shufflingchaos")
-				.SetMinMaxTime(120f, 155f)
-				.SetName("ShufflingChaos")
-				.Build()
-				.SetupEvent();
-
-
-			floorDatas[1].Events.Add(new() { selection = e, weight = 10 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 35 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 55 }); //55
 
 			// Super Fans
 			e = new RandomEventBuilder<SuperFans>(plug.Info)

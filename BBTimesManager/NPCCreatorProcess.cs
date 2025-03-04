@@ -57,23 +57,6 @@ namespace BBTimes.Manager
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 100 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 90 });
 
-			// Crazy Clock
-			npc = new NPCBuilder<CrazyClock>(plug.Info)
-				.SetMinMaxAudioDistance(55f, 90f)
-				.AddSpawnableRoomCategories(RoomCategory.Hall)
-				.IgnorePlayerOnSpawn()
-				.SetEnum("CrazyClock")
-				.SetName("Crazy Clock")
-				.SetMetaName("PST_CC_Name")
-				.AddLooker()
-				.SetMaxSightDistance(55)
-				.SetMetaTags(["neither"])
-				.SetStationary()
-				.Build()
-				.SetupNPCData("CrazyClock", "PST_CC_Name", "PST_CC_Desc", 0f);
-			//CreatorExtensions.CreateNPC<CrazyClock, CrazyClockCustomData>("CrazyClock", 55f, 90f, [RoomCategory.Hall], [], "PST_CC_Name", "PST_CC_Desc", ignorePlayerOnSpawn:true, ignoreBelts:true, hasTrigger: false, lookerDistance: 55f, grounded: false).AddMeta(plug, NPCFlags.StandardNoCollide).value;
-			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 20 });
-
 
 			// Superintendent
 			npc = new NPCBuilder<Superintendent>(plug.Info)

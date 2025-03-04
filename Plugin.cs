@@ -61,7 +61,6 @@ namespace BBTimes
 			_cstData.ForEach(x => x.SetupPrefabPost());
 			// Other stuff to setup
 			yield return "Setup the rest of the assets...";
-			BlackOut.sodaMachineLight = GenericExtensions.FindResourceObject<SodaMachine>().GetComponent<MeshRenderer>().materials[1].GetTexture("_LightGuide"); // Yeah, this one I'm looking for lol
 			SnowPile.SetupItemRandomization();
 			Tresent.GatherShopItems();
 			yield return "Creating post assets...";

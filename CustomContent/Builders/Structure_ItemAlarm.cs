@@ -48,6 +48,8 @@ namespace BBTimes.CustomContent.Builders
 				return;
 			}
 
+			var holder = CreateAlarmHolder();
+
 			int amount = lg.controlledRNG.Next(parameters.minMax[0].x, parameters.minMax[0].z + 1);
 
 			for (int i = 0; i < amount; i++)
@@ -56,8 +58,7 @@ namespace BBTimes.CustomContent.Builders
 					break;
 
 				int idx = lg.controlledRNG.Next(potentialPickups.Count);
-				var alarm = Instantiate(alarmPre, 
-					ec.CellFromPosition(potentialPickups[idx].transform.position).ObjectBase);
+				var alarm = Instantiate(alarmPre, holder);
 
 				
 				alarm.AttachToPickup(potentialPickups[idx]);
@@ -67,6 +68,14 @@ namespace BBTimes.CustomContent.Builders
 			}
 
 			Finished();
+		}
+
+		Transform CreateAlarmHolder()
+		{
+			var gb = new GameObject("ItemAlarm_Holder");
+			gb.transform.SetParent(ec.transform);
+			gb.transform.localPosition = Vector3.zero;
+			return gb.transform;
 		}
 
 		[SerializeField]

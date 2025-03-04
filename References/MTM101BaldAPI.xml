@@ -1,0 +1,1782 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MTM101BaldAPI</name>
+    </assembly>
+    <members>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.LocalizationFromFile(System.String,Language)">
+            <summary>
+            Adds the specified file to be queued for load for the specified language.
+            </summary>
+            <param name="path"></param>
+            <param name="lang"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.LocalizationFromFunction(System.Func{Language,System.Collections.Generic.Dictionary{System.String,System.String}})">
+            <summary>
+            Adds the specified function to get called at the end of language loading.
+            The returned dictionary is added to the localization.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.LocalizationFromMod(BepInEx.BaseUnityPlugin)">
+            <summary>
+            Automatically queues the appropiate localization file from the specified mod.
+            Use this if you are porting a mod from a version before 6.0.0.0
+            (AKA: Put JSON files in Language/English/)
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.ModelFromFile(System.String)">
+            <summary>
+            Loads a .obj and .mtl from the specified file.
+            </summary>
+            <returns>The GameObject containing the model</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.ModelFromFileManualMaterials(System.String,System.Collections.Generic.Dictionary{System.String,UnityEngine.Material})">
+            <summary>
+            Loads an .obj file with the manually specified materials
+            </summary>
+            <returns>The GameObject containing the model</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.TexturesFromFolder(System.String,System.String)">
+            <summary>
+            Load textures from a specified folder.
+            </summary>
+            <param name="path"></param>
+            <param name="search"></param>
+            <returns>The array of textures created using the images found.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.MakeReadableCopy(UnityEngine.Texture2D,System.Boolean)">
+            <summary>
+            Makes a readable copy of the specified Texture2D
+            </summary>
+            <param name="source"></param>
+            <param name="apply">If the changed texture should be uploaded to the GPU.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.TexturesFromMod(BepInEx.BaseUnityPlugin,System.String,System.String[])">
+            <summary>
+            Gets textures from a specified folder, starting from the mod's StreamingAssets path.
+            </summary>
+            <param name="plugin"></param>
+            <param name="search"></param>
+            <param name="paths"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.ToSprites(UnityEngine.Texture2D[],System.Single)">
+            <summary>
+            Convert an array of texture into sprites
+            </summary>
+            <param name="textures"></param>
+            <param name="pixelsPerUnit"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.TextureFromFile(System.String)">
+            <summary>
+            Load a texture from a file.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.TextureFromFile(System.String,UnityEngine.TextureFormat)">
+            <summary>
+            Load a texture from a file with the specified format.
+            </summary>
+            <param name="path"></param>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.ReplaceTexture(UnityEngine.Texture2D,UnityEngine.Texture2D)">
+            <summary>
+            Replace the image data of one texture with another.
+            They must be the exact same size.
+            </summary>
+            <param name="toReplace">The texture to override the texture of.</param>
+            <param name="replacement">The replacement texture.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.ReplaceTexture(System.String,UnityEngine.Texture2D)">
+            <summary>
+            Find a texture with the specified name and replace it's image data with the data of replacement.
+            </summary>
+            <param name="toReplace"></param>
+            <param name="replacement"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.AttemptConvertTo(UnityEngine.Texture2D,UnityEngine.TextureFormat)">
+            <summary>
+            Attempt to convert a texture to another format, deleting the original.
+            </summary>
+            <param name="toConvert"></param>
+            <param name="format"></param>
+            <returns>The texture converted to the new format.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.ReplaceAllTexturesFromFolder(System.String)">
+            <summary>
+            Go through a folder and replace the image data of all textures sharing the same name of the png file.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.AudioClipFromFile(System.String)">
+            <summary>
+            Load an audio clip from a file.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.AudioClipFromFile(System.String,UnityEngine.AudioType)">
+            <summary>
+            Load an audio clip from a file with the specified AudioType.
+            </summary>
+            <param name="path"></param>
+            <param name="type"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.SpriteFromTexture2D(UnityEngine.Texture2D,System.Single)">
+            <summary>
+            Create a sprite from a Texture2D with the origin of the image being the center.
+            </summary>
+            <param name="tex">The texture to use.</param>
+            <param name="pixelsPerUnit">The pixels per unit, a hallway in BB+ is 10 units.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.SpritesFromSpritesheet(System.Int32,System.Int32,System.Single,UnityEngine.Vector2,UnityEngine.Texture2D)">
+            <summary>
+            Generates sprites from the specified spritesheet.
+            </summary>
+            <param name="horizontalTiles">How many tiles this spritesheet has horizontally.</param>
+            <param name="verticalTiles">How many tiles this spritesheet has vertically.</param>
+            <param name="pixelsPerUnit">The pixels per unit for the created sprites.</param>
+            <param name="center">The center for the created sprites.</param>
+            <param name="tex">The texture to use.</param>
+            <returns>The collection of sprites.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.SpritesFromSpritesheet2D(System.Int32,System.Int32,System.Single,UnityEngine.Vector2,UnityEngine.Texture2D)">
+            <summary>
+            Generates sprites from the specified spritesheet.
+            </summary>
+            <param name="horizontalTiles">How many tiles this spritesheet has horizontally.</param>
+            <param name="verticalTiles">How many tiles this spritesheet has vertically.</param>
+            <param name="pixelsPerUnit">The pixels per unit for the created sprites.</param>
+            <param name="center">The center for the created sprites.</param>
+            <param name="tex">The texture to use.</param>
+            <returns>The collection of sprites as a 2D array</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.ToByteArray(System.IO.Stream)">
+            <summary>
+            Convert a stream to a byte array.
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.SpriteFromTexture2D(UnityEngine.Texture2D,UnityEngine.Vector2,System.Single)">
+            <summary>
+            Create a sprite from a Texture2D.
+            </summary>
+            <param name="tex">The texture to use.</param>
+            <param name="center">The center of the sprite, where 0,0 is the top left and 1,1 is the bottom right.</param>
+            <param name="pixelsPerUnit">The pixels per unit, a hallway in BB+ is 10 units.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.SpriteFromFile(System.String,UnityEngine.Vector2,System.Single)">
+            <summary>
+            Creates a sprite from the specified file path.
+            </summary>
+            <param name="filePath">The path to load the texture from.</param>
+            <param name="center">The center of the sprite, where 0,0 is the top left and 1,1 is the bottom right.</param>
+            <param name="pixelsPerUnit">The pixels per unit, a hallway in BB+ is 10 units.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.SpriteFromMod(BepInEx.BaseUnityPlugin,UnityEngine.Vector2,System.Single,System.String[])">
+            <summary>
+            Load a Sprite from the specified path, starting from the specified mod's mod path.
+            </summary>
+            <param name="plug">The mod to load the sprite from</param>
+            <param name="paths">The additional paths to load</param>
+            <param name="pixelsPerUnit">The pixels per unit, a hallway in BB+ is 10 units.</param>
+            <param name="center">The center of the sprite, where 0,0 is the top left and 1,1 is the bottom right.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.LoadLanguageFolder(System.String)">
+            <summary>
+            Load a Language folder from a non-standard place.
+            </summary>
+            <param name="rootPath"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.LoadLocalizationFolder(System.String,Language)">
+            <summary>
+            Queues all the files in the specified localization folder to be loaded.
+            </summary>
+            <param name="rootPath"></param>
+            <param name="lang"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.TextureFromMod(BepInEx.BaseUnityPlugin,System.String[])">
+            <summary>
+            Load a Texture2D from the specified path, starting from the specified mod's mod path.
+            </summary>
+            <param name="plug"></param>
+            <param name="paths"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.AudioClipFromMod(BepInEx.BaseUnityPlugin,System.String[])">
+            <summary>
+            Load an Audioclip from the specified path, starting from the specified mod's mod path.
+            </summary>
+            <param name="plug"></param>
+            <param name="paths"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.GetModPath(BepInEx.BaseUnityPlugin)">
+            <summary>
+            Get a mod's mod path. (Currently StreamingAssets/Modded/[MOD GUID])
+            </summary>
+            <param name="plug"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.MidiFromFile(System.String,System.String)">
+            <summary>
+            Loads a midi file with the specified path.
+            </summary>
+            <param name="path">The filepath of the midi.</param>
+            <param name="id">The ID of the midi, used as a starting point for creating the return value.</param>
+            <returns>The string that can be used in the midi player to play the midi.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.UnloadCustomMidi(System.String)">
+            <summary>
+            Unloads the specified custom midi of the specified ID. This CANNOT unload vanilla midis.
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.MidiFromMod(System.String,BepInEx.BaseUnityPlugin,System.String[])">
+            <summary>
+            Loads a midi file with the specified path starting from the mod path.
+            </summary>
+            <param name="id">The ID of the midi, used as a starting point for creating the return value.</param>
+            <param name="plug">The modpath to get.</param>
+            <param name="paths">The folders to go through starting from the modpath.</param>
+            <returns>The string that can be used in the midi player to play the midi.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.FlipX(UnityEngine.Texture2D,System.Boolean)">
+            <summary>
+            Flips the specified Texture2D horizontally.
+            </summary>
+            <param name="source"></param>
+            <param name="apply">If the changed texture should be uploaded to the GPU.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.FlipY(UnityEngine.Texture2D,System.Boolean)">
+            <summary>
+            Flips the specified Texture2D vertically.
+            </summary>
+            <param name="source"></param>
+            <param name="apply">If the changed texture should be uploaded to the GPU.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.Rotate180(UnityEngine.Texture2D,System.Boolean)">
+            <summary>
+            Rotate specified Texture2D by 180 degrees (flip both horizontally and vertically).
+            </summary>
+            <param name="source"></param>
+            <param name="apply">If the changed texture should be uploaded to the GPU.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.CubemapFromMod(BepInEx.BaseUnityPlugin,System.String[])">
+            <summary>
+            Creates a cubemap from a texture in the specified path, starting from the mod path.
+            </summary>
+            <param name="plugin"></param>
+            <param name="paths"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.CubemapFromFile(System.String)">
+            <summary>
+            Creates a cubemap from a texture in the specified path.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.CubemapFromTexture(UnityEngine.Texture2D)">
+            <summary>
+            Create a cubemap from a Texture2D.
+            </summary>
+            <param name="texture"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.TextureFromCubemap(UnityEngine.Cubemap)">
+            <summary>
+            Unwraps a cubemap and outputs it as a decompressed Texture2D.
+            </summary>
+            <param name="cubemap"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MTM101BaldAPI.AssetTools.AssetManager">
+            <summary>
+            This class provides an (optional) easy and convient way to store mass amounts of asset references.
+            This is useful for storing textures, SoundObjects, NPC references, and more.
+            This class is not meant to be the end all be all of storing and managing assets.
+            However, this is a good starting point for most mods.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.GetUniqueCount">
+            <summary>
+            Get the amount of unique elements in the AssetManager.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.#ctor(System.Type[])">
+            <summary>
+            Create an AssetManager with a custom set of types to be ignored. It is suggested you also add the types in AssetManager.defaultIgnoreTypes
+            </summary>
+            <param name="ignoreTypes"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.#ctor">
+            <summary>
+            Create an AssetManager with the default types ignored.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.ClearAll``1">
+            <summary>
+            Remove all objects of type T from the AssetManager.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.AddRange``1(``0[],System.Func{``0,System.String})">
+            <summary>
+            Add a range of elements to the AssetManager, using the keyFunc to determine the keys.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="range"></param>
+            <param name="keyFunc"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.AddFromResources``1">
+            <summary>
+            Add all resources of the specified type to the AssetManager, using the name as the key.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.ContainsKey(System.String)">
+            <summary>
+            Check if the asset manager contains the specified key.
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.AddRange``1(``0[])">
+            <summary>
+            Add a range of values to the AssetManager, using the .name of the object as the key.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="range"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.AddRange``1(System.Collections.Generic.List{``0})">
+            <summary>
+            Add a range of values to the AssetManager, using the .name of the object as the key.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="range"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.AddRange``1(System.Collections.Generic.Dictionary{``0,System.String},System.String)">
+            <summary>
+            Add a range of values to the AssetManager using a dictionary of object key pairs, with an optional prefix.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="range"></param>
+            <param name="prefix"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.AddRange``1(``0[],System.String[])">
+            <summary>
+            Add a range of values to the AssetManager using an object array and a key array.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="range"></param>
+            <param name="keys"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.AddRange``1(System.Collections.Generic.Dictionary{System.String,``0})">
+            <summary>
+            Add a range of values to the AssetManager using a dictionary of object key pairs.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="range"></param>
+        </member>
+        <member name="T:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder">
+            <summary>
+            A builder for procedural textures, AKA textures generated with other textures.
+            <b>This is slow! Please avoid using this for real time applications, preferably use when loading your mod!</b>
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder.GetAllTexturesWithTag(System.String)">
+            <summary>
+            Gets all currently stored textures with the specified tag.
+            <b>Do not use this to get your finished textures! Use ExportAll for that!</b>
+            </summary>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder.Clip(System.String,UnityEngine.Texture2D,System.String)">
+            <summary>
+            Clip the texture using all textures in the tag as masks, and put the results into the resultTag
+            </summary>
+            <param name="tag"></param>
+            <param name="toClip"></param>
+            <param name="resultTag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder.SplitViaColor(UnityEngine.Texture2D,System.String)">
+            <summary>
+            Splits the specified texture into multiple textures via color, and puts all the resulting textures into the specified tag.
+            <b>Only use this in specially designed images with few colors!</b>
+            </summary>
+            <param name="toSplit"></param>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder.Trim(System.String,System.String)">
+            <summary>
+            Trims all the textures so that their bounds are only where there are visible pixels.
+            </summary>
+            <param name="tag"></param>
+            <param name="resultTag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder.CustomActionWithAll(System.String,System.Action{MTM101BaldAPI.AssetTools.ProceduralTextureBuilder,UnityEngine.Texture2D})">
+            <summary>
+            Perform a custom texture action on all textures with the specified tag.
+            Be sure to delete any textures you create that you dont add to the ProceduralTextureBuilder!
+            </summary>
+            <param name="tag"></param>
+            <param name="customAction"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder.ExportAll(System.String)">
+            <summary>
+            Export all textures with the specified tag, destroying all other textures.
+            </summary>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder.LoadTexture(UnityEngine.Texture2D,System.String)">
+            <summary>
+            Loads a texture into the procedural texture builder with the specified tag.
+            </summary>
+            <param name="tex"></param>
+            <param name="tag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder.FlipAllHorizontal(System.String,System.String)">
+            <summary>
+            Flips all textures with the specified tag horizontally, storing the results into the resulting tag
+            </summary>
+            <param name="tag"></param>
+            <param name="resultTag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.ProceduralTextureBuilder.FlipAllVertical(System.String,System.String)">
+            <summary>
+            Flips all textures with the specified tag vertically, storing the results into the resulting tag
+            </summary>
+            <param name="tag"></param>
+            <param name="resultTag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.SpriteSheets.SpriteSheetLoader.LoadAsepriteAnimationsFromFile(System.String,System.Single,UnityEngine.Vector2)">
+            <summary>
+            Loads an Aesprite JSON file from the specified file path.
+            </summary>
+            <param name="path"></param>
+            <param name="pixelsPerUnit"></param>
+            <param name="pivot"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.SpriteSheets.SpriteSheetLoader.LoadAsepriteAnimationsFromMod(BepInEx.BaseUnityPlugin,System.Single,UnityEngine.Vector2,System.String[])">
+            <summary>
+            Loads an Aesprite JSON file from the specified mod path.
+            </summary>
+            <param name="plugin"></param>
+            <param name="pixelsPerUnit"></param>
+            <param name="pivot"></param>
+            <param name="paths"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.HarmonyExtensions.PatchAllConditionals(HarmonyLib.Harmony,System.Reflection.Assembly,System.Boolean)">
+            <summary>
+            Patches all conditional patches with the specified assembly
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.HarmonyExtensions.PatchAllConditionals(HarmonyLib.Harmony)">
+            <summary>
+            Patches all conditional patches in the current assembly. A direct replacement for PatchAll.
+            </summary>
+            <param name="_harmony"></param>
+        </member>
+        <member name="T:MTM101BaldAPI.ConditionalPatch">
+            <summary>
+            Base class for ConditionalPatches.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.ConditionalPatchAlways">
+            <summary>
+            Always patches, same as not having a ConditionalPatch at all.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.ConditionalPatchConfig">
+            <summary>
+            Patches if the specified config is true.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.ConditionalPatchNever">
+            <summary>
+            Never patches.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.ConditionalPatchMod">
+            <summary>
+            Patch if the specified mod is installed.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.ConditionalPatchNoMod">
+            <summary>
+            Patch if the specified mod is not installed.
+            </summary>
+        </member>
+        <member name="P:MTM101BaldAPI.MTM101BaldiDevAPI.Version">
+            <summary>
+            The version of the API, applicable when BepInEx cache messes up the version number.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.MTM101BaldiDevAPI.PrefabSubObject">
+            <summary>
+            The internal subobject used for converting objects into prefabs. 
+            Use this with GameObject.Instantiate as the parent transform to avoid manually having to clean stuff up.
+            </summary>
+        </member>
+        <member name="P:MTM101BaldAPI.MTM101BaldiDevAPI.prefabTransform">
+            <summary>
+            The internal transform used for object to prefab conversion.
+            Use this with GameObject.Instantiate to prevent awake scripts from activating.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.MTM101BaldiDevAPI.CauseCrash(BepInEx.PluginInfo,System.Exception)">
+            <summary>
+            Please only use this function for actual errors.
+            </summary>
+            <param name="plug"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:MTM101BaldAPI.Components.CullAffector">
+            <summary>
+            GameObjects with this behavior makes the culling manager treat it as if it were a player. Useful if you have are using cameras that aren't the players'.
+            Note that performance may take a hit if you use this, so use it with caution! (Maybe if the player isn't looking you could remove the component?)
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.Components.CustomAnimation`1.#ctor(System.Int32,`0[])">
+            <summary>
+            Create an animation with the specified FPS
+            </summary>
+            <param name="fps"></param>
+            <param name="frames"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Components.CustomAnimation`1.#ctor(`0[],System.Single)">
+            <summary>
+            Create an animation that is totalTime long.
+            </summary>
+            <param name="frames"></param>
+            <param name="totalTime"></param>
+        </member>
+        <member name="T:MTM101BaldAPI.Components.CustomAnimatorMono`3">
+            <summary>
+            A base for a monobehavior implementation of ICustomAnimator, including setting a default animation
+            </summary>
+            <typeparam name="TType"></typeparam>
+            <typeparam name="TAnimation"></typeparam>
+            <typeparam name="TFrame"></typeparam>
+        </member>
+        <member name="F:MTM101BaldAPI.Components.CustomAnimatorMono`3.useUnscaledTime">
+            <summary>
+            Determines if this CustomAnimator should be affected by timescale.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.Components.CustomAnimatorMono`3.PopulateAnimations(System.Collections.Generic.Dictionary{System.String,`2[]},System.Int32)">
+            <summary>
+            Populate the animations dictionary with a dictionary of keys and frame arrays with the specified FPS.
+            </summary>
+            <param name="animations"></param>
+            <param name="fps"></param>
+        </member>
+        <member name="T:MTM101BaldAPI.Components.CustomSpriteAnimator">
+            <summary>
+            A custom animator for sprites.
+            Note that the animations do not serialize, so initialize them in the entities Initialize function.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.Components.CustomImageAnimator">
+            <summary>
+            A custom animator for images.
+            Note that the animations do not serialize, so initialize them in the entities Initialize function.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Components.CustomVolumeAnimator.sensitivity">
+            <summary>
+            An optional animation curve to control the sensitivity.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.Components.RotatedSpriteAnimator">
+            <summary>
+            A custom animator for entities with rotating sprites.
+            EX: First-Prize and Dr. Reflex
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.CustomLevelObject">
+            <summary>
+            A custom version of the LevelObject class, currently doesn't contain much else but it serves as a good base to make extending level generator functionality easy in the future.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObject.MakeClone">
+            <summary>
+            Makes a clone of this CustomLevelObject, preserving the custom mod data.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObject.SetCustomModValue(BepInEx.PluginInfo,System.String,System.Object)">
+            <summary>
+            Adds the specified key/value to the CustomLevelObject, allowing for storing extra, mod specific generator settings.
+            </summary>
+            <param name="pluginInfo"></param>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.EnumExtensions.ToStringExtended``1(``0)">
+            <summary>
+            ToString but for Extended enums. Only use on enums that are ints.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="en"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.EnumExtensions.ExtendEnum``1(System.String)">
+            <summary>
+            Extends an enum, same effect could be achieved by casting an int, however this has a system to keep track of multiple enum additions from different mods to prevent conflicts
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="extendName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.EnumExtensions.GetExtendedName``1(System.Int32)">
+            <summary>
+            Enum.GetName but with support for extended enums.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="val"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.EnumExtensions.GetFromExtendedName``1(System.String)">
+            <summary>
+            Get an extended enum from a name.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="name"></param>
+            <returns></returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException"></exception>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.ConvertToPrefab(UnityEngine.GameObject,System.Boolean)">
+            <summary>
+            Convert the GameObject into a prefab by moving its transform inside an internal GameObject marked as HideAndDontSave. It is automatically done for NPCs made with NPCBuilders and Items made with ItemBuilder.
+            Use this method in AssetsLoaded.
+            </summary>
+            <param name="me"></param>
+            <param name="setActive">If true, then the GameObject will be set to active. The components code won't run anyways.</param>
+            <exception cref="T:System.NullReferenceException"></exception>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.StopCurrentTransition(GlobalCam)">
+            <summary>
+            Stops the currently running transition.
+            </summary>
+            <param name="me"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.MoveUntilDone(System.Collections.IEnumerator)">
+            <summary>
+            Repeatedly calls MoveNext until the IEnumerator is empty
+            </summary>
+            <param name="numerator"></param>
+            <returns>All the things returned by the IEnumerator</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.MarkAsNeverUnload(UnityEngine.Object)">
+            <summary>
+            Makes an object never unload from memory.
+            </summary>
+            <param name="me"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.RemoveUnloadMark(UnityEngine.Object)">
+            <summary>
+            Allows an object unload from memory.
+            </summary>
+            <param name="me"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.MarkAsNeverUnload(UnityEngine.ScriptableObject)">
+            <summary>
+            Makes an object never unload from memory.
+            </summary>
+            <param name="me"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.RemoveUnloadMark(UnityEngine.ScriptableObject)">
+            <summary>
+            Allows an object unload from memory.
+            </summary>
+            <param name="me"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.GetCellIndexAt(RoomAsset,System.Int32,System.Int32)">
+            <summary>
+            Get the index of the cell at the specified position, returns -1 if there is no cell with that position.
+            </summary>
+            <param name="me"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns>The index in the cells array of the cell with the specific position, -1 if there is no cell in that position.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.GetCellAt(RoomAsset,System.Int32,System.Int32)">
+            <summary>
+            Gets the cell at the specified position, returns null if there is no cell at that position.
+            </summary>
+            <param name="me"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns>The cell at the specified position or null if it does not exist.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.SetMainTexture(UnityEngine.Material,UnityEngine.Texture)">
+            <summary>
+            Sets the main texture of the material, uses the appropiate variable names for BB+ shaders.
+            </summary>
+            <param name="me"></param>
+            <param name="texture"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.SetColor(UnityEngine.Material,UnityEngine.Color)">
+            <summary>
+            Sets the color of the material, uses the appropiate variable names for BB+ shaders.
+            </summary>
+            <param name="me"></param>
+            <param name="color"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.SetMaskTexture(UnityEngine.Material,UnityEngine.Texture)">
+            <summary>
+            Sets the mask texture of the material.
+            </summary>
+            <param name="me"></param>
+            <param name="texture"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.ApplyDoorMaterials(StandardDoor,StandardDoorMats,UnityEngine.Material)">
+            <summary>
+            Applies the StandardDoorMats materials to the specified StandardDoor, optionally changing the mask.
+            </summary>
+            <param name="me"></param>
+            <param name="materials"></param>
+            <param name="mask"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.MetaExtensions.ToValues``1(System.Collections.Generic.List{MTM101BaldAPI.Registers.IMetadata{``0}})">
+            <summary>
+            Converts metadata into a list of the metadata's values.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="me"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.MetaExtensions.ToValues``1(MTM101BaldAPI.Registers.IMetadata{``0}[])">
+            <summary>
+            Converts metadata into an array of the metadata's values.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="me"></param>
+            <returns></returns>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.GenerationModType.Base">
+            <summary>
+            This should be used for methods that override the majority of the generator properties, almost completely transforming the level.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.GenerationModType.Override">
+            <summary>
+            This should be used for overriding only certain properties of the generator, such as changing exit counts.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.GenerationModType.Addend">
+            <summary>
+            This should be used for adding onto already existing properties, such as adding characters or items. Most mods will be using this.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.GenerationModType.Finalizer">
+            <summary>
+            Useful for removing things that might've been added or changed by other mods, or if for one reason or another you need the final say on something. 
+            <c>Use with caution.</c>
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.Registers.FieldTripLoot">
+            <summary>
+            A helper class used to store fieldtrip loot during the mod loading phase.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.GeneratorManagement.Register(BepInEx.BaseUnityPlugin,MTM101BaldAPI.Registers.GenerationModType,System.Action{System.String,System.Int32,SceneObject})">
+            <summary>
+            Register a generator action, called during mod loading.
+            </summary>
+            <param name="plug">The plugin adding the generator modifiers.</param>
+            <param name="type"></param>
+            <param name="action">The first parameter is the level name, the second one is the level id, and the last is the SceneObject itself.</param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.GeneratorManagement.RegisterFieldTripLootChange(BepInEx.BaseUnityPlugin,System.Action{FieldTrips,MTM101BaldAPI.Registers.FieldTripLoot})">
+            <summary>
+            Register an action that will be called to modify the field trip loot during mod loading.
+            Unlike registering a generator action, you can only register one of these.
+            </summary>
+            <param name="plug"></param>
+            <param name="action"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.GeneratorManagement.Invoke(System.String,System.Int32,SceneObject)">
+            <summary>
+            Invoke the generator actions for the specified SceneObject.
+            </summary>
+            <param name="name"></param>
+            <param name="floorNumber"></param>
+            <param name="obj"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Collections.IEnumerator,System.Boolean)">
+            <summary>
+            Registers a loading IEnumerator that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
+            The first yield return should be the amount of total amount of yield returns in the function as an int.
+            The second yield return should be the initial loading text.
+            Every yield afterwards should be a string that displays the next loading step.
+            </summary>
+            <param name="info"></param>
+            <param name="enumerator"></param>
+            <param name="post">If true, this will be called after the initial call, this is useful if you need to replace all references to something.</param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Action,System.Boolean)">
+            <summary>
+            Registers an action that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
+            Internally, it just creates an IEnumerator that calls toRegister.
+            </summary>
+            <param name="info"></param>
+            <param name="toRegister"></param>
+            <param name="post">If true, this will be called after the initial call, this is useful if you need to replace all references to something.</param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnLoadingScreenStart(BepInEx.PluginInfo,System.Collections.IEnumerator)">
+            <summary>
+            Registers an event that gets called at the beginning of the Loading screen, before any assets are loaded.
+            Typically, you'd want to just use your plugins Awake event, but if your mod tends to freeze the game at start up, this might be helpful to more properly convey what is going on.
+            </summary>
+            <param name="info"></param>
+            <param name="enumerator"></param>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.ItemFlags.None">
+            <summary>
+            This item has no necessary flags.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.ItemFlags.MultipleUse">
+            <summary>
+            // This item has multiple uses like the grappling hook.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.ItemFlags.NoInventory">
+            <summary>
+            This item should not appear in the players inventory and is used instantly upon pickup.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.ItemFlags.InstantUse">
+            <summary>
+            This item should not appear in the players inventory and is used instantly upon pickup.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.ItemFlags.NoUses">
+            <summary>
+            This item doesn't do anything when used, regardless of circumstance. This is for items like the Apple, but not the quarter as it can be used in machines.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.ItemFlags.Persists">
+            <summary>
+            This item's behavior doesn't instantly destroy itself when used. This is applicable for the BSODA or the Big Ol' Boots.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.ItemFlags.CreatesEntity">
+            <summary>
+            This item creates a physical entity in the world, this is applicable for the BSODA but not the Big Ol' Boots.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.ItemFlags.HasTutorialVariant">
+            <summary>
+            This item has a variant in the tutorial that must be accounted for when handling MultipleUse.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.ItemMetaStorage.GetPointsObject(System.Int32,System.Boolean)">
+            <summary>
+            Get the ItemObject for the points item with the specified(or closest) value.
+            </summary>
+            <param name="points">The amount of points to try to search for</param>
+            <param name="mustBeExact">If true, the point count must be exact, otherwise it will return null.</param>
+            <returns>The found ItemObject, or the closest match if mustBeExact is false.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.NPCMetaStorage.ReplaceAllReferencesForCharacter``2(Character)">
+            <summary>
+            Replaces all references to a specific NPC with a script attached of the same type. Useful if you replace an NPC with a custom type.
+            </summary>
+            <typeparam name="TOld"></typeparam>
+            <typeparam name="TReplace"></typeparam>
+            <param name="character"></param>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.RandomEventFlags.CharacterSpecific">
+            <summary>
+            This event requires a specific character to work
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.RandomEventFlags.RoomSpecific">
+            <summary>
+            This event requires a specific room to work
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.RandomEventFlags.Permanent">
+            <summary>
+            This event makes permanent changes to the level
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.RandomEventFlags.AffectsGenerator">
+            <summary>
+            This event affects the generator in some way(adding a character or room)
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.RandomEventFlags.Special">
+            <summary>
+            This event isn't called through regular means, and shouldn't be added to the random event pool.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.LegacyObjectBuilderSupport">
+            <summary>
+            Add this component to your old ObjectBuilders to hopefully keep them functional for the moment.
+            I suggest switching away from this class as soon as possible.
+            (Untested)
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.EntityBuilder.SetBaseRadius(System.Single)">
+            <summary>
+            Set's the base collision radius of the entity.
+            </summary>
+            <param name="radius"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.EntityBuilder.SetHeight(System.Single)">
+            <summary>
+            Sets the collider's height.
+            </summary>
+            <param name="height"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.EntityBuilder.AddRenderbaseFunction(System.Func{Entity,UnityEngine.Transform})">
+            <summary>
+            Adds a function that will be called to set/create the rendererBase for the entity.
+            </summary>
+            <param name="function"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.EntityBuilder.AddDefaultRenderBaseFunction(UnityEngine.Sprite)">
+            <summary>
+            Sets the function to create the renderbase to create a standard sprite RenderBase with the specified sprite.
+            </summary>
+            <param name="sprite"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.EntityBuilder.AddTrigger(System.Single)">
+            <summary>
+            Adds a trigger with the specified radius to the entity.
+            </summary>
+            <param name="radius"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.EntityBuilder.SetName(System.String)">
+            <summary>
+            Sets the name of the entity's GameObject.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.EntityBuilder.SetLayer(System.String)">
+            <summary>
+            Sets the layer of the entity.
+            </summary>
+            <param name="layer">The name of the layer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.EntityBuilder.SetLayerCollisionMask(UnityEngine.LayerMask)">
+            <summary>
+            Sets the layer collision mask of the entity.
+            </summary>
+            <param name="mask"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.Build">
+            <summary>
+            Builds the ItemObject and creates the Item prefab if none is specified.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetMeta(MTM101BaldAPI.Registers.ItemFlags,System.String[])">
+            <summary>
+            Sets the metadata of the item.
+            </summary>
+            <param name="flags"></param>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetPickupSound(SoundObject)">
+            <summary>
+            Sets the pickup sound of the item to be something different from the default
+            </summary>
+            <param name="sound">The sound that will be played when this item is picked up.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetMeta(MTM101BaldAPI.Registers.ItemMetaData)">
+            <summary>
+            Sets the metadata of the item to an already existing metadata which this object will be appened to.
+            </summary>
+            <param name="existingMeta"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetItemComponent``1">
+            <summary>
+            Sets the type of the item component to add to the created Item prefab.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetItemComponent``1(``0)">
+            <summary>
+            Sets the item component to an already existing gameObject.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="gameObject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetNameAndDescription(System.String,System.String)">
+            <summary>
+            Sets the name of the item and its description in the shop.
+            </summary>
+            <param name="name"></param>
+            <param name="description"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetAsInstantUse">
+            <summary>
+            Makes the item be used instantly when collected through a pickup.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetSprites(UnityEngine.Sprite,UnityEngine.Sprite)">
+            <summary>
+            Sets the big and large sprites respectively.
+            </summary>
+            <param name="small">The small sprite, usually with a pixelsPerUnit of 25.</param>
+            <param name="large">The large sprite, usually with a pixelsPerUnit of 50.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetEnum(Items)">
+            <summary>
+            Set the Items enum to use for the item.
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetEnum(System.String)">
+            <summary>
+            Creates an Items enum using EnumExtensions with the specified name.
+            </summary>
+            <param name="enumToRegister"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetShopPrice(System.Int32)">
+            <summary>
+            Sets the item's price in the shop.
+            </summary>
+            <param name="price"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetGeneratorCost(System.Int32)">
+            <summary>
+            Sets the cost of the item for the generator.
+            Each level has a budget it can spend on items.
+            </summary>
+            <param name="cost"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.Build">
+            <summary>
+            Builds the NPC.
+            </summary>
+            <returns>The created NPC prefab.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.DisableNavigationPrecision">
+            <summary>
+            Makes the NPC target the tile instead of the exact cordinate.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.DisableAutoRotation">
+            <summary>
+            Disables the NPC from automatically rotating in the direction it is moving.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetMaxSightDistance(System.Single)">
+            <summary>
+            Sets the max distance the NPC can see, one tile is 10 units.
+            </summary>
+            <param name="maxDistance"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetFOV(System.Single)">
+            <summary>
+            Assigns a field of view to the NPC, as default NPCs can see all around them.
+            </summary>
+            <param name="fov">The FOV to give the NPC</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetName(System.String)">
+            <summary>
+            Sets the name of the NPC Object
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetMetaName(System.String)">
+            <summary>
+            Sets the localization key that will be set in the NPC's meta. This is usually the same key for the name section of the character poster.
+            </summary>
+            <param name="name">The key to set</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetEnum(Character)">
+            <summary>
+            Sets the enum of the NPC to an already existing enum.
+            </summary>
+            <param name="character"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetEnum(System.String)">
+            <summary>
+            Sets the enum of the NPC to an automatically created one with the same name.
+            </summary>
+            <param name="enumName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetPoster(PosterObject)">
+            <summary>
+            Sets the NPC's poster to the specified poster object.
+            </summary>
+            <param name="poster"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.AddMetaFlag(MTM101BaldAPI.Registers.NPCFlags)">
+            <summary>
+            Adds a flag to the metadata
+            </summary>
+            <param name="flag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.EnableAcceleration">
+            <summary>
+            Changes the NPC's navigator to use acceleration.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetStationary">
+            <summary>
+            Makes the NPC unable to move.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetMetaTags(System.String[])">
+            <summary>
+            Sets the tags for the NPC.
+            </summary>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.RemoveSprite">
+            <summary>
+            Remove the NPC's visuals completely. Only use this if you plan on having your character be entirely invisible all the time.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetPoster(UnityEngine.Texture2D,System.String,System.String)">
+            <summary>
+            Sets the NPC poster to an automatically generated one.
+            </summary>
+            <param name="texture">The texture to use for the automatically generated poster.</param>
+            <param name="posterTitle">The NPC's name to show on the poster.</param>
+            <param name="posterDescription">The NPC's description to show on the poster.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.AddLooker">
+            <summary>
+            Adds a looker, allowing the NPC to see the player.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.AddTrigger">
+            <summary>
+            Adds a trigger, allowing the NPC to collide with entities and the player.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.IgnorePlayerOnSpawn">
+            <summary>
+            Makes the NPC spawn instantly, regardless of distance from the player.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetAirborne">
+            <summary>
+            Makes the NPC count as airborne.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.AddHeatmap">
+            <summary>
+            Makes the NPC have the ability to use the heatmap for navigation.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.AddSpawnableRoomCategories(RoomCategory[])">
+            <summary>
+            Add multiple room categories as potential spawn locations for the NPC.
+            </summary>
+            <param name="categories"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetMinMaxAudioDistance(System.Single,System.Single)">
+            <summary>
+            Set the Min/Max Audio distance for the NPC's sounds. One tile is 10 units.
+            </summary>
+            <param name="min">Minimum distance for the audio manager.</param>
+            <param name="max">Maximum distance for the audio manager.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.AddPotentialRoomAsset(RoomAsset,System.Int32)">
+            <summary>
+            Add a room asset that the NPC will spawn into the level, like Gotta Sweep's closet or Dr. Reflex's office.
+            </summary>
+            <param name="asset"></param>
+            <param name="weight"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.AddPotentialRoomAssets(WeightedRoomAsset[])">
+            <summary>
+            Add multiple room assets that the NPC will spawn one of into the level, like Gotta Sweep's closet or Dr. Reflex's office.
+            </summary>
+            <param name="assets"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.Build">
+            <summary>
+            Builds the random event.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.AddRequiredCharacter(Character)">
+            <summary>
+            Adds a character requirement to this event.
+            NOTE THAT THIS DOES NOTHING ON ITS OWN! THIS ONLY ADDS TO THE METADATA!
+            </summary>
+            <param name="character"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.SetMeta(MTM101BaldAPI.Registers.RandomEventFlags,System.String[])">
+            <summary>
+            Set the metadata of the random event.
+            </summary>
+            <param name="flags"></param>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.SetSound(SoundObject)">
+            <summary>
+            Sets the sound that Baldi will "say" when the event is triggered.
+            </summary>
+            <param name="sound"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.SetJingle(SoundObject)">
+            <summary>
+            Sets the jingle that will occur when this event is initially called and its showing the exclamation marks.
+            Defaults to the standard random event jingle, so unless you want to use a different jingle, there is no need to change this.
+            </summary>
+            <param name="sound"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.AddRoomAsset(RoomAsset,System.Int32)">
+            <summary>
+            Add a room asset that will be generated if this event is chosen.
+            </summary>
+            <param name="asset"></param>
+            <param name="weight"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.AddRoomAssets(WeightedRoomAsset[])">
+            <summary>
+            Add multiple room assets that will have one chosen at random if this event is chosen.
+            </summary>
+            <param name="assets"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.SetName(System.String)">
+            <summary>
+            Set the name of the random event GameObject.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.SetMinMaxTime(System.Single,System.Single)">
+            <summary>
+            Set the minimum and maximum time this event can last for.
+            </summary>
+            <param name="min"></param>
+            <param name="max"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.SetEnum(RandomEventType)">
+            <summary>
+            Set the RandomEventType enum that this event will use.
+            </summary>
+            <param name="typ"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.RandomEventBuilder`1.SetEnum(System.String)">
+            <summary>
+            Create a RandomEventType enum using EnumExtensions with the specified name.
+            </summary>
+            <param name="enumToRegister"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreators.CreateMapTileShader(UnityEngine.Texture2D)">
+            <summary>
+            Creates a material with the appropiate shader and texture for use on the minimap.
+            </summary>
+            <param name="tex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreators.CreateCharacterPoster(UnityEngine.Texture2D,System.String,System.String)">
+            <summary>
+            Create a PosterObject in the style of a typical character poster.
+            </summary>
+            <param name="texture"></param>
+            <param name="nameKey">The localization key that will show up as the character's name.</param>
+            <param name="descKey">The localization key that will show up as the character's description.</param>
+            <returns></returns>
+        </member>
+        <member name="F:MTM101BaldAPI.OBJImporter.OBJLoader.SplitMode">
+            <summary>
+            Determines how objects will be created
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.OBJLoader.LoadMaterialLibrary(System.String)">
+            <summary>
+            Helper function to load mtllib statements
+            </summary>
+            <param name="mtlLibPath"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.OBJLoader.Load(System.IO.Stream)">
+            <summary>
+            Load an OBJ file from a stream. No materials will be loaded, and will instead be supplemented by a blank white material.
+            </summary>
+            <param name="input">Input OBJ stream</param>
+            <returns>Returns a GameObject represeting the OBJ file, with each imported object as a child.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.OBJLoader.Load(System.IO.Stream,System.IO.Stream,UnityEngine.Material)">
+            <summary>
+            Load an OBJ and MTL file from a stream.
+            </summary>
+            <param name="input">Input OBJ stream</param>
+            /// <param name="mtlInput">Input MTL stream</param>
+            <param name="baseMaterial">The material to use as a base for any generated materials (Added by the MTM101Api)</param>
+            <returns>Returns a GameObject represeting the OBJ file, with each imported object as a child.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.OBJLoader.Load(System.String,System.String,UnityEngine.Material)">
+            <summary>
+            Load an OBJ and MTL file from a file path.
+            </summary>
+            <param name="path">Input OBJ path</param>
+            /// <param name="mtlPath">Input MTL path</param>
+            <param name="baseMaterial"></param>
+            <returns>Returns a GameObject represeting the OBJ file, with each imported object as a child.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.OBJLoader.LoadWithManualMaterials(System.String,System.Collections.Generic.Dictionary{System.String,UnityEngine.Material},UnityEngine.Material)">
+            <summary>
+            Load an OBJ while manually specifying the materials to be used.
+            </summary>
+            <param name="path"></param>
+            <param name="materials"></param>
+            <param name="baseMaterial"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.OBJLoader.Load(System.String,UnityEngine.Material)">
+            <summary>
+            Load an OBJ file from a file path. This function will also attempt to load the MTL defined in the OBJ file.
+            </summary>
+            <param name="path">Input OBJ path</param>
+            <param name="materialToCopy">The material that will be copied for all the newly created materials.</param>
+            <returns>Returns a GameObject represeting the OBJ file, with each imported object as a child.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.OBJLoaderHelper.EnableMaterialTransparency(UnityEngine.Material)">
+            <summary>
+            Enables transparency mode on standard materials
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.OBJLoaderHelper.FastFloatParse(System.String)">
+            <summary>
+            Modified from https://codereview.stackexchange.com/a/76891. Faster than float.Parse
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.OBJLoaderHelper.FastIntParse(System.String)">
+            <summary>
+            Modified from http://cc.davelozinski.com/c-sharp/fastest-way-to-convert-a-string-to-an-int. Faster than int.Parse
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.OBJImporter.OBJObjectBuilder.ObjLoopHash">
+            <summary>
+            Loop hasher helper class
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.ImageLoader.SetNormalMap(UnityEngine.Texture2D@)">
+            <summary>
+            Converts a DirectX normal map to Unitys expected format
+            </summary>
+            <param name="tex">Texture to convert</param>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.ImageLoader.LoadTexture(System.IO.Stream,MTM101BaldAPI.OBJImporter.ImageLoader.TextureFormat)">
+            <summary>
+            Loads a texture from a stream
+            </summary>
+            <param name="stream">The stream</param>
+            <param name="format">The format **NOT UNITYENGINE.TEXTUREFORMAT**</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.ImageLoader.LoadTexture(System.String)">
+            <summary>
+            Loads a texture from a file
+            </summary>
+            <param name="fn"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.ImageLoaderHelper.VerifyFormat(UnityEngine.Texture2D)">
+            <summary>
+            Verifies that a 32bpp texture is actuall 32bpp
+            </summary>
+            <returns>The verified texture</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.OBJImporter.ImageLoaderHelper.FillPixelArray(UnityEngine.Color32[],System.Byte[],System.Int32,System.Boolean)">
+            <summary>
+            A cluster for creating arrays of Unity Color 
+            </summary>
+            <param name="fillArray"></param>
+            <param name="pixelData"></param>
+            <param name="bytesPerPixel"></param>
+            <param name="bgra"></param>
+        </member>
+        <member name="E:MTM101BaldAPI.OptionsAPI.CustomOptionsCore.OnMenuInitialize">
+            <summary>
+            This gets called when the Option's Menu gets created. This function may be called multiple times.
+            </summary>
+        </member>
+        <member name="E:MTM101BaldAPI.OptionsAPI.CustomOptionsCore.OnMenuClose">
+            <summary>
+            This gets called whenever the options menu gets closed, so you can save your stuff.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.OptionsAPI.CustomOptionsCategory">
+            <summary>
+            A class to be inherited from that has all the options menu building functionality.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.PlusExtensions.ExtendedPosterObject">
+            <summary>
+            An extended version of the PosterObject that adds extra functionality.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.PlusExtensions.ExtendedPosterTextData">
+            <summary>
+            An extended version of PosterTextData that adds extra functionality useful for automating poster creation or reducing copy and pasted localization.
+            Must be used under an ExtendedPosterObject.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.PlusExtensions.ExtendedPosterTextData.formats">
+            <summary>
+            Calls string.Format with the specified localized strings
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.PlusExtensions.ExtendedPosterTextData.replacementRegex">
+            <summary>
+            Replacement regex, where the first string is the regex itself and the second is the replacement
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.PlusExtensions.PosterImageData">
+            <summary>
+            Used to store additional images to be overlayed ontop of text for posters.
+            Can be used obscure text or other purposes.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.PlusExtensions.PlayerMovementStatModifier">
+            <summary>
+            A stat modifier for the PlayerMovement's variables.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.Reflection.ReflectionHelpers.ReflectionSetVariable(System.Object,System.String,System.Object)">
+            <summary>
+            Use sparingly, as these are not cached, and will waste memory if called constantly.
+            </summary>
+            <param name="me"></param>
+            <param name="name"></param>
+            <param name="setTo"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Reflection.ReflectionHelpers.ReflectionGetVariable(System.Object,System.String)">
+            <summary>
+            Use sparingly, as these are not cached, and will waste memory if called constantly.
+            </summary>
+            <param name="me"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Reflection.ReflectionHelpers.ReflectionInvoke(System.Object,System.String,System.Object[])">
+            <summary>
+            Use sparingly, as these are not cached, and will waste memory if called constantly.
+            </summary>
+            <param name="me"></param>
+            <param name="name"></param>
+            <param name="parameters"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MTM101BaldAPI.SaveSystem.ModdedItemIdentifier">
+            <summary>
+            Stores the mod GUID and name of the ItemObject to allow it to be referenced later.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.SaveSystem.ModdedSaveGame">
+            <summary>
+            The root class for modded save games, storing the base game data, but restructured in a way that is more mod friendly.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOBinary">
+            <summary>
+            The main ModdedSaveGameIO class, these are to be inherited.
+            Useful for people who want their savedata to be small. Or people who just like using BinaryReader/BinaryWriter
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOBinary.Save(System.IO.BinaryWriter)">
+            <summary>
+            When the game is saved, this function will be called to write the data.
+            </summary>
+            <param name="writer"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOBinary.Load(System.IO.BinaryReader)">
+            <summary>
+            When the game is loaded, this function will be called to read the data.
+            </summary>
+            <param name="reader"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOBinary.OnCGMCreated(CoreGameManager,System.Boolean)">
+            <summary>
+            When the CoreGameManager is created, this function will be called. Use this to attach a monobehavior that stores the data while play is in session.
+            </summary>
+            <param name="instance"></param>
+            <param name="isFromSavedGame"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOBinary.Reset">
+            <summary>
+            When a file is deleted, this function will be called. Use it to restore settings to default.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOBinary.GenerateTags">
+            <summary>
+            Generates the current set of tags. 
+            Used to seperate save files with different settings that effect generation, such as a toggle to make a character spawn always, for example.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOBinary.DisplayTags(System.String[])">
+            <summary>
+            Displays the tags in a way that is more readable for players looking at their modded saves to figure out why they are different.
+            Generally, you should keep tags readable even if DisplayTagsDefault is used like it will be if this mod isn't actively installed.
+            </summary>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOBinary.DisplayTagsDefault(System.String[])">
+            <summary>
+            The default function for displaying tags. Will be used if the mod is uninstalled or DisplayTags isn't overwritten.
+            </summary>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOBinary.TagsReady">
+            <summary>
+            Determines if tags are ready to be generated.
+            Return false if tags are not ready to be generated yet, making the API load the first save with matching mods, ignoring tags for this mod.
+            It is suggested to manually call the RegenerateTags function once tags are ready to be generated.
+            <b>This does not stop GenerateTags from being called!</b>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOText">
+            <summary>
+            A version of ModdedSaveGameIOBinary, but for saving/loading plaintext.
+            Useful for people who want to do something like splitting a comma seeperated string for their data.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.SaveSystem.ModdedSaveGameIOJson`1">
+            <summary>
+            A version of ModdedSaveGameIOText but it saves Json data.
+            Useful for people who just want to serialize/deserialize an object and need not much else.
+            </summary>
+            <typeparam name="T">The type of object you want to serialize.</typeparam>
+        </member>
+        <member name="T:MTM101BaldAPI.SaveSystem.ModdedSaveGameIODummy">
+            <summary>
+            A dummy ModdedSaveGameIO used for changing the save type to Modded for custom items.
+            Simply writes a zero. Switch to ModdedSaveGameIOBinary and check for that zero to see if there is data to load if in the future your mod needs data.
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveSystem.AddSaveLoadAction(BepInEx.BaseUnityPlugin,System.Action{System.Boolean,System.String})">
+            <summary>
+            Allows you to add an action to be called when the game saves and loads, please only use this system if you plan to save data.
+            The first value passed to the action is whether or not its saving (true if saving, false if loading)
+            The second is the path allocated to your mod to save your modded save data
+            </summary>
+            <param name="p"></param>
+            <param name="act"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.ScriptableObjectHelpers.CloneScriptableObject``2(``0)">
+            <summary>
+            Creates a ScriptableObject of type CloneType and copies the public values of OriginalType to CloneType.
+            <c>This clones by reference!</c>
+            </summary>
+            <typeparam name="OriginalType"></typeparam>
+            <typeparam name="CloneType"></typeparam>
+            <param name="original"></param>
+            <returns>The clone with all public properties from the original copied over.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.UI.UIExtensions.ConvertToButton``1(UnityEngine.GameObject,System.Boolean)">
+            <summary>
+            Converts a UI element to a button by adding the necessary components and initializing the correct variables and adding the "Button" tag.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <param name="autoAssign">Should the StandardMenuButtons image and text fields be automatically assigned using GetComponent?</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.UI.UIHelpers.CreateImage(UnityEngine.Sprite,UnityEngine.Transform,UnityEngine.Vector3,System.Boolean,System.Single)">
+            <summary>
+            Creates an image based off of the sprite, handling its RectTransform.
+            </summary>
+            <param name="spr"></param>
+            <param name="parent"></param>
+            <param name="position"></param>
+            <param name="correctPosition">If the position should be corrected based off of the top left of a 4:3 screen. This is primarily for custom field trips and UI.</param>
+            <param name="scale">The scale of the image</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.UI.UIHelpers.AddCursorInitiatorToCanvas(UnityEngine.Canvas)">
+            <summary>
+            Adds a standard 4:3 cursor initiator to the respective canvas.
+            </summary>
+            <param name="canvas">The canvas to add to.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.UI.UIHelpers.AddCursorInitiatorToCanvas(UnityEngine.Canvas,UnityEngine.Vector2,CursorController)">
+            <summary>
+            Adds a cursor initiator to the respective canvas with the specified screensize.
+            </summary>
+            <param name="canvas">The canvas to add to.</param>
+            <param name="screenSize">The screen size for the initiator.</param>
+            <param name="prefab">The prefab to use, if left null, it will use the standard one.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.UI.UIHelpers.CreateBlankUIScreen(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Create a blank UI canvas, based off of the canvas' on the title screen.
+            </summary>
+            <param name="name"></param>
+            <param name="addCanvasAssigner"></param>
+            <param name="startActive">Determines if the Canvas should start active or not.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.UI.UIHelpers.CreateBlankUIScreen(System.String,System.Boolean)">
+            <summary>
+            Create a blank UI canvas, based off of the canvas' on the title screen.
+            </summary>
+            <param name="name"></param>
+            <param name="addCanvasAssigner"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.UI.UIHelpers.AddBordersToCanvas(UnityEngine.Canvas)">
+            <summary>
+            Add 4:3 borders to the respective canvas.
+            </summary>
+            <param name="canvas"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.UI.UIHelpers.CreateImage(UnityEngine.Sprite,UnityEngine.Transform,UnityEngine.Vector3,System.Boolean)">
+            <summary>
+            Creates an image based off of the sprite, handling its RectTransform.
+            </summary>
+            <param name="spr"></param>
+            <param name="parent"></param>
+            <param name="position"></param>
+            <param name="correctPosition">If the position should be corrected based off of the top left of a 4:3 screen. This is primarily for UI.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.UI.UIHelpers.CreateText``1(MTM101BaldAPI.UI.BaldiFonts,System.String,UnityEngine.Transform,UnityEngine.Vector3,System.Boolean)">
+            <summary>
+            Creates text object using the requested font.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="font">The font to use, represented as an enum.</param>
+            <param name="text">The text to use</param>
+            <param name="parent"></param>
+            <param name="position"></param>
+            <param name="correctPosition">If the position should be corrected based off of the top left of a 4:3 screen. This is primarily for UI.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MTM101BaldAPI.WaitForSecondsGlobalNPCTimescale">
+            <summary>
+            Wait for the defined amount of time depending on the global NPC timescale. It is advised to use WaitForSecondsNPCTimescale instead.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.WaitForSecondsNPCTimescale">
+            <summary>
+            Waits for the amount of time, scaled based off of the NPC's timescale.
+            </summary>
+        </member>
+        <member name="T:MTM101BaldAPI.WaitForSecondsEnvironmentTimescale">
+            <summary>
+            Wait for the defined amount of time depending on the EnvironmentTimescale of the environment controller.
+            </summary>
+        </member>
+        <member name="M:MTLLoader.TextureLoadFunction(System.String,System.Boolean)">
+            <summary>
+            The texture loading function. Overridable for stream loading purposes.
+            </summary>
+            <param name="path">The path supplied by the OBJ file, converted to OS path seperation</param>
+            <param name="isNormalMap">Whether the loader is requesting we convert this into a normal map</param>
+            <returns>Texture2D if found, or NULL if missing</returns>
+        </member>
+        <member name="M:MTLLoader.Load(System.IO.Stream,UnityEngine.Material)">
+            <summary>
+            Loads a *.mtl file
+            </summary>
+            <param name="input">The input stream from the MTL file</param>
+            <param name="baseMaterial">What material to use as a base(added by the Baldi API)</param>
+            <returns>Dictionary containing loaded materials</returns>
+        </member>
+        <member name="M:MTLLoader.Load(System.String,UnityEngine.Material)">
+            <summary>
+            Loads a *.mtl file
+            </summary>
+            <param name="path">The path to the MTL file</param>
+            <param name="baseMaterial">Added by the API, the base material to use</param>
+            <returns>Dictionary containing loaded materials</returns>
+        </member>
+    </members>
+</doc>

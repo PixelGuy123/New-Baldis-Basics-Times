@@ -1,0 +1,262 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ModdedModesAPI</name>
+    </assembly>
+    <members>
+        <member name="T:ModdedModesAPI.ModesAPI.ButtonBuilder">
+            <summary>
+            A class filled up with functions to make your button.
+            </summary>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.#ctor(ModdedModesAPI.ModesAPI.ModeObject)">
+            <summary>
+            A class filled up with functions to make your button.
+            </summary>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.CreateBlankButton(System.String)">
+            <summary>
+            Create a blank button with no additional functionality. Only use this method if you want to create something "out of the box".
+            <para>Note that the button created will be placed on a pre-set position in the screen.</para>
+            <para>DON'T change its position, you can always insert a new position slot if you're making it in a blank screen.</para>
+            </summary>
+            <param name="name">The name of the button's <see cref="T:UnityEngine.GameObject"/></param>
+            <returns>A button instance.</returns>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.CreateTransitionButton(ModdedModesAPI.ModesAPI.ModeObject,System.Single,UiTransition)">
+            <summary>
+            Creates a button that changes screens.
+            <para>Note that the button created will be placed on a pre-set position in the screen.</para>
+            <para>DON'T change its position, you can always insert a new position slot if you're making it in a blank screen.</para>
+            </summary>
+            <param name="screenToGo">The screen that the button will redirect the player to.</param>
+            <param name="transitionTime">The time the transition takes (by default, standard value from the game).</param>
+            <param name="transitionType">The transition type it uses (by default, standard value from the game).</param>
+            <returns>The button instance.</returns>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.CreateModeButton(SceneObject,System.Boolean,System.Int32,Mode,ElevatorScreen)">
+            <summary>
+            Creates a button that actually redirects you to a level (like the Hide-and-seek button).
+            <para>Note that the button created will be placed on a pre-set position in the screen.</para>
+            <para>DON'T change its position, you can always insert a new position slot if you're making it in a blank screen.</para>
+            </summary>
+            <param name="sceneToStart">The <see cref="T:SceneObject"/> that the game will load.</param>
+            <param name="createsASave">If the button triggers the game to create a save for that level.</param>
+            <param name="lives">How many lives do you start in the elevator (2 by default, don't be mistaken by 3, the life counter starts by 0).</param>
+            <param name="mode">The mode set for that level (Main by default).</param>
+            <param name="elevatorScreen">The <see cref="T:ElevatorScreen"/> used (leaving null will use the an existent prefab of the elevator).</param>
+            <returns></returns>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.CreateSeedInput(SeedInput@)">
+            <summary>
+            Creates a <see cref="T:SeedInput"/> button in the screen.
+            <para>Note that trying to create a <see cref="T:SeedInput"/> inside a <see cref="T:ModdedModesAPI.ModesAPI.ModeObject"/> that has one already will throw an exception.</para>
+            <para>You cannot make a <see cref="T:SeedInput"/> in the challenge screen. If your challenge requires it, make a button that goes to a different screen and add a seed input there, in order to accomplish that.</para>
+            </summary>
+            <param name="input">Output of the <see cref="T:SeedInput"/> instance.</param>
+            <returns>The button instance that holds the <see cref="T:SeedInput"/>.</returns>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.AddTooltipAnimation(StandardMenuButton,System.String)">
+            <summary>
+            Adds a tool tip animation when you hover the cursor on the button.
+            </summary>
+            <param name="but">The button instance.</param>
+            <param name="toolTipKey">The subtitle key that the tool tip will use.</param>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.AddDescriptionText(StandardMenuButton,System.String)">
+            <summary>
+            Allows the button to have a description below when hovering the cursor on.
+            <para>When this method is used by the first time, in a blank screen, it creates a text object to display the description below.</para>
+            <para>This text object uses the default settings from the other selection screens. You can modify this text by using the <see cref="P:ModdedModesAPI.ModesAPI.ModeObject.DescriptionText"/> property.</para>
+            </summary>
+            <param name="but">The button instance.</param>
+            <param name="descriptionKey">The subtitle key that the description has, to be displayed.</param>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.CreateTextLabel(UnityEngine.Vector2,System.String)">
+            <summary>
+            Creates a label for the screen.
+            </summary>
+            <param name="position">The position the label will stay in.</param>
+            <param name="textKey">The subtitle key for the label.</param>
+            <returns>A <see cref="T:TMPro.TextMeshProUGUI"/> instance.</returns>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.CreateTextLabel(UnityEngine.Vector2,System.String,System.Boolean)">
+            <summary>
+            Creates a label for the screen.
+            </summary>
+            <param name="position">The position the label will stay in.</param>
+            <param name="textKey">The subtitle key for the label.</param>
+            <param name="encrypted">If the subtitle is encrypted by the game's standard encryption or not.</param>
+            <returns>A <see cref="T:TMPro.TextMeshProUGUI"/> instance.</returns>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonBuilder.CreateImage(UnityEngine.Sprite,UnityEngine.Vector2,UnityEngine.Vector2)">
+            <summary>
+            Creates an <see cref="T:UnityEngine.UI.Image"/> instance into the screen.
+            </summary>
+            <param name="visual">The visual that this image will have.</param>
+            <param name="position">The position that this image will be located at.</param>
+            <param name="sizeDelta">The size of this image. Try with a size of (100, 100) as a test.</param>
+            <returns>An instance of <see cref="T:UnityEngine.UI.Image"/>.</returns>
+        </member>
+        <member name="T:ModdedModesAPI.ModesAPI.ButtonExtensions">
+            <summary>
+            This class holds some useful extension methods to make the <see cref="T:StandardMenuButton"/> building process easier.
+            </summary>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonExtensions.AddVisual(StandardMenuButton,UnityEngine.Sprite)">
+            <summary>
+            Adds a visual appearance for the button.
+            <para>This is usually used for making icons, to change the size of the visual, change the <see cref="P:UnityEngine.RectTransform.sizeDelta"/> property.</para>
+            </summary>
+            <param name="but">The button instance.</param>
+            <param name="visual">The sprite it'll use to display.</param>
+            <returns>The button instance.</returns>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonExtensions.AddTextVisual(StandardMenuButton,System.String,TMPro.TextMeshProUGUI@)">
+            <summary>
+            Adds a text appearance for the button. It uses the same properties that the other buttons uses for the text mesh.
+            <para>It also sets a default size delta of </para>
+            </summary>
+            <param name="but">The button instance.</param>
+            <param name="textKey">The subtitle key this button will use (every menu button uses a <see cref="T:TextLocalizer"/>).</param>
+            <param name="textMesh">The text mesh created by the method.</param>
+            <returns>The button instance.</returns>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonExtensions.AddTextVisual(StandardMenuButton,System.String,System.Boolean,TMPro.TextMeshProUGUI@)">
+            <summary>
+            Adds a text appearance for the button. It uses the same properties that the other buttons uses for the text mesh.
+            <para>It also sets a default size delta of </para>
+            </summary>
+            <param name="but">The button instance.</param>
+            <param name="textKey">The subtitle key this button will use (every menu button uses a <see cref="T:TextLocalizer"/>).</param>
+            <param name="encrypted">Tells the <see cref="T:TextLocalizer"/> if the subtitle key used is encrypted using the game's encryption standards.</param>
+            <param name="textMesh">The text mesh created by the method.</param>
+            <returns>The button instance.</returns>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ButtonExtensions.AddHighlightAnimation(StandardMenuButton,UnityEngine.Sprite,UnityEngine.Sprite)">
+            <summary>
+            Adds a highlight animation, in the form of sprites, to the button.
+            </summary>
+            <param name="but">The button instance.</param>
+            <param name="highlightOn">Display sprite when the cursor is hovering the button.</param>
+            <param name="highlightOff">Display sprite when the cursor is not hovering the button.</param>
+            <returns>The button instance.</returns>
+        </member>
+        <member name="T:ModdedModesAPI.ModesAPI.CustomModesHandler">
+            <summary>
+            Main class of the API. Which comes with a few methods that you'll need to use, in order to create your custom mode.
+            </summary>
+        </member>
+        <member name="E:ModdedModesAPI.ModesAPI.CustomModesHandler.OnMainMenuInitialize">
+            <summary>
+            An event that expects every receiver to create their own screens or buttons. Use the <see cref="T:ModdedModesAPI.ModesAPI.ModeObject"/> static constructors to make your own mode/screen/buttons from it.
+            </summary>
+        </member>
+        <member name="T:ModdedModesAPI.ModesAPI.ModeObject">
+            <summary>
+            This class stores the data of the screen assigned to it.
+            </summary>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ModeObject.CreateBlankScreenInstance(System.String,System.Boolean,UnityEngine.Vector2[])">
+            <summary>
+            This static constructor will create an instance of <see cref="T:ModdedModesAPI.ModesAPI.ModeObject"/> assigned to a new blank screen.
+            </summary>
+            <param name="screenName">A name for the screen's <see cref="T:UnityEngine.GameObject"/>.</param>
+            <param name="hasPageSystem">If True, this blank screen will follow a similar behavior of pages that the existing ones have.</param>
+            <param name="availablePositions">The positions that the buttons created by the <see cref="T:ModdedModesAPI.ModesAPI.ModeObject"/> will be fixated to.</param>
+            <returns>An instance of <see cref="T:ModdedModesAPI.ModesAPI.ModeObject"/>.</returns>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ModeObject.CreateModeObjectOverExistingScreen(ModdedModesAPI.ModesAPI.SelectionScreen)">
+            <summary>
+            This static constructor will create an instance of <see cref="T:ModdedModesAPI.ModesAPI.ModeObject"/> assigned to an existing selection screen.
+            </summary>
+            <param name="screen">The selection screen enum needed.</param>
+            <returns>An instance of <see cref="T:ModdedModesAPI.ModesAPI.ModeObject"/>.</returns>
+            <exception cref="T:System.ArgumentException"></exception>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ModeObject.SetThePageButtonsAxis(UnityEngine.Vector2)">
+            <summary>
+            By default, all page buttons are built in (230,0). But you can change the both axis through this method. 
+            </summary>
+            <param name="offset">The offset it goes to (note that the X axis starts from (-230,0), the right page button will mirror the X axis from the left one).</param>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="P:ModdedModesAPI.ModesAPI.ModeObject.StandardButtonBuilder">
+            <summary>
+            This class holds a lot of useful methods to create your buttons inside the <see cref="T:ModdedModesAPI.ModesAPI.ModeObject"/>.
+            </summary>
+        </member>
+        <member name="P:ModdedModesAPI.ModesAPI.ModeObject.DescriptionText">
+            <summary>
+            The description text that appears below buttons (they are only usable in custom screens to avoid unexpected changes in main screens).
+            </summary>
+            <exception cref="T:System.NotSupportedException"></exception>
+        </member>
+        <member name="P:ModdedModesAPI.ModesAPI.ModeObject.Background">
+            <summary>
+            Property that returns the sprite and sets the sprite used by the background.
+            <para>If the screen isn't allowed to have the sprite changed, you'll get an exception.</para>
+            </summary>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="P:ModdedModesAPI.ModesAPI.ModeObject.ToolTipControl">
+            <summary>
+            The <see cref="T:TooltipController"/> that this class holds.
+            </summary>
+        </member>
+        <member name="P:ModdedModesAPI.ModesAPI.ModeObject.ScreenTransform">
+            <summary>
+            The screen this instance is overriding.
+            </summary>
+        </member>
+        <member name="T:ModdedModesAPI.ModesAPI.SelectionScreen">
+            <summary>
+            An enum that refers to two existing screens in-game. Can be used for <see cref="M:ModdedModesAPI.ModesAPI.ModeObject.CreateModeObjectOverExistingScreen(ModdedModesAPI.ModesAPI.SelectionScreen)"/>
+            </summary>
+        </member>
+        <member name="F:ModdedModesAPI.ModesAPI.SelectionScreen.MainScreen">
+            <summary>
+            The Main Mode selection screen
+            </summary>
+        </member>
+        <member name="F:ModdedModesAPI.ModesAPI.SelectionScreen.ChallengesScreen">
+            <summary>
+            The challenges mode selection screen
+            </summary>
+        </member>
+        <member name="F:ModdedModesAPI.ModesAPI.SelectionScreen.EndlessScreen">
+            <summary>
+            The endless mode selection screen
+            </summary>
+        </member>
+        <member name="T:ModdedModesAPI.ModesAPI.ReflectionExtensions">
+            <summary>
+            This class is an extra feature from this mod, to help creating custom modes into the game. It contains a few methods that are useful when, for example, you want to modify a <see cref="T:BaseGameManager"/> object.
+            </summary>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ReflectionExtensions.GetACopyFromFields``2(``0,``1)">
+            <summary>
+            Gathers all the fields and properties values from <typeparamref name="C"/> and insert into <typeparamref name="T"/>.
+            <para><strong><typeparamref name="T"/> must inherit from <typeparamref name="C"/> or be type <typeparamref name="C"/> itself.</strong></para>
+            </summary>
+            <typeparam name="T">A type that must inherits from <see cref="T:UnityEngine.MonoBehaviour"/>.</typeparam>
+            <typeparam name="C">A type that must inherits from <see cref="T:UnityEngine.MonoBehaviour"/>.</typeparam>
+            <param name="original">The instance to get the copied values.</param>
+            <param name="toCopyFrom">The instance that'll send the copy the values.</param>
+            <returns>The same instance of type <typeparamref name="T"/>.</returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:ModdedModesAPI.ModesAPI.ReflectionExtensions.ReplaceComponent``2(``1)">
+            <summary>
+            This method will literally replace a component with another, <strong>as long as <typeparamref name="T"/> inherits from <typeparamref name="C"/> or it's of type <typeparamref name="C"/></strong>.
+            </summary>
+            <typeparam name="T">A type that must inherits from <see cref="T:UnityEngine.MonoBehaviour"/>.</typeparam>
+            <typeparam name="C">A type that must inherits from <see cref="T:UnityEngine.MonoBehaviour"/>.</typeparam>
+            <param name="toReplace">The instance to be replaced with.</param>
+            <returns>A new instance of type <typeparamref name="T"/>.</returns>
+        </member>
+    </members>
+</doc>

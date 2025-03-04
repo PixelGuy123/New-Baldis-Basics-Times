@@ -1,0 +1,1066 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PixelInternalAPI</name>
+    </assembly>
+    <members>
+        <member name="T:PixelInternalAPI.Classes.LayerStorage">
+            <summary>
+            Storage for the layers
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.windowLayer">
+            <summary>
+            Windows Layer.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.billboardLayer">
+            <summary>
+            Default Billboard Layer.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.iClickableLayer">
+            <summary>
+            Clickable Entities Layer.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.ignoreRaycast">
+            <summary>
+            Ignore Raycast Layer.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.blockRaycast">
+            <summary>
+            Block Raycast Layer.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.standardEntities">
+            <summary>
+            Entity Standard Layer.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.map">
+            <summary>
+            Map Layer.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.ui">
+            <summary>
+            UI Layer.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.gumCollisionMask">
+            <summary>
+            A specific layer used by the gum for its entity collision mask.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.entityCollisionMask">
+            <summary>
+            The default layer used by the entity for its collision mask.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.principalLookerMask">
+            <summary>
+            A specific layer used by the Principal's <see cref="T:Looker"/> component to see the npcs.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Classes.LayerStorage.TileBaseOffset">
+            <summary>
+            A constant value to indicate the width / height of a tile.
+            </summary>
+        </member>
+        <member name="T:PixelInternalAPI.Classes.SelectionHolder`2">
+            <summary>
+            A class that holds a selection and the limitations for that selection.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="C"></typeparam>
+            <param name="sel"></param>
+            <param name="weight"></param>
+            <param name="selectionLimiter"></param>
+        </member>
+        <member name="M:PixelInternalAPI.Classes.SelectionHolder`2.#ctor(`0,System.Int32,`1[])">
+            <summary>
+            A class that holds a selection and the limitations for that selection.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="C"></typeparam>
+            <param name="sel"></param>
+            <param name="weight"></param>
+            <param name="selectionLimiter"></param>
+        </member>
+        <member name="P:PixelInternalAPI.Classes.SelectionHolder`2.Selection">
+            <summary>
+            The Selection (of type <typeparamref name="T"/>).
+            </summary>
+        </member>
+        <member name="P:PixelInternalAPI.Classes.SelectionHolder`2.SelectionLimiters">
+            <summary>
+            The limits of the selection (of type <typeparamref name="C"/>).
+            </summary>
+        </member>
+        <member name="T:PixelInternalAPI.Components.BillboardRotator">
+            <summary>
+            A component to make the object rotate just like a billboard does.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.BillboardRotator.invertFace">
+            <summary>
+            When set to true, the object will rotate the opposite direction to the player.
+            </summary>
+        </member>
+        <member name="T:PixelInternalAPI.Components.EmptyMonoBehaviour">
+            <summary>
+            As the name suggest, an EmptyMonoBehaviour. It is useful for coroutines.
+            </summary>
+        </member>
+        <member name="T:PixelInternalAPI.Components.ITM_AcceptableNoUse">
+            <summary>
+            Basically an <see cref="T:ITM_Acceptable"/> but isn't wasted after being used.
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.Components.ITM_AcceptableNoUse.Use(PlayerManager)">
+            <summary>
+            
+            </summary>
+            <param name="pm"></param>
+            <returns></returns>
+        </member>
+        <member name="F:PixelInternalAPI.Components.ITM_AcceptableNoUse.item">
+            <summary>
+            The <see cref="T:Items"/> enum it should represent.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.ITM_AcceptableNoUse.audUse">
+            <summary>
+            The noise it does when used (optional).
+            </summary>
+        </member>
+        <member name="T:PixelInternalAPI.Components.ModdedEnvironmentObject">
+            <summary>
+            This class is used to guarantee any <see cref="T:EnvironmentObject"/> can properly spawn inside rooms (excluding hallways).
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.Components.ModdedEnvironmentObject.LoadingFinished">
+            <summary>
+            This method is overrided to set the position and rotation to where it should be.
+            </summary>
+        </member>
+        <member name="T:PixelInternalAPI.Components.NPCAttributesContainer">
+            <summary>
+            A component added to NPCs to modify some aspects from them.
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.Components.NPCAttributesContainer.HasLookerMod(MTM101BaldAPI.Components.ValueModifier)">
+            <summary>
+            Checks if the <paramref name="modifier"/> exists in the looker mods.
+            </summary>
+            <param name="modifier"></param>
+            <returns>true if <paramref name="modifier"/> exists inside the looker mods, otherwise false.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Components.NPCAttributesContainer.AddLookerMod(MTM101BaldAPI.Components.ValueModifier)">
+            <summary>
+            Adds a <paramref name="mod"/> to the looker mods.
+            </summary>
+            <param name="mod"></param>
+        </member>
+        <member name="M:PixelInternalAPI.Components.NPCAttributesContainer.RemoveLookerMod(MTM101BaldAPI.Components.ValueModifier)">
+            <summary>
+            Removes a <paramref name="mod"/> to the looker mods.
+            </summary>
+            <param name="mod"></param>
+        </member>
+        <member name="T:PixelInternalAPI.Components.CustomPlayerCameraComponent">
+            <summary>
+            A player component that manages the Camera's FOV.
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.Components.CustomPlayerCameraComponent.AddModifier(MTM101BaldAPI.Components.ValueModifier)">
+            <summary>
+            Add a fov modifier.
+            </summary>
+            <param name="mod"></param>
+        </member>
+        <member name="M:PixelInternalAPI.Components.CustomPlayerCameraComponent.RemoveModifier(MTM101BaldAPI.Components.ValueModifier)">
+            <summary>
+            Remove a fov modifier.
+            </summary>
+            <param name="mod"></param>
+        </member>
+        <member name="M:PixelInternalAPI.Components.CustomPlayerCameraComponent.ReverseSlideFOVAnimation``1(``0,System.Single,System.Single,System.Single)">
+            <summary>
+            Initiates a Reverse Slide animation (basically goes from <c><paramref name="instance"/>.addend + <paramref name="offset"/></c> to 0).
+            <para><paramref name="smoothness"/> define the smoothness of the animation.</para>
+            <para><paramref name="referenceFrameRate"/> is the frame rate used as reference (since <see cref="P:UnityEngine.Time.deltaTime"/> is used).</para>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="instance"></param>
+            <param name="offset"></param>
+            <param name="smoothness"></param>
+            <param name="referenceFrameRate"></param>
+            <returns>A <see cref="T:UnityEngine.Coroutine"/> of the animation</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Components.CustomPlayerCameraComponent.SlideFOVAnimation``1(``0,System.Single,System.Single,System.Single)">
+            <summary>
+            A basic slide animation to a selected <paramref name="offset"/> from the <c><paramref name="instance"/>.addend</c>
+            <para><paramref name="smoothness"/> define the smoothness of the animation.</para>
+            <para><paramref name="referenceFrameRate"/> is the frame rate used as reference (since <see cref="P:UnityEngine.Time.deltaTime"/> is used).</para>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="instance"></param>
+            <param name="offset"></param>
+            <param name="smoothness"></param>
+            <param name="referenceFrameRate"></param>
+            <returns>A <see cref="T:UnityEngine.Coroutine"/> of the animation</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Components.CustomPlayerCameraComponent.ResetSlideFOVAnimation``1(``0,System.Single,System.Single)">
+            <summary>
+            A slide animation that goes from <c><paramref name="instance"/>.addend</c> to 0.
+            <para><paramref name="smoothness"/> define the smoothness of the animation.</para>
+            <para><paramref name="referenceFrameRate"/> is the frame rate used as reference (since <see cref="P:UnityEngine.Time.deltaTime"/> is used).</para>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="instance"></param>
+            <param name="smoothness"></param>
+            <param name="referenceFrameRate"></param>
+            <returns><see cref="T:UnityEngine.Coroutine"/></returns>
+        </member>
+        <member name="M:PixelInternalAPI.Components.CustomPlayerCameraComponent.ShakeFOVAnimation``1(``0,System.Single,System.Single,System.Single,System.Int32,System.Single)">
+            <summary>
+            Does a Shaking animation in the fov.
+            <para><paramref name="intensity"/> is the how strong the shakeness is (cannot be below 0).</para>
+            <para><paramref name="shakeCooldown"/> is how long the shaking goes.</para>
+            <para><paramref name="shakePerFrames"/> is the change of FOV after x frames passed by (to give enough time for the smoothness to actually work)</para>
+            <para><paramref name="smoothness"/> define the smoothness of the animation.</para>
+            <para><paramref name="referenceFrameRate"/> is the frame rate used as reference (since <see cref="P:UnityEngine.Time.deltaTime"/> is used).</para>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="instance"></param>
+            <param name="smoothness"></param>
+            <param name="intensity"></param>
+            <param name="shakeCooldown"></param>
+            <param name="shakePerFrames"></param>
+            <param name="referenceFrameRate"></param>
+            <returns><see cref="T:UnityEngine.Coroutine"/></returns>
+        </member>
+        <member name="T:PixelInternalAPI.Components.TemporaryParticles">
+            <summary>
+            A component that adds a simple timer to despawn the particles
+            <para>Used for explosions.</para>
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TemporaryParticles.ec">
+            <summary>
+            The <see cref="T:EnvironmentController"/> field (must be set to work).
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TemporaryParticles.particles">
+            <summary>
+            The particles it should use for the explosion.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TemporaryParticles.audExplode">
+            <summary>
+            The explosion audio (optional).
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TemporaryParticles.audMan">
+            <summary>
+            The <see cref="T:AudioManager"/> (optional too)
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TemporaryParticles.minParticles">
+            <summary>
+            The min and max amount of particles for the explosion.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TemporaryParticles.maxParticles">
+            <summary>
+            The min and max amount of particles for the explosion.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TemporaryParticles.cooldown">
+            <summary>
+            How long does the particle object last before despawning.
+            </summary>
+        </member>
+        <member name="T:PixelInternalAPI.Components.TextureAnimator">
+            <summary>
+            An animator for textures
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TextureAnimator.defaultIndex">
+            <summary>
+            The default index of the materials[] array from the renderer
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TextureAnimator.renderers">
+            <summary>
+            The renderers to have their textures replaced
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TextureAnimator.texs">
+            <summary>
+            The animated textures
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TextureAnimator.speed">
+            <summary>
+            The speed of the animator.
+            </summary>
+        </member>
+        <member name="F:PixelInternalAPI.Components.TextureAnimator.useEnvironmentTimeScale">
+            <summary>
+            If it should use the environmentTimeScale
+            </summary>
+        </member>
+        <member name="T:PixelInternalAPI.Extensions.GenericExtensions">
+            <summary>
+            This class provides a bunch of generic extensions that can be useful in many situations.
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.QuadraticEquation(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Performs a quadratic equation. Using <paramref name="x"/> as the independent value.
+            </summary>
+            <param name="x"></param>
+            <param name="a"></param>
+            <param name="b"></param>
+            <param name="c"></param>
+            <returns>Result of the Quadratic equation.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.LinearEquation(System.Single,System.Single,System.Single)">
+            <summary>
+            Performs a linear equation. Using <paramref name="x"/> as the independent value.
+            </summary>
+            <param name="x"></param>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns>Result of the Linear equation.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.CompareFloats(System.Single,System.Single)">
+            <summary>
+            Compare the equality between two floats with a value near 0 (0.01).
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns>true if both values are nearly equal, otherwise false.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.ReplaceAt``1(System.Collections.Generic.IList{``0},System.Int32,``0)">
+            <summary>
+            Replace a value from the <paramref name="list"/> at <paramref name="index"/> with <paramref name="replacement"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="index"></param>
+            <param name="replacement"></param>
+            <exception cref="T:System.IndexOutOfRangeException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.AddRange``1(System.Collections.Generic.ICollection{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Add all elements from a <paramref name="collection"/> to the main collection.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="coll"></param>
+            <param name="collection"></param>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.Replace``1(System.Collections.Generic.IList{``0},System.Predicate{``0},``0)">
+            <summary>
+            Replace an item in the <paramref name="list"/> with the <paramref name="replacement"/> based on a <paramref name="predicate"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="predicate"></param>
+            <param name="replacement"></param>
+            <returns>true if an item was successfully replaced, otherwise false.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.ReplaceAll``1(System.Collections.Generic.IList{``0},System.Predicate{``0},``0)">
+            <summary>
+            Replace all items in the <paramref name="list"/> with the <paramref name="replacement"/> based on a <paramref name="predicate"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="predicate"></param>
+            <param name="replacement"></param>
+            <returns>The amount of items replaced.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.ConvertAll``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
+            <summary>
+            Convert all items in a <paramref name="sequence"/> using a defined <paramref name="func"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <typeparam name="C"></typeparam>
+            <param name="sequence"></param>
+            <param name="func"></param>
+            <returns>A new collection with all items converted to type <typeparamref name="C"/>.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.CustomAction(HarmonyLib.CodeMatcher,System.Action{HarmonyLib.CodeMatcher})">
+            <summary>
+            Does a custom action in a CodeMatcher.
+            </summary>
+            <param name="m"></param>
+            <param name="a"></param>
+            <returns>The <paramref name="m"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.DebugLogAllInstructions(HarmonyLib.CodeMatcher,System.Int32)">
+            <summary>
+            Calls the <see cref="M:UnityEngine.Debug.Log(System.Object)"/> method in all the CodeInstructions available in <paramref name="m"/>. <paramref name="ogPos"/> sets the index it should begin to debug (default is -1, which means all instructions).
+            <para>Here is the following format: <c>"Index: OpCode >> Operand"</c></para>
+            </summary>
+            <param name="m"></param>
+            <param name="ogPos"></param>
+            <returns>The <paramref name="m"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.AllChilds(UnityEngine.Transform)">
+            <summary>
+            Returns all childs from the <paramref name="transform"/>.
+            </summary>
+            <param name="transform"></param>
+            <returns>A list of all childs from the <paramref name="transform"/>.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.AllChilds(UnityEngine.Transform,System.Boolean)">
+            <summary>
+            Returns all childs from the <paramref name="transform"/>. <paramref name="includeDescendants"/> if it should also include the child of the childs (in other words, everything).
+            </summary>
+            <param name="transform"></param>
+            <param name="includeDescendants"></param>
+            <returns>A list of all childs from the <paramref name="transform"/>.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.DuplicatePrefab``1(``0)">
+            <summary>
+            Instantiate an <paramref name="obj"/> but maintaning the same name and put in the HideAndDontSave scene.
+            </summary>
+            <param name="obj"></param>
+            <typeparam name="T"></typeparam>
+            <returns>An instantiated <paramref name="obj"/>.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.DuplicatePrefab(UnityEngine.GameObject)">
+            <summary>
+            Instantiate an <paramref name="obj"/> but maintaning the same name and put in the DontDestroyOnLoad scene.
+            </summary>
+            <param name="obj"></param>
+            <returns>An instantiated <paramref name="obj"/>.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.GetCodeInstruction(HarmonyLib.CodeMatcher,HarmonyLib.CodeInstruction@)">
+            <summary>
+            Get the code instruction (<paramref name="i"/>) and set in an out parameter.
+            </summary>
+            <param name="m"></param>
+            <param name="i"></param>
+            <returns>The <paramref name="m"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.FindResourceObjectByName``1(System.String)">
+            <summary>
+            Find a resource object by the <paramref name="name"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="name"></param>
+            <returns>The first resource object that has the passed <paramref name="name"/>.</returns>
+            /// <exception cref="T:System.NullReferenceException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.FindResourceObject``1">
+            <summary>
+            Get the first resource object of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns>The first resource object of type <typeparamref name="T"/>.</returns>
+            <exception cref="T:System.NullReferenceException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.FindResourceObjects``1">
+            <summary>
+            Find all resource objects of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns>All resource objects of type <typeparamref name="T"/>.</returns>
+            /// <exception cref="T:System.NullReferenceException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.InsertAnIfBlock(HarmonyLib.CodeMatcher,HarmonyLib.CodeInstruction[],System.Reflection.Emit.OpCode,HarmonyLib.CodeInstruction[])">
+            <summary>
+            Inserts an If block (of single condition) into the IL Instructions.
+            <para><paramref name="ifOpcode"/> is the opcode that defines the condition check.</para>
+            <para><paramref name="instructions"/> are the instructions to be done inside the if block.</para>
+            <para><paramref name="parameters"/> are the parameters passed for the condition check.</para>
+            </summary>
+            <param name="m"></param>
+            <param name="parameters"></param>
+            <param name="ifOpcode"></param>
+            <param name="instructions"></param>
+            <returns>The <paramref name="m"/> itself.</returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.InsertAnIfBlockAndAdvance(HarmonyLib.CodeMatcher,HarmonyLib.CodeInstruction[],System.Reflection.Emit.OpCode,HarmonyLib.CodeInstruction[])">
+            <summary>
+            Inserts an If block (of single condition) into the IL Instructions and advance.
+            <para><paramref name="ifOpcode"/> is the opcode that defines the condition check.</para>
+            <para><paramref name="instructions"/> are the instructions to be done inside the if block.</para>
+            <para><paramref name="parameters"/> are the parameters passed for the condition check.</para>
+            </summary>
+            <param name="m"></param>
+            <param name="parameters"></param>
+            <param name="ifOpcode"></param>
+            <param name="instructions"></param>
+            <returns>The <paramref name="m"/> itself.</returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.GoTo(HarmonyLib.CodeMatcher,System.Int32)">
+            <summary>
+            Advances to a specified index (<paramref name="pos"/>);
+            </summary>
+            <param name="m"></param>
+            <param name="pos"></param>
+            <returns>The <paramref name="m"/> itself.</returns>
+            <exception cref="T:System.IndexOutOfRangeException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.SlotsAvailable(ItemManager)">
+            <summary>
+            Return the amount of empty slots in the inventory (excluding locked slots).
+            </summary>
+            <param name="man"></param>
+            <returns>The amount of empty slots in the inventory.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.IsSlotLocked(ItemManager,System.Int32)">
+            <summary>
+            Tells if the slot from <paramref name="man"/> at <paramref name="idx"/> is locked or not.
+            </summary>
+            <param name="man"></param>
+            <param name="idx"></param>
+            <returns>If true, the slot is locked, otherwise false.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.BypassRotation(AnimatedSpriteRotator,System.Boolean)">
+            <summary>
+            A simple method to set the field <c>bypassRotation</c> from the <see cref="T:AnimatedSpriteRotator"/>.
+            <para>If <paramref name="bypass"/> is true. The <see cref="T:AnimatedSpriteRotator"/> will begin using the <see cref="F:AnimatedSpriteRotator.targetSprite"/> instead of the map.</para>
+            </summary>
+            <param name="rotator"></param>
+            <param name="bypass"></param>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.CreateRotationMap(System.Int32,UnityEngine.Sprite[])">
+            <summary>
+            Creates an instance of <see cref="T:SpriteRotationMap"/>.
+            </summary>
+            <param name="angleCount"></param>
+            <param name="sprites"></param>
+            <returns>An instance of <see cref="T:SpriteRotationMap"/>.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.AddRoomFunction``1(RoomAsset)">
+            <summary>
+            Adds a room function directly into the <paramref name="asset"/>.
+            </summary>
+            <typeparam name="T">The <see cref="T:RoomFunction"/> to be added into the <paramref name="asset"/>.</typeparam>
+            <param name="asset">The <see cref="T:RoomAsset"/> to contain the <typeparamref name="T"/></param>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.AddRoomFunctionToContainer``1(RoomAsset)">
+            <summary>
+            Adds a room function directly into the <paramref name="asset"/>.
+            </summary>
+            <typeparam name="T">The <see cref="T:RoomFunction"/> to be added into the <paramref name="asset"/>.</typeparam>
+            <param name="asset">The <see cref="T:RoomAsset"/> to contain the <typeparamref name="T"/></param>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.AddRoomFunction``1(RoomAsset,``0)">
+            <summary>
+            Adds an existing <typeparamref name="T"/> object into the <paramref name="asset"/>.
+            </summary>
+            <param name="asset">The target <see cref="T:RoomAsset"/>.</param>
+            <param name="func">The <typeparamref name="T"/> object to be added.</param>
+            <typeparam name="T">The type of the <see cref="T:RoomFunction"/>.</typeparam>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.GetNPCContainer(NPC)">
+            <summary>
+            Returns the <see cref="T:PixelInternalAPI.Components.NPCAttributesContainer"/> from the <paramref name="npc"/>.
+            </summary>
+            <param name="npc">The npc.</param>
+            <returns>The <see cref="T:PixelInternalAPI.Components.NPCAttributesContainer"/> component.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.GetCustomCam(GameCamera)">
+            <summary>
+            Gets the <see cref="T:PixelInternalAPI.Components.CustomPlayerCameraComponent"/> through the <paramref name="cam"/>.
+            </summary>
+            <param name="cam">The <see cref="T:GameCamera"/>.</param>
+            <returns>The <see cref="T:PixelInternalAPI.Components.CustomPlayerCameraComponent"/> component.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.GetCustomCam(PlayerManager)">
+            <summary>
+            Gets the <see cref="T:PixelInternalAPI.Components.CustomPlayerCameraComponent"/> through the <paramref name="pm"/>.
+            </summary>
+            <param name="pm">The <see cref="T:PlayerManager"/> itself.</param>
+            <returns>The <see cref="T:PixelInternalAPI.Components.CustomPlayerCameraComponent"/> component.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.GenericExtensions.DisableClick(PlayerManager,System.Boolean)">
+            <summary>
+            Tells whether the click abilitity from the player must be disabled or not.
+            </summary>
+            <param name="pm">The <see cref="T:PlayerManager"/> targetted.</param>
+            <param name="disable">If True, the <see cref="T:PlayerClick"/> will stop trying to check for <see cref="T:IClickable`1"/>.</param>
+        </member>
+        <member name="T:PixelInternalAPI.Extensions.ObjectCreationExtensions">
+            <summary>
+            An extension class intended for the creation of components and objects that exists in-game
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreatePropagatedAudioManager(UnityEngine.GameObject,System.Single,System.Single)">
+            <summary>
+            Creates a <see cref="T:PropagatedAudioManager"/> component.
+            </summary>
+            <param name="target"></param>
+            <param name="minDistance"></param>
+            <param name="maxDistance"></param>
+            <returns>The <see cref="T:PropagatedAudioManager"/> component.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateAudioManager(UnityEngine.GameObject,System.Single,System.Single)">
+            <summary>
+            Creates an <see cref="T:AudioManager"/> component.
+            </summary>
+            <param name="target"></param>
+            <param name="minDistance"></param>
+            <param name="maxDistance"></param>
+            <returns>The <see cref="T:AudioManager"/> component.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.MakeAudioManagerNonPositional``1(``0)">
+            <summary>
+            Turns the <see cref="T:AudioManager"/> into a non positional audio (like the jhonny's shop audio for example).
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="man"></param>
+            <returns>The <see cref="T:AudioManager"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.AddStartingAudiosToAudioManager``1(``0,System.Boolean,SoundObject[])">
+            <summary>
+            Mkaes the <see cref="T:AudioManager"/> automatically play something upon active. This is useful for looping songs like Playtime's song for example.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="audio"></param>
+            <param name="loopOnStart"></param>
+            <param name="startingAudios"></param>
+            <returns>The <see cref="T:AudioManager"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateAudioSource(UnityEngine.GameObject,System.Single,System.Single)">
+            <summary>
+            Creates a basic <see cref="T:UnityEngine.AudioSource"/> component.
+            </summary>
+            <param name="target"></param>
+            <param name="minDistance"></param>
+            <param name="maxDistance"></param>
+            <returns>The <see cref="T:UnityEngine.AudioSource"/> component.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateEntity(UnityEngine.GameObject,UnityEngine.Collider,UnityEngine.Collider,UnityEngine.Transform)">
+            <summary>
+            Creates an <see cref="T:Entity"/> component to an object. Warning: Adding an <see cref="T:Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs.
+            </summary>
+            <param name="target"></param>
+            <param name="collider"></param>
+            <param name="triggerCollider"></param>
+            <param name="rendererBase"></param>
+            <returns>The <see cref="T:Entity"/> component</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateEntity(UnityEngine.GameObject,System.Single,System.Single,UnityEngine.Transform)">
+            <summary>
+            Creates an <see cref="T:Entity"/> component to an object. Warning: Adding an <see cref="T:Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs. The default collider added is the <see cref="T:UnityEngine.CapsuleCollider"/>
+            <para>If the <paramref name="triggerColliderRadius"/> is less or equal to 0, the collider is disabled</para>
+            </summary>
+            <param name="target"></param>
+            <param name="colliderRadius"></param>
+            <param name="triggerColliderRadius"></param>
+            <param name="rendererBase"></param>
+            <returns>The <see cref="T:Entity"/> component</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateEntity(UnityEngine.GameObject,System.Single,System.Single,UnityEngine.CapsuleCollider@,UnityEngine.CapsuleCollider@,UnityEngine.Transform)">
+            <summary>
+            Creates an <see cref="T:Entity"/> component to an object. Warning: Adding an <see cref="T:Entity"/> component automatically disables the object, so make sure to use this ONLY for intended prefabs. The default collider added is the <see cref="T:UnityEngine.CapsuleCollider"/>
+            <para>If the <paramref name="triggerColliderRadius"/> is less or equal to 0, the collider is disabled</para>
+            </summary>
+            <param name="target"></param>
+            <param name="colliderRadius"></param>
+            <param name="triggerColliderRadius"></param>
+            <param name="nonTriggerCollider"></param>
+            <param name="triggerCollider"></param>
+            <param name="rendererBase"></param>
+            <returns>The <see cref="T:Entity"/> component</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.SetEntityCollisionLayerMask(Entity,UnityEngine.LayerMask)">
+            <summary>
+            Sets a collision mask for the <paramref name="entity"/> (not the GameObject layer mask, it's another mask).
+            </summary>
+            <param name="entity"></param>
+            <param name="layer"></param>
+            <returns>The <paramref name="entity"/> itself</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateSodaMachineInstance(UnityEngine.Texture,UnityEngine.Texture,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:SodaMachine"/> instance. <paramref name="sodaTex"/> and <paramref name="sodaOutTex"/> sets the textures for new <see cref="T:SodaMachine"/>.
+            <para><paramref name="isPrefab"/> disables the <see cref="T:SodaMachine"/> and set to the DontDestroyOnLoad scene.</para>
+            </summary>
+            <param name="sodaTex"></param>
+            <param name="sodaOutTex"></param>
+            <param name="isPrefab"></param>
+            <returns>A <see cref="T:SodaMachine"/> instance.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.SetPotentialItems(SodaMachine,WeightedItemObject[])">
+            <summary>
+            Set the <paramref name="potentialItems"/> from the <paramref name="mach"/>.
+            </summary>
+            <param name="mach"></param>
+            <param name="potentialItems"></param>
+            <returns>The <paramref name="mach"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.SetUses(SodaMachine,System.Int32)">
+            <summary>
+            Sets the <paramref name="usesLeft"/> from the <paramref name="mach"/> (if any value below 0 is inputted, the soda machine will have infinite uses).
+            </summary>
+            <param name="mach"></param>
+            <param name="usesLeft"></param>
+            <returns>The <paramref name="mach"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.AddNewPotentialItems(SodaMachine,WeightedItemObject[])">
+            <summary>
+            Adds new <paramref name="potentialItems"/> to the <paramref name="mach"/>.
+            </summary>
+            <param name="mach"></param>
+            <param name="potentialItems"></param>
+            <returns>The <paramref name="mach"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.SetRequiredItems(SodaMachine,Items[])">
+            <summary>
+            Set the required items for the <paramref name="mach"/> through the <see cref="T:PixelInternalAPI.Components.SodaMachineCustomComponent"/>.
+            </summary>
+            <param name="mach"></param>
+            <param name="acceptableItems"></param>
+            <returns>The <paramref name="mach"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.AddNewRequiredItems(SodaMachine,Items[])">
+            <summary>
+            Add new required items for the <paramref name="mach"/> through the <see cref="T:PixelInternalAPI.Components.SodaMachineCustomComponent"/>.
+            </summary>
+            <param name="mach"></param>
+            <param name="acceptableItems"></param>
+            <returns>The <paramref name="mach"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateAnimatedSpriteRotator``1(``0,System.Int32,SpriteRotationMap[])">
+            <summary>
+            Creates a <see cref="T:AnimatedSpriteRotator"/> component for the <paramref name="npc"/>.
+            <para>The <paramref name="rendererIdx"/> indicate which renderer to be used in the <see cref="F:NPC.spriteRenderer"/> array.</para>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="npc"></param>
+            <param name="rendererIdx"></param>
+            <param name="map"></param>
+            <returns>The instance of <see cref="T:AnimatedSpriteRotator"/>.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateAnimatedSpriteRotator``1(``0,SpriteRotationMap[])">
+            <summary>
+            Creates a <see cref="T:AnimatedSpriteRotator"/> component for the <paramref name="npc"/>.
+            <para>The default index used for the <see cref="F:NPC.spriteRenderer"/> is 0.</para>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="npc"></param>
+            <param name="map"></param>
+            <returns>The instance of <see cref="T:AnimatedSpriteRotator"/>.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateAnimatedSpriteRotator(UnityEngine.SpriteRenderer,SpriteRotationMap[])">
+            <summary>
+            Creates a <see cref="T:AnimatedSpriteRotator"/> component for a renderer.
+            </summary>
+            <param name="renderer">The target <see cref="T:UnityEngine.SpriteRenderer"/> to be animated.</param>
+            <param name="map"></param>
+            <returns>The instance of <see cref="T:AnimatedSpriteRotator"/>.</returns>
+        </member>
+        <member name="P:PixelInternalAPI.Extensions.ObjectCreationExtensions.BillBoardPrefab">
+            <summary>
+            Returns the bill board prefab used to create sprite billboards.
+            </summary>
+        </member>
+        <member name="P:PixelInternalAPI.Extensions.ObjectCreationExtensions.NonBillBoardPrefab">
+            <summary>
+            Returns the non bill board prefab used to create sprite billboards.
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateSpriteBillboard(UnityEngine.Sprite)">
+            <summary>
+            Creates a <see cref="T:UnityEngine.SpriteRenderer"/> object with the default billboard material and a <see cref="T:RendererContainer"/>.
+            <para>The sprite will have a billboard by default.</para>
+            </summary>
+            <param name="sprite"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateSpriteBillboard(UnityEngine.Sprite,System.Boolean)">
+            <summary>
+            Creates a <see cref="T:UnityEngine.SpriteRenderer"/> object with the default billboard material and a <see cref="T:RendererContainer"/>.
+            <para><paramref name="hasBillboard"/> defines whether the sprite has billboard or not (refer to <see cref="T:ChalkFace"/> sprite when he's in the board as an example).</para>
+            </summary>
+            <param name="sprite"></param>
+            <param name="hasBillboard"></param>
+            <returns>A <see cref="T:UnityEngine.SpriteRenderer"/> instance.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.AddSpriteHolder(UnityEngine.SpriteRenderer,System.Single,System.Nullable{UnityEngine.LayerMask})">
+            <summary>
+            Adds a "SpriteHolder" for the <paramref name="renderer"/>. So you can include offset or collision to the renderer without necessarily putting in the same object.
+            <para><paramref name="holderMask"/> is null by default (and the layer will be the billboard layer, by default). When not null, it becomes the layer of the sprite holder.</para>
+            <para>Note that the SpriteHolder will be the one with the <see cref="T:RendererContainer"/> component, removing the one from the <paramref name="renderer"/> (if it exists).</para>
+            <para>The <paramref name="offset"/> defined will only affect the y axis.</para>
+            </summary>
+            <param name="renderer"></param>
+            <param name="offset"></param>
+            <param name="holderMask"></param>
+            <returns>The <paramref name="renderer"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.AddSpriteHolder(UnityEngine.SpriteRenderer,UnityEngine.Vector3,System.Nullable{UnityEngine.LayerMask})">
+            <summary>
+            Adds a "SpriteHolder" for the <paramref name="renderer"/>. So you can include offset or collision to the renderer without necessarily putting in the same object.
+            <para><paramref name="holderMask"/> is null by default (and the layer will be the billboard layer, by default). When not null, it becomes the layer of the sprite holder.</para>
+            <para>Note that the SpriteHolder will be the one with the <see cref="T:RendererContainer"/> component, removing the one from the <paramref name="renderer"/> (if it exists).</para>
+            </summary>
+            <param name="renderer"></param>
+            <param name="offset"></param>
+            <param name="holderMask"></param>
+            <returns>The <paramref name="renderer"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.AddSpriteHolder(UnityEngine.SpriteRenderer,UnityEngine.SpriteRenderer@,System.Single,System.Nullable{UnityEngine.LayerMask})">
+            <summary>
+            Adds a "SpriteHolder" for the <paramref name="renderer"/>. So you can include offset or collision to the renderer without necessarily putting in the same object.
+            <para><paramref name="holderMask"/> is null by default (and the layer will be the billboard layer, by default). When not null, it becomes the layer of the sprite holder.</para>
+            <para>Note that the SpriteHolder will be the one with the <see cref="T:RendererContainer"/> component, removing the one from the <paramref name="renderer"/> (if it exists).</para>
+            <para>The <paramref name="offset"/> defined will only affect the y axis.</para>
+            </summary>
+            <param name="renderer"></param>
+            <param name="childRenderer"></param>
+            <param name="offset"></param>
+            <param name="holderMask"></param>
+            <returns>The <paramref name="renderer"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.AddSpriteHolder(UnityEngine.SpriteRenderer,UnityEngine.SpriteRenderer@,UnityEngine.Vector3,System.Nullable{UnityEngine.LayerMask})">
+            <summary>
+            Adds a "SpriteHolder" for the <paramref name="renderer"/>. So you can include offset or collision to the renderer without necessarily putting in the same object.
+            <para><paramref name="holderMask"/> is null by default (and the layer will be the billboard layer, by default). When not null, it becomes the layer of the sprite holder.</para>
+            <para>Note that the SpriteHolder will be the one with the <see cref="T:RendererContainer"/> component, removing the one from the <paramref name="renderer"/> (if it exists).</para>
+            </summary>
+            <param name="renderer"></param>
+            <param name="childRenderer"></param>
+            <param name="offset"></param>
+            <param name="holderMask"></param>
+            <returns>The <paramref name="renderer"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.AddSpriteAnimator``1(UnityEngine.SpriteRenderer,``0@)">
+            <summary>
+            Adds a <typeparamref name="T"/> to the <paramref name="renderer"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="renderer"></param>
+            <param name="animator"></param>
+            <returns>The <paramref name="renderer"/> itself.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateCanvas">
+            <summary>
+            Creates a simple <see cref="T:UnityEngine.Canvas"/>.
+            </summary>
+            <returns>A <see cref="T:UnityEngine.Canvas"/> instance.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateTextMeshProUGUI(UnityEngine.Color)">
+            <summary>
+            Creates a <see cref="T:TMPro.TextMeshProUGUI"/> object.
+            </summary>
+            <param name="color">The color of the text.</param>
+            <returns>A <see cref="T:TMPro.TextMeshProUGUI"/> instance.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateImage(UnityEngine.Canvas,UnityEngine.Texture2D,System.Boolean)">
+            <summary>
+            Creates an <see cref="T:UnityEngine.UI.Image"/>.
+            </summary>
+            <param name="canvas">The <see cref="T:UnityEngine.Canvas"/> the image is supposed to be attached.</param>
+            <param name="texture">The <see cref="T:UnityEngine.Texture2D"/> of the image.</param>
+            <param name="coverTheEntireScreen">If true, it'll have the same parameters as the gum overlay, to cover the entire screen.</param>
+            <returns>An <see cref="T:UnityEngine.UI.Image"/> instance.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateImage(UnityEngine.Canvas,UnityEngine.Sprite,System.Boolean)">
+            <summary>
+            Creates an <see cref="T:UnityEngine.UI.Image"/>.
+            </summary>
+            <param name="canvas">The <see cref="T:UnityEngine.Canvas"/> the image is supposed to be attached.</param>
+            <param name="sprite">The <see cref="T:UnityEngine.Sprite"/> of the image.</param>
+            <param name="coverTheEntireScreen">If true, it'll have the same parameters as the gum overlay, to cover the entire screen.</param>
+            <returns>An <see cref="T:UnityEngine.UI.Image"/> instance.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateImage(UnityEngine.Canvas,System.Boolean)">
+            <summary>
+            Creates an <see cref="T:UnityEngine.UI.Image"/> with no texture.
+            </summary>
+            <param name="canvas">The <see cref="T:UnityEngine.Canvas"/> the image is supposed to be attached.</param>
+            <param name="coverTheEntireScreen">If true, it'll have the same parameters as the gum overlay, to cover the entire screen.</param>
+            <returns>An <see cref="T:UnityEngine.UI.Image"/> instance with no texture.</returns>
+        </member>
+        <member name="T:PixelInternalAPI.Extensions.PrivateCallExtensions">
+            <summary>
+            Extensions to call private methods more easily.
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.PrivateCallExtensions.SetGuilt(NPC,System.Single,System.String)">
+            <summary>
+            Calls the <see cref="M:NPC.SetGuilt(System.Single,System.String)"/> method.
+            </summary>
+            <param name="npc">The <see cref="T:NPC"/> instance.</param>
+            <param name="time">The time that rule break lasts to the npc for Principal to notice.</param>
+            <param name="rule">The rule broken.</param>
+        </member>
+        <member name="T:PixelInternalAPI.Extensions.TextureExtensions">
+            <summary>
+            Various extension methods for textures
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.OverlayTexture(UnityEngine.Texture2D,UnityEngine.Texture2D)">
+            <summary>
+            Puts a secondary texture (<paramref name="t2"/>) over the first texture (<paramref name="t"/>)
+            </summary>
+            <param name="t"></param>
+            <param name="t2"></param>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.MakeReadableTexture(UnityEngine.Texture2D)">
+            <summary>
+            Take a unreadable <see cref="T:UnityEngine.Texture2D"/> and converts into a readable one (editable one).
+            </summary>
+            <param name="source"></param>
+            <returns>A readable <see cref="T:UnityEngine.Texture2D"/></returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.CreateSolidTexture(System.Int32,System.Int32,UnityEngine.Color)">
+            <summary>
+            Creates a <see cref="T:UnityEngine.Texture2D"/> with a <paramref name="solidColor"/> defined.
+            </summary>
+            <param name="width">The width of the texture.</param>
+            <param name="height">The height of the texture.</param>
+            <param name="solidColor">The fill up color for the texture.</param>
+            <returns><see cref="T:UnityEngine.Texture2D"/> with a <paramref name="solidColor"/> defined.</returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.AddTextureOutline(UnityEngine.Texture2D,UnityEngine.Color)">
+            <summary>
+            Adds an outline to the <paramref name="tex"/> with a outline width of 1.
+            </summary>
+            <param name="tex">The target texture.</param>
+            <param name="outlineColor">The color of the outline.</param>
+            <returns>The same texture but with an outline.</returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.AddTextureOutline(UnityEngine.Texture2D,UnityEngine.Color,System.Int32)">
+            <summary>
+            Adds an outline to the <paramref name="tex"/>.
+            </summary>
+            <param name="tex">The target texture.</param>
+            <param name="outlineColor">The color of the outline.</param>
+            <param name="outlineWidth">The outline's width</param>
+            <returns>The same texture but with an outline.</returns>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.CubemapFromTexture2D(UnityEngine.Texture2D)">
+            <summary>
+            Creates a Cubemap from <paramref name="texture"/>
+            </summary>
+            <param name="texture"></param>
+            <returns>Cubemap from <paramref name="texture"/></returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.GenerateTextureAtlas(UnityEngine.Texture2D,UnityEngine.Texture2D,UnityEngine.Texture2D)">
+            <summary>
+            Generates the default texture atlas BB+ uses for rooms.
+            </summary>
+            <param name="ceil"></param>
+            <param name="wall"></param>
+            <param name="floor"></param>
+            <returns>default texture atlas BB+ uses for rooms.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.ApplyLightLevel(UnityEngine.Texture2D,System.Single)">
+            <summary>
+            Applies a light increase/decrease into the texture based off the given <paramref name="percentage"/>.
+            </summary>
+            <param name="tex">The texture to be applied.</param>
+            <param name="percentage">The percentage of the light which will be based off the offset between the texture's color and the maximum light/dark that can be applied. 
+            Ranging from -100 to 100. Negative values will decrease the light, positive values will increase it.
+            </param>
+            <returns>The applied texture.</returns>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.LoadSpriteSheet(System.Int32,System.Int32,System.Single,System.String[])">
+            <summary>
+            Converts a full sprite sheet image into separate textures.
+            </summary>
+            <param name="horizontalTiles">The amount of sprites horizontally (beginning from the 1 index)</param>
+            <param name="verticalTiles">The amount of sprites vertically (beginning from the 1 index)</param>
+            <param name="pixelsPerUnit">The pixelsPerUnit used for Sprites.</param>
+            <param name="paths">The path to the image file.</param>
+            <returns>An array of the textures inside the sheet.</returns>
+            <exception cref="T:System.IO.FileNotFoundException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.LoadSpriteSheet(System.Int32,System.Int32,System.Single,UnityEngine.Vector2,System.String[])">
+            <summary>
+            Converts a full sprite sheet image into separate textures.
+            </summary>
+            <param name="horizontalTiles">The amount of sprites horizontally (beginning from the 1 index)</param>
+            <param name="verticalTiles">The amount of sprites vertically (beginning from the 1 index)</param>
+            <param name="pixelsPerUnit">The pixelsPerUnit used for Sprites.</param>
+            <param name="center">The center of the sprite.</param>
+            <param name="paths">The path to the image file.</param>
+            <returns>An array of the textures inside the sheet.</returns>
+            <exception cref="T:System.IO.FileNotFoundException"></exception>
+        </member>
+        <member name="M:PixelInternalAPI.Extensions.TextureExtensions.LoadTextureSheet(System.Int32,System.Int32,System.String[])">
+            <summary>
+            Converts a full sprite sheet image into separate textures.
+            </summary>
+            <param name="horizontalTiles">The amount of sprites horizontally (beginning from the 1 index)</param>
+            <param name="verticalTiles">The amount of sprites vertically (beginning from the 1 index)</param>
+            <param name="paths">The path to the image file.</param>
+            <returns>An array of the textures inside the sheet.</returns>
+            <exception cref="T:System.IO.FileNotFoundException"></exception>
+        </member>
+        <member name="T:PixelInternalAPI.ResourceManager">
+            <summary>
+            A basic class that store some info that can be useful for the game.
+            </summary>
+        </member>
+        <member name="M:PixelInternalAPI.ResourceManager.AddWeightedItemToCrazyMachine(WeightedItemObject)">
+            <summary>
+            Adds an weighted item to the crazy vending machine loot table. Note: This must be called at RegisterOnAssetsLoaded from the LoadingEvents, non-post).
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:PixelInternalAPI.ResourceManager.AddMysteryItem(WeightedItemObject)">
+            <summary>
+            Adds an weighted item to the <see cref="T:MysteryRoom"/> event loot table. Note: This must be called at RegisterOnAssetsLoaded from the LoadingEvents, non-post).
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:PixelInternalAPI.ResourceManager.AddKeyTypeItem(ItemObject)">
+            <summary>
+            Adds the <paramref name="item"/> to be able of unlocking doors (just like keys).
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:PixelInternalAPI.ResourceManager.AddPostGenCallback(System.Action{BaseGameManager})">
+            <summary>
+            Registers a callback after a level is generated/loaded.
+            </summary>
+            <param name="call">The action that is going to be taken when the callback is triggered</param>
+        </member>
+        <member name="M:PixelInternalAPI.ResourceManager.AddGenStartCallback(System.Action{GameInitializer,LevelBuilder,BaseGameManager,SceneObject})">
+            <summary>
+            Registers a callback before the level starts generating/loading.
+            </summary>
+            <param name="call">The action that is going to be taken when the callback is triggered</param>
+        </member>
+        <member name="M:PixelInternalAPI.ResourceManager.AddReloadLevelCallback(System.Action{BaseGameManager,System.Boolean})">
+            <summary>
+            Registers a callback when the level is reloaded (for either, going to the next floor or reloading it).
+            </summary>
+            <param name="call">The action that is going to be taken when the callback is triggered</param>
+        </member>
+        <member name="M:PixelInternalAPI.ResourceManager.RaisePopup(BepInEx.PluginInfo,System.String)">
+            <summary>
+            Raises a popup in the right bottom of the screen.
+            </summary>
+            <param name="info">The plugin that is calling this.</param>
+            <param name="message">The message to be raised.</param>
+        </member>
+        <member name="M:PixelInternalAPI.ResourceManager.RaiseLocalizedPopup(BepInEx.PluginInfo,System.String)">
+            <summary>
+            Raises a popup in the right bottom of the screen.
+            </summary>
+            <param name="info">The plugin that is calling this.</param>
+            <param name="messageKey">The localized message to be raised</param>
+        </member>
+    </members>
+</doc>

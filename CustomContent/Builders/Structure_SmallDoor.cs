@@ -84,7 +84,6 @@ namespace BBTimes.CustomContent.Builders
 		public string TexturePath => this.GenerateDataPath("objects", "Textures");
 		public string SoundPath => this.GenerateDataPath("objects", "Audios");
 
-
 		// Prefab stuff above ^^
 		public override void PostOpenCalcGenerate(LevelGenerator lg, System.Random rng)
 		{
@@ -165,7 +164,6 @@ namespace BBTimes.CustomContent.Builders
 
 			door.transform.position = cell.FloorWorldPosition;
 			door.transform.rotation = dir.ToRotation();
-			return;
 		}
 
 		[SerializeField]
