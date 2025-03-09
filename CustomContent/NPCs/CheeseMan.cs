@@ -17,8 +17,8 @@ namespace BBTimes.CustomContent.NPCs
 
 			animComp = gameObject.AddComponent<AnimationComponent>();
 			var sprs = this.GetSpriteSheet(3, 4, 55f, "cheeseMan.png");
-			sprsWalking = [sprs[0], sprs[1], sprs[2]];
-			sprsWalkHumming = [sprs[3], sprs[4], sprs[5]];
+			sprsWalking = [sprs[0], sprs[1], sprs[2], sprs[1]];
+			sprsWalkHumming = [sprs[3], sprs[4], sprs[5], sprs[4]];
 			sprHit = [sprs[6]];
 			sprStunned = [sprs[7]];
 			sprsOfferYTP = [sprs[8], sprs[9]]; // Reversed, to end at the mouth closed, not open
