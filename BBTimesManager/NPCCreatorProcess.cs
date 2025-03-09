@@ -30,7 +30,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.SetMetaTags(["neither"])
 				.Build()
-				.SetupNPCData("OfficeChair", "PST_OFC_Name", "PST_OFC_Desc", -2f);
+				.SetupNPCData("OfficeChair", "PST_OFC_Name", "PST_OFC_Desc", -0.75f);
 
 			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 35 });
 			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 60 });

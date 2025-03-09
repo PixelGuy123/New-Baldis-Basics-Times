@@ -37,6 +37,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			attached = true;
 		}
 
+		public void Click()
+		{
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audClick);
+			Destroy(gameObject);
+		}
+
 		void Update()
 		{
 			if (!init || !attached) return;
@@ -73,5 +79,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		[SerializeField]
 		internal float adOffsetRange = 225f;
+
+		[SerializeField]
+		internal SoundObject audClick;
 	}
 }

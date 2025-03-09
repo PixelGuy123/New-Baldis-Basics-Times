@@ -131,8 +131,8 @@ namespace BBTimes.CustomContent.Builders
 
 		const float connectionSize = 2f;
 
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("objects", "Textures");
-		public string SoundPath => this.GenerateDataPath("objects", "Audios");
+		public string Name { get; set; } public string Category => "objects";
+
 
 
 

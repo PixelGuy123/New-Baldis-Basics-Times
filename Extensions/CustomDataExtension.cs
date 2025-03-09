@@ -6,17 +6,19 @@ using PixelInternalAPI.Extensions;
 using BBTimes.CustomComponents;
 using System.Linq;
 using BBTimes.Manager;
+using MTM101BaldAPI.OBJImporter;
+using BBTimes.Extensions.ObjectCreationExtensions;
 
 namespace BBTimes.Extensions
 {
 	public static class CustomDataExtension
 	{
+		const string audioFolderName = "Audios", textureFolderName = "Textures", modelsFolderName = "Models";
+
 		public static bool ReplacesCharacter(this INPCPrefab prefab, Character c) =>
 			prefab.GetReplacementNPCs() != null && prefab.GetReplacementNPCs().Contains(c);
-		public static string GenerateDataPath(this IPrefab pr, string category, string folder) =>
-			Path.Combine(BasePlugin.ModPath, category, pr.Name, folder);
 		public static Texture2D GetTexture(this IPrefab pr, string texName) =>
-			AssetLoader.TextureFromFile(Path.Combine(pr.TexturePath, BBTimesManager.GetAssetName(texName)));
+			AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, pr.Category, pr.Name, textureFolderName, BBTimesManager.GetAssetName(texName)));
 
 		public static Sprite GetSprite(this IPrefab pr, float pixelsPerUnit, string texName) =>
 			AssetLoader.SpriteFromTexture2D(pr.GetTexture(texName), pixelsPerUnit);
@@ -25,7 +27,7 @@ namespace BBTimes.Extensions
 			AssetLoader.SpriteFromTexture2D(pr.GetTexture(texName), center, pixelsPerUnit);
 
 		public static Sprite[] GetSpriteSheet(this IPrefab pr, int horizontalTiles, int verticalTiles, float pixelsPerUnit, Vector2 center, string texName) =>
-			TextureExtensions.LoadSpriteSheet(horizontalTiles, verticalTiles, pixelsPerUnit, center, pr.TexturePath, BBTimesManager.GetAssetName(texName));
+			TextureExtensions.LoadSpriteSheet(horizontalTiles, verticalTiles, pixelsPerUnit, center, BasePlugin.ModPath, pr.Category, pr.Name, textureFolderName, BBTimesManager.GetAssetName(texName));
 
 		public static Sprite[] GetSpriteSheet(this IPrefab pr, int horizontalTiles, int verticalTiles, float pixelsPerUnit, string texName) =>
 			pr.GetSpriteSheet(horizontalTiles, verticalTiles, pixelsPerUnit, new Vector2(0.5f, 0.5f), texName);
@@ -63,13 +65,42 @@ namespace BBTimes.Extensions
 		}
 
 		public static SoundObject GetSound(this IPrefab pr, string audioName, string subtitle, SoundType soundType, Color color) =>
-			ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(pr.SoundPath, BBTimesManager.GetAssetName(audioName))), subtitle, soundType, color);
+			ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, pr.Category, pr.Name, audioFolderName, BBTimesManager.GetAssetName(audioName))), subtitle, soundType, color);
 
 		public static SoundObject GetSoundNoSub(this IPrefab pr, string audioName, SoundType soundType)
 		{
 			var s = pr.GetSound(audioName, string.Empty, soundType, Color.white);
 			s.subtitle = false;
 			return s;
+		}
+
+		public static GameObject GetModel(this IPrefab pr, string modelName, bool includeRendererContainer, bool includeMeshCollider, out Transform rendererHolder) =>
+			pr.GetModel(modelName, includeRendererContainer, includeMeshCollider, Vector3.one, out rendererHolder);
+
+		public static GameObject GetModel(this IPrefab pr, string modelName, bool includeRendererContainer, bool includeMeshCollider, Vector3 scale, out Transform rendererHolder)
+		{
+			string normalPath = Path.Combine(BasePlugin.ModPath, pr.Category, pr.Name, modelsFolderName, BBTimesManager.GetAssetName(modelName));
+
+			var obj = new OBJLoader().Load(normalPath + ".obj", normalPath + ".mtl", ObjectCreationExtension.defaultMaterial);
+
+			obj.transform.localScale = Vector3.one;
+			if (includeRendererContainer)
+				obj.AddComponent<RendererContainer>().renderers = obj.GetComponentsInChildren<Renderer>();
+
+			if (includeMeshCollider)
+				obj.AddComponent<MeshCollider>();
+
+			var childObject = new GameObject("RenderHolder");
+			childObject.transform.SetParent(obj.transform);
+			childObject.transform.localPosition = Vector3.zero;
+
+			foreach (var child in obj.GetComponentsInChildren<MeshRenderer>())
+				child.transform.SetParent(childObject.transform, false);
+
+			childObject.transform.localScale = scale;
+			rendererHolder = childObject.transform;
+			
+			return obj;
 		}
 	}
 }

@@ -35,12 +35,13 @@ namespace BBTimes.CustomContent.NPCs
 			adPre.att = advertisementObject.gameObject.AddComponent<VisualAttacher>();
 
 			advertisementObject.gameObject.CreatePropagatedAudioManager(60f, 75f).AddStartingAudiosToAudioManager(false, [this.GetSoundNoSub("erro.mp3", SoundType.Effect)]);
+			adPre.audClick = this.GetSoundNoSub("click.wav", SoundType.Effect);
 		}
 
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
-		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public string Category => "npcs";
+		
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -59,18 +60,20 @@ namespace BBTimes.CustomContent.NPCs
 			if (pm.plm.Entity.Blinded)
 				return;
 
-			CreateAd().AttachToCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam,
+			CreateAd(true).AttachToCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam,
 				Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform);
 			affectedPlayers.Add(new(this, pm));
 		}
 		public void AdNPC(NPC npc) =>
-			CreateAd().AttachToNPC(npc);
+			CreateAd(false).AttachToNPC(npc);
 
-		Advertisement CreateAd()
+		Advertisement CreateAd(bool playerAd)
 		{
 			var ad = Instantiate(adPre);
 			ad.Initialize(ec, adLifeTime);
 			advertisements.Add(ad);
+			if (playerAd)
+				playerAdvertisements.Add(ad);
 			return ad;
 		}
 
@@ -78,7 +81,8 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			while (advertisements.Count != 0)
 			{
-				Destroy(advertisements[0].gameObject);
+				if (advertisements[0])
+					Destroy(advertisements[0].gameObject);
 				advertisements.RemoveAt(0);
 			}
 			affectedPlayers.RemoveAll(x => x.Key == this);
@@ -87,12 +91,22 @@ namespace BBTimes.CustomContent.NPCs
 		public override void VirtualUpdate()
 		{
 			base.VirtualUpdate();
+			for (int i = 0; i < playerAdvertisements.Count; i++)
+				if (!playerAdvertisements[i])
+					playerAdvertisements.RemoveAt(i--);
+
+			if (playerAdvertisements.Count == 0)
+				affectedPlayers.RemoveAll(x => x.Key == this);
+
 			for (int i = 0; i < advertisements.Count; i++)
 				if (!advertisements[i])
 					advertisements.RemoveAt(i--);
-
-			if (advertisements.Count == 0)
-				affectedPlayers.RemoveAll(x => x.Key == this);
+			
+			if (playerAdvertisements.Count != 0 && Singleton<InputManager>.Instance.GetDigitalInput("Interact", true) && Time.timeScale != 0f)
+			{
+				playerAdvertisements[0].Click();
+				playerAdvertisements.RemoveAt(0);
+			}
 		}
 
 		public override void Despawn()
@@ -107,7 +121,7 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal float adLifeTime = 7.5f, timeBeforeAdvertisement = 0.08f;
 
-		readonly List<Advertisement> advertisements = [];
+		readonly List<Advertisement> advertisements = [], playerAdvertisements = [];
 
 		public readonly static List<KeyValuePair<Adverto, PlayerManager>> affectedPlayers = [];
 

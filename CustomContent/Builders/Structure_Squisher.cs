@@ -63,8 +63,8 @@ namespace BBTimes.CustomContent.Builders
 		const float headSize = 6f, bodyHeight = 9f;
 
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("objects", "Textures");
-		public string SoundPath => this.GenerateDataPath("objects", "Audios");
+		public string Category => "objects";
+
 
 
 		// prefab stuff ^^

@@ -12,8 +12,8 @@ namespace BBTimes.CustomContent.Builders
 		public void SetupPrefab() { }
 
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("objects", "Textures");
-		public string SoundPath => this.GenerateDataPath("objects", "Audios");
+		public string Category => "objects";
+
 		public override void Generate(LevelGenerator lg, System.Random rng)
 		{
 			base.Generate(lg, rng);

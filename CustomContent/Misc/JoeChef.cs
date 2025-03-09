@@ -25,7 +25,7 @@ namespace BBTimes.CustomContent.Misc
 				return;
 			}
 			if (workingOn) return;
-			if (Singleton<CoreGameManager>.Instance.GetPoints(player) <= price)
+			if (Singleton<CoreGameManager>.Instance.GetPoints(player) < price)
 			{
 				audMan.PlaySingle(audScream);
 				return;

@@ -32,8 +32,8 @@ namespace BBTimes.CustomContent.Events
 
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("events", "Textures");
-		public string SoundPath => this.GenerateDataPath("events", "Audios");
+		public string Name { get; set; } public string Category => "events";
+		
 		// ---------------------------------------------------
 		public override void Begin()
 		{
@@ -65,13 +65,15 @@ namespace BBTimes.CustomContent.Events
 		public override void End()
 		{
 			base.End();
-			boards.ForEach(x =>
+			while (boards.Count != 0)
 			{
-				StartCoroutine(GameExtensions.TimerToDestroy(x.gameObject, ec, Random.Range(2f, 6f)));
-
-				Destroy(x);
-			});
-			boards.Clear();
+				if (boards[0]) // Make sure it hasn't despawned
+				{
+					StartCoroutine(GameExtensions.TimerToDestroy(boards[0].gameObject, ec, Random.Range(2f, 6f)));
+					Destroy(boards[0]);
+				}
+				boards.RemoveAt(0);
+			}
 		}
 
 		readonly List<Skateboard> boards = [];

@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
@@ -9,6 +10,7 @@ namespace BBTimes.CustomContent.CustomItems
 {
 	public class ITM_Bell : Item, IEntityTrigger, IItemPrefab
 	{
+		ValueModifier valMod = new(0f);
 
 		public void SetupPrefab()
 		{
@@ -30,8 +32,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
-		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public string Name { get; set; } public string Category => "items";
+		
 		public ItemObject ItmObj { get; set; }
 
 
@@ -58,6 +60,7 @@ namespace BBTimes.CustomContent.CustomItems
 				{
 					active = false;
 					renderer.sprite = deactiveSprite;
+					ec.GetBaldi()?.GetNPCContainer().AddLookerMod(valMod);
 					ec.MakeNoise(transform.position, noiseVal);
 					audMan.PlaySingle(audBell);
 
@@ -79,8 +82,15 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator WaitForDespawn()
 		{
-			while (audMan.AnyAudioIsPlaying) yield return null;
+			var baldi = ec.GetBaldi();
+			var cell = ec.CellFromPosition(transform.position);
+			while (audMan.AnyAudioIsPlaying || 
+				(baldi && (ec.CellFromPosition(baldi.transform.position) != cell
+				&& baldi.soundLocations[noiseVal] == transform.position))) 
 
+				yield return null;
+
+			baldi?.GetNPCContainer().RemoveLookerMod(valMod);
 			Destroy(gameObject);
 			yield break;
 		}

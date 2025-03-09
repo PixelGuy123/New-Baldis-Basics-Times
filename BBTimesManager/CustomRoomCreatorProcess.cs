@@ -26,6 +26,7 @@ using BBTimes.Plugin;
 using TMPro;
 using MTM101BaldAPI.OBJImporter;
 using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBE.NPCs.Chess;
 
 namespace BBTimes.Manager
 {
@@ -83,6 +84,7 @@ namespace BBTimes.Manager
 			genDor.closed = bathSprites[0];
 			genDor.open = bathSprites[1];
 			genDor.renderer = bathDoorRenderer;
+			genDor.noiseChance = 0.5f;
 
 
 			bathSprites = TextureExtensions.LoadSpriteSheet(2, 1, 41.5f, GetRoomAsset("Bathroom", "sink.png"));
@@ -899,6 +901,7 @@ namespace BBTimes.Manager
 			var sweepCloset = GenericExtensions.FindResourceObject<GottaSweep>().potentialRoomAssets[0].selection;
 
 			room = GetAllAssets(GetRoomAsset("Closet"), sweepCloset.maxItemValue, 100, sweepCloset.roomFunctionContainer);
+
 			room[0].selection.AddRoomFunctionToContainer<HighCeilingRoomFunction>().ceilingHeight = 1;
 			room[0].selection.AddRoomFunctionToContainer<RandomPosterFunction>().posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Closet", "sweepSad.png"))])];
 
@@ -945,7 +948,10 @@ namespace BBTimes.Manager
 				AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "kitchenDoorClosed.png"))));
 
 
-			room = GetAllAssets(GetRoomAsset("Kitchen"), 75, 35, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "MapBG_Kitchen.png")));
+			room = GetAllAssets(GetRoomAsset("Kitchen"), 75, 35, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Kitchen", "MapBG_Kitchen.png")), autoSizeLimitControl: false);
+			if (!plug.enableBigRooms.Value)
+				RemoveBigRooms(room, 7f);
+
 			var lunchObj = GenericExtensions.FindResourceObjectByName<RendererContainer>("Decor_Lunch").transform;
 			BasicObjectSwapData[] swaps = [
 				new()
@@ -1149,7 +1155,7 @@ namespace BBTimes.Manager
 
 			WeightedRoomAsset classWeightPre = FindRoomGroupOfName("Class");
 			
-			room = GetAllAssets(GetRoomAsset("Class"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer);
+			room = GetAllAssets(GetRoomAsset("Class"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, autoSizeLimitControl: false);
 			if (!plug.enableBigRooms.Value)
 				RemoveBigRooms(room, 6.56f);
 
@@ -1178,7 +1184,7 @@ namespace BBTimes.Manager
 
 			Superintendent.AddAllowedRoom(sets.category);
 
-			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: false);
 			// Workaround to not have to edit every focus room layout lol
 			var redCouchprefab = Resources.FindObjectsOfTypeAll<RendererContainer>().First(x => x.name == "RedCouch");
 			room.ForEach(foc => foc.selection.basicObjects.ForEach(basO => { if (basO.prefab.name == "Couch") basO.prefab = redCouchprefab.transform; }));
@@ -1193,7 +1199,7 @@ namespace BBTimes.Manager
 
 			Superintendent.AddAllowedRoom(sets.category);
 
-			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: false);
 
 			RegisterFalseClass();			
 
@@ -1227,7 +1233,10 @@ namespace BBTimes.Manager
 			//Faculties
 
 			classWeightPre = FindRoomGroupOfName("Faculty");
-			room = GetAllAssets(GetRoomAsset("Faculty"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			room = GetAllAssets(GetRoomAsset("Faculty"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: false);
+
+			if (!plug.enableBigRooms.Value)
+				RemoveBigRooms(room, 8f);
 
 			room.ForEach(x =>
 			{
@@ -1245,7 +1254,7 @@ namespace BBTimes.Manager
 
 			//Offices
 			classWeightPre = FindRoomGroupOfName("Office");
-			room = GetAllAssets(GetRoomAsset("Office"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
+			room = GetAllAssets(GetRoomAsset("Office"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: false);
 			if (!plug.enableBigRooms.Value)
 				RemoveBigRooms(room, 7.65f);
 
@@ -1386,17 +1395,7 @@ namespace BBTimes.Manager
 				});
 			}
 
-			static void RemoveBigRooms(List<WeightedRoomAsset> assets, float averageGiven)
-			{
-				for (int i = 0; i < assets.Count; i++)
-				{
-					if (assets[i].selection.GetRoomSize().Magnitude() >= averageGiven) // Between 6x6 and 7x7
-					{
-						Object.Destroy(assets[i].selection); // Remove the asset since it's never going to be used anyways (free up memory)
-						assets.RemoveAt(i--);
-					}
-				}
-			}
+			
 
 			static WeightedRoomAsset FindRoomGroupOfName(string name)
 			{
@@ -1450,6 +1449,18 @@ namespace BBTimes.Manager
 
 		}
 
+		static void RemoveBigRooms(List<WeightedRoomAsset> assets, float averageGiven)
+		{
+			for (int i = 0; i < assets.Count; i++)
+			{
+				if (assets[i].selection.category != RoomCategory.Special && assets[i].selection.GetRoomSize().Magnitude() >= averageGiven) // Between 6x6 and 7x7
+				{
+					Object.Destroy(assets[i].selection); // Remove the asset since it's never going to be used anyways (free up memory)
+					assets.RemoveAt(i--);
+				}
+			}
+		}
+
 		static string GetRoomAsset(string roomName, string asset = "") => Path.Combine(BasePlugin.ModPath, "rooms", roomName, asset);
 
 		static void AddTextureToEditor(string name, Texture2D tex)
@@ -1486,7 +1497,7 @@ namespace BBTimes.Manager
 			return settings;
 		}
 
-		static List<WeightedRoomAsset> GetAllAssets(string path, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null, bool keepTextures = true, bool squaredShape = false)
+		static List<WeightedRoomAsset> GetAllAssets(string path, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null, bool keepTextures = true, bool squaredShape = false, bool autoSizeLimitControl = true)
 		{
 			List<WeightedRoomAsset> assets = [];
 			RoomFunctionContainer container = cont;
@@ -1522,6 +1533,10 @@ namespace BBTimes.Manager
 				catch { }
 
 			}
+
+			if (autoSizeLimitControl && !plug.enableBigRooms.Value)
+				RemoveBigRooms(assets, 12f);
+			
 
 			return assets;
 		}

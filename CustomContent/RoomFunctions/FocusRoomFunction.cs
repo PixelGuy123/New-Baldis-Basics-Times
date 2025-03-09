@@ -34,28 +34,27 @@ namespace BBTimes.CustomContent.RoomFunctions
 				relaxCooldown += 15f;
 			}
 
-			if (!student.IsSpeaking)
+
+			for (int i = 0; i < playersToWatch.Count; i++)
 			{
-				for (int i = 0; i < playersToWatch.Count; i++)
+				if (playersToWatch[i].ruleBreak == "Running" && playersToWatch[i].guiltTime > 0f)
 				{
-					if (playersToWatch[i].ruleBreak == "Running" && playersToWatch[i].guiltTime > 0f)
+					playersPatience[i] += room.ec.EnvironmentTimeScale * Time.deltaTime;
+					if (playersPatience[i] >= 0.67f)
 					{
-						playersPatience[i] += room.ec.EnvironmentTimeScale * Time.deltaTime;
-						if (playersPatience[i] >= 0.67f)
+						relaxCooldown = 30f;
+						playersToWatch[i].ClearGuilt();
+						playersPatience[i] = 0f;
+						if (student.Disturbed(playersToWatch[i]))
 						{
-							relaxCooldown = 30f;
-							playersToWatch[i].ClearGuilt();
-							playersPatience[i] = 0f;
-							if (student.Disturbed(playersToWatch[i]))
-							{
-								playersToWatch.RemoveAt(i);
-								playersPatience.RemoveAt(i);
-							}
-							return;
+							playersToWatch.RemoveAt(i);
+							playersPatience.RemoveAt(i);
 						}
+						return;
 					}
 				}
 			}
+
 		}
 
 		float relaxCooldown = 0f;

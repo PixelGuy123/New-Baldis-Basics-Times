@@ -68,8 +68,8 @@ namespace BBTimes.CustomContent.Events
 			driftPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(4.9f, 10f, 4.9f), true);
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("events", "Textures");
-		public string SoundPath => this.GenerateDataPath("events", "Audios");
+		public string Name { get; set; } public string Category => "events";
+		
 		// ---------------------------------------------------
 
 		public override void Begin()

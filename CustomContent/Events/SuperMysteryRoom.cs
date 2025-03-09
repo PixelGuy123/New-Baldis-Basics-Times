@@ -20,8 +20,8 @@ namespace BBTimes.CustomContent.Events
 			target = EnumExtensions.GetFromExtendedName<RoomCategory>("SuperMystery");
 		
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("events", "Textures");
-		public string SoundPath => this.GenerateDataPath("events", "Audios");
+		public string Category => "events";
+		
 		// ---------------------------------------------------
 		public override void Begin()
 		{

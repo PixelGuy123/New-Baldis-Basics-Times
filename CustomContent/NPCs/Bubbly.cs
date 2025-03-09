@@ -53,8 +53,8 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 
 		const float pixs = 21f;
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
-		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public string Name { get; set; } public string Category => "npcs";
+		
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }

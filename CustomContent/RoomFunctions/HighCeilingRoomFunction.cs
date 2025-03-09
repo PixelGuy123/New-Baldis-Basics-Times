@@ -19,7 +19,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 			base.Build(builder, rng);
 			proof = builder;
 
-			if (changed || ceilingHeight < 1 || rng.NextDouble() > chanceToHappen)
+			if (BBTimesManager.plug.disableHighCeilings.Value || changed || ceilingHeight < 1 || rng.NextDouble() > chanceToHappen)
 				return;
 
 			AddAllWalls();

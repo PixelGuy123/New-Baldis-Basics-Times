@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,14 +14,21 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			audRoll = this.GetSound("ChairRolling.wav", "Vfx_OFC_Walk", SoundType.Effect, new(0.74609375f, 0.74609375f, 0.74609375f));
 
-			var storedSprites = this.GetSpriteSheet(2, 1, 24f, "officeChair.png");
-			spriteRenderer[0].sprite = storedSprites[0];
-			sprActive = storedSprites[0];
-			sprDeactive = storedSprites[1];
+			var normalSprs = this.GetSpriteSheet(3, 3, 25f, "OfficeChair.png").ExcludeNumOfSpritesFromSheet(1);
+			var disabledSprs = this.GetSpriteSheet(3, 3, 25f, "OfficeChair_Disabled.png").ExcludeNumOfSpritesFromSheet(1);
+
+			rotator = spriteRenderer[0].CreateAnimatedSpriteRotator(
+				GenericExtensions.CreateRotationMap(8, normalSprs),
+				GenericExtensions.CreateRotationMap(8, disabledSprs)
+				);
+
+			sprActive = normalSprs[0];
+			sprDeactive = disabledSprs[0];
+			spriteRenderer[0].sprite = normalSprs[0];
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
-		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public string Name { get; set; } public string Category => "npcs";
+		
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -44,7 +52,8 @@ namespace BBTimes.CustomContent.NPCs
 			behaviorStateMachine.ChangeState(new OfficeChair_FindOffice(this, false, awaitCooldown, en));
 
 
-		public void SetEnabled(bool active) => spriteRenderer[0].sprite = active ? sprActive : sprDeactive;
+		public void SetEnabled(bool active) => 
+			rotator.targetSprite = active ? sprActive : sprDeactive;
 
 		const float normSpeed = 50f;
 
@@ -76,6 +85,12 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal SoundObject audRoll;
 
+		[SerializeField]
+		internal AnimatedSpriteRotator rotator;
+
+		[SerializeField]
+		internal int maxAttemptsBeforeGivingUpNavigation = 5;
+
 		readonly static HashSet<Items> itemsThatFixMe = [];
 		public static void AddFixableItem(Items i) => itemsThatFixMe.Add(i);
 
@@ -106,6 +121,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		Entity target = target;
 
+		int targetAttempts = 0;
+
 		// float entityBaseHeight = 0f;
 
 		readonly float waitCooldown = cooldown;
@@ -116,6 +133,19 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 
 
+			
+
+			var room = chair.ec.CellFromPosition(chair.transform.position).room;
+			List<Cell> cells = useCurrent ? room.GetTilesOfShape(TileShapeMask.Single, true) : GetRandomOffice(room);
+			if (cells.Count == 0)
+				cells = useCurrent ? room.AllEntitySafeCellsNoGarbage() : GetRandomOffice(room, true);
+
+			if (cells.Count == 0)
+			{
+				chair.behaviorStateMachine.ChangeState(new OfficeChair_WaitForCollision(chair, waitCooldown));
+				return;
+			}
+
 			if (target)
 			{
 				target.Override(overrider);
@@ -124,11 +154,6 @@ namespace BBTimes.CustomContent.NPCs
 				target.Teleport(chair.transform.position);
 				overrider.SetHeight(target.InternalHeight + heightOffset);
 			}
-
-			var room = chair.ec.CellFromPosition(chair.transform.position).room;
-			List<Cell> cells = useCurrent ? room.GetTilesOfShape(TileShapeMask.Single, true) : GetRandomOffice(room);
-			if (cells.Count == 0)
-				cells = useCurrent ? room.AllEntitySafeCellsNoGarbage() : GetRandomOffice(room, true);
 
 			targetCell = cells[Random.Range(0, cells.Count)];
 
@@ -145,7 +170,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.DestinationEmpty();
 			if (!initialized) return;
 
-			if (chair.ec.CellFromPosition(chair.transform.position) != targetCell)
+			if (chair.ec.CellFromPosition(chair.transform.position) != targetCell && ++targetAttempts <= chair.maxAttemptsBeforeGivingUpNavigation)
 			{
 				ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, targetCell.FloorWorldPosition));
 				return;
@@ -181,7 +206,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		List<Cell> GetRandomOffice(RoomController room, bool allTiles = false)
 		{
-			List<RoomController> rooms = new(chair.ec.rooms);
+			List<RoomController> rooms = [.. chair.ec.rooms];
 			rooms.RemoveAll(x => x == room || (x.category != RoomCategory.Office && x.category != RoomCategory.Faculty));
 
 #if CHEAT

@@ -29,8 +29,8 @@ namespace BBTimes.CustomContent.Builders
 		public void SetupPrefabPost() { }
 
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("objects", "Textures");
-		public string SoundPath => this.GenerateDataPath("objects", "Audios");
+		public string Category => "objects";
+
 
 		// Prefab stuff above ^^
 

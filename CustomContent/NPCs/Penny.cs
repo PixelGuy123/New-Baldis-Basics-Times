@@ -1,23 +1,32 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
+using System.Text;
 using TMPro;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	public class Penny : NPC, INPCPrefab
+	public class Penny : NPC, INPCPrefab, IClickable<int>
 	{
 		public void SetupPrefab()
 		{
 			renderer = spriteRenderer[0];
 			audMan = GetComponent<PropagatedAudioManager>();
 			stepAudMan = gameObject.CreatePropagatedAudioManager(115, 125);
+
+			var myCol = (CapsuleCollider)baseTrigger[0];
+			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
+			col.isTrigger = true;
+			col.height = myCol.height;
+			col.direction = myCol.direction;
+			col.radius = myCol.radius; // Adds a clickable to penny
 
 			var sprites = this.GetSpriteSheet(4, 3, 34f, "penny.png").ExcludeNumOfSpritesFromSheet(1);
 			talkHappySprs = sprites.TakeAPair(0, 2);
@@ -87,13 +96,13 @@ namespace BBTimes.CustomContent.NPCs
 
 			SoundObject[] sds = new SoundObject[easyWords.Length];
 			for (int i = 0; i < sds.Length; i++)
-				sds[i] = this.GetSound($"{easyWords[i]}.wav", " _ ".RepeatStr(easyWords[i].Length), SoundType.Voice, new(1f, 0.15f, 0f));
+				sds[i] = this.GetSound($"{easyWords[i]}.wav", easyWords[i], SoundType.Voice, new(1f, 0.15f, 0f));
 			
 			easyWordSoundPair = sds;
 
 			sds = new SoundObject[hardWords.Length];
 			for (int i = 0; i < sds.Length; i++)
-				sds[i] = this.GetSound($"{hardWords[i]}.wav", " _ ".RepeatStr(hardWords[i].Length), SoundType.Voice, new(1f, 0.15f, 0f));
+				sds[i] = this.GetSound($"{hardWords[i]}.wav", hardWords[i], SoundType.Voice, new(1f, 0.15f, 0f));
 			hardWordSoundPair = sds;
 
 			// ----------------- Done with words -------------------
@@ -141,8 +150,8 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
-		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public string Category => "npcs";
+		
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -304,6 +313,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (minigame != null)
 				StopCoroutine(minigame);
 			chosenPlayer = null;
+			currentWordIndex = -1;
 			EnableLetters(false);
 		}
 		public void HideAboveText() => aboveText.gameObject.SetActive(false);
@@ -318,6 +328,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			int idx = angry ? Random.Range(0, hardWords.Length) : Random.Range(0, easyWords.Length);
 			audMan.QueueAudio(angry ? hardWordSoundPair[idx] : easyWordSoundPair[idx]);
+			currentWordIndex = idx;
 			chosenWord = angry ? hardWords[idx] : easyWords[idx];
 			formingWord = string.Empty;
 			wordIndex = 0;
@@ -379,6 +390,19 @@ namespace BBTimes.CustomContent.NPCs
 			}
 		}
 
+		public bool ClickableRequiresNormalHeight() => false;
+		public bool ClickableHidden() => currentWordIndex == -1;
+		public void Clicked(int player)
+		{
+			if (currentWordIndex != -1 && Singleton<CoreGameManager>.Instance.GetPlayer(player) == chosenPlayer)
+			{
+				audMan.FlushQueue(true);
+				audMan.QueueAudio(angry ? hardWordSoundPair[currentWordIndex] : easyWordSoundPair[currentWordIndex]);
+			}
+		}
+		public void ClickableSighted(int player) { }
+		public void ClickableUnsighted(int player) { }
+
 		PlayerManager chosenPlayer;
 		Coroutine minigame;
 		bool angry = false, step = false;
@@ -387,7 +411,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		private string formingWord;
 		private string chosenWord;
-		int wordIndex = 0, guesses = 0;
+		int wordIndex = 0, guesses = 0, currentWordIndex = -1;
 
 		public string FormingWord => formingWord;
 		public string SelectedWord => chosenWord;

@@ -1,4 +1,5 @@
 ﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+using HarmonyLib;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,6 +45,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		{
 			var slip = Instantiate(slipMatPre);
 			slip.transform.position = cell.FloorWorldPosition;
+			slip.GetComponentsInChildren<Renderer>().Do(cell.AddRenderer);
 			slips.Add(slip);
 		}
 	}

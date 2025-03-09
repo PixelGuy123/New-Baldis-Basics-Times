@@ -7,8 +7,10 @@ namespace BBTimes.CustomComponents
 	{
 		public void Open(float timer, bool makeNoise)
 		{
-			if (makeNoise && !opened)
-				ec.MakeNoise(transform.position, 1);
+			if (makeNoise && !opened && noiseChance >= Random.value)
+			{
+				ec.MakeNoise(transform.position, noiseVal);
+			}
 
 			if (openTimer != null)
 				StopCoroutine(openTimer);
@@ -85,6 +87,12 @@ namespace BBTimes.CustomComponents
 
 		[SerializeField]
 		internal float defaultOpenTimer = 3f;
+
+		[SerializeField]
+		internal int noiseVal = 12;
+
+		[Range(0f, 1f)]
+		internal float noiseChance = 1f;
 
 		public float DefaultOpenTimer => defaultOpenTimer;
 	}

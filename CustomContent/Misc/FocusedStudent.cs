@@ -27,7 +27,7 @@ namespace BBTimes.CustomContent.Misc
 		public bool Disturbed(PlayerManager player)
 		{
 			speaking = true;
-
+			audMan.FlushQueue(true);
 			if (++disturbedCount >= 3)
 			{
 				shaking = true;

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using PixelInternalAPI.Extensions;
 using PixelInternalAPI.Classes;
-using UnityEngine.Yoga;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 
 namespace BBTimes.CustomContent.NPCs
@@ -43,6 +42,8 @@ namespace BBTimes.CustomContent.NPCs
 			hookPre.lineRenderer.widthMultiplier = 0.75f;
 
 			hookPre.entity = hookPre.gameObject.CreateEntity(2.5f, 3f, hookRenderer.transform);
+			hookPre.entity.SetGrounded(false);
+
 			hookPre.audMan = hookPre.gameObject.CreatePropagatedAudioManager(35f, 85f);
 			hookPre.audGrab = this.GetSound("hookGrab.wav", "Vfx_Kreye_Grab", SoundType.Effect, audMan.subtitleColor);
 
@@ -52,8 +53,8 @@ namespace BBTimes.CustomContent.NPCs
 			animComp.animation = sprWalk;
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("npcs", "Textures");
-		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public string Name { get; set; } public string Category => "npcs";
+		
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -62,9 +63,6 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Initialize()
 		{
 			base.Initialize();
-
-			spotsToGo = ec.mainHall.GetNewTileList();
-			spotsToGo.RemoveAll(x => (TileShapeMask.Corner | TileShapeMask.Single | TileShapeMask.End & x.shape) == 0);
 
 			hook = Instantiate(hookPre);
 			hook.Initialize(ec, this);
@@ -84,16 +82,13 @@ namespace BBTimes.CustomContent.NPCs
 
 			animComp.ResetFrame(true);
 			animComp.animation = walk ? sprWalk : sprOpenEye;
+			audMan.FlushQueue(true);
 			if (!walk)
 			{
 				animComp.StopLastFrameMode();
 				audMan.maintainLoop = true;
 				audMan.SetLoop(true);
 				audMan.QueueAudio(audStatic);
-			}
-			else
-			{
-				audMan.FlushQueue(true);
 			}
 		}
 
@@ -138,7 +133,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void WanderAgain()
 		{
-			behaviorStateMachine.ChangeState(throwHookState ? new MrKreye_Watch(this) : new MrKreye_TargetSpot(this));
+			behaviorStateMachine.ChangeState(throwHookState ? new MrKreye_Watch(this) : new MrKreye_Wander(this));
 			throwHookState = false;
 		}
 
@@ -188,28 +183,10 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] sprWalk, sprOpenEye, sprChestOpen;
 
 		[SerializeField]
-		internal float speed = 20f, hookSpeed = 46f, watchTime = 15f, detentionTime = 15f, maxDelayBeforeHookThrow = 1f, noMoveDelaySpeed = 0.65f;
+		internal float speed = 20f, hookSpeed = 46f, watchTime = 15f, detentionTime = 15f, maxDelayBeforeHookThrow = 1.75f, noMoveDelaySpeed = 1.15f;
 
 		float hooKDelay, reverseSpeedDelay;
 		bool throwHookState = false;
-
-		Cell previousCell = null;
-
-		List<Cell> spotsToGo;
-
-		public Cell GetSpotToGo
-		{
-			get
-			{
-				var cell = spotsToGo[Random.Range(0, spotsToGo.Count)];
-
-				while (cell == previousCell || spotsToGo.Count == 1)
-					cell = spotsToGo[Random.Range(0, spotsToGo.Count)];
-
-				previousCell = cell;
-				return cell;
-			}
-		}
 	}
 
 	internal class MrKreye_StateBase(MrKreye kre) : NpcState(kre)
@@ -232,31 +209,36 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-	internal class MrKreye_TargetSpot(MrKreye kre) : MrKreye_StateBase(kre)
+	internal class MrKreye_Wander(MrKreye kre) : MrKreye_StateBase(kre)
 	{
-		NavigationState_TargetPosition tarPos;
-		readonly Cell target = kre.GetSpotToGo;
 		public override void Enter()
 		{
 			base.Enter();
 			kre.Walk(true);
-			tarPos = new(kre, 16, target.FloorWorldPosition);
-			ChangeNavigationState(tarPos);
+			ChangeNavigationState(new NavigationState_WanderRandom(kre, 0));
 		}
 
-		public override void DestinationEmpty()
+		public override void Update()
 		{
-			base.DestinationEmpty();
-			if (kre.ec.CellFromPosition(kre.transform.position) != target)
-				ChangeNavigationState(tarPos);
-			else
+			base.Update();
+			for (int i = 0; i < kre.ec.Npcs.Count; i++)
+			{
+				if (kre != kre.ec.Npcs[i] && kre.ec.Npcs[i].Navigator.isActiveAndEnabled)
+				{
+					if (kre.looker.RaycastNPC(kre.ec.Npcs[i]) && kre.ec.Npcs[i].Disobeying)
+					{
+						kre.behaviorStateMachine.ChangeState(new MrKreye_Watch(kre));
+						return;
+					}
+				}
+			}
+		}
+
+		public override void PlayerInSight(PlayerManager player)
+		{
+			base.PlayerInSight(player);
+			if (player.Disobeying && !player.Tagged)
 				kre.behaviorStateMachine.ChangeState(new MrKreye_Watch(kre));
-		}
-
-		public override void Exit()
-		{
-			base.Exit();
-			tarPos.priority = 0;
 		}
 
 	}
@@ -279,7 +261,7 @@ namespace BBTimes.CustomContent.NPCs
 			watchTime -= kre.TimeScale * Time.deltaTime;
 			if (watchTime <= 0f || kre.transform.position != spotToStayOn)
 			{
-				kre.behaviorStateMachine.ChangeState(new MrKreye_TargetSpot(kre));
+				kre.behaviorStateMachine.ChangeState(new MrKreye_Wander(kre));
 				return;
 			}
 

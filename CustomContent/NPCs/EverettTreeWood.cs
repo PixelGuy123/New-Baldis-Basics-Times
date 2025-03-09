@@ -82,6 +82,7 @@ namespace BBTimes.CustomContent.NPCs
 			snowBallRenderer.name = "ChristmasBallSprite";
 
 			snowPre.entity = snowPre.gameObject.CreateEntity(1.5f, 1.5f, snowBallRenderer.transform);
+			snowPre.entity.SetGrounded(false);
 			snowPre.audMan = snowPre.gameObject.CreatePropagatedAudioManager(35f, 60f);
 			snowPre.audWoosh = this.GetSound("christmasBallWoosh.wav", "Sfx_Ben_Gum_Whoosh", SoundType.Effect, audMan.subtitleColor);
 			snowPre.audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
@@ -98,8 +99,8 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
-		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public string Category => "npcs";
+		
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }

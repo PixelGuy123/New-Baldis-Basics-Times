@@ -19,8 +19,8 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string TexturePath => this.GenerateDataPath("items", "Textures");
-		public string SoundPath => this.GenerateDataPath("items", "Audios");
+		public string Name { get; set; } public string Category => "items";
+		
 		public ItemObject ItmObj { get; set; }
 
 		public override bool Use(PlayerManager pm)

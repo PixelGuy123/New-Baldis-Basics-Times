@@ -16,18 +16,18 @@ namespace BBTimes.CustomContent.NPCs
 			this.CreateClickableLink().CopyColliderAttributes((CapsuleCollider)baseTrigger[0]);
 
 			animComp = gameObject.AddComponent<AnimationComponent>();
-			var sprs = this.GetSpriteSheet(2, 5, 55f, "cheeseMan.png");
-			sprsWalking = [sprs[0], sprs[1]];
-			sprsWalkHumming = [sprs[2], sprs[3]];
-			sprHit = [sprs[4]];
-			sprStunned = [sprs[5]];
-			sprsOfferYTP = [sprs[7], sprs[6]]; // Reversed, to end at the mouth closed, not open
-			sprBlankFace = [sprs[8]];
-			sprAngryTalk = [sprs[9]];
+			var sprs = this.GetSpriteSheet(3, 4, 55f, "cheeseMan.png");
+			sprsWalking = [sprs[0], sprs[1], sprs[2]];
+			sprsWalkHumming = [sprs[3], sprs[4], sprs[5]];
+			sprHit = [sprs[6]];
+			sprStunned = [sprs[7]];
+			sprsOfferYTP = [sprs[8], sprs[9]]; // Reversed, to end at the mouth closed, not open
+			sprBlankFace = [sprs[10]];
+			sprAngryTalk = [sprs[11]];
 
 			animComp.renderers = [spriteRenderer[0]];
 			animComp.animation = sprsWalking;
-			animComp.speed = 7f;
+			animComp.speed = 6.5f;
 			spriteRenderer[0].sprite = sprsWalking[0];
 
 			Color subColor = new(0.796875f, 0.796875f, 0f);
@@ -57,8 +57,8 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
-		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public string Category => "npcs";
+		
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }

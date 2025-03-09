@@ -38,6 +38,7 @@ namespace BBTimes.CustomContent.NPCs
 			snowBallRenderer.name = "SnowBallSprite";
 
 			snowPre.entity = snowPre.gameObject.CreateEntity(1f, 1f, snowBallRenderer.transform);
+			snowPre.entity.SetGrounded(false);
 			snowPre.audMan = snowPre.gameObject.CreatePropagatedAudioManager(35f, 55f);
 			snowPre.audHit = BBTimesManager.man.Get<SoundObject>("audGenericSnowHit");
 
@@ -45,8 +46,8 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("npcs", "Textures");
-		public string SoundPath => this.GenerateDataPath("npcs", "Audios");
+		public string Category => "npcs";
+		
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }

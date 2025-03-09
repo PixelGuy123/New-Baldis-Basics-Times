@@ -1,7 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
-using HarmonyLib;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
@@ -14,9 +13,8 @@ namespace BBTimes.CustomContent.Builders
 
 		public StructureWithParameters SetupBuilderPrefabs()
 		{
-			var cam = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "SecurityCamera.png")).AddSpriteHolder(out var renderer, 9f, 0);
-			renderer.name = "Sprite";
-			cam.name = "SecurityCamera";
+			var cam = this.GetModel("SecurityCamera", true, false, Vector3.one * 0.02f, out var renderer);
+			renderer.transform.localPosition = Vector3.up * 9.15f;
 			cam.gameObject.ConvertToPrefab(true);
 
 			var camComp = cam.gameObject.AddComponent<SecurityCamera>();
@@ -46,8 +44,7 @@ namespace BBTimes.CustomContent.Builders
 		public void SetupPrefabPost() { }
 
 		public string Name { get; set; }
-		public string TexturePath => this.GenerateDataPath("objects", "Textures");
-		public string SoundPath => this.GenerateDataPath("objects", "Audios");
+		public string Category => "objects";
 
 
 		// Prefab stuff above ^^
@@ -79,7 +76,6 @@ namespace BBTimes.CustomContent.Builders
 				int s = rng.Next(spots.Count);
 				var cam = Instantiate(camPre, spots[s].ObjectBase).GetComponentInChildren<SecurityCamera>();
 				cam.Ec = ec;
-				cam.GetComponentsInChildren<SpriteRenderer>().Do(spots[s].AddRenderer);
 				cam.Setup(spots[s].AllOpenNavDirections, rng.Next(parameters.minMax[1].x, parameters.minMax[1].z + 1));
 				ecData.Cameras.Add(cam);
 
@@ -98,7 +94,6 @@ namespace BBTimes.CustomContent.Builders
 				var spot = ec.CellFromPosition(data[i].position);
 				var cam = Instantiate(camPre, spot.ObjectBase).GetComponentInChildren<SecurityCamera>();
 				cam.Ec = ec;
-				cam.GetComponentsInChildren<Renderer>().Do(spot.AddRenderer);
 				cam.Setup(spot.AllOpenNavDirections, data[i].data);
 				ecData.Cameras.Add(cam);
 

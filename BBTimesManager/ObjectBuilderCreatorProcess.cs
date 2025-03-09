@@ -48,6 +48,8 @@ namespace BBTimes.Manager
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_Camera>("Structure_Camera", out _, "SecurityCamera");
 			vent.parameters.minMax[0] = new(3, 5);
 
+			//floorDatas[0].ForcedObjectBuilders.Add(vent);
+
 			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
 			vent = CloneParameter(vent);
 			vent.parameters.minMax[0] = new(5, 7);
