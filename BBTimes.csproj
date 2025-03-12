@@ -4,7 +4,7 @@
     <TargetFramework>net46</TargetFramework>
     <AssemblyName>BBTimes</AssemblyName>
     <Description>Enjoy a grand experience with Baldi's Basics Times!</Description>
-    <Version>1.2.3.3</Version>
+    <Version>1.2.3.4</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;Cheat</Configurations>
@@ -29,13 +29,13 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\editor\BaldiLevelEditor.dll</HintPath>
     </Reference>
     <Reference Include="BaldisBasicsPlusAdvanced">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\ModReferences\BaldisBasicsPlusAdvanced.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BaldisBasicsPlusAdvanced.dll</HintPath>
     </Reference>
     <Reference Include="BBE">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\ModReferences\BBE.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\DisabledPlugins\BBE.dll</HintPath>
     </Reference>
     <Reference Include="BBPlusAnimations">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBPlusAnimations.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\DisabledPlugins\BBPlusAnimations.dll</HintPath>
     </Reference>
     <Reference Include="BBPlusCustomMusics">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\BBPlusCustomMusics.dll</HintPath>
@@ -47,7 +47,7 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\CustomMainMenusAPI.dll</HintPath>
     </Reference>
     <Reference Include="CustomVendingMachines">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\CustomVendingMachines.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\DisabledPlugins\CustomVendingMachines.dll</HintPath>
     </Reference>
     <Reference Include="EditorCustomRooms">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\EditorCustomRooms.dll</HintPath>
@@ -59,7 +59,7 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\InfiniteFloorsRemake.dll</HintPath>
     </Reference>
     <Reference Include="Infinte floors Hotfix">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\FullyAccessibleEditor\Infinte floors Hotfix.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\DisabledPlugins\Infinte floors Hotfix.dll</HintPath>
     </Reference>
     <Reference Include="MTM101BaldAPI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\MTM101BaldAPI.dll</HintPath>
