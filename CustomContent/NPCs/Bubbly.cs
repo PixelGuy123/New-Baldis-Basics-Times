@@ -24,7 +24,7 @@ namespace BBTimes.CustomContent.NPCs
 			sprWalkingAnim = [..sprs.Take(7)];
 			sprPrepareBub = sprs[8];
 			renderer = spriteRenderer[0];
-			audFillUp = this.GetSound("Bubbly_BubbleSpawn.mp3", "Vfx_Bubbly_Fillup", SoundType.Effect, new(1f, 0.345f, 0.886f));
+			audFillUp = this.GetSound("Bubbly_BubbleSpawn.wav", "Vfx_Bubbly_Fillup", SoundType.Effect, new(1f, 0.345f, 0.886f));
 
 			var bubble = new GameObject("Bubble").AddComponent<Bubble>();
 			bubble.gameObject.ConvertToPrefab(true);

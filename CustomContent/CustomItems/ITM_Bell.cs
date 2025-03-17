@@ -10,7 +10,7 @@ namespace BBTimes.CustomContent.CustomItems
 {
 	public class ITM_Bell : Item, IEntityTrigger, IItemPrefab
 	{
-		ValueModifier valMod = new(0f);
+		readonly ValueModifier valMod = new(0f);
 
 		public void SetupPrefab()
 		{
@@ -60,7 +60,12 @@ namespace BBTimes.CustomContent.CustomItems
 				{
 					active = false;
 					renderer.sprite = deactiveSprite;
-					ec.GetBaldi()?.GetNPCContainer().AddLookerMod(valMod);
+					var baldi = ec.GetBaldi();
+					if (baldi) 
+					{
+						baldi.ClearSoundLocations(); // Forcefully makes him follow the bell
+						baldi.GetNPCContainer()?.AddLookerMod(valMod);
+					}
 					ec.MakeNoise(transform.position, noiseVal);
 					audMan.PlaySingle(audBell);
 

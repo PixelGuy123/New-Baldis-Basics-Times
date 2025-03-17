@@ -193,6 +193,9 @@ namespace BBTimes.Manager
 			MainGameManagerPatches.placeholderBaldi.ConvertToPrefab(true);
 			MainGameManagerPatches.placeholderBaldi.name = "PlaceholderBaldi";
 
+			// Baldi Super Angry Animation
+			MainGameManagerPatches.angryBaldiAnimation = TextureExtensions.LoadSpriteSheet(9, 8, 30f, MiscPath, TextureFolder, GetAssetName("baldiSuperAngry.png"));
+
 			// Setup Window hit audio
 
 			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Effect, Color.white);

@@ -276,11 +276,6 @@ namespace BBTimes.ModPatches
 					Singleton<MusicManager>.Instance.MidiPlayer.MPTK_ChannelEnableSet(i, false);
 				}
 
-				for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)
-					Singleton<CoreGameManager>.Instance.GetCamera(i).GetCustomCam().ReverseSlideFOVAnimation(new ValueModifier(), 55f, 9.5f); // Animation (weird way, I know)
-
-				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(angryBal);
-
 				Baldi baldiToFollow = null;
 
 				for (int i = 0; i < ___ec.Npcs.Count; i++)
@@ -314,10 +309,11 @@ namespace BBTimes.ModPatches
 				___ec.SetTimeLimit(9999f);
 				___ec.StartCoroutine(SpawnFires());
 				if (baldiToFollow)
-				{
-					// Animation here
-				}
+					___ec.StartCoroutine(DangerousAngryBaldiAnimation(___ec, baldiToFollow));
+
+
 			}
+
 
 
 			IEnumerator SpawnFires()
@@ -348,6 +344,127 @@ namespace BBTimes.ModPatches
 
 		}
 
+		static IEnumerator DangerousAngryBaldiAnimation(EnvironmentController ec, Baldi baldi) // Yeah, made the main IEnumerator, then passed through DeepSeek R1 to add random animations to the camera because it's hellish to code that manually
+		{
+			const float distanceFromBaldi = 14.5f;
+			const float shakeIntensity = 0.35f;
+			const float shakeSpeed = 20f;
+			const float maxRoll = 4f;
+			const float fovEnd = 100f;
+			const float fovInitialStart = 65f;
+			const float framerate = 24.85f;
+
+			baldi.enabled = false;
+			baldi.animator.enabled = false;
+			baldi.volumeAnimator.enabled = false;
+
+			TimeScaleModifier timeScaleMod = new(0f, 0f, 0f);
+			ec.AddTimeScale(timeScaleMod);
+
+			float elevatorDelay = 1.5f;
+			bool camFovThing = false;
+
+			for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)
+				Singleton<CoreGameManager>.Instance.GetCamera(i).GetCustomCam().ReverseSlideFOVAnimation(new ValueModifier(), 35f, 8f);
+
+			ValueModifier mod = new();
+			while (elevatorDelay > 0f || mod.addend >= fovInitialStart)
+			{
+				elevatorDelay -= Time.deltaTime;
+				if (!camFovThing && elevatorDelay < 0.5f)
+				{
+					camFovThing = true;
+					for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)
+						Singleton<CoreGameManager>.Instance.GetCamera(i).GetCustomCam().SlideFOVAnimation(mod, fovInitialStart, 10f, framerate);
+				}
+				yield return null;
+			}
+
+			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(angryBal);
+
+			var cam = new GameObject("BaldiAngryCamView").AddComponent<Camera>();
+			cam.gameObject.AddComponent<CullAffector>();
+			float fovStart = cam.fieldOfView;
+
+			Vector3 basePosition = baldi.transform.position + baldi.transform.forward * distanceFromBaldi;
+			Vector3 startCamPos = baldi.transform.position + baldi.transform.forward * 0.5f;
+			var cell = ec.CellFromPosition(basePosition);
+			if (cell.Null || cell.HasWallInDirection(Directions.DirFromVector3(baldi.transform.forward, 45f).GetOpposite()))
+			{
+				basePosition = baldi.transform.position - baldi.transform.forward * distanceFromBaldi;
+				startCamPos = baldi.transform.position - baldi.transform.forward * 0.5f;
+			}
+
+			Vector3 finalCamPos = basePosition;
+
+			cam.transform.position = startCamPos;
+			cam.transform.LookAt(baldi.transform);
+
+			float frame = 0f;
+			float finalFrameIndex = angryBaldiAnimation.Length + 1.5f;
+			float baseShakeSeed = Random.Range(0f, 100f);
+
+			while (true)
+			{
+				if (Time.timeScale == 0f)
+				{
+					yield return null;
+					continue;
+				}
+
+				float progress = frame / finalFrameIndex;
+				float intensityMultiplier = Mathf.Clamp01(progress * 2f);
+
+				Vector3 targetPos = Vector3.Lerp(startCamPos, finalCamPos, EaseInOutQuad(progress));
+				cam.transform.position = targetPos;
+
+				float shakeX = (Mathf.PerlinNoise(baseShakeSeed + Time.time * shakeSpeed, 0) * 2 - 1);
+				float shakeY = (Mathf.PerlinNoise(0, baseShakeSeed + Time.time * shakeSpeed) * 2 - 1);
+				Vector3 shakeOffset = cam.transform.right * shakeX + cam.transform.up * shakeY;
+				cam.transform.position += shakeOffset * shakeIntensity * intensityMultiplier;
+
+				cam.fieldOfView = Mathf.Lerp(fovStart, fovEnd, progress * progress);
+
+				cam.transform.LookAt(baldi.transform);
+				float roll = Mathf.Sin(Time.time * 40f) * maxRoll * intensityMultiplier;
+				cam.transform.Rotate(0, 0, roll, Space.Self);
+
+				if (Mathf.FloorToInt(frame % 10) == 0)
+				{
+					cam.transform.position += cam.transform.forward * 0.4f * intensityMultiplier;
+				}
+
+				frame += Time.deltaTime * framerate;
+				if (frame >= angryBaldiAnimation.Length)
+					break;
+
+				baldi.spriteRenderer[0].sprite = angryBaldiAnimation[Mathf.FloorToInt(frame)];
+				yield return null;
+			}
+
+			float punchTimer = 0f;
+			while (punchTimer < 0.2f)
+			{
+				punchTimer += Time.deltaTime;
+				cam.transform.position += cam.transform.forward * 75f * Time.deltaTime;
+				cam.fieldOfView += Time.deltaTime * 120f;
+				yield return null;
+			}
+
+			ec.RemoveTimeScale(timeScaleMod);
+			baldi.enabled = true;
+			baldi.animator.enabled = true;
+			Object.Destroy(cam.gameObject);
+
+			for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)
+				Singleton<CoreGameManager>.Instance.GetCamera(i).GetCustomCam().ResetSlideFOVAnimation(mod, 10f, framerate); // Animation (weird way, I know)
+
+
+			static float EaseInOutQuad(float t) =>
+				t < 0.5f ? 2 * t * t : 1 - Mathf.Pow(-2 * t + 2, 2) / 2;
+			
+		}
+
 		static void AddFire(Cell cell, EnvironmentController ec)
 		{
 			var obj = Object.Instantiate(fire, cell.TileTransform);
@@ -371,5 +488,6 @@ namespace BBTimes.ModPatches
 		internal static GameObject fire;
 		internal static Texture2D[] gateTextures = new Texture2D[3];
 		internal static GameObject placeholderBaldi;
+		internal static Sprite[] angryBaldiAnimation;
 	}
 }

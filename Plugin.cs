@@ -43,7 +43,7 @@ namespace BBTimes
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.customvendingmachines", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.custommusics", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.grapplinghooktweaks", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("baldi.basics.plus.advanced.mod", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("mrsasha5.baldi.basics.plus.advanced", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.stackableitems", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.leveleditor", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.infinitefloors", BepInDependency.DependencyFlags.SoftDependency)]
@@ -90,7 +90,7 @@ namespace BBTimes
 			var fieldTrip = GenericExtensions.FindResourceObject<FieldTripBaseRoomFunction>();
 			foreach (var floor in BBTimesManager.floorDatas)
 			{
-				List<WeightedItemObject> items = new(floor.FieldTripItems);
+				List<WeightedItemObject> items = [.. floor.FieldTripItems];
 				for (int i = 0; i < items.Count; i++)
 				{
 					if (!Config.Bind("Item Settings", $"Enable {(items[i].selection.itemType == Items.Points ? items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)items[i].selection.itemType))}",
@@ -369,6 +369,10 @@ namespace BBTimes
 					ld.bridgeTurnChance += 4;
 					ld.outerEdgeBuffer += 1;
 					ld.extraDoorChance += 0.2f;
+
+					//groups[0].minRooms = 1;
+					//groups[0].maxRooms = 1;
+
 					groups[0].maxRooms = 5;
 					ld.maxHallsToRemove += 1;
 					ld.maxPlots += 1;
@@ -378,6 +382,8 @@ namespace BBTimes
 					ld.minHallsToRemove += 1;
 					ld.minSize += new IntVector2(3, 1);
 					ld.timeBonusLimit *= 1.8f;
+
+					//ld.exitCount = 4;
 
 					// Custom datas
 					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 9));

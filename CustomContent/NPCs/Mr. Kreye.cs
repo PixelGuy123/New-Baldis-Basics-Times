@@ -183,7 +183,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] sprWalk, sprOpenEye, sprChestOpen;
 
 		[SerializeField]
-		internal float speed = 20f, hookSpeed = 46f, watchTime = 15f, detentionTime = 15f, maxDelayBeforeHookThrow = 1.75f, noMoveDelaySpeed = 1.15f;
+		internal float speed = 20f, hookSpeed = 46f, watchTime = 4.5f, detentionTime = 15f, maxDelayBeforeHookThrow = 1.15f, noMoveDelaySpeed = 1.15f;
 
 		float hooKDelay, reverseSpeedDelay;
 		bool throwHookState = false;

@@ -7,7 +7,6 @@ using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
-using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -96,13 +95,13 @@ namespace BBTimes.CustomContent.NPCs
 
 			SoundObject[] sds = new SoundObject[easyWords.Length];
 			for (int i = 0; i < sds.Length; i++)
-				sds[i] = this.GetSound($"{easyWords[i]}.wav", easyWords[i], SoundType.Voice, new(1f, 0.15f, 0f));
+				sds[i] = this.GetSound($"{easyWords[i]}.wav", HideWords(easyWords[i]), SoundType.Voice, new(1f, 0.15f, 0f));
 			
 			easyWordSoundPair = sds;
 
 			sds = new SoundObject[hardWords.Length];
 			for (int i = 0; i < sds.Length; i++)
-				sds[i] = this.GetSound($"{hardWords[i]}.wav", hardWords[i], SoundType.Voice, new(1f, 0.15f, 0f));
+				sds[i] = this.GetSound($"{hardWords[i]}.wav", HideWords(hardWords[i]), SoundType.Voice, new(1f, 0.15f, 0f));
 			hardWordSoundPair = sds;
 
 			// ----------------- Done with words -------------------
@@ -146,6 +145,14 @@ namespace BBTimes.CustomContent.NPCs
 				let.gameObject.SetActive(false);
 
 				return let;
+			}
+
+			string HideWords(string str)
+			{
+				char[] newStr = new char[str.Length];
+				for (int i = 0; i < str.Length; i++)
+					newStr[i] = i % 2 == 0 ? str[i] : '_';
+				return new string(newStr);
 			}
 		}
 		public void SetupPrefabPost() { }

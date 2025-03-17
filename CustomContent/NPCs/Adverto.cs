@@ -34,7 +34,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			adPre.att = advertisementObject.gameObject.AddComponent<VisualAttacher>();
 
-			advertisementObject.gameObject.CreatePropagatedAudioManager(60f, 75f).AddStartingAudiosToAudioManager(false, [this.GetSoundNoSub("erro.mp3", SoundType.Effect)]);
+			advertisementObject.gameObject.CreatePropagatedAudioManager(60f, 75f).AddStartingAudiosToAudioManager(false, [this.GetSoundNoSub("erro.wav", SoundType.Effect)]);
 			adPre.audClick = this.GetSoundNoSub("click.wav", SoundType.Effect);
 		}
 

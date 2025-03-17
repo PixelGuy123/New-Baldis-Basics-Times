@@ -57,6 +57,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal void Jump()
 		{
+			currentJumpDistance = Random.Range(minJumpDistance, maxJumpDistance + 1);
 			renderer.sprite = sprJump;
 			audMan.PlaySingle(audJump);
 		}
@@ -76,7 +77,7 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.PlaySingle(audStomp);
 			affectedEntities.Add(e);
 			e.ExternalActivity.moveMods.Add(affectedMoveMod);
-			e.Squish(10f);
+			e.Squish(squishTime);
 		}
 
 		public override void VirtualUpdate()
@@ -92,6 +93,12 @@ namespace BBTimes.CustomContent.NPCs
 			}
 		}
 
+		public override float DistanceCheck(float val) =>
+			val * currentJumpDistance;
+
+
+		float currentJumpDistance = 1f;
+
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
@@ -103,6 +110,12 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal Sprite sprIdle, sprPrepare, sprJump;
+
+		[SerializeField]
+		internal int minJumpDistance = 1, maxJumpDistance = 3;
+
+		[SerializeField]
+		internal float squishTime = 10f, minIdleTime = 0.5f, maxIdleTime = 0.8f, leapingInAirTimer = 0.5f, prepJumpCooldown = 0.3f, speed = 20f;
 
 		readonly MovementModifier myMoveMod = new(Vector3.zero, 0f), affectedMoveMod = new(Vector3.zero, 0.3f);
 
@@ -138,13 +151,13 @@ namespace BBTimes.CustomContent.NPCs
 				le.behaviorStateMachine.ChangeState(new Leapy_PrepareJump(le));
 		}
 
-		float idleCool = Random.Range(0.5f, 0.8f);
+		float idleCool = Random.Range(le.minIdleTime, le.maxIdleTime);
 		
 	}
 
 	internal class Leapy_PrepareJump(Leapy le) : Leapy_StateBase(le)
 	{
-		float prepCool = 0.3f;
+		float prepCool = le.prepJumpCooldown;
 		public override void Enter()
 		{
 			base.Enter();
@@ -162,12 +175,12 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class Leapy_Jump(Leapy le) : Leapy_StateBase(le)
 	{
-		float jumpCool = 1.1f;
+		float jumpCool = le.leapingInAirTimer;
 		public override void Enter()
 		{
 			base.Enter();
-			le.Navigator.maxSpeed = speed;
-			le.Navigator.SetSpeed(speed);
+			le.Navigator.maxSpeed = le.speed;
+			le.Navigator.SetSpeed(le.speed);
 			le.Jump();
 		}
 		public override void Initialize()
@@ -194,7 +207,5 @@ namespace BBTimes.CustomContent.NPCs
 					le.Stomp(e);
 			}
 		}
-
-		const float speed = 17f;
 	}
 }

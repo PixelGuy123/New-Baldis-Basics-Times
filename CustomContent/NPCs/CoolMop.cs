@@ -18,13 +18,13 @@ namespace BBTimes.CustomContent.NPCs
 			var subColor = new Color(0.99609375f, 0.5f, 0.5f);
 
 			audMan = GetComponent<PropagatedAudioManager>();
-			audStartSweep = this.GetSound("CoolerStartMop.mp3", "Vfx_MOP_StartMop", SoundType.Voice, subColor);
+			audStartSweep = this.GetSound("CoolerStartMop.wav", "Vfx_MOP_StartMop", SoundType.Voice, subColor);
 			audGoofyHahahas = [
-				this.GetSound("CoolerMop.mp3", "Vfx_MOP_Mop", SoundType.Voice, subColor),
-				this.GetSound("CoolerMop2.mp3", "Vfx_MOP_Mop2", SoundType.Voice, subColor)
+				this.GetSound("CoolerMop.wav", "Vfx_MOP_Mop", SoundType.Voice, subColor),
+				this.GetSound("CoolerMop2.wav", "Vfx_MOP_Mop2", SoundType.Voice, subColor)
 				];
-			audEndSweep = this.GetSound("CoolerEndMop.mp3", "Vfx_MOP_EndMop", SoundType.Voice, subColor);
-			audCarefulWithWater = this.GetSound("CoolerWatering.mp3", "Vfx_MOP_Watering", SoundType.Voice, subColor);
+			audEndSweep = this.GetSound("CoolerEndMop.wav", "Vfx_MOP_EndMop", SoundType.Voice, subColor);
+			audCarefulWithWater = this.GetSound("CoolerWatering.wav", "Vfx_MOP_Watering", SoundType.Voice, subColor);
 
 			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
 			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(24f, "coolWater.png");

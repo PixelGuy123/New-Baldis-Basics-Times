@@ -54,7 +54,7 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal SoundObject[] audIdle, audMeGrab;
 		[SerializeField]
-		internal float idleChance = 0.6f;
+		internal float idleChance = 0.6f, throwForce = 125f, throwAcceleration = -67f;
 		public void PlayIdleMusic()
 		{
 			musicAudMan.FlushQueue(true);
@@ -80,7 +80,7 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.FlushQueue(true);
 			audMan.PlaySingle(audThrow);
 			audMan.PlaySingle(audLetGo);
-			e.AddForce(new(dir, 125f, -67f));
+			e.AddForce(new(dir, throwForce, throwAcceleration));
 		}
 		public void SpinningDance() =>
 			animComp.animation = dancing2;

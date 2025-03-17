@@ -113,11 +113,14 @@ namespace BBTimes.Manager
 
 			
 
-			var toilet = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "toilet.png")), 35f)).AddSpriteHolder(out var toiletRenderer, 2f, LayerStorage.ignoreRaycast);
+			var toilet = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "toilet.png")), 35f)).AddSpriteHolder(out var toiletRenderer, 2f, LayerMask.NameToLayer("ClickableCollideable"));
 			toiletRenderer.name = "toiletRenderer";
 			toilet.name = "Toilet";
-			toilet.gameObject.AddBoxCollider(Vector3.zero, new(0.8f, 10f, 0.8f), false);
+			toilet.gameObject.AddBoxCollider(Vector3.up * 5f, new(0.8f, 5f, 0.8f), false);
 			toilet.gameObject.AddNavObstacle(new(1.2f, 10f, 1.2f));
+			var toiletComp = toilet.gameObject.AddComponent<Toilet>();
+			toiletComp.audMan = toilet.gameObject.CreatePropagatedAudioManager(55f, 75f);
+			toiletComp.audFlush = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Bathroom", "toilet.wav")), "Vfx_Toilet_Flush", SoundType.Effect, Color.white);
 
 			toilet.gameObject.AddObjectToEditor();
 
@@ -1453,7 +1456,7 @@ namespace BBTimes.Manager
 		{
 			for (int i = 0; i < assets.Count; i++)
 			{
-				if (assets[i].selection.category != RoomCategory.Special && assets[i].selection.GetRoomSize().Magnitude() >= averageGiven) // Between 6x6 and 7x7
+				if (assets[i].selection.category != RoomCategory.Special && assets[i].selection.GetRoomSize().Magnitude() >= averageGiven)
 				{
 					Object.Destroy(assets[i].selection); // Remove the asset since it's never going to be used anyways (free up memory)
 					assets.RemoveAt(i--);
