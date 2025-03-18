@@ -232,7 +232,7 @@ namespace BBTimes.ModPatches
 				Singleton<MusicManager>.Instance.QueueFile(chaos1, true);
 
 				Singleton<MusicManager>.Instance.MidiPlayer.MPTK_Transpose = Random.Range(-24, -12);
-				___ec.standardDarkLevel = new Color(1f, 0f, 0f); ;
+				___ec.standardDarkLevel = new Color(1f, 0f, 0f);
 				foreach (var c in ___ec.AllExistentCells())
 				{
 					c.lightColor = Color.red;
@@ -283,19 +283,18 @@ namespace BBTimes.ModPatches
 					var npc = ___ec.Npcs[i];
 					try
 					{
-						if (npc.Character == Character.Baldi) // Check Baldi enum (TeacherAPI has unique enums, so it's fine)
+						if (npc is Baldi bald)
 						{
-							var bald = (Baldi)npc;
-							baldiToFollow = bald;
+							bald = (Baldi)npc;
 							bald.StartCoroutine(GameExtensions.InfiniteAnger(bald, 0.6f));
+							if (npc.Character == Character.Baldi) // Check Baldi enum (TeacherAPI has unique enums, so it's fine)
+								baldiToFollow = bald;
+							
 							continue;
 						}
 
-						if (npc is not Baldi) // Checks for Inheritance (should account TeachersAPI's teachers)
-						{
-							npc.Despawn();
-							i--;
-						}
+						npc.Despawn();
+						i--;
 					}
 					catch (System.Exception e)
 					{
