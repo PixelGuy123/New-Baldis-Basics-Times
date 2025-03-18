@@ -1,15 +1,15 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Misc;
 using BBTimes.Extensions;
+using BBTimes.Manager;
 using HarmonyLib;
+using MTM101BaldAPI;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using MTM101BaldAPI;
-using BBTimes.Manager;
 
 namespace BBTimes.ModPatches
 {
@@ -232,7 +232,7 @@ namespace BBTimes.ModPatches
 				Singleton<MusicManager>.Instance.QueueFile(chaos1, true);
 
 				Singleton<MusicManager>.Instance.MidiPlayer.MPTK_Transpose = Random.Range(-24, -12);
-				___ec.standardDarkLevel = new Color(1f, 0f, 0f);;
+				___ec.standardDarkLevel = new Color(1f, 0f, 0f); ;
 				foreach (var c in ___ec.AllExistentCells())
 				{
 					c.lightColor = Color.red;
@@ -283,14 +283,15 @@ namespace BBTimes.ModPatches
 					var npc = ___ec.Npcs[i];
 					try
 					{
-						if (npc is Baldi bald)
+						if (npc.Character == Character.Baldi) // Check Baldi enum (TeacherAPI has unique enums, so it's fine)
 						{
+							var bald = (Baldi)npc;
 							baldiToFollow = bald;
 							bald.StartCoroutine(GameExtensions.InfiniteAnger(bald, 0.6f));
 							continue;
 						}
 
-						if (npc.Character != Character.Baldi)
+						if (npc is not Baldi) // Checks for Inheritance (should account TeachersAPI's teachers)
 						{
 							npc.Despawn();
 							i--;
@@ -386,13 +387,13 @@ namespace BBTimes.ModPatches
 			cam.gameObject.AddComponent<CullAffector>();
 			float fovStart = cam.fieldOfView;
 
-			Vector3 basePosition = baldi.transform.position + baldi.transform.forward * distanceFromBaldi;
-			Vector3 startCamPos = baldi.transform.position + baldi.transform.forward * 0.5f;
+			Vector3 basePosition = baldi.transform.position + (baldi.transform.forward * distanceFromBaldi);
+			Vector3 startCamPos = baldi.transform.position + (baldi.transform.forward * 0.5f);
 			var cell = ec.CellFromPosition(basePosition);
 			if (cell.Null || cell.HasWallInDirection(Directions.DirFromVector3(baldi.transform.forward, 45f).GetOpposite()))
 			{
-				basePosition = baldi.transform.position - baldi.transform.forward * distanceFromBaldi;
-				startCamPos = baldi.transform.position - baldi.transform.forward * 0.5f;
+				basePosition = baldi.transform.position - (baldi.transform.forward * distanceFromBaldi);
+				startCamPos = baldi.transform.position - (baldi.transform.forward * 0.5f);
 			}
 
 			Vector3 finalCamPos = basePosition;
@@ -418,9 +419,9 @@ namespace BBTimes.ModPatches
 				Vector3 targetPos = Vector3.Lerp(startCamPos, finalCamPos, EaseInOutQuad(progress));
 				cam.transform.position = targetPos;
 
-				float shakeX = (Mathf.PerlinNoise(baseShakeSeed + Time.time * shakeSpeed, 0) * 2 - 1);
-				float shakeY = (Mathf.PerlinNoise(0, baseShakeSeed + Time.time * shakeSpeed) * 2 - 1);
-				Vector3 shakeOffset = cam.transform.right * shakeX + cam.transform.up * shakeY;
+				float shakeX = (Mathf.PerlinNoise(baseShakeSeed + (Time.time * shakeSpeed), 0) * 2) - 1;
+				float shakeY = (Mathf.PerlinNoise(0, baseShakeSeed + (Time.time * shakeSpeed)) * 2) - 1;
+				Vector3 shakeOffset = (cam.transform.right * shakeX) + (cam.transform.up * shakeY);
 				cam.transform.position += shakeOffset * shakeIntensity * intensityMultiplier;
 
 				cam.fieldOfView = Mathf.Lerp(fovStart, fovEnd, progress * progress);
@@ -461,8 +462,8 @@ namespace BBTimes.ModPatches
 
 
 			static float EaseInOutQuad(float t) =>
-				t < 0.5f ? 2 * t * t : 1 - Mathf.Pow(-2 * t + 2, 2) / 2;
-			
+				t < 0.5f ? 2 * t * t : 1 - (Mathf.Pow((-2 * t) + 2, 2) / 2);
+
 		}
 
 		static void AddFire(Cell cell, EnvironmentController ec)
