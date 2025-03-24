@@ -937,6 +937,37 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 30 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 9 });
+
+			// Cleaning Cloth
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_CleaningCloth>()
+				.SetGeneratorCost(25)
+				.SetShopPrice(450)
+				.SetNameAndDescription("CleaningCloth_Name", "CleaningCloth_Desc")
+				.SetMeta(ItemFlags.None, [])
+				.Build("CleaningCloth");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 75 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 55 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 35 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 15 });
+
+			// Baldi's Year Book
+			new ItemBuilder(plug.Info)
+			.SetItemComponent<ITM_BaldiYearbook>()
+			.SetGeneratorCost(99)
+			.SetShopPrice(25)
+			.SetNameAndDescription("BaldiYearbook_Name", "BaldiYearbook_Desc")
+			.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse, [])
+			.Build("BaldiYearbook");
+			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 25 });
 		}
 	}
 }

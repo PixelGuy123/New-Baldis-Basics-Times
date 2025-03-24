@@ -9,11 +9,56 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 namespace BBTimes.Extensions
 {
 	public static class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
 	{
+
+		public static StandardMenuButton CreateImageButton(this Canvas canvasRef, string name, Sprite highlightVisual, Sprite unhighlightVisual)
+		{
+			var but = new GameObject(name)
+			{
+				tag = "Button",
+				layer = LayerMask.NameToLayer("UI")
+			}.AddComponent<StandardMenuButton>();
+
+			but.transform.SetParent(canvasRef.transform);
+			but.transform.localScale = Vector3.one; // it's set to scale 0 for some reason?
+
+			but.OnRelease = new();
+			but.OnHighlight = new();
+			but.OffHighlight = new();
+			but.OnPress = new();
+
+			but.image = but.gameObject.AddComponent<Image>();
+			but.image.sprite = unhighlightVisual;
+			but.unhighlightOnEnable = true;
+
+			but.swapOnHigh = true;
+			but.highlightedSprite = highlightVisual;
+			but.unhighlightedSprite = unhighlightVisual;
+
+			return but;
+		}
+		public static Texture2D ConvertToGrayscale(this Texture2D texture)
+		{
+			Color32[] pixels = texture.GetPixels32();
+
+			for (int i = 0; i < pixels.Length; i++)
+			{
+				Color32 pixel = pixels[i];
+				byte gray = (byte)Mathf.RoundToInt((0.299f * pixel.r) + (0.587f * pixel.g) + (0.114f * pixel.b)); // cool formula I guess
+
+				pixels[i] = new Color32(gray, gray, gray, pixel.a);
+			}
+
+			texture.SetPixels32(pixels);
+			texture.Apply();
+
+			return texture;
+		}
 		public static bool IsPlayingClip(this AudioManager audMan, SoundObject audio)
 		{
 			return audMan.audioDevice.clip == audio.soundClip; // Might change this later once BB+ implements audios for different languages

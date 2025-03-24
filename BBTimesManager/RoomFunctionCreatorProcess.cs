@@ -12,6 +12,7 @@ using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
 using BBTimes.CustomContent.Objects;
+using MTM101BaldAPI.Registers;
 
 namespace BBTimes.Manager
 {
@@ -35,6 +36,8 @@ namespace BBTimes.Manager
 			AddFunctionToEveryRoom<RandomPosterFunction>(CafeteriaPrefix).posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "CafeteriaRules.png"))]),
 				ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "food_allergy_.png"))])];
 
+			AddFunctionToEveryRoom<RandomItemSpawnFunction>(OfficePrefix).itemToSpawn = ItemMetaStorage.Instance.FindByEnum(EnumExtensions.GetFromExtendedName<Items>("BaldiYearbook")).value;
+
 			// High ceiling function
 			var highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(CafeteriaPrefix);
 			highCeil.ceilingHeight = 5;
@@ -49,9 +52,6 @@ namespace BBTimes.Manager
 			highCeil.customLight = man.Get<GameObject>("prefab_libraryHangingLight").transform;
 			highCeil.usesSingleCustomWall = true;
 			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(GetRoomAsset("Library", GetAssetName("libraryWallSheet.png")))];
-
-
-			// Random Corner Object
 
 			// -------------------- DUST SHROOM CREATION ----------------------------
 

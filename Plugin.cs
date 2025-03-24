@@ -56,7 +56,7 @@ namespace BBTimes
 	{
 		IEnumerator SetupPost()
 		{
-			yield return 2;
+			yield return 3;
 			yield return "Calling custom data setup prefab post...";
 			_cstData.ForEach(x => x.SetupPrefabPost());
 			// Other stuff to setup
@@ -69,6 +69,8 @@ namespace BBTimes
 			IsModLoaded = true;
 			Logger.LogDebug("Calling the api file manager to reload tags!");
 			ModdedFileManager.Instance.RegenerateTags();
+			yield return "Calling GC Collect...";
+			GC.Collect(); // Get any garbage I guess
 
 			yield break;
 		}
@@ -727,12 +729,20 @@ namespace BBTimes
 
 		public override void Save(BinaryWriter writer)
 		{
-			writer.Write((byte)0);
+			try // Silently surpress any exceptions
+			{
+				writer.Write((byte)0);
+			}
+			catch { }
 		}
 
 		public override void Load(BinaryReader reader)
 		{
-			reader.ReadByte();
+			try
+			{
+				reader.ReadByte();
+			}
+			catch { }
 		}
 
 		public override void Reset() { }

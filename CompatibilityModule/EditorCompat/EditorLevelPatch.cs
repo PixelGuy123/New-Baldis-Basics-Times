@@ -111,6 +111,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("beehive", "Beehive");
 			AddItem("BSED", "BSED");
 			AddItem("cherryBsoda", "CherryBsoda");
+			AddItem("CleaningCloth", "CleaningCloth");
 			AddItem("chocolate", "HotChocolate");
 			AddPointItem<ITM_StaminaYTP>("ChocolateYTP");
 			AddItem("comicallyLargeTrumpet", "ComicallyLargeTrumpet");
@@ -148,6 +149,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("toiletPaper", "ToiletPaper");
 			AddItem("water", "WaterBottle");
 			AddPointItem<ITM_StaminaYTP>("WaterYTP");
+			AddItem("yearBook", "BaldiYearbook");
 
 
 			// ************************ Npcs *****************************

@@ -116,13 +116,13 @@ namespace BBTimes.Manager
 			var toilet = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "toilet.png")), 35f)).AddSpriteHolder(out var toiletRenderer, 2f, LayerMask.NameToLayer("ClickableCollideable"));
 			toiletRenderer.name = "toiletRenderer";
 			toilet.name = "Toilet";
+			toilet.gameObject.AddObjectToEditor();
 			toilet.gameObject.AddBoxCollider(Vector3.up * 5f, new(0.8f, 5f, 0.8f), false);
 			toilet.gameObject.AddNavObstacle(new(1.2f, 10f, 1.2f));
 			var toiletComp = toilet.gameObject.AddComponent<Toilet>();
 			toiletComp.audMan = toilet.gameObject.CreatePropagatedAudioManager(55f, 75f);
 			toiletComp.audFlush = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Bathroom", "toilet.wav")), "Vfx_Toilet_Flush", SoundType.Effect, Color.white);
-
-			toilet.gameObject.AddObjectToEditor();
+			
 
 
 			var bathLightPre = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "long_hanginglamp.png")), 50f))

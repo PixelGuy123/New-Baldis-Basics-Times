@@ -31,7 +31,7 @@ namespace BBTimes.Manager
 		internal static BasePlugin plug;
 		internal static IEnumerator InitializeContentCreation()
 		{
-			yield return 14 + (EditorExists ? 1 : 0);
+			yield return 13 + (EditorExists ? 1 : 0);
 
 			yield return "Loading assets...";
 			GameExtensions.TryRunMethod(SetAssets);
@@ -78,9 +78,6 @@ namespace BBTimes.Manager
 					flDat.WeightedObjectBuilders.ForEach(x => x.weight = 9999);
 				}
 			}
-
-			yield return "Calling GC Collect...";
-			GC.Collect(); // Get any garbage I guess
 
 			BasePlugin.PostSetup(man);
 

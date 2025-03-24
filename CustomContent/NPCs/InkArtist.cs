@@ -68,6 +68,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		Coroutine uiInkCooldown;
 		readonly List<KeyValuePair<NPCAttributesContainer ,ValueModifier>> affectedNpcs = [];
+		static internal readonly List<KeyValuePair<PlayerManager, InkArtist>> affectedPlayers = [];
 
 		public override void Initialize()
 		{
@@ -80,6 +81,9 @@ namespace BBTimes.CustomContent.NPCs
 		public void InkPlayer(PlayerManager pm)
 		{
 			audMan.PlaySingle(audSplash);
+
+			if (!affectedPlayers.Exists(x => x.Key == pm))
+				affectedPlayers.Add(new(pm, this));
 
 			if (uiInkCooldown != null)
 				StopCoroutine(uiInkCooldown);
@@ -96,6 +100,14 @@ namespace BBTimes.CustomContent.NPCs
 			att.SetOwnerRefToSelfDestruct(gameObject);
 
 			att.StartCoroutine(InkNPC(att.gameObject, ent));
+		}
+
+		public void CancelCameraInk()
+		{
+			stunCanvas.gameObject.SetActive(false);
+			if (uiInkCooldown != null)
+				StopCoroutine(uiInkCooldown);
+			affectedPlayers.RemoveAll(x => x.Value == this);
 		}
 
 		IEnumerator InkNPC(GameObject selfDestruct, NPC e)
@@ -130,6 +142,8 @@ namespace BBTimes.CustomContent.NPCs
 				affectedNpcs[0].Key?.RemoveLookerMod(affectedNpcs[0].Value);
 				affectedNpcs.RemoveAt(0);
 			}
+
+			affectedPlayers.RemoveAll(x => x.Value == this);
 		}
 
 		IEnumerator InkCamera(Camera target)
@@ -173,6 +187,8 @@ namespace BBTimes.CustomContent.NPCs
 				image.transform.localScale = Vector3.Lerp(ogSize, zero, t);
 				yield return null;
 			}
+
+			affectedPlayers.RemoveAll(x => x.Value == this);
 
 			yield break;
 		}
