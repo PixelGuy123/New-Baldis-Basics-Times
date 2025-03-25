@@ -105,6 +105,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 
 			// ************************ Items ****************************
 
+			AddItem("yearBook", "BaldiYearbook");
 			AddItem("basketball", "Basketball");
 			AddItem("bell", "Bell");
 			AddItem("blowDrier", "BlowDrier");
@@ -113,6 +114,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("cherryBsoda", "CherryBsoda");
 			AddItem("CleaningCloth", "CleaningCloth");
 			AddItem("chocolate", "HotChocolate");
+			AddItem("ChillyChilli", "ChillyChilli");
 			AddPointItem<ITM_StaminaYTP>("ChocolateYTP");
 			AddItem("comicallyLargeTrumpet", "ComicallyLargeTrumpet");
 			AddPointItem<ITM_DivideYTP>("DivisionPoint");
@@ -149,7 +151,6 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("toiletPaper", "ToiletPaper");
 			AddItem("water", "WaterBottle");
 			AddPointItem<ITM_StaminaYTP>("WaterYTP");
-			AddItem("yearBook", "BaldiYearbook");
 
 
 			// ************************ Npcs *****************************

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Reflection;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.RoomFunctions
 {
@@ -9,6 +10,8 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 		[SerializeField]
 		internal ItemObject itemToSpawn;
+
+		Vector3 positionToSpawnItem = default;
 
 		public override void Build(LevelBuilder builder, System.Random rng)
 		{
@@ -21,15 +24,21 @@ namespace BBTimes.CustomContent.RoomFunctions
 			}
 
 			if (cells.Count != 0)
+				positionToSpawnItem = cells[rng.Next(cells.Count)].FloorWorldPosition;
+			else
+				Debug.LogWarning("RandomItemSpawnFunction: Failed to find good spot to spawn item.");
+		}
+
+		public override void OnGenerationFinished()
+		{
+			base.OnGenerationFinished();
+			if (positionToSpawnItem != default)
 			{
-				var pos = cells[rng.Next(cells.Count)].FloorWorldPosition;
-				var anchorPos = room.ec.RealRoomMin(room);
-				builder.CreateItem(room, itemToSpawn, new(pos.x - anchorPos.x, pos.z - anchorPos.z));
-				return;
+				room.ec.CreateItem(room, itemToSpawn, new(positionToSpawnItem.x, positionToSpawnItem.z));
+
+				var pickup = room.ec.items[room.ec.items.Count - 1];
+				pickup.icon = room.ec.map.AddIcon(pickup.iconPre, pickup.transform, Color.white);
 			}
-
-			Debug.LogWarning("RandomItemSpawnFunction: Failed to find good spot to spawn item.");
-
 		}
 	}
 }

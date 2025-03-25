@@ -24,7 +24,7 @@ namespace BBTimes.Manager
 			// 2 - F3
 			// 3 - END
 			ItemObject item;
-
+			const string PIRATE_CANN_HATE = "cann_hate", CRIMINALPACK_CONTRABAND = "crmp_contraband";
 
 			// Hammer
 			item = new ItemBuilder(plug.Info)
@@ -191,7 +191,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(28)
 				.SetShopPrice(450)
 				.SetNameAndDescription("SPP_Name", "SPP_Desc")
-				.SetMeta(ItemFlags.Persists, ["Drink"])
+				.SetMeta(ItemFlags.Persists, ["Drink", CRIMINALPACK_CONTRABAND])
 				.Build("SpeedPotion");
 
 			//CreatorExtensions.CreateItem<ITM_SpeedPotion, SpeedPotionCustomData>("SpeedPotion", "SPP_Name", "SPP_Desc", 165, 28).AddMeta(plug, ItemFlags.Persists).value;
@@ -275,7 +275,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(65)
 				.SetShopPrice(550)
 				.SetNameAndDescription("POGST_Name3", "POGST_Desc")
-				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists | ItemFlags.MultipleUse, [])
+				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists | ItemFlags.MultipleUse, [CRIMINALPACK_CONTRABAND])
 				.Build("Pogostick");
 			//CreatorExtensions.CreateItem<ITM_Pogostick, PogostickCustomData>("Pogostick", "POGST_Name3", "POGST_Desc", 475, 25);
 			meta = item.GetMeta();
@@ -299,7 +299,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(18)
 				.SetShopPrice(300)
 				.SetNameAndDescription("BT_Name", "BT_Desc")
-				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
+				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [CRIMINALPACK_CONTRABAND])
 				.Build("Beartrap");
 			//CreatorExtensions.CreateItem<ITM_Beartrap, BearTrapCustomData>("Beartrap", "BT_Name", "BT_Desc", 335, 18).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
 			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
@@ -501,7 +501,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<Item>() // Item class returns false
 				.SetShopPrice(450)
 				.SetNameAndDescription("Coal_Name", string.Empty)
-				.SetMeta(ItemFlags.Persists | ItemFlags.NoUses, [])
+				.SetMeta(ItemFlags.Persists | ItemFlags.NoUses, [PIRATE_CANN_HATE])
 				.Build("Coal");
 
 			HappyHolidays.itmCoal = item;
@@ -965,9 +965,28 @@ namespace BBTimes.Manager
 			.SetNameAndDescription("BaldiYearbook_Name", "BaldiYearbook_Desc")
 			.SetMeta(ItemFlags.Persists | ItemFlags.MultipleUse, [])
 			.Build("BaldiYearbook");
-			floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
+			//floorDatas[0].ShopItems.Add(new() { selection = item, weight = 25 });
+			//floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
+			//floorDatas[2].ShopItems.Add(new() { selection = item, weight = 25 });
+
+			// Chilly Chilli
+			item = new ItemBuilder(plug.Info)
+			.SetItemComponent<ITM_ChillyChilli>()
+			.SetGeneratorCost(32)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.Persists, ["Food", PIRATE_CANN_HATE])
+			.SetNameAndDescription("ChillyChilli_Name", "ChillyChilli_Desc")
+			.Build("ChillyChilli");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 5 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 35 });
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
-			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 40 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 45 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 75 });
 		}
 	}
 }
