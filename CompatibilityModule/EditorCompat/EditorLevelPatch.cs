@@ -117,6 +117,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("ChillyChilli", "ChillyChilli");
 			AddPointItem<ITM_StaminaYTP>("ChocolateYTP");
 			AddItem("comicallyLargeTrumpet", "ComicallyLargeTrumpet");
+			AddItem("comicallyLargeJello", "ComicallyLargeJello");
 			AddPointItem<ITM_DivideYTP>("DivisionPoint");
 			AddItem("DoorStopper", "DoorStopper");
 			AddItem("electricalGel", "ElectricalGel");
@@ -140,6 +141,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			AddItem("rottenCheese", "RottenCheese");
 			AddItem("screwDriver", "Screwdriver");
 			AddItem("soapBubbles", "SoapBubbles");
+			AddItem("sketchBook", "Sketchbook");
 			AddItem("stormInABag", "StormInABag");
 			AddItem("sugarFlavoredZestyBar", "SugarFlavorZestyBar");
 			AddItem("superCamera", "SuperCamera");

@@ -221,6 +221,9 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
+			if (kre.Blinded)
+				return;
+
 			for (int i = 0; i < kre.ec.Npcs.Count; i++)
 			{
 				if (kre != kre.ec.Npcs[i] && kre.ec.Npcs[i].Navigator.isActiveAndEnabled)

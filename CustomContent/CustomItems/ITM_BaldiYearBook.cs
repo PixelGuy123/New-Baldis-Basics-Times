@@ -149,7 +149,7 @@ namespace BBTimes.CustomContent.CustomItems
 					.ConvertToGrayscale(), 1f
 					));
 			}
-			Destroy(generatorRef);
+			Destroy(generatorRef.gameObject);
 		}
 
 		public string Name { get; set; }

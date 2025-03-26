@@ -15,7 +15,18 @@ namespace BBTimes.Extensions
 {
 	public static class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
 	{
-
+		public static T SpawnForeignNPC<T>(this EnvironmentController ec, T prefab, Vector3 position) where T : NPC
+		{
+			T npc2 = Object.Instantiate(prefab, ec.transform);
+			npc2.ec = ec;
+			npc2.transform.position = position;
+			for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)
+				npc2.players.Add(Singleton<CoreGameManager>.Instance.GetPlayer(i));
+			
+			npc2.Initialize();
+			npc2.gameObject.SetActive(true);
+			return npc2;
+		}
 		public static StandardMenuButton CreateImageButton(this Canvas canvasRef, string name, Sprite highlightVisual, Sprite unhighlightVisual)
 		{
 			var but = new GameObject(name)
