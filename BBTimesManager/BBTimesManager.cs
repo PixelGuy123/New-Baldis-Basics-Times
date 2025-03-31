@@ -283,6 +283,7 @@ namespace BBTimes.Manager
 			UnityEngine.Object.Destroy(playerVisual.GetComponent<RendererContainer>()); // Should make the game not cull the player's visual, if that happens
 
 			// Global Assets
+			man.Add("audExplosion", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("loudExplosion.wav"))), string.Empty, SoundType.Effect, Color.white));
 			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("potion_drink.wav"))), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
 			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("pc_stab.wav"))), "Vfx_PC_stab", SoundType.Effect, Color.yellow));
 			man.Add("basketBall", TextureExtensions.LoadSpriteSheet(5, 1, 25f, GlobalAssetsPath, GetAssetName("basketball.png")));

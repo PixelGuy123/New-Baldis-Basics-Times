@@ -10,10 +10,8 @@ using System.Collections.Generic;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using TMPro;
-using System.Linq;
-using MTM101BaldAPI.UI;
 
-// TODO: Test the Yearbook text message and adjust it to then apply in code; check the coloration of the poster display
+// TODO: Transform this into an actual Yearbook later on
 
 namespace BBTimes.CustomContent.CustomItems
 {

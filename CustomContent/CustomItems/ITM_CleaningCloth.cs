@@ -21,6 +21,23 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public override bool Use(PlayerManager pm)
 		{
+			RaycastHit hit;
+			if (cleanClothItem) // If item is not null, this is a dirty cloth
+			{
+				Destroy(gameObject);
+				if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out hit, pm.pc.reach))
+				{
+					var water = hit.transform.GetComponent<WaterFountain>();
+					if (water)
+					{
+						this.pm = pm;
+						InteractWithFountain(water);
+						pm.itm.SetItem(cleanClothItem, pm.itm.selectedItem);
+					}
+				}
+				return false;
+			}
+
 			bool flag = false;
 			for (int i = 0; i < InkArtist.affectedPlayers.Count; i++)
 			{
@@ -31,7 +48,7 @@ namespace BBTimes.CustomContent.CustomItems
 				}
 			}
 
-			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.reach))
+			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out hit, pm.pc.reach))
 			{
 				var functions = pm.ec.CellFromPosition(hit.transform.parent.position).room.functions.functions;
 				int idx = functions.FindIndex(x => x is Chalkboard);
@@ -54,7 +71,15 @@ namespace BBTimes.CustomContent.CustomItems
 			return flag;
 		}
 
+		void InteractWithFountain(WaterFountain fountain)
+		{
+			fountain.audMan.PlaySingle(fountain.audSip);
+		} // will be used to be patched by BB+ Animations aswell
+
 		[SerializeField]
 		internal SoundObject audUse;
+
+		[SerializeField]
+		internal ItemObject cleanClothItem = null;
 	}
 }

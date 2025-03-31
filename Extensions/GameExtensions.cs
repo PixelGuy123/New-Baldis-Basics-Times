@@ -53,6 +53,83 @@ namespace BBTimes.Extensions
 
 			return but;
 		}
+		public static Texture2D Mask(this Texture2D original, Texture2D texRef) =>
+			original.Mask(texRef.GetPixels());
+		public static Texture2D Mask(this Texture2D original, Color[] colorRef)
+		{
+			var pixels = original.GetPixels();
+			if (colorRef.Length != pixels.Length)
+				throw new System.ArgumentException($"Color reference array has a different length from the original texture given. Ref: ({colorRef.Length}) | Pixels: ({pixels.Length})");
+			for (int i = 0; i < pixels.Length; i++)
+			{
+				if (colorRef[i].a == 0f) // If alpha is 0, it's not inside the mask
+					pixels[i] = Color.clear;
+			}
+			original.SetPixels(pixels);
+			original.Apply();
+			return original;
+		}
+		public static Texture2D ActualResize(this Texture2D original, int newWidth, int newHeight) // Apparently you work an average of WxH grid, not linear lol
+		{ // yoink from LotsOfItems
+			int originalWidth = original.width;
+			int originalHeight = original.height;
+
+			if (originalWidth == newWidth && originalHeight == newHeight)
+				return original; // No need to apply changes
+
+			// Calculate scaling factors.
+			int scaleX = originalWidth / newWidth;
+			int scaleY = originalHeight / newHeight;
+
+			Texture2D newTex = new(newWidth, newHeight, original.format, false)
+			{
+				filterMode = original.filterMode
+			};
+
+			// Get the original pixel data.
+			Color[] originalColors = original.GetPixels();
+			Color[] newColors = new Color[newWidth * newHeight];
+
+			// Loop over every pixel in the new texture.
+			for (int newY = 0; newY < newHeight; newY++)
+			{
+				for (int newX = 0; newX < newWidth; newX++)
+				{
+					Color colorSum = Color.black;
+					bool invalidAlpha = false;
+
+					// For each new pixel, average over the corresponding block in the original texture.
+					for (int offsetY = 0; offsetY < scaleY; offsetY++)
+					{
+						for (int offsetX = 0; offsetX < scaleX; offsetX++)
+						{
+							int origX = newX * scaleX + offsetX;
+							int origY = newY * scaleY + offsetY;
+							int index = origY * originalWidth + origX;
+
+							Color current = originalColors[index];
+							if (current.a < 1f)
+							{
+								invalidAlpha = true;
+							}
+							colorSum += current;
+						}
+					}
+
+					int pixelCount = scaleX * scaleY;
+					Color avgColor = colorSum / pixelCount;
+					avgColor.a = invalidAlpha ? 0f : 1f;
+
+					newColors[newY * newWidth + newX] = invalidAlpha ? Color.clear : avgColor;
+				}
+			}
+
+			// Apply the new colors and update the texture.
+			newTex.SetPixels(newColors);
+			newTex.Apply();
+
+			return newTex;
+		}
 		public static Texture2D ConvertToGrayscale(this Texture2D texture)
 		{
 			Color32[] pixels = texture.GetPixels32();

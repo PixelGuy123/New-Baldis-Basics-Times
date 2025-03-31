@@ -245,19 +245,24 @@ namespace BBTimes.Manager
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 35 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 25 });
-			ITM_WaterBottle.audDrink = man.Get<SoundObject>("audRobloxDrink");
-			ITM_EmptyWaterBottle.waterBottle = item;
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 75 });
 
-			// Empty Water Bottle
-			item = new ItemBuilder(plug.Info)
-				.SetItemComponent<ITM_EmptyWaterBottle>()
-				.SetGeneratorCost(18)
-				.SetShopPrice(100)
-				.SetNameAndDescription("EBottle_Name", "EBottle_Desc")
-				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, [])
-				.Build("EmptyWaterBottle");
-			//CreatorExtensions.CreateItem<ITM_EmptyWaterBottle, CustomItemData>("EmptyWaterBottle", "EBottle_Name", "EBottle_Desc", 90, 18).AddMeta(plug, ItemFlags.MultipleUse | ItemFlags.Persists).value;
+			// Empty Bottle
+			var newItem = item.DuplicateItem("EBottle_Name", true, newItemEnumString: "EmptyWaterBottle");
+			newItem.descKey = "EBottle_Desc";
+			((ITM_WaterBottle)newItem.item).waterBottle = item;
+
+			var iconSprs = CreatorExtensions.GetAllItemSpritesFrom("EmptyBottle");
+			newItem.itemSpriteLarge = iconSprs[1];
+			newItem.itemSpriteSmall = iconSprs[0];
+			newItem.value = 18;
+			newItem.price = 100;
+
+			((ITM_WaterBottle)item.item).emptyBottle = newItem;
+
+			// Empty Bottle added to the Generator
+			item = newItem;
+
 			floorDatas[0].Items.Add(new() { selection = item, weight = 50 });
 			floorDatas[1].Items.Add(new() { selection = item, weight = 45 });
 			floorDatas[2].Items.Add(new() { selection = item, weight = 55 });
@@ -267,7 +272,6 @@ namespace BBTimes.Manager
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 44 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 105 });
-			ITM_WaterBottle.emptyBottle = item;
 
 			// Pogostick
 			item = new ItemBuilder(plug.Info)
@@ -443,7 +447,7 @@ namespace BBTimes.Manager
 			var bsodaMeta = ItemMetaStorage.Instance.FindByEnum(Items.Bsoda);
 			var normBsoda = bsodaMeta.value;
 
-			var itemBs = normBsoda.DuplicateItem("CherryBsoda_Name");
+			var itemBs = normBsoda.DuplicateItem("CherryBsoda_Name", true);
 
 			itemBs.price += 50;
 			itemBs.descKey = "CherryBsoda_Desc";
@@ -457,7 +461,6 @@ namespace BBTimes.Manager
 
 			itemBs.item = ch;
 			itemBs.itemType = EnumExtensions.ExtendEnum<Items>("CherryBsoda");
-			itemBs.AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).tags.AddRange(bsodaMeta.tags);
 
 			item = itemBs;
 
@@ -669,7 +672,7 @@ namespace BBTimes.Manager
 			meta.itemObjects = [.. meta.itemObjects.Reverse()];
 
 			// GSoda
-			itemBs = normBsoda.DuplicateItem("GSoda_Name");
+			itemBs = normBsoda.DuplicateItem("GSoda_Name", true);
 
 			itemBs.price += 175;
 			itemBs.descKey = "GSoda_Desc";
@@ -681,7 +684,6 @@ namespace BBTimes.Manager
 
 			itemBs.item = gs;
 			itemBs.itemType = EnumExtensions.ExtendEnum<Items>("GSoda");
-			itemBs.AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).tags.AddRange(bsodaMeta.tags);
 
 			item = itemBs;
 			floorDatas[0].Items.Add(new() { selection = item, weight = 10 });
@@ -944,7 +946,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(25)
 				.SetShopPrice(450)
 				.SetNameAndDescription("CleaningCloth_Name", "CleaningCloth_Desc")
-				.SetMeta(ItemFlags.None, [])
+				.SetMeta(ItemFlags.MultipleUse, [])
 				.Build("CleaningCloth");
 
 			floorDatas[0].Items.Add(new() { selection = item, weight = 35 });
@@ -956,6 +958,16 @@ namespace BBTimes.Manager
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 35 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 15 });
+
+			// Dirty Cleaning Cloth
+			newItem = item.DuplicateItem("DirtyCleaningCloth_Name", true, "DirtyCleaningCloth");
+			newItem.descKey = "DirtyCleaningCloth_Desc";
+			((ITM_CleaningCloth)newItem.item).cleanClothItem = item;
+			iconSprs = CreatorExtensions.GetAllItemSpritesFrom("DirtyCleaningCloth");
+			newItem.itemSpriteLarge = iconSprs[1];
+			newItem.itemSpriteSmall = iconSprs[0];
+
+
 
 			// Baldi's Year Book
 			new ItemBuilder(plug.Info)
@@ -1024,6 +1036,48 @@ namespace BBTimes.Manager
 			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 50 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 75 });
 			ResourceManager.AddMysteryItem(new() { selection = item, weight = 45 });
+
+			// Firework Rocket
+			item = new ItemBuilder(plug.Info)
+			.SetItemComponent<ITM_FireworkRocket>()
+			.SetGeneratorCost(39)
+			.SetShopPrice(700)
+			.SetMeta(ItemFlags.Persists, [CRIMINALPACK_CONTRABAND])
+			.SetNameAndDescription("FireworkRocket_Name", "FireworkRocket_Desc")
+			.Build("FireworkRocket");
+			floorDatas[1].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 20 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 18 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 30 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 15 });
+
+			// Slingshot
+			item = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_Slingshot>()
+				.SetGeneratorCost(40)
+				.SetShopPrice(700)
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity | ItemFlags.MultipleUse, [CRIMINALPACK_CONTRABAND])
+				.SetNameAndDescription("Slingshot_Name3", "Slingshot_Desc")
+				.Build("Slingshot");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 55 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 65 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 45 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 55 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 75 });
+
+			meta = item.GetMeta();
+			secondItem = item.DuplicateItem(meta, "Slingshot_Name2");
+			((ITM_Slingshot)item.item).nextSlingShot = secondItem;
+			((ITM_Slingshot)secondItem.item).nextSlingShot = secondItem.DuplicateItem(meta, "Slingshot_Name1");
+			meta.itemObjects = [.. meta.itemObjects.Reverse()];
 		}
 	}
 }

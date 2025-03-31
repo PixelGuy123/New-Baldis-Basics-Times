@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace BBTimes.CustomComponents
 {
@@ -44,6 +45,10 @@ namespace BBTimes.CustomComponents
 				for (int i = 0; i < renderers.Length; i++)
 					renderers[i].sprite = sprite;
 
+			if (imageRenderers != null)
+				for (int i = 0; i < imageRenderers.Length; i++)
+					imageRenderers[i].sprite = sprite;
+
 			if (rotators != null)
 				for (int i = 0; i < rotators.Length; i++)
 					rotators[i].targetSprite = sprite;
@@ -77,6 +82,9 @@ namespace BBTimes.CustomComponents
 
 		[SerializeField]
 		internal SpriteRenderer[] renderers;
+
+		[SerializeField]
+		internal Image[] imageRenderers;
 
 		[SerializeField]
 		internal AnimatedSpriteRotator[] rotators;

@@ -1,5 +1,4 @@
 ﻿using BaldiLevelEditor;
-using BBTimes.CustomContent.CustomItems;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.Manager;
 using HarmonyLib;
@@ -9,8 +8,10 @@ using MTM101BaldAPI.Registers;
 using PlusLevelFormat;
 using System.Collections.Generic;
 using System.IO;
+using BBTimes.Extensions;
 using System.Linq;
 using UnityEngine;
+using PlusLevelLoader;
 
 namespace BBTimes.CompatibilityModule.EditorCompat
 {
@@ -104,55 +105,18 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				MarkObject(man.Get<GameObject>("editorPrefab_TimesGenericCornerLamp_" + i), Vector3.zero);
 
 			// ************************ Items ****************************
+			HashSet<ItemObject> alreadySeenItems = [];
+			foreach (var meta in ItemMetaStorage.Instance.All())
+			{
+				if (meta.info != BBTimesManager.plug.Info) continue;
 
-			AddItem("yearBook", "BaldiYearbook");
-			AddItem("basketball", "Basketball");
-			AddItem("bell", "Bell");
-			AddItem("blowDrier", "BlowDrier");
-			AddItem("beehive", "Beehive");
-			AddItem("BSED", "BSED");
-			AddItem("cherryBsoda", "CherryBsoda");
-			AddItem("CleaningCloth", "CleaningCloth");
-			AddItem("chocolate", "HotChocolate");
-			AddItem("ChillyChilli", "ChillyChilli");
-			AddPointItem<ITM_StaminaYTP>("ChocolateYTP");
-			AddItem("comicallyLargeTrumpet", "ComicallyLargeTrumpet");
-			AddItem("comicallyLargeJello", "ComicallyLargeJello");
-			AddPointItem<ITM_DivideYTP>("DivisionPoint");
-			AddItem("DoorStopper", "DoorStopper");
-			AddItem("electricalGel", "ElectricalGel");
-			AddItem("empty", "EmptyWaterBottle");
-			AddItem("fidgetSpinner", "FidgetSpinner");
-			AddItem("fryingPan", "FryingPan");
-			AddItem("gps", "Gps");
-			AddItem("gQuarter", "GoldenQuarter");
-			AddItem("gsoda", "GSoda");
-			AddItem("grabGun", "GrabGun");
-			AddItem("gum", "Gum");
-			AddItem("hammer", "Hammer");
-			AddItem("hardHat", "Hardhat");
-			AddItem("headachePill", "Headachepill");
-			AddItem("pencil", "Pencil");
-			AddItem("pogostick", "Pogostick");
-			AddItem("present", "Present");
-			AddItem("magnet", "Magnet");
-			AddItem("mrMolar", "MrMolar");
-			AddItem("remote", "InvRemControl");
-			AddItem("rottenCheese", "RottenCheese");
-			AddItem("screwDriver", "Screwdriver");
-			AddItem("soapBubbles", "SoapBubbles");
-			AddItem("sketchBook", "Sketchbook");
-			AddItem("stormInABag", "StormInABag");
-			AddItem("sugarFlavoredZestyBar", "SugarFlavorZestyBar");
-			AddItem("superCamera", "SuperCamera");
-			AddItem("soap", "Soap");
-			AddItem("sp", "SpeedPotion");
-			AddItem("trap", "Beartrap");
-			AddPointItem<ITM_TimesYTP>("TimesIcon");
-			AddItem("throwableTeleporter", "ThrowableTeleporter");
-			AddItem("toiletPaper", "ToiletPaper");
-			AddItem("water", "WaterBottle");
-			AddPointItem<ITM_StaminaYTP>("WaterYTP");
+				ItemObject itm = meta.value;
+				if (alreadySeenItems.Contains(itm)) continue;
+
+				alreadySeenItems.Add(itm);
+
+				itemsToAdd.Add(itm); // Add to dictionary (THAT WORKS?? HUUH)
+			}
 
 
 			// ************************ Npcs *****************************
@@ -201,7 +165,33 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 
 			string[] files = Directory.GetFiles(Path.Combine(BasePlugin.ModPath, "EditorUI"));
 			for (int i = 0; i < files.Length; i++)
-				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + Path.GetFileNameWithoutExtension(files[i]), AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
+			{
+				string name = Path.GetFileNameWithoutExtension(files[i]);
+				if (!name.StartsWith("Ignore_"))
+					BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/" + name, AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(files[i]), 40f));
+			}
+
+			var maskRef = AssetLoader.TextureFromFile(Path.Combine(BasePlugin.ModPath, "EditorUI", "Ignore_itemSlotMask.png"));
+
+			// Process items for sprites (basically what LotsOfItems does)
+			foreach (var itm in itemsToAdd)
+			{
+				string itmEnum = itm.itemType == Items.Points ? itm.name : itm.itemType.ToStringExtended();
+				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itmEnum, itm);
+
+				Sprite icon = itm.itemSpriteSmall;
+				var tex = icon.texture;
+				if (icon.texture.width != 32 || icon.texture.height != 32)
+				{
+					tex = tex.ActualResize(32, 32);
+					tex.name = "Resized_" + tex.name;
+				}
+				tex = tex.Mask(maskRef);
+				tex.name = "Masked_" + icon.texture.name;
+				icon = AssetLoader.SpriteFromTexture2D(tex, 40f);
+				BaldiLevelEditorPlugin.Instance.assetMan.Add("UI/ITM_" + itmEnum, icon);
+			}
+
 
 			// ************* Local Methods ***************
 
@@ -220,21 +210,21 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			static void MarkObjectRow(string prebuiltToolName, params ObjectData[] objs) =>
 				markersToAdd.Add(new(prebuiltToolName, new(false, objs)));
 
-			static void AddItem(string itemName, string itemEnum)
-			{
-				var en = EnumExtensions.GetFromExtendedName<Items>(itemEnum);
-				var itm = ItemMetaStorage.Instance.FindByEnumFromMod(en, BBTimesManager.plug.Info).value;
+			//static void AddItem(string itemName, string itemEnum)
+			//{
+			//	var en = EnumExtensions.GetFromExtendedName<Items>(itemEnum);
+			//	var itm = ItemMetaStorage.Instance.FindByEnumFromMod(en, BBTimesManager.plug.Info).value;
 
-				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemEnum, itm);
-				itemsToAdd.Add(new(itemEnum, itemName));
-			}
+			//	BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemEnum, itm);
+			//	itemsToAdd.Add(itemEnum, itemName);
+			//}
 
-			static void AddPointItem<T>(string itemName) where T : Item
-			{
-				var itm = points.Find(x => x.item is T && x.nameKey == itemName);
-				BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemName, itm);
-				itemsToAdd.Add(new(itemName, itemName));
-			}
+			//static void AddPointItem<T>(string itemName) where T : Item
+			//{
+			//	var itm = points.Find(x => x.item is T && x.nameKey == itemName);
+			//	BaldiLevelEditorPlugin.itemObjects.Add("times_" + itemName, itm);
+			//	itemsToAdd.Add(itemName, itemName);
+			//}
 
 			static void AddNPC(string npcName, string npcEnum)
 			{
@@ -297,9 +287,17 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 		[HarmonyPostfix]
 		static void InitializeStuff(PlusLevelEditor __instance)
 		{
-			
+			__instance.toolCats.Find(x => x.name == "items").tools.AddRange(
+				itemsToAdd.Select(itm =>
+				{
+					string itmEnum = itm.itemType == Items.Points ? itm.name : itm.itemType.ToStringExtended();
+					return new TimesItem(
+						itmEnum,
+						BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/ITM_" + itmEnum)
+						);
+				}
+				));
 
-			__instance.toolCats.Find(x => x.name == "items").tools.AddRange(itemsToAdd.ConvertAll(x => new TimesItem(x.Key, x.Value)));
 			__instance.toolCats.Find(x => x.name == "characters").tools.AddRange(npcsToAdd.ConvertAll(x => new TimesNPC(x.Key, x.Value)));
 			var objectCats = __instance.toolCats.Find(x => x.name == "objects").tools;
 
@@ -336,7 +334,8 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			]);
 		}
 
-		static List<KeyValuePair<string, string>> npcsToAdd, itemsToAdd;
+		static List<KeyValuePair<string, string>> npcsToAdd;
+		static List<ItemObject> itemsToAdd;
 		static List<KeyValuePair<string, KeyValuePair<bool, ObjectData[]>>> markersToAdd;
 
 		internal static void AddPoint(ItemObject point) =>
@@ -352,11 +351,10 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			public Quaternion Item3 = rot;
 		}
 
-		class TimesItem(string obj, string objTex) : ItemTool("times_" + obj)
+		class TimesItem(string obj, Sprite itemTex) : ItemTool("times_" + obj)
 		{
-			public override Sprite editorSprite => BaldiLevelEditorPlugin.Instance.assetMan.ContainsKey("UI/item_" + objTex) ?
-				BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/item_" + objTex) : BaldiLevelEditorPlugin.Instance.assetMan.Get<Sprite>("UI/Item_" + objTex);
-			readonly string objTex = objTex;
+			public override Sprite editorSprite => spr;
+			readonly Sprite spr = itemTex;
 		}
 		class TimesNPC(string obj, string objTex) : NpcTool("times_" + obj)
 		{

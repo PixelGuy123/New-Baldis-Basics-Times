@@ -96,7 +96,8 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 			}
 		}
 
-		[HarmonyPatch(typeof(ITM_EmptyWaterBottle), "InteractWithFountain")] // Fountain animation
+		[HarmonyPatch(typeof(ITM_WaterBottle), "InteractWithFountain")] // Fountain animation
+		[HarmonyPatch(typeof(ITM_CleaningCloth), "InteractWithFountain")] // Fountain animation
 		[HarmonyPostfix]
 		private static void AnimatedWaterFountain(WaterFountain fountain, PlayerManager ___pm) =>
 				GenericAnimation.AnimateWaterFountain(fountain, ___pm);
