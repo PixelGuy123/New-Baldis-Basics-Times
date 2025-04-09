@@ -210,7 +210,7 @@ namespace BBTimes.Manager
 			SoundObject speechMenu;
 			string jingle = AssetLoader.MidiFromMod("timeNewJingle", plug, "misc", "Audios", "newJingle.mid");
 
-			if (BooleanStorage.IsChristmas)
+			if (Storage.IsChristmas)
 			{
 				selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("BBTChristmasV2.png"))), 1f);
 				speechMenu = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_timesChristmas.wav")), "Vfx_BAL_BalMainMenuSpeech_Christmas_1", SoundType.Voice, Color.green);
@@ -284,6 +284,8 @@ namespace BBTimes.Manager
 
 			// Global Assets
 			man.Add("audExplosion", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("loudExplosion.wav"))), string.Empty, SoundType.Effect, Color.white));
+			man.Get<SoundObject>("audExplosion").subtitle = false;
+
 			man.Add("audRobloxDrink", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("potion_drink.wav"))), "Vfx_Roblox_drink", SoundType.Effect, Color.white));
 			man.Add("audPencilStab", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("pc_stab.wav"))), "Vfx_PC_stab", SoundType.Effect, Color.yellow));
 			man.Add("basketBall", TextureExtensions.LoadSpriteSheet(5, 1, 25f, GlobalAssetsPath, GetAssetName("basketball.png")));

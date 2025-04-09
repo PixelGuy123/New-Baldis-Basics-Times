@@ -14,7 +14,16 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			spriteRenderer[0].sprite = this.GetSprite(30f, "snowFlake.png");
 			audMan = GetComponent<PropagatedAudioManager>();
-			audThrow = this.GetSound("snowfolke_Throw.wav", "Vfx_Snowfolke_Throw", SoundType.Voice, audMan.subtitleColor);
+			audThrow = this.GetSound("snw_throwsfx.wav", "Vfx_Snowfolke_ThrowSfx", SoundType.Voice, audMan.subtitleColor);
+			audThrowVoice = this.GetSound("snw_throw.wav", "Vfx_Snowfolke_Throw", SoundType.Voice, audMan.subtitleColor);
+			audIdle = [
+				this.GetSound("snw_idle1.wav", "Vfx_Snowfolke_Idle1", SoundType.Voice, audMan.subtitleColor),
+				this.GetSound("snw_idle2.wav", "Vfx_Snowfolke_Idle2", SoundType.Voice, audMan.subtitleColor)
+				];
+			audBefThrow = [
+				this.GetSound("snw_beforethrow1.wav", "Vfx_Snowfolke_BeforeThrow1", SoundType.Voice, audMan.subtitleColor),
+				this.GetSound("snw_beforethrow2.wav", "Vfx_Snowfolke_BeforeThrow2", SoundType.Voice, audMan.subtitleColor)
+				];
 
 			floatingRenderer = spriteRenderer[0].transform;
 
@@ -28,7 +37,8 @@ namespace BBTimes.CustomContent.NPCs
 			snowPre.entity = snowPre.gameObject.CreateEntity(1f, 1f, snowBallRenderer.transform);
 			snowPre.entity.SetGrounded(false);
 			snowPre.audMan = snowPre.gameObject.CreatePropagatedAudioManager(35f, 55f);
-			snowPre.audHit = this.GetSound("snowfolke_freeze.wav", "Vfx_Snowfolke_Hit", SoundType.Effect, audMan.subtitleColor);
+
+			snowPre.audHit = this.GetSound("snw_freeze.wav", "Vfx_Snowfolke_Hit", SoundType.Effect, audMan.subtitleColor);
 
 			snowPre.renderer = snowBallRenderer.gameObject;
 		}
@@ -60,6 +70,19 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.SetSpeed(speed);
 		}
 
+		public void PrepareToShoot()
+		{
+			audMan.FlushQueue(true);
+			audMan.QueueRandomAudio(audBefThrow);
+		}
+
+		public void Idle()
+		{
+			if (!audMan.QueuedAudioIsPlaying && Random.value <= idleChance)
+				audMan.PlayRandomAudio(audIdle);
+		}
+		
+
 		public void ShootAllDirs()
 		{
 			if (shootAwaitCor != null)
@@ -89,6 +112,7 @@ namespace BBTimes.CustomContent.NPCs
 			Vector3 dir = Vector3.forward;
 			float rotOffset = 360f / dirsToThrow;
 			audMan.PlaySingle(audThrow);
+			audMan.PlaySingle(audThrowVoice);
 
 			for (int i = 0; i < dirsToThrow; i++)
 			{
@@ -103,7 +127,10 @@ namespace BBTimes.CustomContent.NPCs
 		internal PropagatedAudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject audThrow;
+		internal SoundObject audThrowVoice, audThrow;
+
+		[SerializeField]
+		internal SoundObject[] audBefThrow, audIdle;
 
 		[SerializeField]
 		internal Transform floatingRenderer;
@@ -113,6 +140,10 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal float throwSpeed = 30f, minCooldownPerThrow = 20f, maxCooldownPerThrow = 45f, delayBeforeHit = 5f, maxShakeForce = 1.5f;
+
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float idleChance = 0.0025f;
 
 		[SerializeField]
 		internal int dirsToThrow = 8;
@@ -150,7 +181,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-		
+
+			w.Idle();
 			if (cooldown > 0f)
 				cooldown -= w.TimeScale * Time.deltaTime;
 			else if (w.AmIOnAGoodSpotToShoot)
@@ -164,6 +196,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			ChangeNavigationState(new NavigationState_DoNothing(w, 0));
+			w.PrepareToShoot();
 			w.Walk(false);
 			w.ShootAllDirs();
 		}

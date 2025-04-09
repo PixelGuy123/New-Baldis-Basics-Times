@@ -1,9 +1,10 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
 {
-	public class ItemAlarm : EnvironmentObject
+	public class ItemAlarm : EnvironmentObject, IItemAcceptor
 	{
 		public void AttachToPickup(Pickup itmPick)
 		{
@@ -52,6 +53,13 @@ namespace BBTimes.CustomContent.Objects
 			transform.position = linkedPickup.transform.position;
 		}
 
+		public void InsertItem(PlayerManager pm, EnvironmentController ec) =>
+			triggered = true;
+
+		public bool ItemFits(Items item) =>
+			!triggered && disablingItems.Contains(item);
+		
+
 		Coroutine shakeCor;
 		Vector3 localPos;
 
@@ -69,6 +77,8 @@ namespace BBTimes.CustomContent.Objects
 
 		[SerializeField]
 		internal float angerLevel = 2.5f;
+
+		public static HashSet<Items> disablingItems = [];
 
 		Pickup linkedPickup;
 		public Pickup LinkedPickup => linkedPickup;

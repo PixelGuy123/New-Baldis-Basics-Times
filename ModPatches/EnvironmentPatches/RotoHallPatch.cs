@@ -2,7 +2,7 @@
 using HarmonyLib;
 using BBTimes.CustomContent.MapIcons;
 
-namespace BBTimes.ModPatches
+namespace BBTimes.ModPatches.EnvironmentPatches
 {
 	[HarmonyPatch(typeof(RotoHall))]
 	internal static class RotoHallPatch

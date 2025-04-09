@@ -48,9 +48,14 @@ namespace BBTimes.CustomContent.CustomItems
 			comp.RemoveModifier(stamDrop);
 			mod.RemoveAttribute(attribute);
 
-			Destroy(gameObject);
+			Despawn();
 
 			yield break;
+		}
+
+		public virtual void Despawn()
+		{
+			Destroy(gameObject);
 		}
 
 		internal void SetMod(float staminamax, float staminarise, float staminadrop) 

@@ -338,7 +338,7 @@ namespace BBTimes.Manager
 
 			// Hot Chocolate
 			item = new ItemBuilder(plug.Info)
-				.SetItemComponent<ITM_StaminaDrinkable>()
+				.SetItemComponent<ITM_HotChocolate>()
 				.SetGeneratorCost(24)
 				.SetShopPrice(200)
 				.SetNameAndDescription("HotChoc_Name", "HotChoc_Desc")
@@ -353,9 +353,9 @@ namespace BBTimes.Manager
 			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 55 });
 			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 45 });
 			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 55 });
-			((ITM_StaminaDrinkable)item.item).SetMod(1f, 0.3f, 0.6f);
-			((ITM_StaminaDrinkable)item.item).audDrink = man.Get<SoundObject>("audRobloxDrink");
-			((ITM_StaminaDrinkable)item.item).attribute = "hotchocactive";
+			((ITM_HotChocolate)item.item).SetMod(1f, 0.3f, 0.6f);
+			((ITM_HotChocolate)item.item).audDrink = man.Get<SoundObject>("audRobloxDrink");
+			((ITM_HotChocolate)item.item).attribute = Storage.HOTCHOCOLATE_ATTR_TAG;
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 55 });
 			JoeChef.AddFood(item, 46);
 
@@ -405,6 +405,7 @@ namespace BBTimes.Manager
 			ZapZap.AddDeactivator(item.itemType);
 			DetentionBot.AddDisablingItem(item.itemType);
 			JerryTheAC.AddDisablingItem(item.itemType);
+			ItemAlarm.disablingItems.Add(item.itemType);
 
 			// Hardhat
 			item = new ItemBuilder(plug.Info)
@@ -963,6 +964,7 @@ namespace BBTimes.Manager
 			newItem = item.DuplicateItem("DirtyCleaningCloth_Name", true, "DirtyCleaningCloth");
 			newItem.descKey = "DirtyCleaningCloth_Desc";
 			((ITM_CleaningCloth)newItem.item).cleanClothItem = item;
+			((ITM_CleaningCloth)item.item).dirtyClothItem = newItem;
 			iconSprs = CreatorExtensions.GetAllItemSpritesFrom("DirtyCleaningCloth");
 			newItem.itemSpriteLarge = iconSprs[1];
 			newItem.itemSpriteSmall = iconSprs[0];
@@ -1078,6 +1080,63 @@ namespace BBTimes.Manager
 			((ITM_Slingshot)item.item).nextSlingShot = secondItem;
 			((ITM_Slingshot)secondItem.item).nextSlingShot = secondItem.DuplicateItem(meta, "Slingshot_Name1");
 			meta.itemObjects = [.. meta.itemObjects.Reverse()];
+
+			// Good Grades
+			item = new ItemBuilder(plug.Info)
+			.SetItemComponent<ITM_GoodGrades>()
+			.SetGeneratorCost(30)
+			.SetShopPrice(750)
+			.SetMeta(ItemFlags.Persists, [])
+			.SetNameAndDescription("GoodGrades_Name", "GoodGrades_Desc")
+			.Build("GoodGrades");
+
+			floorDatas[1].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 15 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 75 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 15 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 25 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
+
+			// AAAAH Tomato
+			item = new ItemBuilder(plug.Info)
+			.SetItemComponent<ITM_AaaahTomato>()
+			.SetGeneratorCost(28)
+			.SetShopPrice(450)
+			.SetMeta(ItemFlags.Persists, ["Food"])
+			.SetNameAndDescription("AAAHTomato_Name", "AAAHTomato_Desc")
+			.Build("AAAHTomato");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 45 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 15 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 50 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 40 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 60 });
+
+			// Ice Skates
+			item = new ItemBuilder(plug.Info)
+			.SetItemComponent<ITM_IceSkates>()
+			.SetGeneratorCost(30)
+			.SetShopPrice(650)
+			.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
+			.SetNameAndDescription("IceSkates_Name", "IceSkates_Desc")
+			.Build("IceSkates");
+
+			floorDatas[0].Items.Add(new() { selection = item, weight = 25 });
+			floorDatas[1].Items.Add(new() { selection = item, weight = 55 });
+			floorDatas[2].Items.Add(new() { selection = item, weight = 35 });
+			floorDatas[3].Items.Add(new() { selection = item, weight = 55 });
+			floorDatas[1].ShopItems.Add(new() { selection = item, weight = 75 });
+			floorDatas[2].ShopItems.Add(new() { selection = item, weight = 25 });
+			floorDatas[3].ShopItems.Add(new() { selection = item, weight = 45 });
+			floorDatas[1].FieldTripItems.Add(new() { selection = item, weight = 15 });
+			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 25 });
+
 		}
 	}
 }

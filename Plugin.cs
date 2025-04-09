@@ -221,7 +221,7 @@ namespace BBTimes
 
 			// ********************************************************** Christmas Baldi Setup ***************************************************************************
 
-			if (BooleanStorage.IsChristmas)
+			if (Storage.IsChristmas)
 			{
 				var baldiSPrites = TextureExtensions.LoadSpriteSheet(6, 1, 30f, BBTimesManager.MiscPath, BBTimesManager.TextureFolder, BBTimesManager.GetAssetName("christmasBaldi.png"));
 				var chBaldi = ObjectCreationExtensions.CreateSpriteBillboard(baldiSPrites[0])
@@ -279,7 +279,7 @@ namespace BBTimes
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
 
-		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, forceChristmasMode, disableArcadeRennovationsSupport, disableSchoolhouseEscape;
+		internal ConfigEntry<bool> disableOutside, disableHighCeilings, enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, forceChristmasMode, disableArcadeRennovationsSupport, disableSchoolhouseEscape, disableOldLighting;
 		internal List<string> disabledCharacters = [], disabledItems = [], disabledEvents = [], disabledBuilders = [];
 		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") ||
 			Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
@@ -296,6 +296,7 @@ namespace BBTimes
 			forceChristmasMode = Config.Bind("Specials Settings", "Force enable christmas special", false, "Setting this to \"true\" will force the christmas special to be enabled.");
 			disableArcadeRennovationsSupport = Config.Bind("Misc Settings", "Disable arcade rennovations support", false, "Setting this to \"true\" disable any checks for arcade rennovations. This can be useful for RNG Floors, if you\'re having any issues.");
 			disableSchoolhouseEscape = Config.Bind("Environment Settings", "Disable schoolhouse escape", false, "Setting this to \"true\" will disable entirely the schoolhouse escape sequence (the only exception is for the red sequence).");
+			disableOldLighting = Config.Bind("Environment Settings", "Disable old lighting", false, "Setting this to \"true\" will disable the old lighting (from 0.7 and below).");
 
 
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
@@ -453,6 +454,14 @@ namespace BBTimes
 						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
 					ld.timeBonusLimit *= 1.8f;
 
+					if (!disableOldLighting.Value)
+					{
+						ld.lightMode = LightMode.Greatest;
+						ld.standardLightColor = new(1f, 0.9412f, 0.8667f);
+						ld.maxLightDistance = 9;
+						ld.standardLightStrength = 6;
+					}
+
 					// Custom datas
 					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(12, BBTimesManager.MaximumNumballs));
 					return;
@@ -506,7 +515,7 @@ namespace BBTimes
 					return;
 				}
 
-				bool isChristmas = BooleanStorage.IsChristmas;
+				bool isChristmas = Storage.IsChristmas;
 
 				for (int i = 0; i < floordata.NPCs.Count; i++)
 				{
@@ -769,7 +778,7 @@ namespace BBTimes
 			if (plug.enableYoutuberMode.Value)
 				tags.Add("Times_Config_YoutuberMode");
 
-			if (BooleanStorage.IsChristmas)
+			if (Storage.IsChristmas)
 				tags.Add("Times_Specials_Christmas");
 
 			if (plug.HasInfiniteFloors && plug.disableArcadeRennovationsSupport.Value)

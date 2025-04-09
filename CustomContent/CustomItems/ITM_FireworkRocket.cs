@@ -88,7 +88,7 @@ namespace BBTimes.CustomContent.CustomItems
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;
-			moveMod = new(Vector3.zero, movementFactor);
+			moveMod = new(Vector3.zero, movementFactor) { forceTrigger = true };
 			pm.plm.Entity.ExternalActivity.moveMods.Add(moveMod);
 
 			rocketCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
@@ -97,28 +97,33 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan.SetLoop(true);
 
 			StartCoroutine(RocketLifetime());
-			StartCoroutine(AccelerateRocket());
 			return true;
 		}
 
-		IEnumerator AccelerateRocket()
+		void UpdateVelocity()
 		{
-			while (active)
+			Vector3 vel = moveMod.movementAddend;
+			float offset = pm.ec.EnvironmentTimeScale * Time.deltaTime * deacceleration;
+
+			vel.x += Mathf.Sign(vel.x) * offset;
+			vel.z += Mathf.Sign(vel.z) * offset;
+
+			vel += Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward *
+				   acceleration * Time.deltaTime * pm.ec.EnvironmentTimeScale;
+			vel.Limit(maxSpeed, 0f, maxSpeed);
+
+			if (vel.magnitude > 0f)
 			{
-				Vector3 vel = moveMod.movementAddend;
-				float offset = pm.ec.EnvironmentTimeScale * Time.deltaTime * deacceleration;
-
-				vel.x += vel.x > 0f ? -offset : offset;
-				vel.z += vel.z > 0f ? -offset : offset;
-
-				vel += Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward * acceleration * Time.deltaTime * pm.ec.EnvironmentTimeScale;
-				vel.Limit(maxSpeed, 0f, maxSpeed);
-
-				moveMod.movementAddend = vel;
-
-				yield return null;
+				if (Physics.Raycast(pm.transform.position, vel.normalized, out RaycastHit hit, rayCastHitDistance, collisionLayer, QueryTriggerInteraction.Collide) && hit.transform.CompareTag("Wall"))
+				{
+					// Zero out only the velocity component moving into the wall
+					vel -= Vector3.Project(vel, hit.normal);
+				}
 			}
+
+			moveMod.movementAddend = vel;
 		}
+
 
 		IEnumerator RocketLifetime()
 		{
@@ -127,10 +132,16 @@ namespace BBTimes.CustomContent.CustomItems
 
 			while (lifetime > 0f && active)
 			{
+				float prevMagnitude = moveMod.movementAddend.magnitude; // to avoid velocity changing mid-time
+				UpdateVelocity();
+
 				smokeParticles.transform.forward = -Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
-				smokeParticles.transform.position = pm.transform.position + transform.forward * 1.5f;
+				smokeParticles.transform.position = pm.transform.position + smokeParticles.transform.forward * 1.5f;
 				lifetime -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
-				if (moveMod.movementAddend.magnitude > hitSpeed && Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, 1.5f, LayerStorage.gumCollisionMask, QueryTriggerInteraction.Collide))
+
+				if (prevMagnitude > hitSpeed && 
+					Physics.Raycast(pm.transform.position, moveMod.movementAddend.normalized, out var hit, rayCastHitDistance, collisionLayer, QueryTriggerInteraction.Collide) && 
+					hit.transform.CompareTag("Wall"))
 					Explode();
 
 				yield return null;
@@ -177,9 +188,8 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 		}
 
-		[SerializeField] 
-		private float maxSpeed = 125f, hitSpeed = 75f, acceleration = 75f, deacceleration = 17f, maxLifeTime = 60f, dieDelay = 2f;
-
+		[SerializeField]
+		private float maxSpeed = 125f, hitSpeed = 75f, acceleration = 75f, deacceleration = 17f, maxLifeTime = 60f, dieDelay = 2f, rayCastHitDistance = 3.5f;
 		[SerializeField]
 		[Range(0f, 1f)]
 		private float movementFactor = 0.15f;
@@ -204,6 +214,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		private AnimationComponent explosionAnimation;
+
+		[SerializeField]
+		private LayerMask collisionLayer = LayerStorage.gumCollisionMask;
 
 		bool active = false;
 		MovementModifier moveMod;

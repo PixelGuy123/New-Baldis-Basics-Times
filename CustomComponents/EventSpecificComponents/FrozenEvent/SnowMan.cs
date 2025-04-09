@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using BBTimes.Plugin;
+using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents.FrozenEvent
@@ -10,10 +11,17 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.FrozenEvent
 			if (Dead)
 				return;
 
-			if (other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
+			bool isPlayer = other.CompareTag("Player");
+
+			if (other.isTrigger && (other.CompareTag("NPC") || isPlayer))
 			{
-				var e = other.GetComponent<Entity>();
-				if (e)
+				if (isPlayer && other.TryGetComponent<PlayerAttributesComponent>(out var attrs) && attrs.HasAttribute(Storage.HOTCHOCOLATE_ATTR_TAG))
+				{
+					collider.enabled = false;
+					StartCoroutine(Die());
+				}
+
+				if (other.TryGetComponent<Entity>(out var e))
 					HitEntity(e);
 			}
 		}

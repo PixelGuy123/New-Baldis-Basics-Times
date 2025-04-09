@@ -6,11 +6,12 @@ namespace BBTimes.CustomComponents
 {
 	public class EnvironmentControllerData : MonoBehaviour
 	{
-		public List<BeltManager> ConveyorBelts = [];
-		public List<Duct> Vents = [];
-		public List<Trapdoor> Trapdoors = [];
-		public List<SecurityCamera> Cameras = [];
-		public List<Squisher> Squishers = [];
+		// Previously used for Blackout, but that event doesn't exist anymore
+		//public List<BeltManager> ConveyorBelts = [];
+		//public List<Duct> Vents = [];
+		//public List<Trapdoor> Trapdoors = [];
+		//public List<SecurityCamera> Cameras = [];
+		//public List<Squisher> Squishers = [];
 		public List<Coroutine> OngoingEvents = [];
 	}
 }

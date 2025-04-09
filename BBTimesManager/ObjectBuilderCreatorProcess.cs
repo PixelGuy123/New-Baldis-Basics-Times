@@ -3,7 +3,6 @@ using BBTimes.Extensions;
 using BBTimes.Helpers;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI;
-using MTM101BaldAPI.Registers;
 using System.IO;
 
 namespace BBTimes.Manager
@@ -38,7 +37,7 @@ namespace BBTimes.Manager
 			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 75 });
 
 			vent = CloneParameter(vent);
-			vent.parameters.minMax[0] = new(6, 9);
+			vent.parameters.minMax[0] = new(4, 5);
 			vent.parameters.chance[0] = 0.35f;
 
 			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 55 });

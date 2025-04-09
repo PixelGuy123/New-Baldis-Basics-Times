@@ -53,7 +53,6 @@ namespace BBTimes.CustomContent.Builders
 			base.PostOpenCalcGenerate(lg, rng);
 
 			var room = lg.Ec.mainHall;
-			var ecData = ec.GetComponent<EnvironmentControllerData>();
 			var spots = room.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single, false);
 			for (int i = 0; i < spots.Count; i++)
 				if (!spots[i].HardCoverageFits(CellCoverage.Up))
@@ -77,7 +76,6 @@ namespace BBTimes.CustomContent.Builders
 				var cam = Instantiate(camPre, spots[s].ObjectBase).GetComponentInChildren<SecurityCamera>();
 				cam.Ec = ec;
 				cam.Setup(spots[s].AllOpenNavDirections, rng.Next(parameters.minMax[1].x, parameters.minMax[1].z + 1));
-				ecData.Cameras.Add(cam);
 
 				spots[s].HardCover(CellCoverage.Up);
 				spots.RemoveAt(s);
@@ -95,7 +93,6 @@ namespace BBTimes.CustomContent.Builders
 				var cam = Instantiate(camPre, spot.ObjectBase).GetComponentInChildren<SecurityCamera>();
 				cam.Ec = ec;
 				cam.Setup(spot.AllOpenNavDirections, data[i].data);
-				ecData.Cameras.Add(cam);
 
 				spot.HardCover(CellCoverage.Up);
 			}

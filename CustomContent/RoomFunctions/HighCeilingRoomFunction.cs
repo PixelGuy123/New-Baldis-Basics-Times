@@ -169,6 +169,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		Texture2D originalCeilTex;
 		MeshFilter tilePrefabRef;
 		bool changed = false;
+		public bool HasGeneratedCeiling => changed;
 
 		[SerializeField]
 		public string targetTransformNamePrefix = string.Empty;

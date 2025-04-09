@@ -4,7 +4,7 @@ using System;
 
 namespace BBTimes.Plugin
 {
-	public static class BooleanStorage // This storage will contain all booleans that are gonna be disabled by any mod that requires them to be disabled (REMINDER: NOT SETTINGS, THESE ARE STORED IN THE PLUGIN CLASS)
+	public static class Storage // This storage will contain all global variables that are gonna be disabled by any mod that requires them to be disabled (REMINDER: NOT SETTINGS, THESE ARE STORED IN THE PLUGIN CLASS)
 	{
 		public static bool HasCrispyPlus => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.crispyplus");
 
@@ -20,5 +20,11 @@ namespace BBTimes.Plugin
 				return now >= minDate && now <= maxDate;
 			} 
 		}
+
+		// ------------------- Constant Strings ---------------------
+
+		public const string HOTCHOCOLATE_ATTR_TAG = "hotchocolateactive";
 	}
+
+
 }

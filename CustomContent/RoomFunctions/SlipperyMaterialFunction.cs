@@ -1,4 +1,4 @@
-﻿using BBTimes.CustomComponents.NpcSpecificComponents;
+﻿using BBTimes.CustomComponents;
 using HarmonyLib;
 using System.Collections.Generic;
 using UnityEngine;

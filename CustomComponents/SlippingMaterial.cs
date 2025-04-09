@@ -1,7 +1,7 @@
 ﻿using BBTimes.Extensions;
 using UnityEngine;
 
-namespace BBTimes.CustomComponents.NpcSpecificComponents
+namespace BBTimes.CustomComponents
 {
 	public class SlippingMaterial : MonoBehaviour
 	{

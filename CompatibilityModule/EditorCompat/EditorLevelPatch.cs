@@ -81,6 +81,8 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			MarkObject(man.Get<GameObject>("editorPrefab_Shovel_ForSnowPile"), Vector3.up * 0.1f);
 			MarkObject(man.Get<GameObject>("editorPrefab_MysteryTresentMaker"), Vector3.zero);
 
+			MarkRotatingObject(man.Get<GameObject>("editorPrefab_MetalFence"), Vector3.zero);
+
 			// Secret stuff
 			//MarkObject(man.Get<GameObject>("editorPrefab_Times_SecretBaldi"), Vector3.up * 5f);
 			//MarkRotatingObject(man.Get<GameObject>("editorPrefab_Times_InvisibleWall"), Vector3.up * 5f);
@@ -205,6 +207,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			{
 				markersToAdd.Add(new(obj.name, new(true, null)));
 				BaldiLevelEditorPlugin.editorObjects.Add(EditorObjectType.CreateFromGameObject<EditorPrefab, PrefabLocation>(obj.name, obj, offset, false));
+				
 			}
 
 			static void MarkObjectRow(string prebuiltToolName, params ObjectData[] objs) =>
@@ -281,6 +284,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			__instance.defaultTextures.Add("SuperMystery", new TextureContainer("redCeil", "redWall", "redFloor"));
 			__instance.defaultTextures.Add("ExibitionRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
 			__instance.defaultTextures.Add("SnowyPlayground", new TextureContainer("snowyPlaygroundFloor", "Fence", "None"));
+			__instance.defaultTextures.Add("IceRink", new TextureContainer("IceRinkFloor", "Fence", "None"));
 		}
 
 		[HarmonyPatch(typeof(PlusLevelEditor), "Initialize")]
@@ -330,7 +334,8 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 				new TimesRoom("FocusRoom"),
 				new TimesRoom("SuperMystery"),
 				new TimesRoom("ExibitionRoom"),
-				new TimesRoom("SnowyPlayground")
+				new TimesRoom("SnowyPlayground"),
+				new TimesRoom("IceRink"),
 			]);
 		}
 

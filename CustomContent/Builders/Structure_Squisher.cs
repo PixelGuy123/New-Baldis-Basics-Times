@@ -73,7 +73,6 @@ namespace BBTimes.CustomContent.Builders
 			base.PostOpenCalcGenerate(lg, rng);
 
 			var room = lg.Ec.mainHall;
-			var ecData = ec.GetComponent<EnvironmentControllerData>();
 			var spots = room.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.Single | TileShapeMask.Straight, false);
 			for (int i = 0; i < spots.Count; i++)
 				if (!spots[i].HardCoverageFits(CellCoverage.Up))
@@ -101,7 +100,6 @@ namespace BBTimes.CustomContent.Builders
 				squ.Setup(rng.Next(parameters.minMax[1].x, parameters.minMax[1].z + 1));
 
 				squ.GetComponentsInChildren<Renderer>().Do(spots[idx].AddRenderer);
-				ecData.Squishers.Add(squ);
 
 				if (rng.NextDouble() <= parameters.chance[0])
 					GameButton.BuildInArea(ec, spots[idx].position, spots[idx].position, rng.Next(parameters.minMax[2].x, parameters.minMax[2].z + 1), squ.gameObject, buttonPre, rng);
@@ -116,7 +114,6 @@ namespace BBTimes.CustomContent.Builders
 		public override void Load(List<StructureData> data)
 		{
 			base.Load(data);
-			var ecData = ec.GetComponent<EnvironmentControllerData>();
 
 			Squisher lastBuiltSquisher = null;
 
@@ -135,7 +132,6 @@ namespace BBTimes.CustomContent.Builders
 				squ.Ec = ec;
 				squ.Setup(data[i].data);
 				squ.GetComponentsInChildren<Renderer>().Do(cell.AddRenderer);
-				ecData.Squishers.Add(squ);
 
 				lastBuiltSquisher = squ;
 			}

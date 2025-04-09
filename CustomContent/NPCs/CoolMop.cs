@@ -1,5 +1,4 @@
 ﻿using BBTimes.CustomComponents;
-using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using MTM101BaldAPI;

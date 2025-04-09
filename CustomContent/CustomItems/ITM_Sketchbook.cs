@@ -7,6 +7,7 @@ using BBTimes.Manager;
 using PixelInternalAPI.Extensions;
 using PixelInternalAPI.Classes;
 using System.Collections;
+using MTM101BaldAPI.Registers;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -24,6 +25,7 @@ namespace BBTimes.CustomContent.CustomItems
 				.IgnorePlayerOnSpawn()
 				.SetEnum(Character.Null)
 				.SetForcedSubtitleColor(Color.white)
+				.SetPoster(NPCMetaStorage.Instance.Get(Character.Baldi).value.Poster) // Placeholder poster because I cannot remove the npc from meta data
 				.SetName("SketchEntity")
 				.SetMinMaxAudioDistance(85f, 115f)
 				.Build();

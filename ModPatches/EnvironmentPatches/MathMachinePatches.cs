@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 using TMPro;
 using UnityEngine;
 
-namespace BBTimes.ModPatches
+namespace BBTimes.ModPatches.EnvironmentPatches
 {
 	[HarmonyPatch(typeof(MathMachine))]
 	internal class MathMachinePatches

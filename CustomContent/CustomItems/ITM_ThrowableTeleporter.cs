@@ -1,7 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
-using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using System.Collections;
@@ -10,13 +9,15 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	public class ITM_ThrowableTeleporter : Item, IItemPrefab
+	public class ITM_ThrowableTeleporter : Item, IItemPrefab, IEntityTrigger
 	{
 		public void SetupPrefab()
 		{
 			gameObject.layer = LayerStorage.standardEntities;
 
-			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "telep.png"));
+			throwAnimation = this.GetSpriteSheet(3, 2, 50f, "telepWorld.png");
+
+			renderer = ObjectCreationExtensions.CreateSpriteBillboard(throwAnimation[0]);
 			renderer.transform.SetParent(transform);
 			renderer.name = "ThrowableTeleporterVisual";
 
@@ -52,56 +53,85 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator ThrowAnimation()
 		{
-			float height = 1.2f;
-			float time = 0f;
+			float height = 1.2f, time = 0f;
 
 			while (true)
 			{
 				time += ec.EnvironmentTimeScale * Time.deltaTime * 2.5f;
 				entity.SetHeight(height + GenericExtensions.QuadraticEquation(time, -0.5f, 1, 0));
+				renderer.sprite = throwAnimation[
+					Mathf.FloorToInt(
+						Mathf.Lerp(0f, throwAnimation.Length - 1, time * 0.5f)
+						)
+					];
 				if (time >= 2f)
 				{
+					renderer.sprite = throwAnimation[throwAnimation.Length - 1];
 					entity.SetHeight(height);
 					break;
 				}
 				yield return null;
 			}
 
-			float cooldown = Random.Range(2f, 4f);
-			while (cooldown > 0f)
+			canTeleport = true;
+		}
+
+		public void EntityTriggerEnter(Collider other) { }
+
+		public void EntityTriggerStay(Collider other) 
+		{ 
+			if (canTeleport && other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")) && other.TryGetComponent<Entity>(out var e))
 			{
-				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
-				yield return null;
+				TeleportEntity(e);
+			}
+		}
+		public void EntityTriggerExit(Collider other) { }
+
+		void TeleportEntity(Entity e)
+		{
+			DijkstraMap map = new(ec, PathType.Const, transform);
+			map.Calculate();
+
+			List<Cell> spots = ec.AllTilesNoGarbage(false, false);
+			spots.ConvertEntityUnsafeCells();
+
+			for (int i = 0; i < spots.Count; i++)
+			{
+				if (map.Value(spots[i].position) < minDistanceFromTeleporter)
+					spots.RemoveAt(i--);
 			}
 
-			List<NPC> npcs = [];
-			for (int i = 0; i < ec.Npcs.Count; i++)
+			if (spots.Count != 0)
 			{
-				if (ec.Npcs[i] && ec.Npcs[i].Navigator && ec.Npcs[i].Navigator.isActiveAndEnabled && ec.Npcs[i].GetMeta().flags.HasFlag(NPCFlags.Standard))
-					npcs.Add(ec.Npcs[i]);
-			}
-
-			if (npcs.Count != 0)
-			{
+				e.Teleport(spots[Random.Range(0, spots.Count)].FloorWorldPosition);
 				audMan.PlaySingle(audTeleport);
-				npcs[Random.Range(0, npcs.Count)].Navigator.Entity.Teleport(transform.position);
 			}
 
-			cooldown = Random.Range(3f, 6f);
-			while (audMan.AnyAudioIsPlaying || cooldown > 0f)
+			StartCoroutine(DespawnAnimation());
+		}
+
+		IEnumerator DespawnAnimation()
+		{
+			canTeleport = false;
+			float height = entity.BaseHeight;
+			while (true)
 			{
-				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+				height -= ec.EnvironmentTimeScale * Time.deltaTime * despawnSpeed;
+				entity.SetHeight(height);
+				if (height < -5f)
+				{
+					break;
+				}
 				yield return null;
 			}
+
+			while (audMan.AnyAudioIsPlaying)
+				yield return null;
 
 			Destroy(gameObject);
-
-			yield break;
 		}
 
 		EnvironmentController ec;
-
-		readonly Dictionary<Entity, MovementModifier> touchedEntities = [];
 
 		[SerializeField]
 		internal Entity entity;
@@ -113,7 +143,18 @@ namespace BBTimes.CustomContent.CustomItems
 		internal SoundObject audThrow, audTeleport;
 
 		[SerializeField]
-		internal float maxForce = 55f;
+		internal SpriteRenderer renderer;
+
+		[SerializeField]
+		internal Sprite[] throwAnimation;
+
+		[SerializeField]
+		internal float maxForce = 55f, despawnSpeed = 5f;
+
+		[SerializeField]
+		internal int minDistanceFromTeleporter = 15;
+
+		bool canTeleport = false;
 
 
 	}

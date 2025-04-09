@@ -4,11 +4,11 @@ using BBTimes.CustomComponents;
 using UnityEngine.UI;
 using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
-using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Manager;
 using System.Collections;
 using BBTimes.CustomComponents.EventSpecificComponents.FrozenEvent;
 using PixelInternalAPI.Classes;
+using BBTimes.Plugin;
 
 
 namespace BBTimes.CustomContent.Events
@@ -208,7 +208,7 @@ namespace BBTimes.CustomContent.Events
 			{
 				var x = pMoveMods[i];
 
-				if (x.Key.HasAttribute("hotchocactive"))
+				if (x.Key.HasAttribute(Storage.HOTCHOCOLATE_ATTR_TAG))
 				{
 					x.Value.movementMultiplier += slowDownMultiplier * ec.EnvironmentTimeScale * Time.deltaTime;
 					x.Value.movementMultiplier = Mathf.Clamp(x.Value.movementMultiplier, 0.1f, 0.95f);

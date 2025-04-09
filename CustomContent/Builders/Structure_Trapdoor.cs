@@ -66,7 +66,7 @@ namespace BBTimes.CustomContent.Builders
 			fake.gameObject.CreatePropagatedAudioManager(35f, 45f);
 			trapdoorholder.fakeTrapdoorPre = fake.transform;
 
-			return new() { prefab = this, parameters = new() { minMax = [new(3, 6)], chance = [0.55f] } };
+			return new() { prefab = this, parameters = new() { minMax = [new(3, 4)], chance = [0.55f] } };
 		}
 
 		public void SetupPrefabPost() { }
@@ -110,13 +110,13 @@ namespace BBTimes.CustomContent.Builders
 					break;
 
 
-				var trap = CreateTrapDoor(GetCell(), ec, ecData);
+				var trap = CreateTrapDoor(GetCell(), ec);
 
 				//Debug.Log("weightedCell count: " + weightedCells.Count);
 
 				if (weightedCells.Count >= 1 && rng.NextDouble() <= parameters.chance[0]) // Checks 1 in the count because every GetCell() removes an item from this list
 				{
-					var strap = CreateTrapDoor(GetCell(), ec, ecData);
+					var strap = CreateTrapDoor(GetCell(), ec);
 
 					trap.SetLinkedTrapDoor(strap);
 					strap.SetLinkedTrapDoor(trap);
@@ -166,15 +166,14 @@ namespace BBTimes.CustomContent.Builders
 		public override void Load(List<StructureData> data)
 		{
 			base.Load(data);
-			var ecData = ec.GetComponent<EnvironmentControllerData>();
 
-			List<StructureData> datas = new(data);
+			List<StructureData> datas = [.. data];
 
 			for (int i = 0; i < datas.Count; i++)
 			{
 				var cell = ec.CellFromPosition(datas[i].position);
 
-				var trap = CreateTrapDoor(cell, ec, ecData);
+				var trap = CreateTrapDoor(cell, ec);
 				if (datas[i].data <= 0) // If below or equal to 0, there's no link explicitely told
 				{
 					RandomTrapdoor();
@@ -191,7 +190,7 @@ namespace BBTimes.CustomContent.Builders
 					{
 						cell = ec.CellFromPosition(datas[z].position); // Updates cell for the next position
 
-						var strap = CreateTrapDoor(cell, ec, ecData); // Linked trapdoor setup
+						var strap = CreateTrapDoor(cell, ec); // Linked trapdoor setup
 						trap.SetLinkedTrapDoor(strap);
 						strap.SetLinkedTrapDoor(trap);
 
@@ -222,7 +221,7 @@ namespace BBTimes.CustomContent.Builders
 			Finished();
 		}
 
-		private Trapdoor CreateTrapDoor(Cell pos, EnvironmentController ec, EnvironmentControllerData dat)
+		private Trapdoor CreateTrapDoor(Cell pos, EnvironmentController ec)
 		{
 			var trapdoor = Instantiate(trapDoorpre);
 			trapdoor.transform.SetParent(pos.ObjectBase);
@@ -233,8 +232,6 @@ namespace BBTimes.CustomContent.Builders
 			pos.AddRenderer(trapdoor.renderer);
 			pos.AddRenderer(trapdoor.text.GetComponent<MeshRenderer>());
 			ec.map.AddIcon(icon, trapdoor.transform, Color.white);
-
-			dat.Trapdoors.Add(trapdoor);
 
 			return trapdoor;
 		}

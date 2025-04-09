@@ -129,6 +129,6 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		ActivityModifier targettedMod;
 
-		readonly MovementModifier moveMod = new(Vector3.zero, 0.05f);
+		readonly MovementModifier moveMod = new(Vector3.zero, 0.12f);
 	}
 }

@@ -3,6 +3,7 @@ using BBTimes.CustomContent.NPCs;
 using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using System.Collections;
 using System.Collections.Generic;
@@ -452,8 +453,9 @@ namespace BBTimes.Extensions
 			{
 				s.shopItems.Do(x =>
 				{
-					if (!itmObjs.Contains(x.selection))
-						itmObjs.Add(x.selection);
+					var meta = x.selection.GetMeta();
+					if (meta != null && !itmObjs.Contains(meta.value))
+						itmObjs.Add(meta.value);
 				});
 			}
 			return itmObjs;

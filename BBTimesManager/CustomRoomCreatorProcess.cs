@@ -25,7 +25,6 @@ using NewPlusDecorations;
 using BBTimes.Plugin;
 using TMPro;
 using MTM101BaldAPI.OBJImporter;
-using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBE.NPCs.Chess;
 
 namespace BBTimes.Manager
@@ -495,12 +494,12 @@ namespace BBTimes.Manager
 				GetRoomAsset("SnowyPlayground", "SnowPile.mtl"),
 				ObjectCreationExtension.defaultMaterial);
 			snowPile.name = "SnowPile";
-			SetupObjCollisionAndScale(snowPile, new(9.7f, 10f, 9.7f), 0.2f);
+			SetupObjCollisionAndScale(snowPile, new(9.7f, 10f, 9.7f), 0.2f, addMeshCollider: false);
 
 			snowPile.AddObjectToEditor();
 
 			var snowPileComp = snowPile.AddComponent<SnowPile>();
-			snowPileComp.collider = snowPile.AddBoxCollider(Vector3.up * 7.5f, new(5f, 10f, 5f), true);
+			snowPileComp.collider = snowPile.AddBoxCollider(Vector3.up * 7.5f, new(7.5f, 10f, 7.5f), false);
 			snowPileComp.mainRenderer = snowPile.transform.GetChild(0).gameObject; // The renderer
 
 			snowPileComp.audMan = snowPile.CreatePropagatedAudioManager(55f, 75f);
@@ -644,6 +643,33 @@ namespace BBTimes.Manager
 			col.enabled = true;
 			col.type = ParticleSystemCollisionType.World;
 			col.enableDynamicColliders = false;
+
+			// ********************************************************
+			// ********************************************************
+			// ******************** ICE RINK ROOM *********************
+			// ********************************************************
+			// ********************************************************
+
+			// ** Metal Fence
+			var metalFence = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "metalFence.png")), 25f), false)
+				.AddSpriteHolder(out var metalFenceRenderer, Vector3.forward * 5f + Vector3.up * 5f, LayerStorage.ignoreRaycast);
+			metalFence.name = "MetalFence";
+			metalFence.gameObject.AddBoxCollider(metalFenceRenderer.transform.localPosition, new(10f, 5f, 0.95f), false);
+			metalFence.gameObject.AddNavObstacle(metalFenceRenderer.transform.localPosition, new(10f, 5f, 1.75f));
+			metalFenceRenderer.name = "Sprite";
+			metalFence.gameObject.AddObjectToEditor();
+
+			// ** Ice Water
+			var iceWater = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "IceRinkWater.png")), 20f), false) // make sure to load a sprite sheet
+				.AddSpriteHolder(out var iceWaterRenderer, Vector3.up * 0.1f, LayerStorage.ignoreRaycast);
+			iceWater.name = "iceWater";
+			iceWater.gameObject.AddBoxCollider(Vector3.up * 5f, new(3.85f, 5f, 3.85f), true);
+			var iceWaterComp = iceWater.gameObject.AddComponent<IceRinkWater>();
+
+			iceWaterRenderer.name = "Sprite";
+			iceWaterRenderer.gameObject.layer = 0;
+			iceWaterRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			iceWater.gameObject.ConvertToPrefab(true);
 
 			// ======================== Focus Room ===========================
 			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
@@ -1021,7 +1047,7 @@ namespace BBTimes.Manager
 			// GYM
 			sets = RegisterSpecialRoom("BasketballArea", Color.cyan);
 
-			room = GetAllAssets(GetRoomAsset("BasketballArea"), 2, 55, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "mapIcon_basket.png")) : null, squaredShape: true);
+			room = GetAllAssets(GetRoomAsset("BasketballArea"), 2, 55, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "mapIcon_basket.png")) : null, squaredShape: true);
 			var swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = baldiBall.transform, weight = 100 }], prefabToSwap = basketballPile.transform };
 			var floorTex = AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "dirtyGrayFloor.png"));
 			AddTextureToEditor("dirtyGrayFloor", floorTex);
@@ -1051,7 +1077,7 @@ namespace BBTimes.Manager
 			// Forest Area
 			sets = RegisterSpecialRoom("Forest", Color.cyan);
 
-			room = GetAllAssets(GetRoomAsset("Forest"), 75, 1, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("Forest", "mapIcon_trees.png")) : null, squaredShape: true);
+			room = GetAllAssets(GetRoomAsset("Forest"), 75, 1, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("Forest", "mapIcon_trees.png")) : null, squaredShape: true);
 			//Swap for 99 trees
 			swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = treeEasterEgg.transform, weight = 100 }], prefabToSwap = tree.transform };
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("Forest", "treeWall.png"));
@@ -1128,9 +1154,9 @@ namespace BBTimes.Manager
 
 			sets = RegisterSpecialRoom("SnowyPlayground", Color.cyan);
 
-			int snowyWeight = BooleanStorage.IsChristmas ? 165 : 75;
+			int snowyWeight = Storage.IsChristmas ? 165 : 75;
 
-			room = GetAllAssets(GetRoomAsset("SnowyPlayground"), snowyWeight, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snow.png")) : null, squaredShape: true);
+			room = GetAllAssets(GetRoomAsset("SnowyPlayground"), snowyWeight, 1, cont: playgroundClonedRoomContainer, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snow.png")) : null, squaredShape: true);
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowyPlaygroundFloor.png"));
 			AddTextureToEditor("snowyPlaygroundFloor", floorTex);
 
@@ -1148,6 +1174,45 @@ namespace BBTimes.Manager
 			floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.85f)));
 			floorDatas[3].SpecialRooms.AddRange(room);
 			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.65f)));
+
+			// Ice Rink Room
+
+			playgroundClonedRoomContainer = Object.Instantiate(playgroundRoomRef.roomFunctionContainer);
+			playgroundClonedRoomContainer.name = "IceRinkRoom_Container";
+			playgroundClonedRoomContainer.gameObject.ConvertToPrefab(true);
+
+			//snowFunc = playgroundClonedRoomContainer.gameObject.AddComponent<FallingParticlesFunction>();
+			//snowFunc.particleTexture = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowFlake.png"));
+
+			playgroundClonedRoomContainer.AddFunction(snowFunc);	
+			playgroundClonedRoomContainer.AddFunction(playgroundClonedRoomContainer.gameObject.AddComponent<IceSlippingFunction>());
+
+			var iceRinkFunc = playgroundClonedRoomContainer.gameObject.AddComponent<IceWaterFunction>();
+			iceRinkFunc.waterPre = iceWaterComp;
+			playgroundClonedRoomContainer.AddFunction(iceRinkFunc);
+
+			sets = RegisterSpecialRoom("IceRink", Color.cyan);
+
+			snowyWeight = Storage.IsChristmas ? 265 : 85;
+
+			//room = GetAllAssets(GetRoomAsset("IceRink"), snowyWeight, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "mapIcon_iceRink.png")) : null, squaredShape: true);
+			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "IceRinkFloor.png"));
+			AddTextureToEditor("IceRinkFloor", floorTex);
+
+			room.ForEach(x =>
+			{
+				x.selection.keepTextures = true;
+				x.selection.florTex = floorTex;
+				x.selection.wallTex = playgroundRoomRef.wallTex;
+				x.selection.ceilTex = playgroundRoomRef.ceilTex;
+			});
+
+			sets.container = playgroundClonedRoomContainer;
+
+			//floorDatas[0].SpecialRooms.AddRange(room);
+			//floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.85f)));
+			//floorDatas[3].SpecialRooms.AddRange(room);
+			//floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.65f)));
 
 
 			// ================================================ Base Game Room Variants ====================================================

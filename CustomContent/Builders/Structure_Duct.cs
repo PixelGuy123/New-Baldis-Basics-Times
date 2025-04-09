@@ -235,8 +235,6 @@ namespace BBTimes.CustomContent.Builders
 
 			vents[0].BlockMe();
 
-			ec.GetComponent<EnvironmentControllerData>().Vents.AddRange(vents);
-
 			Finished();
 		}
 
@@ -303,13 +301,11 @@ namespace BBTimes.CustomContent.Builders
 							t.AddRenderer(c2.GetComponent<MeshRenderer>());
 					}
 				}
-				vent.nextVents = new(vents);
+				vent.nextVents = [.. vents];
 				vent.nextVents.Remove(vent); // nextVents, excluding itself
 			}
 
 			vents[0].BlockMe();
-
-			ec.GetComponent<EnvironmentControllerData>().Vents.AddRange(vents);
 
 			Finished();
 		}

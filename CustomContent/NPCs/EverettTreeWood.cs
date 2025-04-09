@@ -21,38 +21,81 @@ namespace BBTimes.CustomContent.NPCs
 
 			const float pixsPerUnit = 35f;
 
-			walkAnim = this.GetSpriteSheet(3, 2, pixsPerUnit, "EverestWalk.png");
+			walkAnim = this.GetSpriteSheet(5, 3, pixsPerUnit, "EverestWalk.png").ExcludeNumOfSpritesFromSheet(1);
 			spriteRenderer[0].sprite = walkAnim[0];
 			idleAnim = [walkAnim[0]];
-			var angryAnimSprs = this.GetSpriteSheet(4, 3, pixsPerUnit, "EverestAngryTree.png");
-			angryAnim = angryAnimSprs.ExcludeNumOfSpritesFromSheet(2);
-			spitAnim = [angryAnimSprs[angryAnimSprs.Length - 2]];
+			var angryAnimSprs = this.GetSpriteSheet(5, 3, pixsPerUnit, "AngryTree.png");
+			angryAnim = angryAnimSprs.TakeAPair(0, 5);
+			spitAnim = angryAnimSprs.ExcludeNumOfSpritesFromSheet(5, false).ExcludeNumOfSpritesFromSheet(1);
+			angryWalkAnim = this.GetSpriteSheet(4, 1, pixsPerUnit, "EverestMadWalk.png");
 
-			audWalking = this.GetSound("christmasornament_loop.wav", "Vfx_EverettTree_TreeNoises", SoundType.Effect, audMan.subtitleColor);
+			audWalking = this.GetSound("EverettTreewood_loop.wav", "Vfx_EverettTree_TreeNoises", SoundType.Effect, audMan.subtitleColor);
 			audDecorate = this.GetSound("EverettTreewood_decorations.wav", "Vfx_EverettTree_Decoration", SoundType.Voice, audMan.subtitleColor);
 			audFinishDecor = this.GetSound("EverettTreewood_finishdecorating.wav", "Vfx_EverettTree_FinishDecor", SoundType.Voice, audMan.subtitleColor);
 			audMad = this.GetSound("EverettTreewood_mad.wav", "Vfx_EverettTree_Mad_1", SoundType.Voice, audMan.subtitleColor);
 			audMad.additionalKeys = [
-				new() { key = "Vfx_EverettTree_Mad_2", time = 3.125f },
-				new() { key = "Vfx_EverettTree_Mad_3", time = 7.36f }
+				new() { key = "Vfx_EverettTree_HeavyBreathing", time = 0.597f },
+				new() { key = "Vfx_EverettTree_Mad_2", time = 0.975f },
+				new() { key = "Vfx_EverettTree_HeavyBreathing", time = 1.587f },
+				new() { key = "Vfx_EverettTree_Mad_3", time = 1.931f },
+				new() { key = "Vfx_EverettTree_Mad_4", time = 2.378f },
+				new() { key = "Vfx_EverettTree_Mad_5", time = 3.08f },
+				new() { key = "Vfx_EverettTree_Mad_6", time = 3.886f },
+				new() { key = "Vfx_EverettTree_Mad_7", time = 4.234f },
+				new() { key = "Vfx_EverettTree_Mad_8", time = 4.598f },
+				new() { key = "Vfx_EverettTree_Mad_9", time = 5.065f },
+				new() { key = "Vfx_EverettTree_Mad_10", time = 6.061f },
+				new() { key = "Vfx_EverettTree_Mad_11", time = 6.678f },
+				new() { key = "Vfx_EverettTree_Mad_12", time = 7.23f }
 				];
-			audIdle = [this.GetSound("EverettTreewood_idle1.wav", "Vfx_EverettTree_Idle1_0", SoundType.Voice, audMan.subtitleColor)];
+			audIdle = [
+				this.GetSound("EverettTreewood_idle1.wav", "Vfx_EverettTree_Idle1_0", SoundType.Voice, audMan.subtitleColor),
+				this.GetSound("EverettTreewood_idle2.wav", "Vfx_EverettTree_Idle2_0", SoundType.Voice, audMan.subtitleColor)
+				];
 			audIdle[0].additionalKeys = [
-				new() { key = "Vfx_EverettTree_Idle1_1", time = 0.469f },
-				new() { key = "Vfx_EverettTree_Idle1_2", time = 1.032f },
-				new() { key = "Vfx_EverettTree_Idle1_3", time = 2.044f },
-				new() { key = "Vfx_EverettTree_Idle1_0", time = 5.092f },
-				new() { key = "Vfx_EverettTree_Idle1_1", time = 5.501f },
-				new() { key = "Vfx_EverettTree_Idle1_2", time = 5.879f },
+				new() { key = "Vfx_EverettTree_Idle1_1", time = 0.37f },
+				new() { key = "Vfx_EverettTree_Idle1_2", time = 0.724f },
+				new() { key = "Vfx_EverettTree_HeavyBreathing", time = 1.109f },
+				new() { key = "Vfx_EverettTree_Idle1_3", time = 1.428f },
+				new() { key = "Vfx_EverettTree_Idle1_4", time = 2.735f },
+				new() { key = "Vfx_EverettTree_HeavyBreathing", time = 6.558f },
+				new() { key = "Vfx_EverettTree_Idle1_0", time = 6.963f },
+				new() { key = "Vfx_EverettTree_Idle1_1", time = 7.313f },
+				new() { key = "Vfx_EverettTree_Idle1_2", time = 7.687f },
+				];
+
+			audIdle[1].additionalKeys = [
+				new() { key = "Vfx_EverettTree_Idle2_1", time = 0.06f },
+				new() { key = "Vfx_EverettTree_Idle2_2", time = 0.187f },
+				new() { key = "Vfx_EverettTree_Idle2_0", time = 0.306f },
+				new() { key = "Vfx_EverettTree_Idle2_1", time = 0.409f },
+				new() { key = "Vfx_EverettTree_Idle2_3", time = 0.52f },
+				new() { key = "Vfx_EverettTree_Idle2_0", time = 0.568f },
+				new() { key = "Vfx_EverettTree_Idle2_1", time = 0.8f },
+				new() { key = "Vfx_EverettTree_Idle2_2", time = 1.17f },
+				new() { key = "Vfx_EverettTree_Idle2_0", time = 1.552f },
+				new() { key = "Vfx_EverettTree_Idle2_1", time = 1.64f },
+				new() { key = "Vfx_EverettTree_Idle2_2", time = 1.72f },
+				new() { key = "Vfx_EverettTree_Idle2_3", time = 1.779f },
+				new() { key = "Vfx_EverettTree_Idle2_4", time = 1.862f },
+				new() { key = "Vfx_EverettTree_Idle2_5", time = 1.925f },
+				new() { key = "Vfx_EverettTree_Idle2_0", time = 2.191f },
+				new() { key = "Vfx_EverettTree_Idle2_2", time = 2.426f },
+				new() { key = "Vfx_EverettTree_Idle2_3", time = 2.509f },
+				new() { key = "Vfx_EverettTree_Idle2_4", time = 2.648f },
+				new() { key = "Vfx_EverettTree_Idle2_5", time = 2.846f },
+				new() { key = "Vfx_EverettTree_Idle2_6", time = 3.525f },
+				new() { key = "Vfx_EverettTree_Idle2_7", time = 3.879f },
+				new() { key = "Vfx_EverettTree_Idle2_6", time = 4.673f },
+				new() { key = "Vfx_EverettTree_Idle2_7", time = 5.157f },
+				new() { key = "Vfx_EverettTree_Idle2_8", time = 5.526f }
 				];
 
 			audSpit = this.GetSound("EverettTreewoodmad_spitornament.wav", "Vfx_EverettTree_Spit", SoundType.Effect, audMan.subtitleColor);
 
 			audDestroyedDecor = this.GetSound("EverettTreewood_destroydecoration.wav", "Vfx_EverettTree_AngryAtBrokenDecor_0", SoundType.Effect, audMan.subtitleColor);
 			audDestroyedDecor.additionalKeys = [
-				new() { key = "Vfx_EverettTree_AngryAtBrokenDecor_1", time = 0.81f },
-				new() { key = "Vfx_EverettTree_AngryAtBrokenDecor_2", time = 2.267f },
-				new() { key = "Vfx_EverettTree_AngryAtBrokenDecor_3", time = 4.718f },
+				new() { key = "Vfx_EverettTree_AngryAtBrokenDecor_1", time = 1.065f }
 				];
 
 
@@ -151,22 +194,28 @@ namespace BBTimes.CustomContent.NPCs
 			Destroy(decor.gameObject);
 		}
 
-		public void Walk(bool walk)
+		public void Walk(bool walk, bool angryWalk)
 		{
-			float speed = walk ? 18f : 0f;
+			float speed =
+				walk ? 
+					angryWalk ? angrySpeedWalk : walkSpeed
+				: 0f;
 			navigator.maxSpeed = speed;
 			navigator.SetSpeed(speed);
 
 			animComp.ResetFrame(true);
-			animComp.animation = walk ? walkAnim : idleAnim;
-			animComp.speed = 14f;
+			animComp.animation =
+				walk ? 
+					angryWalk ? angryWalkAnim : walkAnim
+				: idleAnim;
+			animComp.speed = normalWalkAnimSpeed;
 
 			if (walk)
 			{
 				audMovingMan.maintainLoop = true;
 				audMovingMan.SetLoop(true);
 				audMovingMan.QueueAudio(audWalking);
-				audMovingMan.pitchModifier = 1f;
+				audMovingMan.pitchModifier = angryWalk ? 1.15f : 1f;
 				return;
 			}
 			audMovingMan.FlushQueue(true);
@@ -185,10 +234,10 @@ namespace BBTimes.CustomContent.NPCs
 			}
 			audMovingMan.pitchModifier = 1.5f;
 
-			navigator.maxSpeed = 75f;
-			navigator.SetSpeed(75f);
+			navigator.maxSpeed = alertedSpeed;
+			navigator.SetSpeed(alertedSpeed);
 
-			animComp.speed = 35f;
+			animComp.speed = alertedAnimSpeed;
 		}
 
 		public void QueueDecor(ChristmasDecoration decor) => decorsToGo.Enqueue(decor);
@@ -201,7 +250,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			behaviorStateMachine.ChangeState(new EverettTreewood_AlertedByDecor(this, null));
 			behaviorStateMachine.ChangeNavigationState(new NavigationState_DoNothing(this, 0));
-			Walk(false);
+			Walk(false, false);
 
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audMad);
@@ -213,37 +262,33 @@ namespace BBTimes.CustomContent.NPCs
 
 			animComp.animation = angryAnim;
 			animComp.ResetFrame(true);
-			animComp.speed = 16f;
+			animComp.speed = angryAnimationSpeed;
 			animComp.StopLastFrameMode();
 
 			while (audMan.QueuedAudioIsPlaying || !animComp.Paused)
 				yield return null;
 
 			animComp.animation = spitAnim;
-			animComp.ResetFrame(true);
+			animComp.speed = spitAnimationSpeed;
 
 			ec.RemoveTimeScale(timeScale);
 			if (e)
 			{
-				float delay = 0f;
 				e.ExternalActivity.moveMods.Remove(moveMod);
 				for (int i = 0; i < shootPerTarget; i++)
 				{
-					while (delay > 0f)
-					{
-						delay -= TimeScale * Time.deltaTime;
+					animComp.ResetFrame(true);
+					animComp.StopLastFrameMode();
+					while (!animComp.Paused)
 						yield return null;
-					}
 
 					audMan.PlaySingle(audSpit);
 					Instantiate(snowPre).Spawn(gameObject, transform.position, (e.transform.position - transform.position).normalized, shootForce, ec);
-
-					delay = shootDelay;
 				}
 			}
 
 
-			behaviorStateMachine.ChangeState(new EverettTreewood_Wander(this));
+			behaviorStateMachine.ChangeState(new EverettTreewood_AngryWander(this));
 		}
 		
 
@@ -281,10 +326,12 @@ namespace BBTimes.CustomContent.NPCs
 		internal AnimationComponent animComp;
 
 		[SerializeField]
-		internal Sprite[] idleAnim, walkAnim, spitAnim, angryAnim;
+		internal Sprite[] idleAnim, walkAnim, angryWalkAnim, spitAnim, angryAnim;
 
 		[SerializeField]
-		internal float shootDelay = 0.45f, shootForce = 65f, prepareDecorDelay = 6f, wannaBuildDecorCooldown = 20f, delayBeforeScanEveryone = 1.5f;
+		internal float shootDelay = 0.45f, shootForce = 65f, prepareDecorDelay = 6f, wannaBuildDecorCooldown = 20f, delayBeforeScanEveryone = 1.5f, angryWalkDelay = 20f,
+			angryAnimationSpeed = 16f, spitAnimationSpeed = 25f, normalWalkAnimSpeed = 14f, alertedAnimSpeed = 35f,
+			angrySpeedWalk = 25f, walkSpeed = 18f, alertedSpeed = 75f;
 
 		[SerializeField]
 		internal int shootPerTarget = 3;
@@ -326,7 +373,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			ev.Walk(true);
+			ev.Walk(true, false);
 			ChangeNavigationState(new NavigationState_WanderRandom(ev, 0));
 		}
 
@@ -349,6 +396,30 @@ namespace BBTimes.CustomContent.NPCs
 
 			if (ev.SuitableSpotToPrepareDecoration)
 				ev.behaviorStateMachine.ChangeState(new EverettTreewood_AlignToDecorate(ev));
+		}
+	}
+
+	internal class EverettTreewood_AngryWander(EverettTreewood ev) : EverettTreewood_StateBase(ev)
+	{
+		float cooldown = ev.angryWalkDelay;
+		public override void Enter()
+		{
+			base.Enter();
+			ev.Walk(true, true);
+			ChangeNavigationState(new NavigationState_WanderRandom(ev, 0));
+		}
+
+		public override void Update()
+		{
+			base.Update();
+
+			if (cooldown > 0f)
+			{
+				cooldown -= ev.TimeScale * Time.deltaTime;
+				return;
+			}
+
+			ev.behaviorStateMachine.ChangeState(new EverettTreewood_Wander(ev));
 		}
 	}
 
@@ -384,7 +455,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			ev.Walk(false);
+			ev.Walk(false, false);
 			ev.PrepareDecor();
 			ChangeNavigationState(new NavigationState_DoNothing(ev, 0));
 		}
@@ -440,7 +511,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			ChangeNavigationState(new NavigationState_DoNothing(ev, 0));
 			ev.audMan.FlushQueue(true);
-			ev.Walk(false);
+			ev.Walk(false, false);
 		}
 
 		public override void Update()

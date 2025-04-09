@@ -125,8 +125,8 @@ namespace BBTimes.CustomContent.NPCs
 				yield return null;
 			}
 
-			cont.RemoveLookerMod(valMod);
-			affectedNpcs.RemoveAll(x => x.Key == cont);
+			cont?.RemoveLookerMod(valMod);
+			affectedNpcs.RemoveAll(x => x.Key == cont || !x.Key);
 
 			if (selfDestruct)
 				Destroy(selfDestruct);

@@ -11,8 +11,6 @@ using MTM101BaldAPI.ObjectCreation;
 using BBTimes.CustomComponents;
 using PlusLevelLoader;
 using BBTimes.Manager;
-using BBTimes.CustomContent.CustomItems;
-using System.Xml.Linq;
 
 namespace BBTimes.Helpers
 {

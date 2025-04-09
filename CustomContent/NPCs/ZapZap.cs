@@ -30,6 +30,19 @@ namespace BBTimes.CustomContent.NPCs
 			audActivationNoises = this.GetSoundNoSub("zap_activatesfx.wav", SoundType.Effect);
 			audDeactivating = this.GetSound("zap_deactivating.wav", "Vfx_ZapZap_Deactivate", SoundType.Voice, new(0f, 0.55f, 0.75f));
 			audHacked = this.GetSound("zap_hacked.wav", "Vfx_ZapZap_Hacked", SoundType.Voice, new(0f, 0.55f, 0.75f));
+			audKamiActivate = this.GetSound("zap_konamicode.wav", "Vfx_ZapZap_KamiCode_Left", SoundType.Voice, new(0f, 0.55f, 0.75f));
+			audKamiActivate.additionalKeys = [
+				new() {key = "Vfx_ZapZap_KamiCode_Right", time = 0.555f},
+				new() {key = "Vfx_ZapZap_KamiCode_Left", time = 1.054f},
+				new() {key = "Vfx_ZapZap_KamiCode_Right", time = 1.589f},
+				new() {key = "Vfx_ZapZap_KamiCode_Up", time = 2.101f},
+				new() {key = "Vfx_ZapZap_KamiCode_Down", time = 2.558f},
+				new() {key = "Vfx_ZapZap_KamiCode_Up", time = 3.084f},
+				new() {key = "Vfx_ZapZap_KamiCode_Down", time = 3.538f},
+				new() {key = "Vfx_ZapZap_KamiCode_B", time = 4.172f},
+				new() {key = "Vfx_ZapZap_KamiCode_A", time = 4.544f},
+				new() {key = "Vfx_ZapZap_KamiCode_A", time = 4.983f},
+				];
 
 			var elePre = BBTimesManager.man.Get<Eletricity>("EletricityPrefab");
 
@@ -114,7 +127,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal AudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject audActivated, audActivationNoises, audDeactivating, audHacked;
+		internal SoundObject audActivated, audKamiActivate, audActivationNoises, audDeactivating, audHacked;
 
 		[SerializeField]
 		internal Sprite[] sprsActive, sprDeactivated;
@@ -124,6 +137,10 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal float minWaitCooldown = 30f, maxWaitCooldown = 60f, minActiveCooldown = 40f, maxActiveCooldown = 80f, eletricityPretricityDestructionDelay = 45f;
+
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float chanceToKamiCode = 0.1f;
 
 		[SerializeField]
 		internal ZapZapEletricity eletricityPre;
@@ -202,7 +219,7 @@ namespace BBTimes.CustomContent.NPCs
 			SetActiveState(true);
 			audMan.FlushQueue(true);
 			audMan.PlaySingle(audActivationNoises);
-			audMan.PlaySingle(audActivated);
+			audMan.PlaySingle(Random.value <= chanceToKamiCode ? audKamiActivate : audActivated);
 
 			navigator.maxSpeed = 11f;
 			navigator.SetSpeed(11f);

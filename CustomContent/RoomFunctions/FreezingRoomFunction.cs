@@ -1,5 +1,5 @@
 ﻿using BBTimes.CustomComponents;
-using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBTimes.Plugin;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,13 +14,13 @@ namespace BBTimes.CustomContent.RoomFunctions
 			int entIdx = actMods.IndexOf(entity.ExternalActivity);
 			if (entIdx == -1)
 			{
-				if (!pm || !pm.HasAttribute("hotchocactive"))
+				if (!pm || !pm.HasAttribute(Storage.HOTCHOCOLATE_ATTR_TAG))
 				{
 					entity.ExternalActivity.moveMods.Add(moveMod);
 					actMods.Add(entity.ExternalActivity);
 				}
 			}
-			else if (pm && pm.HasAttribute("hotchocactive"))
+			else if (pm && pm.HasAttribute(Storage.HOTCHOCOLATE_ATTR_TAG))
 			{
 				entity.ExternalActivity.moveMods.Remove(moveMod);
 				actMods.RemoveAt(entIdx);

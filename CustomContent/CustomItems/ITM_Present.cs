@@ -1,5 +1,6 @@
 ﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -26,12 +27,18 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public override bool Use(PlayerManager pm)
 		{
+			this.pm = pm;
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(aud_unbox);
-			pm.itm.SetItem(items[Random.Range(0, items.Length)], pm.itm.selectedItem);
 
+			StartCoroutine(GiveItem());
+			return true;
+		}
+
+		IEnumerator GiveItem()
+		{
+			yield return null;
+			pm.itm.AddItem(items[Random.Range(0, items.Length)]);
 			Destroy(gameObject);
-
-			return false;
 		}
 
 		[SerializeField]

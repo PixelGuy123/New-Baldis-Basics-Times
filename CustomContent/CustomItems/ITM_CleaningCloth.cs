@@ -64,11 +64,15 @@ namespace BBTimes.CustomContent.CustomItems
 				}
 			}
 
-			if (flag)
-				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
-
 			Destroy(gameObject);
-			return flag;
+
+			if (flag)
+			{
+				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
+				pm.itm.SetItem(dirtyClothItem, pm.itm.selectedItem);
+			}
+			
+			return false;
 		}
 
 		void InteractWithFountain(WaterFountain fountain)
@@ -80,6 +84,6 @@ namespace BBTimes.CustomContent.CustomItems
 		internal SoundObject audUse;
 
 		[SerializeField]
-		internal ItemObject cleanClothItem = null;
+		internal ItemObject cleanClothItem = null, dirtyClothItem = null;
 	}
 }

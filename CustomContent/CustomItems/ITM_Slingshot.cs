@@ -56,15 +56,12 @@ namespace BBTimes.CustomContent.CustomItems
 			StartCoroutine(ChargeRoutine());
 
 			if (nextSlingShot)
-				StartCoroutine(ReAddDelay());
-			
-			return true;
-		}
+			{
+				pm.itm.SetItem(nextSlingShot, pm.itm.selectedItem);
+				return false;
+			}
 
-		IEnumerator ReAddDelay()
-		{
-			yield return null;
-			pm.itm.SetItem(nextSlingShot, pm.itm.selectedItem);
+			return true;
 		}
 
 		IEnumerator RevealSlingShot()

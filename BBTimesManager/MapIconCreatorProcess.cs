@@ -3,6 +3,7 @@ using BBTimes.CustomContent.MapIcons;
 using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.ModPatches;
+using BBTimes.ModPatches.EnvironmentPatches;
 using MTM101BaldAPI.AssetTools;
 using PixelInternalAPI.Extensions;
 using System.IO;

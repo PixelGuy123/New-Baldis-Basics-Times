@@ -15,19 +15,27 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
-			SoundObject[] soundObjects = [this.GetSound("rol_warning.wav", "Vfx_Rollbot_Warning", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
-			this.GetSound("rol_error.wav", "Vfx_Rollbot_Error", SoundType.Voice, new(0.7f, 0.7f, 0.7f)),
-			this.GetSound("motor.wav", "Sfx_1PR_Motor", SoundType.Effect, new(0.7f, 0.7f, 0.7f)),
-			this.GetSound("rol_fix.wav", "Vfx_Rollbot_Fix", SoundType.Voice, new(0.7f, 0.7f, 0.7f))];
+			Color capColor = new(0.7f, 0.7f, 0.7f);
+			
 			Sprite[] storedSprites = this.GetSpriteSheet(4, 4, 25f, "rollBotSheet.png");
 
 			// npc setup
-			audError = soundObjects[1];
-			audWarning = soundObjects[0];
-			audThanks = soundObjects[3];
+			audError = this.GetSound("roll_error.wav", "Vfx_Rollbot_Error", SoundType.Voice, capColor);
+			audWarning = [
+				this.GetSound("roll_warn1.wav", "Vfx_Rollbot_Warning1", SoundType.Voice, capColor),
+				this.GetSound("roll_warn2.wav", "Vfx_Rollbot_Warning2", SoundType.Voice, capColor),
+				this.GetSound("roll_warn3.wav", "Vfx_Rollbot_Warning3", SoundType.Voice, capColor)
+				];
+			audThanks = this.GetSound("roll_fix.wav", "Vfx_Rollbot_Fix", SoundType.Voice, capColor);
+			audIdle = [
+				this.GetSound("roll_idle1.wav", "Vfx_Rollbot_Idle1", SoundType.Voice, capColor),
+				this.GetSound("roll_idle2.wav", "Vfx_Rollbot_Idle2", SoundType.Voice, capColor)
+				];
 			audMan = GetComponent<PropagatedAudioManager>();
 
-			gameObject.CreatePropagatedAudioManager(10f, 115f).AddStartingAudiosToAudioManager(true, soundObjects[2]);
+			gameObject.CreatePropagatedAudioManager(10f, 115f)
+				.AddStartingAudiosToAudioManager(true, 
+				this.GetSound("motor.wav", "Sfx_1PR_Motor", SoundType.Effect, capColor));
 
 			spriteRenderer[0].CreateAnimatedSpriteRotator(
 				GenericExtensions.CreateRotationMap(storedSprites.Length, storedSprites)
@@ -65,10 +73,24 @@ namespace BBTimes.CustomContent.NPCs
 			
 		}
 
-		internal void AnnounceWarning() =>
-			audMan.PlaySingle(audWarning);
-		internal void AnnounceError() =>
+		internal void AnnounceWarning()
+		{
+			audMan.FlushQueue(true);
+			audMan.PlayRandomAudio(audWarning);
+		}
+		internal void AnnounceError()
+		{
+			audMan.FlushQueue(true);
 			audMan.PlaySingle(audError);
+		}
+
+		internal void Idle()
+		{
+			if (audMan.QueuedAudioIsPlaying)
+				return;
+			if (Random.value <= idleChance)
+				audMan.QueueRandomAudio(audIdle);
+		}
 
 		internal void SpawnEletricity(Cell cell)
 		{
@@ -122,13 +144,24 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		[SerializeField]
-		internal SoundObject audError, audWarning, audThanks;
+		internal SoundObject audThanks, audError;
+
+		[SerializeField]
+		internal SoundObject[] audWarning, audIdle;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
 
 		[SerializeField]
 		internal Eletricity eletricityPre;
+
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float idleChance = 0.005f;
+
+		[SerializeField]
+		internal float minErrorCooldown = 25f, maxErrorCooldown = 40f, errorThreshold = 10f,
+			errorMinActiveCooldown = 15f, errorMaxActiveCooldown = 30f;
 
 		readonly List<Transform> eletricities = [];
 
@@ -146,7 +179,7 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class RollingBot_Wandering(RollingBot bot) : RollingBot_StateBase(bot)
 	{
-		float errorCooldown = Random.Range(25f, 40f);
+		float errorCooldown = Random.Range(bot.minErrorCooldown, bot.maxErrorCooldown);
 		bool errorAnnounced = false;
 
 		public override void Enter()
@@ -158,8 +191,11 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
+			if (!errorAnnounced)
+				bot.Idle();
+
 			errorCooldown -= bot.TimeScale * Time.deltaTime;
-			if (errorCooldown <= 10f)
+			if (errorCooldown <= bot.errorThreshold)
 			{
 				if (!errorAnnounced)
 				{
@@ -177,7 +213,7 @@ namespace BBTimes.CustomContent.NPCs
 		Cell currentCell = null;
 		List<Cell> usedCells = [];
 
-		internal float cooldown = Random.Range(15f, 30f);
+		internal float cooldown = Random.Range(bot.errorMinActiveCooldown, bot.errorMaxActiveCooldown);
 
 		const int eletricityLimit = 12;
 		public override void Initialize()
