@@ -1,11 +1,11 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -55,7 +55,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -404,9 +404,9 @@ namespace BBTimes.CustomContent.NPCs
 			}
 		}
 
-		public override void Hear(Vector3 position, int value)
+		public override void Hear(GameObject source, Vector3 position, int value)
 		{
-			base.Hear(position, value);
+			base.Hear(source, position, value);
 			tar.priority = 63;
 			ChangeNavigationState(tar);
 			tar.UpdatePosition(position);

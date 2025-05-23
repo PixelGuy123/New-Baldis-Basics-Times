@@ -1,7 +1,7 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -9,7 +9,7 @@ namespace BBTimes.CustomContent.NPCs
 	public class NavigationState_FollowToSpot(NPC npc, Cell target, float speedMultiplier = 8f) : NavigationState(npc, 31)
 	{
 		public NavigationState_FollowToSpot(NPC npc, Cell target, int priority, float speedMultiplier = 8f) : this(npc, target, speedMultiplier) => base.priority = priority;
-		
+
 
 		Cell tar = target;
 		readonly MovementModifier moveMod = new(Vector3.zero, speedMultiplier);
@@ -140,7 +140,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -149,7 +149,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Initialize()
 		{
 			base.Initialize();
-			timeInSight = new float[players.Count];
+			timeInSight = new float[Singleton<CoreGameManager>.Instance.TotalPlayers];
 			navigator.Entity.OnTeleport += Teleport;
 			behaviorStateMachine.ChangeState(new SuperIntendentJr_Wander(this));
 		}
@@ -195,9 +195,9 @@ namespace BBTimes.CustomContent.NPCs
 				audMan.QueueAudio(audWonder);
 		}
 
-		public override void Hear(Vector3 position, int value)
+		public override void Hear(GameObject source, Vector3 position, int value)
 		{
-			base.Hear(position, value);
+			base.Hear(source, position, value);
 			if (value >= 78 && value <= 120)
 				behaviorStateMachine.ChangeState(new SuperIntendentJr_RunForNoise(this, position, behaviorStateMachine.CurrentState));
 		}

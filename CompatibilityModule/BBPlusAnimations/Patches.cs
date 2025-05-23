@@ -1,4 +1,6 @@
-﻿using BBPlusAnimations.Components;
+﻿using System.Collections;
+using System.IO;
+using BBPlusAnimations.Components;
 using BBPlusAnimations.Patches;
 using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
@@ -10,8 +12,6 @@ using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.IO;
 using UnityEngine;
 
 namespace BBTimes.CompatibilityModule.BBPlusAnimations
@@ -31,7 +31,7 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 
 			NPCMetaStorage.Instance.Get(Character.Sweep).prefabs.DoIf(x => x.Value.GetComponent<INPCPrefab>() != null, (x) =>
 			{
-				
+
 				var comp = x.Value.GetComponent<GenericAnimationExtraComponent>();
 				comp.sprites = [x.Value.spriteRenderer[0].sprite, .. sweepSprs];
 
@@ -39,14 +39,14 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 				c.aud_sweep = aud;
 
 			});
-			((ITM_Gum)ItemMetaStorage.Instance.FindByEnum(EnumExtensions.GetFromExtendedName<Items>("Gum")).value.item).aud_splash = GumSplash.splash;
+			((ITM_Gum)ItemMetaStorage.Instance.FindByEnum(EnumExtensions.GetFromExtendedName<Items>("Gum")).value.item).aud_splash = GumSplash_WallSplash.splash;
 		}
 
 		[HarmonyPatch(typeof(ITM_Gum), "HitSomething")] // Override gum hit animation
 		[HarmonyPrefix]
 		private static void OverrideGumBehaviour(ITM_Gum __instance, ref RaycastHit hit, EnvironmentController ___ec, Transform ___rendererBase, Transform ___flyingSprite)
 		{
-			var gum = Object.Instantiate(GumSplash.gumSplash);
+			var gum = Object.Instantiate(GumSplash_WallSplash.gumSplash);
 			Vector3 pos = hit.transform.position - (__instance.transform.forward * 0.03f);
 			pos.y = ___flyingSprite.position.y;
 			gum.transform.position = pos;
@@ -95,12 +95,12 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 				yield break;
 			}
 		}
-
-		[HarmonyPatch(typeof(ITM_WaterBottle), "InteractWithFountain")] // Fountain animation
-		[HarmonyPatch(typeof(ITM_CleaningCloth), "InteractWithFountain")] // Fountain animation
-		[HarmonyPostfix]
-		private static void AnimatedWaterFountain(WaterFountain fountain, PlayerManager ___pm) =>
-				GenericAnimation.AnimateWaterFountain(fountain, ___pm);
+		// TODO: Make public the classes used in Animations, alongside the fields, so I can already implement this just like before >:(
+		// [HarmonyPatch(typeof(ITM_WaterBottle), "InteractWithFountain")] // Fountain animation
+		// [HarmonyPatch(typeof(ITM_CleaningCloth), "InteractWithFountain")] // Fountain animation
+		// [HarmonyPostfix]
+		// private static void AnimatedWaterFountain(WaterFountain fountain, PlayerManager ___pm) =>
+		// 		fountain.StartCoroutine((IEnumerator)AccessTools.Method("ExpansionAnimation_VendingMachine:GenericOffsetAnimation").Invoke(fountain, [fountain, ___pm]));
 
 		[HarmonyPatch(typeof(TimedFountain), "Clicked")]
 		[HarmonyPrefix]
@@ -109,7 +109,7 @@ namespace BBTimes.CompatibilityModule.BBPlusAnimations
 			if (!___disabled)
 				__instance.StartCoroutine(Slurp(__instance.renderer.transform, __instance.Ec));
 		}
-		
+
 
 		static IEnumerator Slurp(Transform obj, EnvironmentController ec)
 		{

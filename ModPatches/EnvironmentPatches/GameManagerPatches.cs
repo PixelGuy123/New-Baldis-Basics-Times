@@ -1,4 +1,7 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Misc;
 using BBTimes.Extensions;
 using BBTimes.Manager;
@@ -6,9 +9,6 @@ using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace BBTimes.ModPatches
@@ -51,7 +51,7 @@ namespace BBTimes.ModPatches
 				core.audMan.FlushQueue(true);
 				return;
 			}
-			if (!BBTimesManager.plug.disableSchoolhouseEscape.Value && !__instance.Ec.timeOut && !__instance.name.StartsWith("Lvl3")) // Not F3
+			if (!BBTimesManager.plug.disableSchoolhouseEscape.Value && !__instance.Ec.timeOut && !__instance.levelObject.finalLevel) // Not F3
 				Singleton<MusicManager>.Instance.PlayMidi("Level_1_End", true); // Music
 		}
 
@@ -64,7 +64,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPrefix]
 		static bool PlayCutscene(MainGameManager __instance, bool ___allNotebooksFound)
 		{
-			if (Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || !__instance.name.StartsWith("Lvl3") || !___allNotebooksFound) return true;
+			if (Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || !__instance.levelObject.finalLevel || !___allNotebooksFound) return true;
 			var elevator = __instance.Ec.elevators.FirstOrDefault(x => x.IsOpen);
 			if (!elevator) // failsafe
 				return true;
@@ -222,7 +222,7 @@ namespace BBTimes.ModPatches
 				Shader.SetGlobalColor("_SkyboxColor", Color.red);
 				Singleton<MusicManager>.Instance.SetSpeed(0.1f);
 				__instance.StartCoroutine(___ec.LightChanger(___ec.AllExistentCells(), 0.2f));
-				if (__instance.name.StartsWith("Lvl3"))
+				if (__instance.levelObject.finalLevel)
 					Singleton<MusicManager>.Instance.QueueFile(chaos0, true);
 				return;
 			}
@@ -289,7 +289,7 @@ namespace BBTimes.ModPatches
 							bald.StartCoroutine(GameExtensions.InfiniteAnger(bald, 0.6f));
 							if (npc.Character == Character.Baldi) // Check Baldi enum (TeacherAPI has unique enums, so it's fine)
 								baldiToFollow = bald;
-							
+
 							continue;
 						}
 

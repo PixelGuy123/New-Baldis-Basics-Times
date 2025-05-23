@@ -1,9 +1,10 @@
-﻿using MTM101BaldAPI.AssetTools;
+﻿using System.Collections.Generic;
 using System.IO;
-using BBTimes.Misc.SelectionHolders;
+using System.Linq;
 using BBTimes.Helpers;
+using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches.EnvironmentPatches;
-using System.Collections.Generic;
+using MTM101BaldAPI.AssetTools;
 
 namespace BBTimes.Manager
 {
@@ -16,9 +17,12 @@ namespace BBTimes.Manager
 			var tex = brokenTex;
 			var window = CreatorExtensions.CreateWindow("MetalWindow", tex, brokenTex, unbreakable: true);
 			var windowSel = new WindowObjectHolder(window, 75, [RoomCategory.Office]);
-			((List<WindowObjectHolder>)floorDatas[1].levelObject.GetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn")).Add(windowSel);
-			((List<WindowObjectHolder>)floorDatas[2].levelObject.GetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn")).Add(windowSel);
-			((List<WindowObjectHolder>)floorDatas[3].levelObject.GetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn")).Add(windowSel);
+
+			AddWindowsToFloor(F1, windowSel);
+			AddWindowsToFloor(F2, windowSel);
+			AddWindowsToFloor(F3, windowSel);
+			AddWindowsToFloor(F4, windowSel);
+			AddWindowsToFloor(F5, windowSel);
 
 			// Round Window
 			brokenTex = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("roundWindow.png")));
@@ -27,7 +31,16 @@ namespace BBTimes.Manager
 
 			EnvironmentControllerMakeBeautifulOutside.window = window; // Set the metal window, as it is unbreakable
 
-			
+
+			// Add Windows to all level objects from a sceneObject
+			static void AddWindowsToFloor(string floorName, WindowObjectHolder window, params LevelType[] floorTypes)
+			{
+				foreach (var ld in floorDatas[floorName].levelObjects)
+				{
+					if (floorTypes.Length == 0 || floorTypes.Contains(ld.type))
+						((List<WindowObjectHolder>)ld.GetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn")).Add(window);
+				}
+			}
 		}
 	}
 }

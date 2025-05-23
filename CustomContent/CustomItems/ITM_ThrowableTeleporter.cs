@@ -1,10 +1,10 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -29,8 +29,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -78,8 +79,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void EntityTriggerEnter(Collider other) { }
 
-		public void EntityTriggerStay(Collider other) 
-		{ 
+		public void EntityTriggerStay(Collider other)
+		{
 			if (canTeleport && other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")) && other.TryGetComponent<Entity>(out var e))
 			{
 				TeleportEntity(e);
@@ -89,7 +90,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		void TeleportEntity(Entity e)
 		{
-			DijkstraMap map = new(ec, PathType.Const, transform);
+			DijkstraMap map = new(ec, PathType.Const, int.MaxValue, transform);
 			map.Calculate();
 
 			List<Cell> spots = ec.AllTilesNoGarbage(false, false);

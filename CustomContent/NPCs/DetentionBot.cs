@@ -1,6 +1,6 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -29,7 +29,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -42,7 +42,7 @@ namespace BBTimes.CustomContent.NPCs
 				if (ec.rooms[i].category == RoomCategory.Office)
 					offices.Add(ec.rooms[i]);
 
-			timeInSight = new float[players.Count];
+			timeInSight = new float[Singleton<CoreGameManager>.Instance.TotalPlayers];
 			behaviorStateMachine.ChangeState(new DetentionBot_Wandering(this));
 		}
 

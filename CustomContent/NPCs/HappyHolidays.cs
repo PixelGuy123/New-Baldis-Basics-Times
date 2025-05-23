@@ -1,12 +1,12 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class HappyHolidays : NPC, INPCPrefab, IClickable<int>, IItemAcceptor
+	public class HappyHolidays : NPC, INPCPrefab, IClickable<int>, IItemAcceptor
 	{
 		public void SetupPrefab()
 		{
@@ -28,8 +28,9 @@ namespace BBTimes.CustomContent.NPCs
 		}
 		public void SetupPrefabPost() =>
 			objects = [.. GameExtensions.GetAllShoppingItems()];
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -150,7 +151,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		float fleeCooldown = 15f;
 		readonly HappyHolidays_StateBase prevState = prevState;
-		readonly DijkstraMap map = new(hh.ec, PathType.Nav, runningFrom);
+		readonly DijkstraMap map = new(hh.ec, PathType.Nav, int.MaxValue, runningFrom);
 		public override void Enter()
 		{
 			base.Enter();
@@ -197,7 +198,7 @@ namespace BBTimes.CustomContent.NPCs
 			cooldown -= hh.TimeScale * Time.deltaTime;
 			if (cooldown < 0f)
 				hh.behaviorStateMachine.ChangeState(new HappyHolidays_AboutToRespawn(hh, prevHeight));
-			
+
 		}
 
 		public override void Exit()
@@ -206,7 +207,7 @@ namespace BBTimes.CustomContent.NPCs
 			var cells = hh.ec.mainHall.AllTilesNoGarbage(false, false);
 			if (cells.Count > 0)
 				hh.transform.position = cells[Random.Range(0, cells.Count)].CenterWorldPosition;
-			
+
 		}
 
 		float prevHeight;

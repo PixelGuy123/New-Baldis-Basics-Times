@@ -1,17 +1,17 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
+using BBTimes.Extensions;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
-using BBTimes.Extensions;
-using System.Collections.Generic;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class PencilBoy : NPC, INPCPrefab, IItemAcceptor
+	public class PencilBoy : NPC, INPCPrefab, IItemAcceptor
 	{
 		public void SetupPrefab()
 		{
@@ -37,8 +37,9 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -50,12 +51,12 @@ namespace BBTimes.CustomContent.NPCs
 			lastSightedPlayerLocation = player.transform.position;
 		}
 
-		public override void Hear(Vector3 position, int value)
+		public override void Hear(GameObject source, Vector3 position, int value)
 		{
-			base.Hear(position, value);
+			base.Hear(source, position, value);
 			if (!looker.PlayerInSight())
 				lastSightedPlayerLocation = position;
-			
+
 		}
 
 		public override void Initialize()
@@ -215,7 +216,7 @@ namespace BBTimes.CustomContent.NPCs
 			boy.looker.Blink();
 			if (!boy.Navigator.HasDestination)
 				ChangeNavigationState(new NavigationState_WanderRandom(boy, 0));
-			
+
 		}
 
 		public override void OnStateTriggerEnter(Collider other)
@@ -226,7 +227,7 @@ namespace BBTimes.CustomContent.NPCs
 				PlayerManager component = other.GetComponent<PlayerManager>();
 				if (!component.Tagged)
 					boy.StabSatisfied(component, false);
-				
+
 			}
 		}
 		public override void DestinationEmpty()
@@ -243,7 +244,7 @@ namespace BBTimes.CustomContent.NPCs
 				boy.SeePlayer(player);
 				followingPlayer = true;
 			}
-			
+
 		}
 
 		public override void PlayerInSight(PlayerManager player)
@@ -251,7 +252,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.PlayerInSight(player);
 			if (!player.Tagged)
 				boy.PersuePlayer(player);
-			
+
 		}
 
 		public override void PlayerLost(PlayerManager player)
@@ -312,9 +313,9 @@ namespace BBTimes.CustomContent.NPCs
 			}
 		}
 
-		public override void Hear(Vector3 position, int value)
+		public override void Hear(GameObject source, Vector3 position, int value)
 		{
-			base.Hear(position, value);
+			base.Hear(source, position, value);
 			if (!boy.looker.PlayerInSight())
 			{
 				ChangeNavigationState(target);

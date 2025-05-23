@@ -8,7 +8,7 @@ using PixelInternalAPI.Classes;
 
 namespace BBTimes.Manager
 {
-    internal static partial class BBTimesManager
+	internal static partial class BBTimesManager
 	{
 		static void CreateNPCs()
 		{
@@ -32,9 +32,9 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("OfficeChair", "PST_OFC_Name", "PST_OFC_Desc", -0.75f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 60 });
-			
+			floorDatas[F1].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 60));
+
 			// Happy Holidays
 			npc = new NPCBuilder<HappyHolidays>(plug.Info)
 				.SetMinMaxAudioDistance(45f, 80f)
@@ -49,13 +49,13 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("HappyHolidays", "PST_HapH_Name", "PST_HapH_Desc", -2f);
 			//CreatorExtensions.CreateNPC<HappyHolidays, HappyHolidaysCustomData>("HappyHolidays", 45f, 80f, [RoomCategory.Hall], [], "PST_HapH_Name", "PST_HapH_Desc", lookerDistance: 125, spriteYOffset: -2f).AddMeta(plug, NPCFlags.Standard).value;
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 10 });
+			floorDatas[F1].NPCs.Add(new(npc, 10));
 
 			// Classic Gotta Sweep
 			npc = CreatorExtensions.CreateCustomNPCFromExistent<GottaSweep, ClassicGottaSweep>(Character.Sweep, "oldsweep", "ClassicGottaSweep").MarkAsReplacement(45, Character.Sweep);
 			npc.AddMetaPrefab();
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 100 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 90 });
+			floorDatas[F1].NPCs.Add(new(npc, 100));
+			floorDatas[END].NPCs.Add(new(npc, 90));
 
 
 			// Superintendent
@@ -74,8 +74,8 @@ namespace BBTimes.Manager
 			//CreatorExtensions.CreateNPC<Superintendent, SuperintendentCustomData>("Superintendent", 110f, 140f, [RoomCategory.Office, RoomCategory.Class, RoomCategory.Faculty], [], "PST_SI_Name", "PST_SI_Desc", usesHeatMap:true, lookerDistance: 90f, avoidRooms:false, spriteYOffset: -0.5f).AddMeta(plug, NPCFlags.Standard).value;
 			npc.Navigator.SetRoomAvoidance(false);
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[F2].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 45));
 
 			// Stunly
 			npc = new NPCBuilder<Stunly>(plug.Info)
@@ -91,8 +91,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("Stunly", "PST_Stunly_Name", "PST_Stunly_Desc", -1.5f);
 			//CreatorExtensions.CreateNPC<Stunly, StunlyCustomData>("Stunly", 75f, 100f, [RoomCategory.Hall, RoomCategory.Special], [], "PST_Stunly_Name", "PST_Stunly_Desc", lookerDistance: 60f, spriteYOffset: -1.5f).AddMeta(plug , NPCFlags.Standard).value;
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[F2].NPCs.Add(new(npc, 25));
+			floorDatas[END].NPCs.Add(new(npc, 35));
 
 			// Pix
 			npc = new NPCBuilder<Pix>(plug.Info)
@@ -111,8 +111,8 @@ namespace BBTimes.Manager
 
 			//CreatorExtensions.CreateNPC<Pix, PixCustomData>("Pix", 155f, 165f, [RoomCategory.Hall], [], "PST_Pix_Name", "PST_Pix_Desc", lookerDistance: 90f, spriteYOffset:-1f).AddMeta(plug, NPCFlags.Standard).value.SetNPCLookerFov(100f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[F2].NPCs.Add(new(npc, 55));
+			floorDatas[END].NPCs.Add(new(npc, 35));
 
 			// Zero Prize
 
@@ -128,7 +128,7 @@ namespace BBTimes.Manager
 				.SetupNPCData("0thPrize", "PST_0TH_Name", "PST_0TH_Desc", -0.4f)
 				.MarkAsReplacement(75, Character.Sweep); // 25
 
-			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[F3].NPCs.Add(new(npc, 25));
 
 			// Pencil Boy
 			npc = new NPCBuilder<PencilBoy>(plug.Info)
@@ -144,8 +144,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("PencilBoy", "PST_PB_Name", "PST_PB_Desc", -1.77f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[F2].NPCs.Add(new(npc, 55));
+			floorDatas[END].NPCs.Add(new(npc, 45));
 
 			// Rolling Bot
 			npc = new NPCBuilder<RollingBot>(plug.Info)
@@ -160,8 +160,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("RollingBot", "PST_Rollbot_Name", "PST_Rollbot_Desc", -1.88f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 65 });
+			floorDatas[F2].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 65));
 
 			// Watcher
 			npc = new NPCBuilder<Watcher>(plug.Info)
@@ -176,8 +176,8 @@ namespace BBTimes.Manager
 				.EnableAcceleration()
 				.Build()
 				.SetupNPCData("Watcher", "PST_Wch_Name", "PST_Wch_Desc", 0f);
-			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
+			floorDatas[F3].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 15));
 
 			// MGS
 			npc = new NPCBuilder<MagicalStudent>(plug.Info)
@@ -193,10 +193,10 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("MagicalStudent", "PST_MGS_Name", "PST_MGS_Desc", -1.91f)
 				.MarkAsReplacement(35, Character.Principal); //35
-			
+
 			npc.Navigator.SetRoomAvoidance(false);
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[F2].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 35));
 
 			// Superintendent Jr.
 			npc = new NPCBuilder<SuperIntendentJr>(plug.Info)
@@ -214,8 +214,8 @@ namespace BBTimes.Manager
 
 			npc.Navigator.SetRoomAvoidance(false);
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 65 });
+			floorDatas[F2].NPCs.Add(new(npc, 25));
+			floorDatas[END].NPCs.Add(new(npc, 65));
 
 			// Leapy
 			npc = new NPCBuilder<Leapy>(plug.Info)
@@ -229,8 +229,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("Leapy", "PST_Leapy_Name", "PST_Leapy_Desc", -1.1f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[F2].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 45));
 
 			// Glue boy
 			npc = new NPCBuilder<Glubotrony>(plug.Info)
@@ -248,8 +248,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("Glubotrony", "PST_Gboy_Name", "PST_Gboy_Desc", -0.7f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 28 });
+			floorDatas[F2].NPCs.Add(new(npc, 55));
+			floorDatas[END].NPCs.Add(new(npc, 28));
 
 			// Dribble
 			npc = new NPCBuilder<Dribble>(plug.Info)
@@ -267,8 +267,8 @@ namespace BBTimes.Manager
 
 			npc.Navigator.SetRoomAvoidance(false);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 50 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 33 });
+			floorDatas[F2].NPCs.Add(new(npc, 50));
+			floorDatas[END].NPCs.Add(new(npc, 33));
 
 			// Bubbly
 			npc = new NPCBuilder<Bubbly>(plug.Info)
@@ -283,8 +283,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("Bubbly", "PST_Bubbly_Name", "PST_Bubbly_Desc", -1.03f)
 				.MarkAsReplacement(55, Character.Cumulo);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[F2].NPCs.Add(new(npc, 25));
+			floorDatas[END].NPCs.Add(new(npc, 35));
 
 			// Phawillow
 			npc = new NPCBuilder<Phawillow>(plug.Info)
@@ -300,8 +300,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("Phawillow", "PST_Phawillow_Name", "PST_Phawillow_Desc", 0f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 45 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[F2].NPCs.Add(new(npc, 45));
+			floorDatas[END].NPCs.Add(new(npc, 25));
 
 			// Faker
 			npc = new NPCBuilder<Faker>(plug.Info)
@@ -317,8 +317,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("Faker", "PST_Faker_Name", "PST_Faker_Desc", -1.36f)
 				.MarkAsReplacement(45, Character.LookAt); // 45
 
-			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 23 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 44 });
+			floorDatas[F3].NPCs.Add(new(npc, 23));
+			floorDatas[END].NPCs.Add(new(npc, 44));
 
 			// Camera Stand
 			npc = new NPCBuilder<CameraStand>(plug.Info)
@@ -334,8 +334,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("CameraStand", "PST_CamSt_Name", "PST_CamSt_Desc", -0.75f);
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 66 });
+			floorDatas[F2].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 66));
 
 			// Mugh
 			npc = new NPCBuilder<Mugh>(plug.Info)
@@ -349,8 +349,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("Mugh", "PST_Mugh_Name", "PST_Mugh_Desc", -1.36f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 50 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[F1].NPCs.Add(new(npc, 50));
+			floorDatas[END].NPCs.Add(new(npc, 35));
 
 			// Penny
 			npc = new NPCBuilder<Penny>(plug.Info)
@@ -367,8 +367,8 @@ namespace BBTimes.Manager
 				.MarkAsReplacement(30, Character.DrReflex);
 
 			npc.Navigator.SetRoomAvoidance(false);
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 21 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[F2].NPCs.Add(new(npc, 21));
+			floorDatas[END].NPCs.Add(new(npc, 35));
 
 			// Ser Oran
 			npc = new NPCBuilder<SerOran>(plug.Info)
@@ -384,8 +384,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("SerOran", "PST_Oran_Name", "PST_Oran_Desc", -0.196f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 10 });
+			floorDatas[F2].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 10));
 
 			// CoolMop
 			npc = new NPCBuilder<CoolMop>(plug.Info)
@@ -401,8 +401,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("CoolMop", "PST_MOP_Name", "PST_MOP_Desc", -0.67f)
 				.MarkAsReplacement(35, Character.Sweep);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 55 });
+			floorDatas[F2].NPCs.Add(new(npc, 55));
+			floorDatas[END].NPCs.Add(new(npc, 55));
 
 			// Ink Artist
 			npc = new NPCBuilder<InkArtist>(plug.Info)
@@ -416,7 +416,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("InkArtist", "PST_InkArt_Name", "PST_InkArt_Desc", -0.196f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 20 });
+			floorDatas[F1].NPCs.Add(new(npc, 20));
 
 			// Tick Tock
 			npc = new NPCBuilder<TickTock>(plug.Info)
@@ -424,14 +424,14 @@ namespace BBTimes.Manager
 				.SetEnum("TickTock")
 				.AddSpawnableRoomCategories(RoomCategory.Faculty, RoomCategory.Office)
 				.SetMetaTags(["neither"])
-				.SetMetaName("PST_TickTock_Name")  
+				.SetMetaName("PST_TickTock_Name")
 				.SetName("TickTock")
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("TickTock", "PST_TickTock_Name", "PST_TickTock_Desc", -1.12f);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 45 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 20 });
+			floorDatas[F1].NPCs.Add(new(npc, 45));
+			floorDatas[END].NPCs.Add(new(npc, 20));
 
 			// Quiker
 			npc = new NPCBuilder<Quiker>(plug.Info)
@@ -446,7 +446,7 @@ namespace BBTimes.Manager
 				.SetupNPCData("Quiker", "PST_Quiker_Name", "PST_Quiker_Desc", 0)
 				.MarkAsReplacement(55, Character.LookAt);
 
-			floorDatas[2].NPCs.Add(new() { selection = npc, weight = 20 });
+			floorDatas[F3].NPCs.Add(new(npc, 20));
 
 			// Jerry The Air Conditioner
 			npc = new NPCBuilder<JerryTheAC>(plug.Info)
@@ -460,8 +460,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("JerryTheAirConditioner", "PST_JerryAc_Name", "PST_JerryAc_Desc", 0)
 				.MarkAsReplacement(35, Character.Cumulo);
 
-			floorDatas[0].NPCs.Add(new() { selection = npc, weight = 25 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[F1].NPCs.Add(new(npc, 25));
+			floorDatas[END].NPCs.Add(new(npc, 45));
 
 			// Zap Zap
 			npc = new NPCBuilder<ZapZap>(plug.Info)
@@ -478,8 +478,8 @@ namespace BBTimes.Manager
 
 			npc.Navigator.SetRoomAvoidance(false);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[F2].NPCs.Add(new(npc, 25));
+			floorDatas[END].NPCs.Add(new(npc, 45));
 
 			// Cheese McSwiss
 			npc = new NPCBuilder<CheeseMan>(plug.Info)
@@ -492,8 +492,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("CheeseMan", "PST_CheeseMan_Name", "PST_CheeseMan_Desc", -1.86f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 50 });
+			floorDatas[F2].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 50));
 
 			// Detention Bot
 			npc = new NPCBuilder<DetentionBot>(plug.Info)
@@ -512,8 +512,8 @@ namespace BBTimes.Manager
 
 			npc.Navigator.SetRoomAvoidance(false);
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 38 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 41 });
+			floorDatas[F2].NPCs.Add(new(npc, 38));
+			floorDatas[END].NPCs.Add(new(npc, 41));
 
 			// Science Teacher
 			npc = new NPCBuilder<ScienceTeacher>(plug.Info)
@@ -529,8 +529,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("ScienceTeacher", "PST_SciTeacher_Name", "PST_SciTeacher_Desc", -0.1f);
 
 			npc.Navigator.SetRoomAvoidance(false);
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 24 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 37 });
+			floorDatas[F2].NPCs.Add(new(npc, 24));
+			floorDatas[END].NPCs.Add(new(npc, 37));
 
 			// Adverto
 			npc = new NPCBuilder<Adverto>(plug.Info)
@@ -545,8 +545,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("Adverto", "PST_Adverto_Name", "PST_Adverto_Desc", -0.1f);
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 15 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 25 });
+			floorDatas[F2].NPCs.Add(new(npc, 15));
+			floorDatas[END].NPCs.Add(new(npc, 25));
 
 			// Vacuum Cleaner
 			npc = new NPCBuilder<VacuumCleaner>(plug.Info)
@@ -562,8 +562,8 @@ namespace BBTimes.Manager
 				.MarkAsReplacement(15, Character.Sweep);
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[F2].NPCs.Add(new(npc, 25));
+			floorDatas[END].NPCs.Add(new(npc, 45));
 
 			// Mopliss
 			npc = new NPCBuilder<Mopliss>(plug.Info)
@@ -579,8 +579,8 @@ namespace BBTimes.Manager
 				.SetupNPCData("Mopliss", "PST_MOPLISS_Name", "PST_MOPLISS_Desc", -0.75f)
 				.MarkAsReplacement(20, Character.Sweep);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 65 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 45 });
+			floorDatas[F2].NPCs.Add(new(npc, 65));
+			floorDatas[END].NPCs.Add(new(npc, 45));
 
 			// Nose
 			npc = new NPCBuilder<NoseMan>(plug.Info)
@@ -595,7 +595,7 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("NoseMan", "PST_NOSE_Name", "PST_NOSE_Desc", -1.45f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 20 });
+			floorDatas[F2].NPCs.Add(new(npc, 20));
 
 			// Mimicry
 			npc = new NPCBuilder<Mimicry>(plug.Info)
@@ -613,8 +613,8 @@ namespace BBTimes.Manager
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 35 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 20 });
+			floorDatas[F2].NPCs.Add(new(npc, 35));
+			floorDatas[END].NPCs.Add(new(npc, 20));
 
 			// Pran the Dancer
 			npc = new NPCBuilder<PranTheDancer>(plug.Info)
@@ -627,8 +627,8 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("Pran", "PST_Pran_Name", "PST_Pran_Desc", 0f);
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 45 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 15 });
+			floorDatas[F2].NPCs.Add(new(npc, 45));
+			floorDatas[END].NPCs.Add(new(npc, 15));
 
 			// Winterry
 			npc = new NPCBuilder<Winterry>(plug.Info)
@@ -647,8 +647,8 @@ namespace BBTimes.Manager
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 40 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 20 });
+			floorDatas[F2].NPCs.Add(new(npc, 40));
+			floorDatas[END].NPCs.Add(new(npc, 20));
 
 			// Snowfolke
 			npc = new NPCBuilder<Snowfolke>(plug.Info)
@@ -663,8 +663,8 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupNPCData("Snowfolke", "PST_Snowfolke_Name", "PST_Snowfolke_Desc", 0f);
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 55 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 32 });
+			floorDatas[F2].NPCs.Add(new(npc, 55));
+			floorDatas[END].NPCs.Add(new(npc, 32));
 
 			// Everett Treewood
 			npc = new NPCBuilder<EverettTreewood>(plug.Info)
@@ -682,8 +682,8 @@ namespace BBTimes.Manager
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 10 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 35 });
+			floorDatas[F2].NPCs.Add(new(npc, 10));
+			floorDatas[END].NPCs.Add(new(npc, 35));
 
 			// Mr. Kreye
 			npc = new NPCBuilder<MrKreye>(plug.Info)
@@ -701,8 +701,8 @@ namespace BBTimes.Manager
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 
-			floorDatas[1].NPCs.Add(new() { selection = npc, weight = 25 });
-			floorDatas[3].NPCs.Add(new() { selection = npc, weight = 40 });
+			floorDatas[F2].NPCs.Add(new(npc, 25));
+			floorDatas[END].NPCs.Add(new(npc, 40));
 		}
 	}
 }

@@ -1,11 +1,11 @@
-﻿using BBTimes.ModPatches;
+﻿using System.IO;
+using BBTimes.ModPatches;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
-using System.IO;
+using PixelInternalAPI.Extensions;
 using UnityEngine;
 using UnityEngine.Audio;
-using PixelInternalAPI.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -37,7 +37,7 @@ namespace BBTimes.Manager
 				new SubtitleTimedKey() { key = "Vfx_BAL_AllNotebooks_5", time = 14.382f} // Tip: use audacity to know the audio length
 			];
 			// Update the all notebooks notification
-			GenericExtensions.FindResourceObjects<MainGameManager>().Do(man => man.allNotebooksNotification = man.name.StartsWith("Lvl3") ? soundCRAZY : sound);
+			GenericExtensions.FindResourceObjects<MainGameManager>().Do(man => man.allNotebooksNotification = man.name.StartsWith("Lvl5_") ? soundCRAZY : sound); // hopefully the name pattern stays this way for enternity lol
 
 			// Level Final Mode
 			AudioMixerGroup group = GenericExtensions.FindResourceObjectByName<AudioMixerGroup>("Effects");
@@ -57,10 +57,10 @@ namespace BBTimes.Manager
 			MainGameManagerPatches.chaos2 = sObj;
 
 			MainGameManagerPatches.angryBal = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_AngryGetOut.wav")), "Vfx_BAL_ANGRY_0", SoundType.Voice, Color.green);
-			MainGameManagerPatches.angryBal.additionalKeys = 
+			MainGameManagerPatches.angryBal.additionalKeys =
 				[new() { key = "Vfx_BAL_ANGRY_1", time = 0.358f},
-				new() { key = "Vfx_BAL_ANGRY_2", time = 0.681f }, 
-				new() { key = "Vfx_BAL_ANGRY_3", time = 0.934f }, 
+				new() { key = "Vfx_BAL_ANGRY_2", time = 0.681f },
+				new() { key = "Vfx_BAL_ANGRY_3", time = 0.934f },
 				new() { key = "Vfx_BAL_ANGRY_4", time = 1.113f },
 				new() { key = "Vfx_BAL_ANGRY_5", time = 1.738f }
 				];

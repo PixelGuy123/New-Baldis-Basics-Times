@@ -1,12 +1,12 @@
 ﻿using BBTimes.CustomContent.Events;
 using BBTimes.Helpers;
-using MTM101BaldAPI.Registers;
-using MTM101BaldAPI.ObjectCreation;
 using BBTimes.Plugin;
+using MTM101BaldAPI.ObjectCreation;
+using MTM101BaldAPI.Registers;
 
 namespace BBTimes.Manager
 {
-    internal static partial class BBTimesManager
+	internal static partial class BBTimesManager
 	{
 		static void CreateEvents()
 		{
@@ -21,15 +21,16 @@ namespace BBTimes.Manager
 				.SetEnum("Principalout")
 				.SetMinMaxTime(40f, 80f)
 				.SetMeta(RandomEventFlags.CharacterSpecific)
-				.AddRequiredCharacters([Character.Principal, ..GetReplacementNPCs(Character.Principal)])
+				.AddRequiredCharacters([Character.Principal, .. GetReplacementNPCs(Character.Principal)])
 				.SetName("Principalout")
 				.Build()
 				.SetupEvent();
 
 
-			floorDatas[0].Events.Add(new() { selection = e, weight = 45 });
-			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 50 });
+			floorDatas[F1].Events.Add(new(e, 45));
+			floorDatas[F2].Events.Add(new(e, 55));
+			floorDatas[F3].Events.Add(new(e, 25));
+			floorDatas[END].Events.Add(new(e, 50));
 
 			// Freezing Event
 			e = new RandomEventBuilder<FrozenEvent>(plug.Info)
@@ -40,9 +41,9 @@ namespace BBTimes.Manager
 				.Build()
 				.SetupEvent();
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 75 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 25 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 35 });
+			floorDatas[F2].Events.Add(new(e, 75));
+			floorDatas[F3].Events.Add(new(e, 25));
+			floorDatas[END].Events.Add(new(e, 35));
 
 
 			// Curtains Closed
@@ -55,9 +56,11 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 77 });
+			floorDatas[F2].Events.Add(new(e, 55));
+			floorDatas[F3].Events.Add(new(e, 45));
+			floorDatas[F4].Events.Add(new(e, 32, LevelType.Factory));
+			floorDatas[F5].Events.Add(new(e, 15, LevelType.Factory));
+			floorDatas[END].Events.Add(new(e, 77));
 
 			// Hologram Past
 			e = new RandomEventBuilder<HologramPastEvent>(plug.Info)
@@ -68,9 +71,11 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 55 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 77 });
+			floorDatas[F2].Events.Add(new(e, 55));
+			floorDatas[F3].Events.Add(new(e, 45));
+			floorDatas[F4].Events.Add(new(e, 30, LevelType.Laboratory));
+			floorDatas[F5].Events.Add(new(e, 25, LevelType.Laboratory));
+			floorDatas[END].Events.Add(new(e, 77));
 
 			// Skateboard Day
 			e = new RandomEventBuilder<SkateboardDayEvent>(plug.Info)
@@ -81,9 +86,11 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 75 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 75 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 45 });
+			floorDatas[F2].Events.Add(new(e, 75));
+			floorDatas[F3].Events.Add(new(e, 75));
+			floorDatas[F4].Events.Add(new(e, 55));
+			floorDatas[F5].Events.Add(new(e, 45));
+			floorDatas[END].Events.Add(new(e, 45));
 
 			// Earthquake
 			e = new RandomEventBuilder<Earthquake>(plug.Info)
@@ -94,9 +101,11 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 25 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 35 });
+			floorDatas[F2].Events.Add(new(e, 25));
+			floorDatas[F3].Events.Add(new(e, 45));
+			floorDatas[F4].Events.Add(new(e, 35));
+			floorDatas[F5].Events.Add(new(e, 25));
+			floorDatas[END].Events.Add(new(e, 35));
 
 			// Super Fans
 			e = new RandomEventBuilder<SuperFans>(plug.Info)
@@ -108,9 +117,11 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 60 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 25 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 45 });
+			floorDatas[F2].Events.Add(new(e, 60));
+			floorDatas[F3].Events.Add(new(e, 25));
+			floorDatas[F4].Events.Add(new(e, 12, LevelType.Factory));
+			floorDatas[F5].Events.Add(new(e, 16, LevelType.Factory));
+			floorDatas[END].Events.Add(new(e, 45));
 
 			// Thunderstorm
 			e = new RandomEventBuilder<LightningEvent>(plug.Info)
@@ -121,9 +132,9 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 50 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 45 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 15 });
+			floorDatas[F2].Events.Add(new(e, 50));
+			floorDatas[F3].Events.Add(new(e, 45));
+			floorDatas[END].Events.Add(new(e, 15));
 
 			//Super Mystery Room
 			e = new RandomEventBuilder<SuperMysteryRoom>(plug.Info)
@@ -135,9 +146,8 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 35 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 40 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 15 });
+			floorDatas[F2].Events.Add(new(e, 35));
+			floorDatas[END].Events.Add(new(e, 15));
 
 			//Nature Event
 			e = new RandomEventBuilder<NatureEvent>(plug.Info)
@@ -149,13 +159,13 @@ namespace BBTimes.Manager
 				.SetupEvent();
 
 
-			floorDatas[1].Events.Add(new() { selection = e, weight = 15 });
-			floorDatas[2].Events.Add(new() { selection = e, weight = 55 });
-			floorDatas[3].Events.Add(new() { selection = e, weight = 25 });
+			floorDatas[F2].Events.Add(new(e, 15));
+			floorDatas[F3].Events.Add(new(e, 55));
+			floorDatas[END].Events.Add(new(e, 25));
 		}
 
-		
 
-		
+
+
 	}
 }

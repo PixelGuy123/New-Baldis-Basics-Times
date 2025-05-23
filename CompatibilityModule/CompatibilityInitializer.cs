@@ -4,7 +4,7 @@ using BepInEx.Bootstrap;
 
 namespace BBTimes.CompatibilityModule
 {
-    internal static class CompatibilityInitializer
+	internal static class CompatibilityInitializer
 	{
 		internal static void InitializeOnLoadMods()
 		{
@@ -15,8 +15,8 @@ namespace BBTimes.CompatibilityModule
 		{
 			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.stackableitems"))
 				StackableItemsCompat.Loadup();
-			if (BBTimesManager.plug.HasInfiniteFloors && !BBTimesManager.plug.disableArcadeRennovationsSupport.Value)
-				ArcadeRenovationsCompat.Loadup();
+			// if (BBTimesManager.plug.HasInfiniteFloors && !BBTimesManager.plug.disableArcadeRennovationsSupport.Value)
+			// 	ArcadeRenovationsCompat.Loadup();
 		}
 		internal static void InitializeOnAwake()
 		{

@@ -1,6 +1,6 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -14,8 +14,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -29,7 +30,7 @@ namespace BBTimes.CustomContent.CustomItems
 			use = true;
 			this.pm = pm;
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
-			pm.SetInvisible(true);
+			pm.plm.Entity.SetVisible(true);
 
 			StartCoroutine(Timer());
 
@@ -47,7 +48,7 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audDeuse);
-			pm.SetInvisible(false);
+			pm.plm.Entity.SetVisible(false);
 			Destroy(gameObject);
 			yield break;
 		}

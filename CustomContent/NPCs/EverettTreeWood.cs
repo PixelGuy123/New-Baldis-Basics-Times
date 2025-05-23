@@ -1,11 +1,11 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents.EverettTreewood;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -143,7 +143,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -197,7 +197,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void Walk(bool walk, bool angryWalk)
 		{
 			float speed =
-				walk ? 
+				walk ?
 					angryWalk ? angrySpeedWalk : walkSpeed
 				: 0f;
 			navigator.maxSpeed = speed;
@@ -205,7 +205,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			animComp.ResetFrame(true);
 			animComp.animation =
-				walk ? 
+				walk ?
 					angryWalk ? angryWalkAnim : walkAnim
 				: idleAnim;
 			animComp.speed = normalWalkAnimSpeed;
@@ -244,7 +244,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void LectureEntity(Entity e) =>
 			StartCoroutine(PunishEntity(e));
-		
+
 
 		IEnumerator PunishEntity(Entity e)
 		{
@@ -290,7 +290,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			behaviorStateMachine.ChangeState(new EverettTreewood_AngryWander(this));
 		}
-		
+
 
 		public override void Despawn()
 		{
@@ -532,15 +532,15 @@ namespace BBTimes.CustomContent.NPCs
 			Entity faultyEntity = null;
 			float minDistance = ev.looker.distance * 10f;
 
-			for (int i = 0; i < ev.players.Count; i++)
+			for (int i = 0; i < Singleton<CoreGameManager>.Instance.TotalPlayers; i++)
 			{
-				if (ev.looker.PlayerInSight(ev.players[i]))
+				if (ev.looker.PlayerInSight(Singleton<CoreGameManager>.Instance.GetPlayer(i)))
 				{
-					float distance = Vector3.Distance(decoration.transform.position, ev.players[i].transform.position);
+					float distance = Vector3.Distance(decoration.transform.position, Singleton<CoreGameManager>.Instance.GetPlayer(i).transform.position);
 					//Debug.Log("Distance to player: " + distance);
 					if (distance < minDistance)
 					{
-						faultyEntity = ev.players[i].plm.Entity;
+						faultyEntity = Singleton<CoreGameManager>.Instance.GetPlayer(i).plm.Entity;
 						minDistance = distance;
 						//Debug.Log("Got it!");
 					}

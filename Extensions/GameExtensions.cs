@@ -1,13 +1,13 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -21,9 +21,7 @@ namespace BBTimes.Extensions
 			T npc2 = Object.Instantiate(prefab, ec.transform);
 			npc2.ec = ec;
 			npc2.transform.position = position;
-			for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)
-				npc2.players.Add(Singleton<CoreGameManager>.Instance.GetPlayer(i));
-			
+
 			npc2.Initialize();
 			npc2.gameObject.SetActive(true);
 			return npc2;
@@ -168,7 +166,7 @@ namespace BBTimes.Extensions
 
 			return strFound;
 		}
-		readonly static Dictionary<int, string> cachedNumbers = new(capacity:300); // naturally it'd never need to have the whole set of int.MaxValue/int.MinValue
+		readonly static Dictionary<int, string> cachedNumbers = new(capacity: 300); // naturally it'd never need to have the whole set of int.MaxValue/int.MinValue
 		static readonly StringBuilder bld = new();
 
 		public static bool RaycastNPC(this Looker looker, NPC npc)
@@ -210,7 +208,7 @@ namespace BBTimes.Extensions
 		}
 		public static Vector3 RotateAroundAxis(this Vector3 vector, Vector3 axis, float angle) =>
 		 Quaternion.AngleAxis(angle, axis) * vector;
-		
+
 		public static float Magnitude(this IntVector2 vec) =>
 			Mathf.Sqrt((vec.x * vec.x) + (vec.z * vec.z));
 		public static IntVector2 GetRoomSize(this RoomAsset asset)

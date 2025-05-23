@@ -1,6 +1,6 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -19,7 +19,7 @@ namespace BBTimes.CustomContent.NPCs
 			audSeekingAttention = new SoundObject[6];
 			var speechColor = new Color(0.99609375f, 0.84765625f, 0.69921875f);
 			for (int i = 0; i < audSeekingAttention.Length; i++)
-				audSeekingAttention[i] = this.GetSound($"attention{i+1}.mp3", $"Vfx_NOSE_Attention{i+1}", SoundType.Voice, speechColor);
+				audSeekingAttention[i] = this.GetSound($"attention{i + 1}.mp3", $"Vfx_NOSE_Attention{i + 1}", SoundType.Voice, speechColor);
 			audGaveUp = new SoundObject[2];
 			for (int i = 0; i < audGaveUp.Length; i++)
 				audGaveUp[i] = this.GetSound($"gaveup{i + 1}.mp3", $"Vfx_NOSE_GiveUp{i + 1}", SoundType.Voice, speechColor);
@@ -30,7 +30,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -120,10 +120,10 @@ namespace BBTimes.CustomContent.NPCs
 
 				if (force >= 5f)
 					player.plm.Entity.AddForce(new(offset.normalized, force, -force * 0.21f));
-				
+
 			}
 		}
-		
+
 		IEnumerator SneezeSequence(PlayerManager pm)
 		{
 			lastPm = pm;
@@ -300,7 +300,7 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class NoseMan_LeavePlayerAlone(NoseMan nos, PlayerManager pm) : NoseMan_StateBase(nos)
 	{
-		readonly DijkstraMap dijas = new(nos.ec, PathType.Nav, pm.transform);
+		readonly DijkstraMap dijas = new(nos.ec, PathType.Nav, int.MaxValue, pm.transform);
 		float cooldown = nos.delayBeforeNextAnnoyance;
 		public override void Enter()
 		{

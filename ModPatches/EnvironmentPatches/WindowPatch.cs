@@ -1,12 +1,12 @@
-﻿using BBTimes.CustomComponents;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BBTimes.CustomComponents;
 using BBTimes.Manager;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using MTM101BaldAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BBTimes.ModPatches
 {
@@ -47,7 +47,7 @@ namespace BBTimes.ModPatches
 
 			var listObj = ((CustomLevelObject)dataLvl).GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
 
-			if (listObj == null || listObj is false) // why tf it can return two things lmao
+			if (listObj == null)
 				return;
 
 			var objs = listObj as List<WindowObjectHolder>;

@@ -1,12 +1,13 @@
-﻿using BBTimes.Extensions;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using BBTimes.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
 {
 	public class Squisher : EnvironmentObject, IButtonReceiver
 	{
+		public void ConnectButton(GameButtonBase button) { }
 		public void ButtonPressed(bool val)
 		{
 			if (!active)
@@ -26,13 +27,13 @@ namespace BBTimes.CustomContent.Objects
 				StartCoroutine(ResetPosition());
 			}
 		}
-		
+
 		public void Setup(float speed)
 		{
 			ogPos = transform.position;
 			this.speed = speed;
 		}
-		
+
 		void Update()
 		{
 			if (!waitingForSquish)
@@ -58,7 +59,7 @@ namespace BBTimes.CustomContent.Objects
 					e.SetFrozen(true);
 					squishedEntities.Add(e);
 				}
-				
+
 			}
 		}
 
@@ -100,7 +101,7 @@ namespace BBTimes.CustomContent.Objects
 				cool -= ec.EnvironmentTimeScale * Time.deltaTime;
 				yield return null;
 			}
-			
+
 
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audRun);

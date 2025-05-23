@@ -1,8 +1,8 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.IO;
+using BBTimes.CustomComponents;
 using MTM101BaldAPI.AssetTools;
-using System.IO;
-using UnityEngine;
 using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.Manager
 {
@@ -22,13 +22,13 @@ namespace BBTimes.Manager
 				//	comp.mapForToday = ObjectCreationExtension.defaultCubemap;
 				//	continue;
 				//}
-				if (man.levelTitle == "F2")
+				if (man.levelTitle == F2)
 				{
 					comp.outsideLighting = new Color(0.7f, 0.7f, 0.7f, 1f);
 					man.skybox = GenericExtensions.FindResourceObjectByName<Cubemap>("Cubemap_Twilight");
 					continue;
 				}
-				if (man.levelTitle == "F3")
+				if (man.levelTitle == F3)
 				{
 					man.skybox = F3Map;
 					comp.outsideLighting = new Color(0.45f, 0.45f, 0.45f, 1f);

@@ -1,4 +1,8 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.EventSpecificComponents.FrozenEvent;
 using BBTimes.CustomContent.CustomItems;
 using BBTimes.CustomContent.Events;
 using BBTimes.CustomContent.Misc;
@@ -7,25 +11,22 @@ using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Manager.InternalClasses.LevelTypeWeights;
+using BBTimes.Plugin;
 using EditorCustomRooms;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
+using MTM101BaldAPI.OBJImporter;
 using MTM101BaldAPI.Registers;
+using NewPlusDecorations;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using PlusLevelLoader;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
-using NewPlusDecorations;
-using BBTimes.Plugin;
-using TMPro;
-using MTM101BaldAPI.OBJImporter;
-using BBE.NPCs.Chess;
 
 namespace BBTimes.Manager
 {
@@ -33,6 +34,22 @@ namespace BBTimes.Manager
 	{
 		static void CreateCustomRooms()
 		{
+			// ==========================================================================================
+			// ===================== 1. CREATE STRUCTURES FOR CUSTOM ROOMS ==============================
+			// ==========================================================================================
+			// This section is for creating all the GameObjects, prefabs, and assets that will be used in custom rooms.
+
+			// --- Variable Declarations (for reuse throughout the method) ---
+			RoomGroupWithLevelType levelTypeGroup = null; // Used for registering room groups with level types
+			RoomGroup group = null; // Used for registering room groups
+			RoomSettings sets = null; // Used for registering room settings
+			List<WeightedRoomAsset> room = null; // Used for holding room asset lists
+			BasicObjectSwapData swap = null; // Used for object swaps in rooms
+			Texture2D floorTex = null; // Used for floor textures
+			int commonRoomWeight = 0; // Used for snowy playground/ice rink weights
+			WeightedRoomAsset classWeightPre = null; // Used for classroom/faculty/office base
+
+			// --- Common references and textures ---
 			var lightPre = new WeightedTransform() { selection = Resources.FindObjectsOfTypeAll<RoomAsset>().Last(x => x.category == RoomCategory.Class).lightPre }; // Last because it should be the original asset
 			var carpet = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("Carpet") };
 			var ceiling = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("CeilingNoLight") };
@@ -41,12 +58,11 @@ namespace BBTimes.Manager
 			var blackTexture = TextureExtensions.CreateSolidTexture(1, 1, Color.black); // It'll be stretched anyways lol
 			var grass = man.Get<Texture2D>("Tex_Grass");
 
-			//***************************************************
-			//***************************************************
-			//*************Bathroom Creation*******************
-			//***************************************************
-			//***************************************************
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- BATHROOM STRUCTURES -------------------------------------------
+			// ------------------------------------------------------------------------------------------
 
+			// Bath Stall
 			var bathStall = ObjectCreationExtension.CreateCube(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "bathToiletWalls.png")), false);
 			bathStall.gameObject.AddNavObstacle(new(1f, 10f, 1f));
 			bathStall.name = "bathStall";
@@ -85,7 +101,7 @@ namespace BBTimes.Manager
 			genDor.renderer = bathDoorRenderer;
 			genDor.noiseChance = 0.5f;
 
-
+			// Bath Sink
 			bathSprites = TextureExtensions.LoadSpriteSheet(2, 1, 41.5f, GetRoomAsset("Bathroom", "sink.png"));
 			var bathSink = ObjectCreationExtensions.CreateSpriteBillboard(bathSprites[0])
 				.AddSpriteHolder(out var bathSinkRenderer, 2f, LayerStorage.iClickableLayer);
@@ -110,8 +126,8 @@ namespace BBTimes.Manager
 			collider.transform.SetParent(bathSink.transform);
 			collider.transform.localPosition = Vector3.zero;
 
-			
 
+			// Toilet
 			var toilet = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "toilet.png")), 35f)).AddSpriteHolder(out var toiletRenderer, 2f, LayerMask.NameToLayer("ClickableCollideable"));
 			toiletRenderer.name = "toiletRenderer";
 			toilet.name = "Toilet";
@@ -121,19 +137,17 @@ namespace BBTimes.Manager
 			var toiletComp = toilet.gameObject.AddComponent<Toilet>();
 			toiletComp.audMan = toilet.gameObject.CreatePropagatedAudioManager(55f, 75f);
 			toiletComp.audFlush = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Bathroom", "toilet.wav")), "Vfx_Toilet_Flush", SoundType.Effect, Color.white);
-			
 
 
+			// Light for Bathroom
 			var bathLightPre = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "long_hanginglamp.png")), 50f))
 				.AddSpriteHolder(out _, 8.98f).transform;
 			bathLightPre.name = "hangingLongLight";
 			bathLightPre.gameObject.ConvertToPrefab(true);
 
-			//***************************************************
-			//***************************************************
-			//*************Computer Room Creation ***************
-			//***************************************************
-			//***************************************************
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- COMPUTER ROOM STRUCTURES --------------------------------------
+			// ------------------------------------------------------------------------------------------
 			//Table
 			var table = new GameObject("FancyComputerTable")
 			{
@@ -166,7 +180,7 @@ namespace BBTimes.Manager
 				renderer.renderers = renderer.renderers.AddToArray(machineWheel.GetComponent<MeshRenderer>());
 			}
 
-			
+
 
 			table.AddObjectToEditor();
 
@@ -245,11 +259,9 @@ namespace BBTimes.Manager
 			descriptor.text.rectTransform.sizeDelta = new(8.15f, 5f);
 			descriptor.text.text = Singleton<LocalizationManager>.Instance.GetLocalizedText("PST_ItemDescriptor_NoDescription");
 
-			//***************************************************
-			//***************************************************
-			//************* Dribble's Room **********************
-			//***************************************************
-			//***************************************************
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- DRIBBLE'S ROOM STRUCTURES -------------------------------------
+			// ------------------------------------------------------------------------------------------
 			var runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineStraight.png")), 12.5f), false).AddSpriteHolder(out var runLineRenderer, 0.1f, 0);
 			//runLine.gameObject.layer = 0; // default layer
 			runLineRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
@@ -262,11 +274,9 @@ namespace BBTimes.Manager
 			runLine.name = "CurvedRunLine";
 			runLine.gameObject.AddObjectToEditor();
 
-			// ***********************************************
-			// ***********************************************
-			// ******************* Kitchen *******************
-			// ***********************************************
-			// ***********************************************
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- KITCHEN STRUCTURES --------------------------------------------
+			// ------------------------------------------------------------------------------------------
 
 			// Kitchen "table"
 			var shelf = new GameObject("KitchenCabinet");
@@ -326,13 +336,9 @@ namespace BBTimes.Manager
 			joeSign.gameObject.AddObjectToEditor();
 
 
-			// ================================================ Modded Special Room Creation ====================================================
-
-			// *******************************************************
-			// *******************************************************
-			// ******************* Basketball Area *******************
-			// *******************************************************
-			// *******************************************************	
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- BASKETBALL AREA STRUCTURES ------------------------------------
+			// ------------------------------------------------------------------------------------------	
 
 			// Hoop
 
@@ -422,11 +428,9 @@ namespace BBTimes.Manager
 			line.name = "BasketBallBigLine";
 			line.gameObject.AddObjectToEditor();
 
-			// **********************************************
-			// **********************************************
-			// ******************* Forest *******************
-			// **********************************************
-			// **********************************************
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- FOREST STRUCTURES ---------------------------------------------
+			// ------------------------------------------------------------------------------------------
 
 			// Tree
 			var tree = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("Forest", "forestTree.png")), 8f)).AddSpriteHolder(out _, 10.76f, 0);
@@ -477,18 +481,18 @@ namespace BBTimes.Manager
 			trap.sprOpen = trapRender.sprite;
 			trap.renderer = trapRender;
 
-			// ********************************************************
-			// ********************************************************
-			// ******************* SNOWY PLAYGROUND *******************
-			// ********************************************************
-			// ********************************************************
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- SNOWY PLAYGROUND STRUCTURES -----------------------------------
+			// ------------------------------------------------------------------------------------------
 
+			// Snowy Tree
 			var snowyTree = Object.Instantiate(GenericExtensions.FindResourceObjectByName<RendererContainer>("TreeCG"));
 			snowyTree.name = "SnowyPlaygroundTree";
 			snowyTree.gameObject.AddObjectToEditor();
 			var snowyTreeRenderer = (MeshRenderer)snowyTree.renderers[0];
 			snowyTreeRenderer.material.SetTexture("_MainTex", AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowyTreeCG.png")));
 
+			// Snow Pile
 			var snowPile = new OBJLoader().Load(
 				GetRoomAsset("SnowyPlayground", "SnowPile.obj"),
 				GetRoomAsset("SnowyPlayground", "SnowPile.mtl"),
@@ -602,7 +606,7 @@ namespace BBTimes.Manager
 			mtm.tresentPre.text.color = Color.white;
 			mtm.tresentPre.text.fontSize = 7f;
 			mtm.tresentPre.text.gameObject.SetActive(false);
-			
+
 
 			mtm.tresentPre.entity = mtm.tresentPre.gameObject.CreateEntity(1f, rendererBase: tresentRenderbase);
 
@@ -644,11 +648,9 @@ namespace BBTimes.Manager
 			col.type = ParticleSystemCollisionType.World;
 			col.enableDynamicColliders = false;
 
-			// ********************************************************
-			// ********************************************************
-			// ******************** ICE RINK ROOM *********************
-			// ********************************************************
-			// ********************************************************
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- ICE RINK ROOM STRUCTURES --------------------------------------
+			// ------------------------------------------------------------------------------------------
 
 			// ** Metal Fence
 			var metalFence = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "metalFence.png")), 25f), false)
@@ -671,7 +673,10 @@ namespace BBTimes.Manager
 			iceWaterRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 			iceWater.gameObject.ConvertToPrefab(true);
 
-			// ======================== Focus Room ===========================
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- FOCUS ROOM STRUCTURES -----------------------------------------
+			// ------------------------------------------------------------------------------------------
+
 			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
 			var student = ObjectCreationExtensions.CreateSpriteBillboard(studentSprs[0]);
 			student.name = "FocusedStudent";
@@ -688,7 +693,10 @@ namespace BBTimes.Manager
 			focusedStudent.sprSpeaking = studentSprs[1];
 			focusedStudent.sprScreaming = studentSprs[2];
 			focusedStudent.sprNormal = student.sprite;
-			// ======================== Art Room ============================
+
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- ART ROOM STRUCTURES -------------------------------------------
+			// ------------------------------------------------------------------------------------------
 			var vaseSprs = TextureExtensions.LoadSpriteSheet(2, 1, 17f, GetRoomAsset("ExibitionRoom", "Vase.png"));
 			var vase = ObjectCreationExtensions.CreateSpriteBillboard(vaseSprs[0]).AddSpriteHolder(out var vaseRenderer, 0f, LayerStorage.ignoreRaycast);
 			vase.gameObject.AddBoxCollider(Vector3.zero, new(4.5f, 5f, 4.5f), true);
@@ -703,7 +711,9 @@ namespace BBTimes.Manager
 			vaseObj.renderer = vaseRenderer;
 			vaseObj.sprBroken = vaseSprs[1];
 
-			// ================================================ Misc Assets to Load =======================================================
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- MISCELLANEOUS STRUCTURES --------------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Corner Lamps
 			List<WeightedTransform> transformsList = [
 				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("lamp.png"))), 25f))
@@ -743,9 +753,16 @@ namespace BBTimes.Manager
 
 			man.Add("prefabs_cornerLamps", transformsList);
 
-			// ================================================ Modded Room Generator Application ==========================================
+			// ==========================================================================================
+			// ===================== 2. REGISTER ROOMS INTO THE GAME ===================================
+			// ==========================================================================================
+			// This section is for registering the created structures as rooms and adding them to the floor data.
+
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- BATHROOM ROOM REGISTRATION ------------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Bathrooms
-			var sets = RegisterRoom("Bathroom", new(0.85f, 0.85f, 0.85f, 1f),
+			sets = RegisterRoom("Bathroom", new(0.85f, 0.85f, 0.85f, 1f),
 				ObjectCreators.CreateDoorDataObject("BathDoor",
 				AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "bathDoorOpened.png")),
 				AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "bathDoorClosed.png"))));
@@ -753,7 +770,7 @@ namespace BBTimes.Manager
 			Superintendent.AddAllowedRoom(sets.category);
 
 
-			var room = GetAllAssets(GetRoomAsset("Bathroom"), 45, 25, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "MapBG_Bathroom.png")));
+			room = GetAllAssets(GetRoomAsset("Bathroom"), 45, 25, mapBg: AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "MapBG_Bathroom.png")));
 			var fun = room[0].selection.AddRoomFunctionToContainer<PosterAsideFromObject>();
 			fun.targetPrefabName = "sink";
 			fun.posterPre = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Bathroom", "mirror.png"))]);
@@ -769,52 +786,58 @@ namespace BBTimes.Manager
 			});
 			sets.container = room[0].selection.roomFunctionContainer;
 
-			var group = new RoomGroup()
+			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
 				minRooms = 0,
 				maxRooms = 1,
-				potentialRooms = [.. room.FilterRoomAssetsByFloor(0)],
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(F1)],
 				name = "Bathroom",
 				light = [new() { selection = bathLightPre }],
 			};
 
-			floorDatas[0].RoomAssets.Add(group);
+			floorDatas[F1].RoomAssets.Add(new(group));
 
 			group = new RoomGroup()
 			{
 				stickToHallChance = 0.7f,
 				minRooms = 1,
 				maxRooms = 1,
-				potentialRooms = [.. room.FilterRoomAssetsByFloor(1)],
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(F2)],
 				name = "Bathroom",
 				light = [new() { selection = bathLightPre }]
 			};
 
-			floorDatas[1].RoomAssets.Add(group);
+			floorDatas[F2].RoomAssets.Add(new(group));
 
 			group = new RoomGroup()
 			{
 				stickToHallChance = 0.7f,
 				minRooms = 1,
 				maxRooms = 2,
-				potentialRooms = [.. room.FilterRoomAssetsByFloor(3)],
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(F3)],
 				name = "Bathroom",
 				light = [new() { selection = bathLightPre }]
 			};
 
-			floorDatas[3].RoomAssets.Add(group);
+			floorDatas[F3].RoomAssets.Add(new(group));
+			levelTypeGroup = new RoomGroupWithLevelType(group, LevelType.Maintenance, LevelType.Laboratory);
+			floorDatas[F4].RoomAssets.Add(levelTypeGroup);
+			floorDatas[F5].RoomAssets.Add(levelTypeGroup);
 			group = new RoomGroup()
 			{
 				stickToHallChance = 0.45f,
 				minRooms = 1,
 				maxRooms = 3,
-				potentialRooms = [.. room.FilterRoomAssetsByFloor(2)],
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(END)],
 				name = "Bathroom",
 				light = [new() { selection = bathLightPre }]
 			};
-			floorDatas[2].RoomAssets.Add(group);
+			floorDatas[F2].RoomAssets.Add(new(group));
 
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- ABANDONED ROOM REGISTRATION -----------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Abandoned Room
 			sets = RegisterRoom("AbandonedRoom", new(0.59765625f, 0.19921875f, 0f),
 				ObjectCreators.CreateDoorDataObject("OldDoor",
@@ -838,10 +861,13 @@ namespace BBTimes.Manager
 				ceilingTexture = [ceiling],
 				floorTexture = [carpet]
 			};
-			floorDatas[2].RoomAssets.Add(group);
+			floorDatas[F3].RoomAssets.Add(new(group));
 
 			AddCategoryForNPCToSpawn(sets.category, typeof(TickTock), typeof(Phawillow));
 
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- COMPUTER ROOM REGISTRATION ------------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Computer Room
 
 			sets = RegisterRoom("ComputerRoom", new(0f, 0f, 0.35f),
@@ -859,50 +885,44 @@ namespace BBTimes.Manager
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
-				minRooms = 0,
-				maxRooms = 1,
-				potentialRooms = [.. room.FilterRoomAssetsByFloor(0)],
-				light = [lightPre],
-				name = "ComputerRoom"
-			};
-
-			floorDatas[0].RoomAssets.Add(group);
-
-			group = new RoomGroup()
-			{
-				stickToHallChance = 1f,
 				minRooms = 1,
 				maxRooms = 2,
-				potentialRooms = [.. room.FilterRoomAssetsByFloor(1)],
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(F2)],
 				name = "ComputerRoom",
 				light = [lightPre],
 			};
 
-			floorDatas[1].RoomAssets.Add(group);
+			floorDatas[F2].RoomAssets.Add(new(group));
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
 				minRooms = 2,
 				maxRooms = 2,
-				potentialRooms = [.. room.FilterRoomAssetsByFloor(3)],
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(END)],
 				name = "ComputerRoom",
 				light = [lightPre]
 			};
 
-			floorDatas[3].RoomAssets.Add(group);
+			floorDatas[END].RoomAssets.Add(new(group));
 
 			group = new RoomGroup()
 			{
 				stickToHallChance = 1f,
 				minRooms = 2,
 				maxRooms = 4,
-				potentialRooms = [.. room.FilterRoomAssetsByFloor(2)],
+				potentialRooms = [.. room.FilterRoomAssetsByFloor(F3)],
 				name = "ComputerRoom",
 				light = [lightPre]
 			};
 
-			floorDatas[2].RoomAssets.Add(group);
+			floorDatas[F3].RoomAssets.Add(new(group));
+			levelTypeGroup = new(group, LevelType.Laboratory);
+			floorDatas[F4].RoomAssets.Add(levelTypeGroup);
+			floorDatas[F5].RoomAssets.Add(levelTypeGroup);
 
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- DRIBBLE ROOM REGISTRATION -------------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Dribble Room
 
 			sets = RegisterRoom("DribbleRoom", new(1f, 0.439f, 0f),
@@ -926,6 +946,9 @@ namespace BBTimes.Manager
 
 			AddAssetsToNpc<Dribble>(room);
 
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- SWEEP'S CLOSET REGISTRATION -----------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Sweep's Closet
 			var sweepCloset = GenericExtensions.FindResourceObject<GottaSweep>().potentialRoomAssets[0].selection;
 
@@ -952,6 +975,9 @@ namespace BBTimes.Manager
 			AddAssetsToNpc<Mopliss>([new() { selection = sweepCloset, weight = 100 }, .. room]);
 			AddAssetsToNpc<VacuumCleaner>([new() { selection = sweepCloset, weight = 100 }, .. room]);
 
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- DR REFLEX OFFICE REGISTRATION ---------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Dr Reflex Office
 			sweepCloset = GenericExtensions.FindResourceObject<DrReflex>().potentialRoomAssets[0].selection;
 			room = GetAllAssets(GetRoomAsset("Reflex"), sweepCloset.maxItemValue, 100, sweepCloset.roomFunctionContainer);
@@ -970,6 +996,9 @@ namespace BBTimes.Manager
 
 			AddAssetsToNpc<DrReflex>(room);
 
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- KITCHEN ROOM REGISTRATION -------------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Kitchen
 			sets = RegisterRoom("Kitchen", new(0.59765625f, 0.796875f, 0.99609375f, 1f),
 				ObjectCreators.CreateDoorDataObject("KitchenDoor",
@@ -1013,9 +1042,11 @@ namespace BBTimes.Manager
 				wallTexture = [normWall]
 			};
 
-			for (int i = 1; i < floorDatas.Count; i++)
-				floorDatas[i].RoomAssets.Add(group);
+			AddGroupToAllFloors(group);
 
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- SUPER MYSTERY ROOM REGISTRATION -------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Super mystery room
 			sets = RegisterRoom("SuperMystery", new(1f, 0.439f, 0f),
 				ObjectCreators.CreateDoorDataObject("SuperMysteryDoor",
@@ -1043,13 +1074,15 @@ namespace BBTimes.Manager
 
 			AddAssetsToEvent<SuperMysteryRoom>(room);
 
-			// ================================================ Modded Special Room Creation ====================================================
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- BASKETBALL AREA SPECIAL ROOM REGISTRATION ---------------------
+			// ------------------------------------------------------------------------------------------
 			// GYM
 			sets = RegisterSpecialRoom("BasketballArea", Color.cyan);
 
 			room = GetAllAssets(GetRoomAsset("BasketballArea"), 2, 55, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "mapIcon_basket.png")) : null, squaredShape: true);
-			var swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = baldiBall.transform, weight = 100 }], prefabToSwap = basketballPile.transform };
-			var floorTex = AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "dirtyGrayFloor.png"));
+			swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = baldiBall.transform, weight = 100 }], prefabToSwap = basketballPile.transform };
+			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "dirtyGrayFloor.png"));
 			AddTextureToEditor("dirtyGrayFloor", floorTex);
 
 			room.ForEach(x =>
@@ -1069,11 +1102,16 @@ namespace BBTimes.Manager
 
 			sets.container = room[0].selection.roomFunctionContainer;
 
+			var typedRoom = ConvertRoomsToLevelTypeOnes(room, LevelType.Schoolhouse);
 
-			floorDatas[1].SpecialRooms.AddRange(room);
-			floorDatas[3].SpecialRooms.AddRange(room);
-			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(55));
 
+			floorDatas[F2].SpecialRooms.AddRange(typedRoom);
+			floorDatas[END].SpecialRooms.AddRange(typedRoom);
+			floorDatas[F3].SpecialRooms.AddRange(typedRoom.ConvertAssetWeights(55));
+
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- FOREST SPECIAL ROOM REGISTRATION ------------------------------
+			// ------------------------------------------------------------------------------------------
 			// Forest Area
 			sets = RegisterSpecialRoom("Forest", Color.cyan);
 
@@ -1121,8 +1159,13 @@ namespace BBTimes.Manager
 
 			sets.container = room[0].selection.roomFunctionContainer;
 
-			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(60));
+			typedRoom = ConvertRoomsToLevelTypeOnes(room, LevelType.Schoolhouse);
 
+			floorDatas[F3].SpecialRooms.AddRange(typedRoom.ConvertAssetWeights(60));
+
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- SNOWY PLAYGROUND SPECIAL ROOM REGISTRATION --------------------
+			// ------------------------------------------------------------------------------------------
 			// SNOWY PLAYGROUND
 
 			var playgroundRoomRef = GenericExtensions.FindResourceObjects<RoomAsset>().First(x => x.name.StartsWith("Playground"));
@@ -1142,7 +1185,7 @@ namespace BBTimes.Manager
 			playgroundClonedRoomContainer.AddFunction(objCornerSpawn);
 
 			var slipFunc = playgroundClonedRoomContainer.gameObject.AddComponent<SlipperyMaterialFunction>();
-			slipFunc.slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
+			slipFunc.slipMatPre = man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
 			((SpriteRenderer)slipFunc.slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = AssetLoader.SpriteFromFile(GetRoomAsset("SnowyPlayground", "icePatch.png"), Vector2.one * 0.5f, 22f);
 			slipFunc.slipMatPre.force = 65f;
 			slipFunc.slipMatPre.antiForceReduceFactor = 0.75f;
@@ -1154,9 +1197,9 @@ namespace BBTimes.Manager
 
 			sets = RegisterSpecialRoom("SnowyPlayground", Color.cyan);
 
-			int snowyWeight = Storage.IsChristmas ? 165 : 75;
+			commonRoomWeight = Storage.IsChristmas ? 165 : 75;
 
-			room = GetAllAssets(GetRoomAsset("SnowyPlayground"), snowyWeight, 1, cont: playgroundClonedRoomContainer, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snow.png")) : null, squaredShape: true);
+			room = GetAllAssets(GetRoomAsset("SnowyPlayground"), commonRoomWeight, 1, cont: playgroundClonedRoomContainer, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snow.png")) : null, squaredShape: true);
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowyPlaygroundFloor.png"));
 			AddTextureToEditor("snowyPlaygroundFloor", floorTex);
 
@@ -1170,11 +1213,16 @@ namespace BBTimes.Manager
 
 			sets.container = playgroundClonedRoomContainer;
 
-			floorDatas[0].SpecialRooms.AddRange(room);
-			floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.85f)));
-			floorDatas[3].SpecialRooms.AddRange(room);
-			floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.65f)));
+			typedRoom = ConvertRoomsToLevelTypeOnes(room, LevelType.Schoolhouse);
 
+			floorDatas[F1].SpecialRooms.AddRange(typedRoom);
+			floorDatas[F2].SpecialRooms.AddRange(typedRoom.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.85f)));
+			floorDatas[END].SpecialRooms.AddRange(typedRoom);
+			floorDatas[F3].SpecialRooms.AddRange(typedRoom.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.65f)));
+
+			// ------------------------------------------------------------------------------------------
+			// -------------------------- ICE RINK SPECIAL ROOM REGISTRATION ----------------------------
+			// ------------------------------------------------------------------------------------------
 			// Ice Rink Room
 
 			playgroundClonedRoomContainer = Object.Instantiate(playgroundRoomRef.roomFunctionContainer);
@@ -1184,7 +1232,7 @@ namespace BBTimes.Manager
 			//snowFunc = playgroundClonedRoomContainer.gameObject.AddComponent<FallingParticlesFunction>();
 			//snowFunc.particleTexture = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowFlake.png"));
 
-			playgroundClonedRoomContainer.AddFunction(snowFunc);	
+			playgroundClonedRoomContainer.AddFunction(snowFunc);
 			playgroundClonedRoomContainer.AddFunction(playgroundClonedRoomContainer.gameObject.AddComponent<IceSlippingFunction>());
 
 			var iceRinkFunc = playgroundClonedRoomContainer.gameObject.AddComponent<IceWaterFunction>();
@@ -1193,9 +1241,10 @@ namespace BBTimes.Manager
 
 			sets = RegisterSpecialRoom("IceRink", Color.cyan);
 
-			snowyWeight = Storage.IsChristmas ? 265 : 85;
+			commonRoomWeight = Storage.IsChristmas ? 265 : 85;
 
-			//room = GetAllAssets(GetRoomAsset("IceRink"), snowyWeight, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "mapIcon_iceRink.png")) : null, squaredShape: true);
+			// TODO: Add variants of this special room, so it doesn't crash
+			//room = GetAllAssets(GetRoomAsset("IceRink"), commonRoomWeight, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "mapIcon_iceRink.png")) : null, squaredShape: true);
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "IceRinkFloor.png"));
 			AddTextureToEditor("IceRinkFloor", floorTex);
 
@@ -1209,10 +1258,10 @@ namespace BBTimes.Manager
 
 			sets.container = playgroundClonedRoomContainer;
 
-			//floorDatas[0].SpecialRooms.AddRange(room);
-			//floorDatas[1].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.85f)));
-			//floorDatas[3].SpecialRooms.AddRange(room);
-			//floorDatas[2].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(snowyWeight * 0.65f)));
+			//floorDatas[F1].SpecialRooms.AddRange(room);
+			//floorDatas[F2].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.85f)));
+			//floorDatas[END].SpecialRooms.AddRange(room);
+			//floorDatas[F3].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.65f)));
 
 
 			// ================================================ Base Game Room Variants ====================================================
@@ -1221,8 +1270,8 @@ namespace BBTimes.Manager
 
 			//Classrooms
 
-			WeightedRoomAsset classWeightPre = FindRoomGroupOfName("Class");
-			
+			classWeightPre = FindRoomGroupOfName("Class");
+
 			room = GetAllAssets(GetRoomAsset("Class"), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, autoSizeLimitControl: false);
 			if (!plug.enableBigRooms.Value)
 				RemoveBigRooms(room, 6.56f);
@@ -1238,10 +1287,14 @@ namespace BBTimes.Manager
 				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 			});
 
-			floorDatas[0].Classrooms.AddRange(room.Where(x => x.selection.activity.prefab.GetType() == typeof(NoActivity)).ToList().FilterRoomAssetsByFloor()); // why not "is NoActivity"? Well, probably because the game doesn't have the right NET to work like that in runtime
+			floorDatas[F1].Classrooms.AddRange(room.Where(x => x.selection.activity.prefab.GetType() == typeof(NoActivity)).ToList().FilterRoomAssetsByFloor()); // why not "is NoActivity"? Well, probably because the game doesn't have the right NET to work like that in runtime
 			var activityRooms = room.Where(x => x.selection.activity.prefab.GetType() != typeof(NoActivity)).ToList().FilterRoomAssetsByFloor();
-			for (int i = 1; i < floorDatas.Count; i++)
-				floorDatas[i].Classrooms.AddRange(activityRooms);
+
+			floorDatas[END].Classrooms.AddRange(activityRooms);
+			floorDatas[F2].Classrooms.AddRange(activityRooms);
+			floorDatas[F3].Classrooms.AddRange(activityRooms);
+			floorDatas[F4].Classrooms.AddRange(activityRooms);
+			floorDatas[F5].Classrooms.AddRange(activityRooms);
 
 
 			// ****** Focus Room (A classroom variant, but with a new npc) ******
@@ -1269,7 +1322,7 @@ namespace BBTimes.Manager
 
 			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: false);
 
-			RegisterFalseClass();			
+			RegisterFalseClass();
 
 			void RegisterFalseClass()
 			{
@@ -1294,8 +1347,11 @@ namespace BBTimes.Manager
 					x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 				});
 
-				for (int i = 1; i < floorDatas.Count; i++)
-					floorDatas[i].Classrooms.AddRange(room);
+				floorDatas[END].Classrooms.AddRange(room);
+				floorDatas[F2].Classrooms.AddRange(room);
+				floorDatas[F3].Classrooms.AddRange(room);
+				floorDatas[F4].Classrooms.AddRange(room);
+				floorDatas[F5].Classrooms.AddRange(room);
 			}
 
 			//Faculties
@@ -1316,9 +1372,8 @@ namespace BBTimes.Manager
 				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 			});
 
-			for (int i = 0; i < floorDatas.Count; i++)
-				floorDatas[i].Faculties.AddRange(room.FilterRoomAssetsByFloor(i));
-
+			foreach (var floorData in floorDatas)
+				floorData.Value.Faculties.AddRange(room.FilterRoomAssetsByFloor(floorData.Key));
 
 			//Offices
 			classWeightPre = FindRoomGroupOfName("Office");
@@ -1350,8 +1405,8 @@ namespace BBTimes.Manager
 				x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 			});
 
-			for (int i = 0; i < floorDatas.Count; i++)
-				floorDatas[i].Offices.AddRange(room.FilterRoomAssetsByFloor(i));
+			foreach (var floorData in floorDatas)
+				floorData.Value.Offices.AddRange(room.FilterRoomAssetsByFloor(floorData.Key));
 
 			// Hall (PREV HALL DOESN'T EXIST ANYMORE CURRENTLY)
 			//classWeightPre = Resources.FindObjectsOfTypeAll<LevelObject>().First(x => x.potentialPrePlotSpecialHalls.Length != 0).potentialPrePlotSpecialHalls[0];
@@ -1383,8 +1438,8 @@ namespace BBTimes.Manager
 				x.selection.lightPre = classWeightPre.selection.lightPre;
 			});
 
-			for (int i = 0; i < floorDatas.Count; i++)
-				floorDatas[i].Halls.AddRange(room.FilterRoomAssetsByFloor(i).ConvertAll<KeyValuePair<WeightedRoomAsset, bool>>(x => new(x, true)));
+			foreach (var floorData in floorDatas)
+				floorData.Value.Halls.AddRange(room.FilterRoomAssetsByFloor(floorData.Key).ConvertAll<KeyValuePair<WeightedRoomAsset, bool>>(x => new(x, true)));
 
 			//================================ Special Rooms ========================================
 
@@ -1418,8 +1473,8 @@ namespace BBTimes.Manager
 					x.selection.lightPre = classWeightPre.selection.lightPre;
 					x.selection.basicSwaps = classWeightPre.selection.basicSwaps;
 				});
-				for (int i = 0; i < floorDatas.Count; i++)
-					floorDatas[i].SpecialRooms.AddRange(room.FilterRoomAssetsByFloor(i));
+				foreach (var floorData in floorDatas)
+					floorData.Value.SpecialRooms.AddRange(ConvertRoomsToLevelTypeOnes(room.FilterRoomAssetsByFloor(floorData.Key)));
 
 
 			}
@@ -1463,7 +1518,7 @@ namespace BBTimes.Manager
 				});
 			}
 
-			
+
 
 			static WeightedRoomAsset FindRoomGroupOfName(string name)
 			{
@@ -1472,7 +1527,7 @@ namespace BBTimes.Manager
 					var lvlGroup = lvl.roomGroup.FirstOrDefault(x => x.name == name);
 					if (lvlGroup != null)
 						return lvlGroup.potentialRooms[0];
-					
+
 				}
 				return null;
 			}
@@ -1515,6 +1570,13 @@ namespace BBTimes.Manager
 				return clone;
 			}
 
+			void AddGroupToAllFloors(RoomGroup roomGroup)
+			{
+				RoomGroupWithLevelType rGroupType = new(roomGroup);
+				foreach (var data in floorDatas)
+					data.Value.RoomAssets.Add(rGroupType);
+			}
+
 		}
 
 		static void RemoveBigRooms(List<WeightedRoomAsset> assets, float averageGiven)
@@ -1551,6 +1613,14 @@ namespace BBTimes.Manager
 			return settings;
 		}
 
+		static List<WeightedRoomAssetWithLevelType> ConvertRoomsToLevelTypeOnes(List<WeightedRoomAsset> assets, params LevelType[] acceptedTypes)
+		{
+			List<WeightedRoomAssetWithLevelType> newAssets = [];
+			for (int i = 0; i < assets.Count; i++)
+				newAssets.Add(new(assets[i].selection, assets[i].weight, acceptedTypes));
+			return newAssets;
+		}
+
 		//static RoomSettings RegisterRoom(string roomName, RoomCategory en, Color color, StandardDoorMats mat)
 		//{
 		//	var settings = new RoomSettings(en, RoomType.Room, color, mat);
@@ -1580,8 +1650,8 @@ namespace BBTimes.Manager
 					if (!container)
 						container = asset[0].roomFunctionContainer;
 
-					for (int i = 0; i < asset.Count; i++)
-						RoomAssetMetaStorage.Instance.Add(new RoomAssetMeta(plug.Info, asset[i]));
+					// for (int i = 0; i < asset.Count; i++)
+					// 	RoomAssetMetaStorage.Instance.Add(new RoomAssetMeta(plug.Info, asset[i]));
 				}
 				catch (KeyNotFoundException e)
 				{
@@ -1604,13 +1674,13 @@ namespace BBTimes.Manager
 
 			if (autoSizeLimitControl && !plug.enableBigRooms.Value)
 				RemoveBigRooms(assets, 12f);
-			
+
 
 			return assets;
 		}
 		static List<WeightedRoomAsset> FilterRoomAssetsByFloor(this List<WeightedRoomAsset> assets) =>
-			assets.FilterRoomAssetsByFloor(-1);
-		static List<WeightedRoomAsset> FilterRoomAssetsByFloor(this List<WeightedRoomAsset> assets, int floor)
+			assets.FilterRoomAssetsByFloor(string.Empty);
+		static List<WeightedRoomAsset> FilterRoomAssetsByFloor(this List<WeightedRoomAsset> assets, string floor)
 		{
 			var newAss = new List<WeightedRoomAsset>(assets);
 			System.Exception e = null;
@@ -1636,22 +1706,18 @@ namespace BBTimes.Manager
 						}
 					}
 
-					if (floor >= 0)
+					if (!string.IsNullOrEmpty(floor))
 					{
 						string[] sdata = rawData[1].Split(',');
-						int[] data = new int[sdata.Length];
 
-						for (int z = 0; z < sdata.Length; z++) // Converts the string numbers into integers
-							if (int.TryParse(sdata[z], out int val))
-								data[z] = val;
-
-						if (!data.Contains(floor)) // Finally remove the asset if it isn't for the intended floor
+						if (!sdata.Contains(floor)) // Finally remove the asset if it isn't for the intended floor
 						{
 							newAss.RemoveAt(i--);
 							if (newAss.Count == 0)
 								break;
 						}
 					}
+
 				}
 			}
 			catch (System.IndexOutOfRangeException ex)
@@ -1677,6 +1743,12 @@ namespace BBTimes.Manager
 		{
 			for (int i = 0; i < assets.Count; i++)
 				assets[i] = new() { selection = assets[i].selection, weight = newWeight };
+			return assets;
+		}
+		static List<WeightedRoomAssetWithLevelType> ConvertAssetWeights(this List<WeightedRoomAssetWithLevelType> assets, int newWeight)
+		{
+			for (int i = 0; i < assets.Count; i++)
+				assets[i] = new(assets[i].selection, newWeight);
 			return assets;
 		}
 

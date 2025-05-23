@@ -1,8 +1,8 @@
-﻿using HarmonyLib;
-using BBTimes.Extensions;
-using BBTimes.CustomComponents;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection.Emit;
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using HarmonyLib;
 using UnityEngine;
 
 namespace BBTimes.ModPatches.ItemPatches
@@ -19,11 +19,8 @@ namespace BBTimes.ModPatches.ItemPatches
 			new CodeMatcher(i)
 			.MatchForward(false,
 				new(OpCodes.Ldloc_1),
-				new(CodeInstruction.LoadField(typeof(ITM_Boots), "animator")),
-				new(OpCodes.Ldstr, "Up", "Up"),
-				new(OpCodes.Ldc_I4_M1),
-				new(OpCodes.Ldc_R4, name:"0.0"),
-				new(OpCodes.Callvirt, AccessTools.Method(typeof(Animator), "Play", [typeof(string), typeof(int), typeof(float)]))
+				new(CodeInstruction.LoadField(typeof(ITM_Boots), "gauge")),
+				new(OpCodes.Callvirt, AccessTools.Method(typeof(HudGauge), "Deactivate", []))
 				)
 			.InsertAndAdvance(
 				new(OpCodes.Ldloc_1),

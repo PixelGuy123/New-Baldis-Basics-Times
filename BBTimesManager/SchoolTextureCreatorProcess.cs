@@ -1,9 +1,9 @@
-﻿using BBTimes.Misc;
+﻿using System;
+using System.IO;
+using BBTimes.Misc;
 using BBTimes.Misc.SelectionHolders;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
-using System;
-using System.IO;
 using UnityEngine;
 
 namespace BBTimes.Manager
@@ -30,7 +30,7 @@ namespace BBTimes.Manager
 					if (Enum.TryParse(dirName, out RoomCategory c))
 					{
 						cat = c;
-						modded = c == RoomCategory.Special;					
+						modded = c == RoomCategory.Special;
 					}
 					else
 					{
@@ -63,33 +63,22 @@ namespace BBTimes.Manager
 						continue;
 					}
 					Texture2D tex = AssetLoader.TextureFromFile(file);
-					
+
 					if (modded)
 						AddTextureToEditor(data[0], tex);
 
 					//Debug.Log($"Texture size is {tex.width}x{tex.height}");
+
 					int weight = 50;
 					if (data.Length < 3 || int.TryParse(data[2], out weight))
 					{
 						var holder = new SchoolTextureHolder(tex, weight, cat, texType);
 
 						if (!modded)
+							return;
 						{
-							for (int i = 3; i < data.Length; i++)
-							{
-								switch (data[i].ToLower())
-								{
-									case "f1": floorDatas[0].SchoolTextures.Add(holder); break;
-									case "f2": floorDatas[1].SchoolTextures.Add(holder); break;
-									case "f3": floorDatas[2].SchoolTextures.Add(holder); break;
-									case "end": floorDatas[3].SchoolTextures.Add(holder); break;
-									default: break;
-								}
-							}
-						}
-						else
-						{
-							floorDatas.ForEach(x => x.SchoolTextures.Add(holder));
+							foreach (var fData in floorDatas)
+								fData.Value.SchoolTextures.Add(holder);
 							_moddedAssets.ForEach((x) =>
 							{
 								if (x.category == cat)
@@ -113,11 +102,11 @@ namespace BBTimes.Manager
 						}
 					}
 					//else
-						//Debug.LogWarning("BB TIMES: Invalid data in Weight: " + data[2]);
+					//Debug.LogWarning("BB TIMES: Invalid data in Weight: " + data[2]);
 
 				}
 			}
-			
+
 
 		}
 	}

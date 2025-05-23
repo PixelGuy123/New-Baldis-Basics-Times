@@ -1,9 +1,15 @@
-﻿using BBTimes.CompatibilityModule;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using BBTimes.CompatibilityModule;
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomComponents.SecretEndingComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Manager.InternalClasses;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches;
 using BBTimes.ModPatches.NpcPatches;
@@ -13,13 +19,9 @@ using CustomMainMenusAPI;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -64,8 +66,9 @@ namespace BBTimes.Manager
 
 			if (plug.enableYoutuberMode.Value)
 			{
-				foreach (var flDat in floorDatas)
+				foreach (var flDatPair in floorDatas)
 				{
+					var flDat = flDatPair.Value;
 					flDat.Classrooms.ForEach(x => x.weight = 9999);
 					flDat.Events.ForEach(x => x.weight = 9999);
 					flDat.Faculties.ForEach(x => x.weight = 9999);
@@ -75,13 +78,52 @@ namespace BBTimes.Manager
 					flDat.NPCs.Do(x => x.weight = 9999);
 					flDat.Offices.ForEach(x => x.weight = 9999);
 					flDat.ShopItems.ForEach(x => x.weight = 9999);
-					flDat.WeightedObjectBuilders.ForEach(x => x.weight = 9999);
+					//flDat.WeightedObjectBuilders.ForEach(x => x.weight = 9999);
 				}
 			}
+			else
+				IncreaseWeightsBasedOnHolidays();
 
 			BasePlugin.PostSetup(man);
 
 			yield break;
+		}
+
+		static void IncreaseWeightsBasedOnHolidays()
+		{
+
+			bool isChristmas = Storage.IsChristmas;
+			foreach (var floorDataPair in floorDatas)
+			{
+				// ******** Christmas Check ********
+
+				// -- Npcs --
+				var floorData = floorDataPair.Value;
+				for (int i = 0; i < floorData.NPCs.Count; i++)
+				{
+					if (isChristmas && floorData.NPCs[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+					{
+						floorData.NPCs[i].weight = Mathf.FloorToInt(floorData.NPCs[i].weight * 1.45f);
+						var dat = floorData.NPCs[i].selection.GetComponent<INPCPrefab>();
+						if (dat != null) // Check if it has replacement too
+							dat.ReplacementWeight = Mathf.FloorToInt(dat.ReplacementWeight * 1.45f);
+					}
+				}
+
+				// -- Items --
+				for (int i = 0; i < floorData.Items.Count; i++)
+				{
+					if (isChristmas && floorData.Items[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+						floorData.Items[i].weight = Mathf.FloorToInt(floorData.Items[i].weight * 1.95f);
+				}
+
+				// -- Random Events --
+				for (int i = 0; i < floorData.Events.Count; i++)
+				{
+					if (isChristmas && floorData.Events[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+						floorData.Events[i].weight = Mathf.FloorToInt(floorData.Events[i].weight * 1.5f);
+				}
+			}
 		}
 
 		static void AddExtraComponentsForSomeObjects()
@@ -142,17 +184,18 @@ namespace BBTimes.Manager
 			// Floor Data LevelObject reference setup
 			foreach (var obj in Resources.FindObjectsOfTypeAll<SceneObject>())
 			{
-				if (obj.levelObject == null || obj.levelObject is not CustomLevelObject ld)
+				var lds = obj.GetCustomLevelObjects();
+				if (lds.Length == 0) continue; ;
+
+				KeyValuePair<string, FloorData>? data = floorDatas.FirstOrDefault(x => x.Key == obj.levelTitle);
+				if (!data.HasValue) // Why didn't I add this earlier, bruh
 					continue;
 
-				var data = floorDatas.FirstOrDefault(x => x.Floor == obj.levelTitle);
-				if (data == null) // Why didn't I add this earlier, bruh
-					continue;
-
-				data.levelObject = ld;
+				data.Value.Value.levelObjects = lds;
 
 				// Some additional LevelObject
-				ld.SetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn", new List<WindowObjectHolder>());
+				foreach (var ld in lds)
+					ld.SetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn", new List<WindowObjectHolder>());
 			}
 
 			// Make a transparent texture
@@ -564,13 +607,27 @@ namespace BBTimes.Manager
 
 		internal static string GetAssetName(string name) => TimesAssetPrefix + name;
 
-		internal const string TimesAssetPrefix = "BBTimesAsset_";
-
-		internal const string AudioFolder = "Audios", TextureFolder = "Textures";
+		internal const string
+		AudioFolder = "Audios",
+		TextureFolder = "Textures",
+		TimesAssetPrefix = "BBTimesAsset_",
+		F1 = "F1",
+		F2 = "F2",
+		F3 = "F3",
+		F4 = "F4",
+		F5 = "F5",
+		END = "END";
 
 		internal const int MaximumNumballs = 18;
 
-		public readonly static List<FloorData> floorDatas = [new("F1"), new("F2"), new("F3"), new("END")]; // floor datas
+		public readonly static Dictionary<string, FloorData> floorDatas = new() {
+			{ F1, new() },
+			{ F2, new() },
+			{ F3, new() },
+			{ F4, new() },
+			{ F5, new() },
+			{ END, new() }
+		};
 
 		public readonly static AssetManager man = new();
 
@@ -580,17 +637,19 @@ namespace BBTimes.Manager
 		{
 			get
 			{
-				var data = floorDatas.FirstOrDefault(x => x.Floor == CurrentFloor);
-				if (data != null || !Singleton<CoreGameManager>.Instance)
-					return data;
+				KeyValuePair<string, FloorData>? data = floorDatas.FirstOrDefault(x => x.Key == CurrentFloor);
+				if (data.HasValue || !Singleton<CoreGameManager>.Instance)
+					return data.Value.Value;
 
-				if (Singleton<CoreGameManager>.Instance.sceneObject.levelNo >= 35) // If Infinite Floors. This levelNo should be like this
-					return floorDatas[2];
+				// Infinite floors is not a thing anymore
 
-				if (Singleton<CoreGameManager>.Instance.sceneObject.levelNo >= 15)
-					return floorDatas[1];
+				// if (Singleton<CoreGameManager>.Instance.sceneObject.levelNo >= 35) // If Infinite Floors. This levelNo should be like this
+				// 	return floorDatas[F3];
 
-				return floorDatas[0];
+				// if (Singleton<CoreGameManager>.Instance.sceneObject.levelNo >= 15)
+				// 	return floorDatas[F2];
+
+				return floorDatas[F1];
 			}
 		}
 
@@ -599,6 +658,8 @@ namespace BBTimes.Manager
 		internal static List<Texture2D> specialRoomTextures = [];
 
 		// All the npcs that are replacement marked will be added to this list
+
+		// TODO: Incorporate the ReplacementNPC system into its own API (instead of being exclusive to this project)
 		internal static List<INPCPrefab> replacementNpcs = [];
 
 		internal static IEnumerable<Character> GetReplacementNPCs(params Character[] npcsReplaced) =>
@@ -606,37 +667,5 @@ namespace BBTimes.Manager
 
 
 
-	}
-	// Floor data
-	internal class FloorData(string floor = "none")
-	{
-		public string Floor => _floor;
-		readonly string _floor = floor;
-
-		public CustomLevelObject levelObject;
-
-		public readonly List<WeightedNPC> NPCs = [];
-		public readonly List<WeightedItemObject> Items = [];
-		public readonly List<ItemObject> ForcedItems = [];
-		public readonly List<WeightedItemObject> ShopItems = [];
-		public readonly List<WeightedItemObject> FieldTripItems = [];
-		public readonly List<WeightedRandomEvent> Events = [];
-		public readonly List<SchoolTextureHolder> SchoolTextures = [];
-
-		// Rooms
-		public readonly List<RoomGroup> RoomAssets = [];
-		public readonly List<WeightedRoomAsset> SpecialRooms = [];
-		public readonly List<WeightedRoomAsset> Classrooms = [];
-		public readonly List<WeightedRoomAsset> Faculties = [];
-		public readonly List<WeightedRoomAsset> Offices = [];
-		public readonly Dictionary<WeightedRoomAsset, bool> Halls = [];
-
-
-		// Object Builders
-		public readonly List<StructureWithParameters> ForcedObjectBuilders = [];
-		public readonly List<WeightedStructureWithParameters> WeightedObjectBuilders = [];
-
-		//readonly List<GenericHallBuilder> _genericHallBuilders = [];
-		//public List<GenericHallBuilder> GenericHallBuilders => _genericHallBuilders;
 	}
 }

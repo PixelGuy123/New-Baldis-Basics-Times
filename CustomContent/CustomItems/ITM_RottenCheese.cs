@@ -1,11 +1,11 @@
-﻿using BBTimes.CustomComponents;
-using MTM101BaldAPI.Registers;
-using PixelInternalAPI.Extensions;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -29,8 +29,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -41,7 +42,7 @@ namespace BBTimes.CustomContent.CustomItems
 			entity.Initialize(pm.ec, pm.transform.position);
 			entity.SetHeight(1);
 
-			map = new(pm.ec, PathType.Nav, transform);
+			map = new(pm.ec, PathType.Nav, int.MaxValue, transform);
 			map.QueueUpdate();
 			map.Activate();
 
@@ -71,7 +72,7 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			
+
 			fleeStates.ForEach(x => x.End());
 			map.Deactivate();
 

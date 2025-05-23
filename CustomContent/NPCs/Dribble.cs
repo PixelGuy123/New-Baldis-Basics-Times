@@ -1,4 +1,4 @@
-﻿
+﻿using System.Collections;
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomContent.RoomFunctions;
@@ -7,12 +7,11 @@ using BBTimes.Manager;
 using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Dribble : NPC, INPCPrefab
+	public class Dribble : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -113,8 +112,9 @@ namespace BBTimes.CustomContent.NPCs
 
 		const float pixelsPerUnit = 48f;
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -166,7 +166,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal void ThrowBasketball(PlayerManager pm)
 		{
 			Vector3 rot = (pm.transform.position - transform.position).normalized;
-			basketball.Throw(rot, transform.position + (rot.ZeroOutY() * 1.5f), pm, Mathf.Max(0.125f, 0.7f / (succeededMinigames + 1)), 
+			basketball.Throw(rot, transform.position + (rot.ZeroOutY() * 1.5f), pm, Mathf.Max(0.125f, 0.7f / (succeededMinigames + 1)),
 				Random.Range(Mathf.Max(35f, 35f * ((succeededMinigames + 1) * 0.2f)), Mathf.Max(65f, 65f * ((succeededMinigames + 1) * 0.6f))));
 		}
 
@@ -245,7 +245,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		void ChangeToTalkingVariantOrNot(Sprite[] talkingArray) =>
 			renderer.sprite = audMan.AnyAudioIsPlaying ? talkingArray[idxInCurrentArray] : currentArrayInUsage[idxInCurrentArray];
-		
+
 
 		internal void ApplyArray(Sprite[] arrayToUse, int idx)
 		{
@@ -677,7 +677,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void DestinationEmpty()
 		{
 			base.DestinationEmpty();
-			
+
 			ChangeNavigationState(new NavigationState_WanderRandom(dr, 0));
 		}
 
@@ -697,14 +697,14 @@ namespace BBTimes.CustomContent.NPCs
 					var e = other.GetComponent<Entity>();
 					if (e)
 						dr.PunchNPC(e);
-					
+
 				}
 			}
 		}
 
-		public override void Hear(Vector3 position, int value)
+		public override void Hear(GameObject source, Vector3 position, int value)
 		{
-			base.Hear(position, value);
+			base.Hear(source, position, value);
 			if (!dr.looker.PlayerInSight())
 			{
 				ChangeNavigationState(state);

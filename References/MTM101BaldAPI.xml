@@ -198,12 +198,6 @@
             <param name="center">The center of the sprite, where 0,0 is the top left and 1,1 is the bottom right.</param>
             <returns></returns>
         </member>
-        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.LoadLanguageFolder(System.String)">
-            <summary>
-            Load a Language folder from a non-standard place.
-            </summary>
-            <param name="rootPath"></param>
-        </member>
         <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.LoadLocalizationFolder(System.String,Language)">
             <summary>
             Queues all the files in the specified localization folder to be loaded.
@@ -352,6 +346,12 @@
         <member name="M:MTM101BaldAPI.AssetTools.AssetManager.AddFromResources``1">
             <summary>
             Add all resources of the specified type to the AssetManager, using the name as the key.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetManager.AddFromResourcesNoClones``1">
+            <summary>
+            Add all resources of the specified type to the AssetManager that are not created by mods/weren't created during runtime, using the name as the key.
             </summary>
             <typeparam name="T"></typeparam>
         </member>
@@ -539,10 +539,23 @@
             Patch if the specified mod is not installed.
             </summary>
         </member>
+        <member name="T:MTM101BaldAPI.IntrusiveAPIFeatures">
+            <summary>
+            An enum for API features that change how the base game behaves internally/changes seeds, but doesn't effect or minally effects gameplay.
+            All of these are off by default and must be explicitely turned on.
+            </summary>
+        </member>
         <member name="P:MTM101BaldAPI.MTM101BaldiDevAPI.Version">
             <summary>
             The version of the API, applicable when BepInEx cache messes up the version number.
             </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.MTM101BaldiDevAPI.EnableFeature(MTM101BaldAPI.IntrusiveAPIFeatures)">
+            <summary>
+            Enables the specified intrusive feature.
+            It is recommended to call this in the Awake method.
+            </summary>
+            <returns></returns>
         </member>
         <member name="F:MTM101BaldAPI.MTM101BaldiDevAPI.PrefabSubObject">
             <summary>
@@ -585,7 +598,7 @@
         </member>
         <member name="T:MTM101BaldAPI.Components.CustomAnimatorMono`3">
             <summary>
-            A base for a monobehavior implementation of ICustomAnimator, including setting a default animation
+            A base for a monobehavior implementation of ICustomAnimator, including setting a default animation.
             </summary>
             <typeparam name="TType"></typeparam>
             <typeparam name="TAnimation"></typeparam>
@@ -625,6 +638,13 @@
             A custom animator for entities with rotating sprites.
             EX: First-Prize and Dr. Reflex
             </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObjectExtensions.GetCustomLevelObjects(SceneObject)">
+            <summary>
+            Get all the level objects referenced by the specified SceneObject.
+            </summary>
+            <param name="sceneObj"></param>
+            <returns></returns>
         </member>
         <member name="T:MTM101BaldAPI.CustomLevelObject">
             <summary>
@@ -787,6 +807,27 @@
             <param name="me"></param>
             <returns></returns>
         </member>
+        <member name="T:MTM101BaldAPI.Registers.Buttons.ButtonColorHandlerInfo">
+            <summary>
+            Stores the color handler info for the respective button.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.Buttons.ButtonColorHandlerInfo.materialInfoPairs">
+            <summary>
+            The Material, FieldInfo(for the variables that store the materials), and a formatting string used for naming the newly generated materials.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.Buttons.ButtonColorHandlerInfo.defaultColor">
+            <summary>
+            The color that won't have a new material generated for it.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.GenerationModType.Preparation">
+            <summary>
+            Runs before everything else, including base. This is the only time a new level type can be added or a level type can be removed from a SceneObject.
+            Attempting it in any other GenerationModType will throw an error.
+            </summary>
+        </member>
         <member name="F:MTM101BaldAPI.Registers.GenerationModType.Base">
             <summary>
             This should be used for methods that override the majority of the generator properties, almost completely transforming the level.
@@ -875,11 +916,6 @@
             // This item has multiple uses like the grappling hook.
             </summary>
         </member>
-        <member name="F:MTM101BaldAPI.Registers.ItemFlags.NoInventory">
-            <summary>
-            This item should not appear in the players inventory and is used instantly upon pickup.
-            </summary>
-        </member>
         <member name="F:MTM101BaldAPI.Registers.ItemFlags.InstantUse">
             <summary>
             This item should not appear in the players inventory and is used instantly upon pickup.
@@ -892,12 +928,12 @@
         </member>
         <member name="F:MTM101BaldAPI.Registers.ItemFlags.Persists">
             <summary>
-            This item's behavior doesn't instantly destroy itself when used. This is applicable for the BSODA or the Big Ol' Boots.
+            This item's behavior doesn't instantly destroy itself when used. This is applicable for the BSODA or the Techno Boots.
             </summary>
         </member>
         <member name="F:MTM101BaldAPI.Registers.ItemFlags.CreatesEntity">
             <summary>
-            This item creates a physical entity in the world, this is applicable for the BSODA but not the Big Ol' Boots.
+            This item creates a physical entity in the world, this is applicable for the BSODA but not the Techno Boots.
             </summary>
         </member>
         <member name="F:MTM101BaldAPI.Registers.ItemFlags.HasTutorialVariant">
@@ -912,6 +948,52 @@
             <param name="points">The amount of points to try to search for</param>
             <param name="mustBeExact">If true, the point count must be exact, otherwise it will return null.</param>
             <returns>The found ItemObject, or the closest match if mustBeExact is false.</returns>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.NPCFlags.None">
+            <summary>
+            This NPC has no applicable flags.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.NPCFlags.CanHear">
+            <summary>
+            This NPC can respond to sound
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.NPCFlags.CanMove">
+            <summary>
+            This NPC can move linearly (Bully doesn't count)
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.NPCFlags.CanSee">
+            <summary>
+            This NPC can see/spot things
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.NPCFlags.MakeNoise">
+            <summary>
+            This NPC can make noise that Baldi can hear (First Prize)
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.NPCFlags.HasTrigger">
+            <summary>
+            This NPC's collider is a trigger (this excludes Chalkles and Bully)
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.NPCFlags.HasSprite">
+            <summary>
+            This NPC has a sprite in the schoolhouse, every NPC including Chalkles currently has this flag.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.NPCFlags.IsBlockade">
+            <summary>
+            This NPC can block other NPC's LOS or Navigation
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.NPCFlags.NonStandardSpawn">
+            <summary>
+            This NPC is spawned via other, non level generator/builder means (such as a StructureBuilder).
+            EX: Student
+            </summary>
         </member>
         <member name="M:MTM101BaldAPI.Registers.NPCMetaStorage.ReplaceAllReferencesForCharacter``2(Character)">
             <summary>
@@ -946,12 +1028,88 @@
             This event isn't called through regular means, and shouldn't be added to the random event pool.
             </summary>
         </member>
-        <member name="T:MTM101BaldAPI.LegacyObjectBuilderSupport">
+        <member name="M:MTM101BaldAPI.Registers.SceneObjectMetadata.GetSupportedLevelTypes">
             <summary>
-            Add this component to your old ObjectBuilders to hopefully keep them functional for the moment.
-            I suggest switching away from this class as soon as possible.
-            (Untested)
+            Get the level types supported by this SceneObject.
             </summary>
+            <returns></returns>
+        </member>
+        <member name="T:MTM101BaldAPI.ObjectCreation.GameManagerNPCAutomaticSpawn">
+            <summary>
+            The enum used for GameManager builders that determines when NPCs are spawned
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.ObjectCreation.GameManagerNPCAutomaticSpawn.Never">
+            <summary>
+            NPCs are never automatically spawned. SpawnNPCs must be invoked manually/in an overload.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.ObjectCreation.GameManagerNPCAutomaticSpawn.OnInitialize">
+            <summary>
+            NPCs are spawned as soon as the GameManager initializes.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.ObjectCreation.GameManagerNPCAutomaticSpawn.OnSpawnExit">
+            <summary>
+            NPCs are spawned as soon as the player leaves the spawn elevator
+            </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.BaseGameManagerBuilder`1.SetObjectName(System.String)">
+            <summary>
+            Sets the name of the created prefab.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.BaseGameManagerBuilder`1.SetNameKey(System.String)">
+            <summary>
+            Sets the manager name key. Currently only used by Steam highlights.
+            Mode_HideSeek is used
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.BaseGameManagerBuilder`1.SetNPCSpawnMode(MTM101BaldAPI.ObjectCreation.GameManagerNPCAutomaticSpawn)">
+            <summary>
+            Sets the automatic NPC spawn mode for the manager builder.
+            (Behind the scenes, this sets spawnImmediately and spawnNpcsOnInit)
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.BaseGameManagerBuilder`1.SetGradeValue(System.Single)">
+            <summary>
+            Sets the multiplier for the grade score for the overall level.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.BaseGameManagerBuilder`1.SetCustomElevatorPrefab(ElevatorScreen)">
+            <summary>
+            Sets
+            </summary>
+            <param name="screen"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.BaseGameManagerBuilder`1.SetNotebookAngerValue(System.Single)">
+            <summary>
+            Sets the amount of anger Baldi gains when a notebook is collected.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.BaseGameManagerBuilder`1.SetLevelNumber(System.Int32)">
+            <summary>
+            Sets the level number for this GameManager.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.BaseGameManagerBuilder`1.Build">
+            <summary>
+            Creates the BaseGameManager prefab.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:MTM101BaldAPI.ObjectCreation.EntityBuilder.SetBaseRadius(System.Single)">
             <summary>
@@ -1037,6 +1195,12 @@
             <param name="existingMeta"></param>
             <returns></returns>
         </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetAsNotOverridable">
+            <summary>
+            Makes this object able to be used, even when the item manager is otherwise disabled. (Such as Johnny's Shop)
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:MTM101BaldAPI.ObjectCreation.ItemBuilder.SetItemComponent``1">
             <summary>
             Sets the type of the item component to add to the created Item prefab.
@@ -1103,6 +1267,35 @@
             <param name="cost"></param>
             <returns></returns>
         </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.MainGameManagerBuilder`1.SetHappyBaldi(HappyBaldi)">
+            <summary>
+            Sets the happy Baldi prefab to be used for this manager.
+            </summary>
+            <param name="prefab"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.MainGameManagerBuilder`1.SetHappyBaldi(SoundObject)">
+            <summary>
+            Sets a soundobject to be used for Happy Baldi.
+            Will automatically create the appropiate prefab.
+            </summary>
+            <param name="greeting"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.MainGameManagerBuilder`1.SetCustomPitstop(SceneObject)">
+            <summary>
+            Sets a custom pitstop SceneObject, otherwise use the standard pitstop SceneObject.
+            </summary>
+            <param name="pitstop"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.MainGameManagerBuilder`1.SetAllNotebooksSound(SoundObject)">
+            <summary>
+            Sets the sound that is played when all notebooks are collected.
+            </summary>
+            <param name="allNotebooks"></param>
+            <returns></returns>
+        </member>
         <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.Build">
             <summary>
             Builds the NPC.
@@ -1112,6 +1305,13 @@
         <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.DisableNavigationPrecision">
             <summary>
             Makes the NPC target the tile instead of the exact cordinate.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.DisableAudioTimeScaling">
+            <summary>
+            Makes the audio this NPC creates not be affected by time.
+            This is done by setting the audio manager's pitchTimeScaleType to TimeScaleType.Null.
             </summary>
             <returns></returns>
         </member>

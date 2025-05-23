@@ -1,10 +1,10 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -84,7 +84,7 @@ namespace BBTimes.CustomContent.Builders
 
 			base.PostOpenCalcGenerate(lg, rng);
 
-			map = new(ec, PathType.Const, []);
+			map = new(ec, PathType.Const, int.MaxValue, []);
 
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
 

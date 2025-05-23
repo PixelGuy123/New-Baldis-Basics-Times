@@ -1,10 +1,17 @@
-﻿using BBTimes.CompatibilityModule;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using BBTimes.CompatibilityModule;
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.SecretEndingComponents;
-using BBTimes.CustomContent.Events;
+using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
 using BBTimes.Manager;
+using BBTimes.Manager.InternalClasses;
+using BBTimes.Manager.InternalClasses.LevelTypeWeights;
 using BBTimes.ModPatches;
 using BBTimes.Plugin;
 using BepInEx;
@@ -19,11 +26,6 @@ using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using PlusLevelFormat;
 using PlusLevelLoader;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using UnityEngine;
 
 
@@ -70,9 +72,22 @@ namespace BBTimes
 			Logger.LogDebug("Calling the api file manager to reload tags!");
 			ModdedFileManager.Instance.RegenerateTags();
 			yield return "Calling GC Collect...";
+
+			BBTimesManager.floorDatas.Clear(); // Clear all, then call GC Collect to free up memory from this useless data
 			GC.Collect(); // Get any garbage I guess
 
 			yield break;
+		}
+
+		void InitializeLevelTypeEnumsForSelection()
+		{
+			if (WeightedSelectionWithLevelType_AllStorage.All != null)
+				return;
+
+			var vals = EnumExtensions.GetValues<LevelType>();
+			WeightedSelectionWithLevelType_AllStorage.All = [];
+			for (int i = 0; i < vals.Length; i++)
+				WeightedSelectionWithLevelType_AllStorage.All.Add((LevelType)vals[i]); // Get literally EVERY SINGLE LevelType value, even modded ones
 		}
 
 		void SetupPostAssets()
@@ -89,23 +104,7 @@ namespace BBTimes
 				MTM101BaldiDevAPI.CauseCrash(Info, e);
 			}
 
-			var fieldTrip = GenericExtensions.FindResourceObject<FieldTripBaseRoomFunction>();
-			foreach (var floor in BBTimesManager.floorDatas)
-			{
-				List<WeightedItemObject> items = [.. floor.FieldTripItems];
-				for (int i = 0; i < items.Count; i++)
-				{
-					if (!Config.Bind("Item Settings", $"Enable {(items[i].selection.itemType == Items.Points ? items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)items[i].selection.itemType))}",
-						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value || fieldTrip.potentialItems.Any(x => x.selection == items[i].selection))
-						items.RemoveAt(i--);
-				}
-
-				fieldTrip.potentialItems = fieldTrip.potentialItems.AddRangeToArray([.. items]);
-			}
-			// No guaranteed items required to not mess with the good ones in
-
-
-			// Times Ending Manager Setup
+			// --- Times Ending Manager Setup ---
 			var sceneObjectClone = Instantiate(GenericExtensions.FindResourceObjectByName<SceneObject>("EndlessPremadeMedium"));
 			sceneObjectClone.name = "TimesSecretEnding";
 
@@ -129,12 +128,14 @@ namespace BBTimes
 
 			using (BinaryReader reader = new(File.OpenRead(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLevel.cbld"))))
 			{
+				// --- Setup secret ending level asset and textures ---
 				sceneObjectClone.levelAsset = CustomLevelLoader.LoadLevelAsset(LevelExtensions.ReadLevel(reader));
 				sceneObjectClone.levelAsset.name = "TimesSecretEndingAsset";
 				sceneObjectClone.levelAsset.rooms[0].ceilTex = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLabCeiling.png"));
 				sceneObjectClone.levelAsset.rooms[0].wallTex = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLabWall.png"));
 				sceneObjectClone.levelAsset.rooms[0].florTex = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLabFloor.png"));
 
+				// --- Setup door materials and mask ---
 				sceneObjectClone.levelAsset.rooms[0].doorMats = ObjectCreators.CreateDoorDataObject("TimesSecretLabMetalDoor",
 					AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "smallMetalDoorOpen.png")),
 					AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "smallMetalDoorClosed.png")));
@@ -143,6 +144,7 @@ namespace BBTimes
 				sceneObjectClone.levelAsset.rooms[0].doorMats.open.SetTexture("_Mask", doorTextureMask);
 				sceneObjectClone.levelAsset.rooms[0].doorMats.shut.SetTexture("_Mask", doorTextureMask);
 
+				// --- Add posters to the secret ending room ---
 				sceneObjectClone.levelAsset.posters.Add(new()
 				{
 					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "liveTubeMakeUp.png"))]),
@@ -175,7 +177,7 @@ namespace BBTimes
 				});
 				sceneObjectClone.levelAsset.rooms[0].hasActivity = false;
 				sceneObjectClone.levelAsset.rooms[0].activity = null;
-				// Setup door clone
+				// --- Setup door clone ---
 				var newDoor = (StandardDoor)sceneObjectClone.levelAsset.doors[0].doorPre.SafeDuplicatePrefab(true);
 				newDoor.audDoorShut = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "metalDoorShut.wav")), "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
 				newDoor.audDoorOpen = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "metalDoorOpen.wav")), "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
@@ -184,6 +186,7 @@ namespace BBTimes
 				sceneObjectClone.levelAsset.doors.ForEach(d => d.doorPre = newDoor);
 			}
 
+			// --- Setup secret ending manager object ---
 			var newManager = new GameObject("TimesSecretEndingManager").SetAsPrefab(true).AddComponent<TimesSecretEndingManager>();
 
 
@@ -215,14 +218,11 @@ namespace BBTimes
 			sceneObjectClone.manager = newManager;
 			MainGameManagerPatches.secretEndingObj = sceneObjectClone;
 
-			//var scene = GenericExtensions.FindResourceObjects<SceneObject>().First(x => x.levelTitle == "F1");
-			//scene.nextLevel = sceneObjectClone;
-			//scene.levelObject.finalLevel = true;
-
 			// ********************************************************** Christmas Baldi Setup ***************************************************************************
 
 			if (Storage.IsChristmas)
 			{
+				// --- Setup Christmas Baldi prefab and audio ---
 				var baldiSPrites = TextureExtensions.LoadSpriteSheet(6, 1, 30f, BBTimesManager.MiscPath, BBTimesManager.TextureFolder, BBTimesManager.GetAssetName("christmasBaldi.png"));
 				var chBaldi = ObjectCreationExtensions.CreateSpriteBillboard(baldiSPrites[0])
 					.AddSpriteHolder(out var chBaldiRenderer, 4f, LayerStorage.iClickableLayer); // Baldo offset should be exactly 5f + hisDefaultoffset
@@ -234,6 +234,7 @@ namespace BBTimes
 
 				var christmasBaldi = chBaldi.gameObject.AddComponent<ChristmasBaldi>();
 
+				// --- Assign audio and present references ---
 				christmasBaldi.audMan = christmasBaldi.gameObject.CreatePropagatedAudioManager(95f, 175f);
 				christmasBaldi.present = BBTimesManager.man.Get<ItemObject>("times_itemObject_Present");
 				christmasBaldi.audBell = BBTimesManager.man.Get<SoundObject>("audRing");
@@ -263,12 +264,14 @@ namespace BBTimes
 					ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_Pitstop_Thanks2.wav")), "Vfx_BAL_Pitstop_Thanks2", SoundType.Voice, Color.green)
 					];
 
+				// --- Add sprite volume animator ---
 				var volumeAnimator = christmasBaldi.gameObject.AddComponent<SpriteVolumeAnimator>();
 				volumeAnimator.audMan = christmasBaldi.audMan;
 				volumeAnimator.renderer = chBaldiRenderer;
 				volumeAnimator.volumeMultipler = 1.2f;
 				volumeAnimator.sprites = baldiSPrites;
 
+				// --- Add Christmas Baldi to pitstop asset ---
 				var pitstopAsset = GenericExtensions.FindResourceObjectByName<LevelAsset>("Pitstop"); // Find shop pitstop here
 				pitstopAsset.tbos.Add(new() { direction = Direction.North, position = new(30, 11), prefab = christmasBaldi });
 			}
@@ -308,7 +311,7 @@ namespace BBTimes
 
 
 			AssetLoader.LoadLocalizationFolder(Path.Combine(ModPath, "Language", "English"), Language.English);
-			
+
 			try
 			{
 				CompatibilityInitializer.InitializeOnAwake();
@@ -331,21 +334,10 @@ namespace BBTimes
 					MainGameManagerPatches.allowEndingToBePlayed = false;
 			});
 
-			GeneratorManagement.Register(this, GenerationModType.Finalizer, (_, _2, sco) =>
-			{
-				var ld = sco.levelObject;
-				if (ld == null) return;
-
-				ld.minSpecialBuilders = Mathf.Min(ld.minSpecialBuilders, ld.potentialStructures.Length);
-				ld.maxSpecialBuilders = Mathf.Min(ld.maxSpecialBuilders, ld.potentialStructures.Length); // Workaround to avoid a bug (that results in a crash) caused by an oversight from Mystman12.
-			});
-
 			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, sco) =>
 			{
-				var nld = sco.levelObject;
-				if (nld == null)
-					return;
-				if (nld is not CustomLevelObject ld)
+				var lds = sco.GetCustomLevelObjects();
+				if (lds.Length == 0)
 					return;
 
 #if CHEAT
@@ -354,162 +346,83 @@ namespace BBTimes
 				Debug.Log("Floor " + floorName);
 				ld.shopItems.Do(x => Debug.Log($"{x.selection.itemType} >> {x.selection.price} || weight: {x.weight} || cost: {x.selection.value}"));
 #endif
-				ld.SetCustomModValue(Info, "Times_GenConfig_DisableOutside", false);
-				ld.MarkAsNeverUnload(); // Maybe?
-
-				RoomGroup[] groups = [ld.roomGroup.First(x => x.name == "Class"), ld.roomGroup.First(x => x.name == "Faculty"), ld.roomGroup.First(x => x.name == "Office")];
-				ld.timeBonusVal *= 2;
-
-
-				if (floorName == "F1")
+				foreach (var ld in lds)
 				{
-					//var builder = Resources.FindObjectsOfTypeAll<RotoHallBuilder>()[0];
-					//for (int i = 0; i < 5; i++)
-					//	ld.forcedSpecialHallBuilders = ld.forcedSpecialHallBuilders.AddToArray(builder);
+					bool shouldDisableOutside = ld.type == LevelType.Factory; // Factory has ceiling, so...
+					ld.SetCustomModValue(Info, "Times_GenConfig_DisableOutside", shouldDisableOutside);
+					ld.MarkAsNeverUnload(); // Maybe?
 
-					//sco.additionalNPCs += 2;
-					ld.additionTurnChance += 10;
-					ld.bridgeTurnChance += 4;
-					ld.outerEdgeBuffer += 1;
-					ld.extraDoorChance += 0.2f;
 
-					//groups[0].minRooms = 1;
-					//groups[0].maxRooms = 1;
-
-					groups[0].maxRooms = 5;
-					ld.maxHallsToRemove += 1;
-					ld.maxPlots += 1;
-					ld.maxReplacementHalls += 1;
-					ld.maxSize += new IntVector2(5, 3);
-					ld.maxSpecialBuilders += 2;
-					ld.minHallsToRemove += 1;
-					ld.minSize += new IntVector2(3, 1);
-					ld.timeBonusLimit *= 1.8f;
-
-					//ld.exitCount = 4;
-
-					// Custom datas
-					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 9));
-					return;
-				}
-
-				if (floorName == "F2")
-				{
-					ld.deadEndBuffer = 4;
-					ld.minSpecialRooms = 1;
-					ld.maxSpecialRooms = 2;
-					//sco.additionalNPCs += 4;
-					ld.additionTurnChance += 5;
-					ld.bridgeTurnChance += 3;
-					ld.outerEdgeBuffer += 3;
-					ld.extraDoorChance += 0.3f;
-					groups[1].minRooms++;
-					groups[1].maxRooms += 4;
-					groups[0].maxRooms = 8;
-					groups[0].minRooms = 6;
-					groups[1].stickToHallChance = 0.85f;
-					ld.maxHallsToRemove += 2;
-					ld.maxPlots += 2;
-					ld.minPlots += 1;
-					ld.maxReplacementHalls += 3;
-					ld.maxSize += new IntVector2(6, 4);
-					ld.maxSpecialBuilders += 2;
-					ld.minHallsToRemove += 1;
-					ld.minSize += new IntVector2(4, 2);
-					ld.minSpecialBuilders += 1;
-					ld.specialRoomsStickToEdge = false;
-					ld.maxLightDistance += 2;
-					ld.timeBonusLimit *= 1.8f;
-
-					// Custom datas
-					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 12));
-					return;
-				}
-
-				if (floorName == "F3")
-				{
-					ld.minSpecialRooms += 1;
-					ld.maxSpecialRooms += 2;
-					//sco.additionalNPCs += 4;
-					ld.additionTurnChance += 15;
-					ld.bridgeTurnChance += 6;
-					ld.extraDoorChance = 0.5f;
-					groups[1].minRooms++;
-					groups[1].maxRooms += 4;
-					groups[0].maxRooms = 10;
-					groups[2].maxRooms += 2;
-					groups[1].stickToHallChance = 0.85f;
-					ld.maxHallsToRemove++;
-					ld.maxPlots += 2;
-					ld.minPlots += 1;
-					ld.maxReplacementHalls += 2;
-					ld.maxSize += new IntVector2(6, 5);
-					ld.minSize += new IntVector2(5, 4);
-					ld.maxSpecialBuilders += 2;
-					ld.minHallsToRemove += 1;
-					ld.minSpecialBuilders += 1;
-					ld.outerEdgeBuffer += 5;
-					ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. Resources.FindObjectsOfTypeAll<RoomAsset>() // Playground in F3
-						.Where(x => x.name.StartsWith("Playground"))
-						.ConvertAll(x => new WeightedRoomAsset() { selection = x, weight = 45 })]);
-					ld.timeBonusLimit *= 1.8f;
-
-					if (!disableOldLighting.Value)
+					if (floorName == BBTimesManager.F1)
 					{
-						ld.lightMode = LightMode.Greatest;
-						ld.standardLightColor = new(1f, 0.9412f, 0.8667f);
-						ld.maxLightDistance = 9;
-						ld.standardLightStrength = 6;
+						// Custom datas
+						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 9));
+						return;
 					}
 
-					// Custom datas
-					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(12, BBTimesManager.MaximumNumballs));
-					return;
-				}
+					if (floorName == BBTimesManager.F2)
+					{
+						// Custom datas
+						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 12));
+						return;
+					}
 
-				if (floorName == "END")
-				{
-					ld.minSpecialRooms = 1;
-					ld.maxSpecialRooms = 2;
-					ld.deadEndBuffer = 3;
-					//sco.additionalNPCs += 4;
-					ld.additionTurnChance += 25;
-					ld.bridgeTurnChance += 6;
-					ld.outerEdgeBuffer += 3;
-					ld.extraDoorChance += 0.3f;
-					ld.maxHallsToRemove += 2;
-					ld.maxPlots += 3;
-					ld.minPlots += 1;
-					ld.maxReplacementHalls += 3;
-					ld.maxSize += new IntVector2(10, 8);
-					ld.maxSpecialBuilders += 2;
-					ld.minHallsToRemove += 1;
-					ld.minSize += new IntVector2(7, 7);
-					ld.minSpecialBuilders += 1;
-					ld.maxLightDistance += 3;
-					groups[1].stickToHallChance = 0.85f;
-					groups[2].maxRooms = 3;
-					groups[2].minRooms = 2;
-					groups[1].minRooms++;
-					groups[1].maxRooms += 5;
-					groups[0].minRooms = 7;
-					groups[0].maxRooms = 9;
+					if (floorName == BBTimesManager.F3)
+					{
+						// Custom datas
+						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(10, 13));
+						return;
+					}
 
-					// Custom datas
-					ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 14));
-					return;
+					if (floorName == BBTimesManager.F4)
+					{
+						// Custom datas
+						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(10, 15));
+						return;
+					}
+
+					if (floorName == BBTimesManager.F5)
+					{
+						// Custom datas
+						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(12, BBTimesManager.MaximumNumballs));
+						return;
+					}
+
+					if (floorName == BBTimesManager.END)
+					{
+
+						// Custom datas
+						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 14));
+						return;
+					}
 				}
 
 			});
 
+			GeneratorManagement.RegisterFieldTripLootChange(this, (fieldTripType, fieldTripLoot) =>
+			{
+				foreach (var floorPair in BBTimesManager.floorDatas)
+				{
+					var floor = floorPair.Value;
+					List<WeightedItemObject> items = [.. floor.FieldTripItems];
+					for (int i = 0; i < items.Count; i++)
+					{
+						// Remove disabled or duplicate items
+						if (!Config.Bind("Item Settings", $"Enable {(items[i].selection.itemType == Items.Points ? items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)items[i].selection.itemType))}",
+							true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value || fieldTripLoot.potentialItems.Exists(x => x.selection == items[i].selection))
+							items.RemoveAt(i--);
+					}
+
+					fieldTripLoot.potentialItems.AddRange(items);
+				}
+			});
+
 			GeneratorManagement.Register(this, GenerationModType.Addend, (floorName, floorNum, sco) =>
 			{
-				var ld = sco.levelObject;
-				if (ld == null)
-					return;
+				InitializeLevelTypeEnumsForSelection();
 
-				var floordata = BBTimesManager.floorDatas.FirstOrDefault(x => x.Floor == floorName);
-				if (floordata == null)
+				KeyValuePair<string, FloorData>? floordatapair = BBTimesManager.floorDatas.FirstOrDefault(x => x.Key == floorName);
+				if (!floordatapair.HasValue)
 				{
 					//Debug.LogWarning("Failed to get floor data for level: " + ld.name);
 					return;
@@ -517,9 +430,15 @@ namespace BBTimes
 
 				bool isChristmas = Storage.IsChristmas;
 
+				var floordata = floordatapair.Value.Value;
+
+				// ******************* ELEMENTS THAT DEPENDS ON SCENEOBJECT SOLELY ***********************
+
+				// ----- NPCs -----
 				for (int i = 0; i < floordata.NPCs.Count; i++)
 				{
-					if (!Config.Bind("NPC Settings", $"Enable {floordata.NPCs[i].selection.name}", true, "If set to true, this character will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					// --- Filter disabled NPCs and add to potential/forced lists ---
+					if (!Config.Bind("NPC Settings", $"Enable {floordata.NPCs[i].selection.name}", !_disabledByDefault_NPCs.Contains(floordata.NPCs[i].GetType()), "If set to true, this character will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
 					{
 						disabledCharacters.Add(floordata.NPCs[i].selection.name);
 						floordata.NPCs.RemoveAt(i--);
@@ -528,57 +447,15 @@ namespace BBTimes
 
 					var dat = floordata.NPCs[i].selection.GetComponent<INPCPrefab>();
 					if (enableReplacementNPCsAsNormalOnes.Value || dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
-					{
-						if (isChristmas && floordata.NPCs[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
-							floordata.NPCs[i].weight = Mathf.FloorToInt(floordata.NPCs[i].weight * 1.45f);
-
-						sco.potentialNPCs.Add(floordata.NPCs[i]); // Only non-replacement Npcs
-					}
+						sco.potentialNPCs.Add(floordata.NPCs[i].GetWeightedSelection()); // Only non-replacement Npcs
 					else
-					{
-						if (isChristmas && floordata.NPCs[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
-							dat.ReplacementWeight = Mathf.FloorToInt(dat.ReplacementWeight * 1.45f);
-
 						sco.forcedNpcs = sco.forcedNpcs.AddToArray(floordata.NPCs[i].selection); // This field will be used for getting the replacement npcs, since they are outside the normal potential npcs, they can replace the existent ones at any time
-					}
 				}
 
-				//List<WeightedItemObject> acceptableItems = floordata.Items;
-				for (int i = 0; i < floordata.Items.Count; i++)
-				{
-					string itemName = floordata.Items[i].selection.itemType == Items.Points ? floordata.Items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.Items[i].selection.itemType);
-					if (!Config.Bind("Item Settings", $"Enable {itemName}",
-						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-					{
-						disabledItems.Add(itemName);
-						floordata.Items.RemoveAt(i--);
-						continue;
-					}
-
-					if (isChristmas && floordata.Items[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
-						floordata.Items[i].weight = Mathf.FloorToInt(floordata.Items[i].weight * 1.95f);
-				}
-
-
-				ld.potentialItems = ld.potentialItems.AddRangeToArray([.. floordata.Items]);
-
-				//List<ItemObject> items = floordata.ForcedItems;
-				for (int i = 0; i < floordata.ForcedItems.Count; i++)
-				{
-					string itemName = floordata.ForcedItems[i].itemType == Items.Points ? floordata.ForcedItems[i].nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.ForcedItems[i].itemType);
-					if (!Config.Bind("Item Settings", $"Enable {itemName}",
-						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-					{
-						if (!disabledItems.Contains(itemName))
-							disabledItems.Add(itemName);
-						floordata.ForcedItems.RemoveAt(i--);
-					}
-				}
-				ld.forcedItems.AddRange(floordata.ForcedItems);
-
-				//acceptableItems = new(floordata.ShopItems);
+				// ----- Shop Items -----
 				for (int i = 0; i < floordata.ShopItems.Count; i++)
 				{
+					// --- Filter disabled shop items and add to shopItems array ---
 					string itemName = floordata.ShopItems[i].selection.itemType == Items.Points ? floordata.ShopItems[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.ShopItems[i].selection.itemType);
 					if (!Config.Bind("Item Settings", $"Enable {itemName}",
 						true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
@@ -586,138 +463,132 @@ namespace BBTimes
 						if (!disabledItems.Contains(itemName))
 							disabledItems.Add(itemName);
 						floordata.ShopItems.RemoveAt(i--);
-					}
-				}
-
-				sco.shopItems = sco.shopItems.AddRangeToArray([.. floordata.ShopItems]);
-
-				//List<WeightedRandomEvent> events = new(floordata.Events);
-				for (int i = 0; i < floordata.Events.Count; i++)
-				{
-					if (!Config.Bind("Random Event Settings", $"Enable {floordata.Events[i].selection.name}", true, "If set to true, this random event will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
-					{
-						disabledEvents.Add(floordata.Events[i].selection.name);
-						floordata.Events.RemoveAt(i--);
 						continue;
 					}
 
-					if (isChristmas && floordata.Events[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
-						floordata.Events[i].weight = Mathf.FloorToInt(floordata.Events[i].weight * 1.5f);
+					sco.shopItems = sco.shopItems.AddToArray(floordata.ShopItems[i]);
 				}
 
-				ld.randomEvents.AddRange(floordata.Events);
 
-				//List<ObjectBuilder> objBlds = new(floordata.ForcedObjectBuilders);
-				for (int i = 0; i < floordata.ForcedObjectBuilders.Count; i++)
+				// *************** ELEMENTS THAT DEPENDS IN LEVEL OBJECTS ******************
+
+				foreach (var ld in sco.GetCustomLevelObjects())
 				{
-					if (!Config.Bind("Structure Settings", $"Enable {floordata.ForcedObjectBuilders[i].prefab.name}", true,
-						"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+
+					// ----- Items -----
+					for (int i = 0; i < floordata.Items.Count; i++)
 					{
-						disabledBuilders.Add(floordata.ForcedObjectBuilders[i].prefab.name);
-						floordata.ForcedObjectBuilders.RemoveAt(i--);
+						// --- Filter disabled items and add to potentialItems ---
+						string itemName = floordata.Items[i].selection.itemType == Items.Points ? floordata.Items[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.Items[i].selection.itemType);
+						if (!Config.Bind("Item Settings", $"Enable {itemName}",
+							true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						{
+							if (!disabledItems.Contains(itemName))
+								disabledItems.Add(itemName);
+							floordata.Items.RemoveAt(i--);
+							continue;
+						}
+
+						if (floordata.Items[i].AcceptsLevelType(ld.type))
+							ld.potentialItems = ld.potentialItems.AddToArray(floordata.Items[i].GetWeightedSelection());
 					}
-				}
 
-				ld.forcedStructures = ld.forcedStructures.AddRangeToArray([.. floordata.ForcedObjectBuilders]);
-
-				//List<WeightedObjectBuilder> rngObjBlds = new(floordata.WeightedObjectBuilders);
-				for (int i = 0; i < floordata.WeightedObjectBuilders.Count; i++)
-				{
-					if (!Config.Bind("Structure Settings", $"Enable {floordata.WeightedObjectBuilders[i].selection.prefab.name}", true,
-						"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+					// ----- Forced Items -----
+					for (int i = 0; i < floordata.ForcedItems.Count; i++)
 					{
-						if (!disabledBuilders.Contains(floordata.WeightedObjectBuilders[i].selection.prefab.name))
-							disabledBuilders.Add(floordata.WeightedObjectBuilders[i].selection.prefab.name);
-						floordata.WeightedObjectBuilders.RemoveAt(i--);
+						// --- Filter disabled forced items and add to forcedItems ---
+						string itemName = floordata.ForcedItems[i].selection.itemType == Items.Points ? floordata.ForcedItems[i].selection.nameKey : EnumExtensions.GetExtendedName<Items>((int)floordata.ForcedItems[i].selection.itemType);
+						if (!Config.Bind("Item Settings", $"Enable {itemName}",
+							true, "If set to true, this item will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						{
+							if (!disabledItems.Contains(itemName))
+								disabledItems.Add(itemName);
+							floordata.ForcedItems.RemoveAt(i--);
+							continue;
+						}
+
+						if (floordata.ForcedItems[i].AcceptsLevelType(ld.type))
+							ld.forcedItems.Add(floordata.ForcedItems[i].GetWeightedSelection());
 					}
-				}
 
-				ld.potentialStructures = ld.potentialStructures.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
-
-				ld.roomGroup = ld.roomGroup.AddRangeToArray([.. floordata.RoomAssets]);
-				ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddRangeToArray([.. floordata.SpecialRooms]);
-
-				RoomGroup[] groups = [ld.roomGroup.First(x => x.name == "Class"), ld.roomGroup.First(x => x.name == "Faculty"), ld.roomGroup.First(x => x.name == "Office")];
-				groups[0].potentialRooms = groups[0].potentialRooms.AddRangeToArray([.. floordata.Classrooms]);
-				groups[1].potentialRooms = groups[1].potentialRooms.AddRangeToArray([.. floordata.Faculties]);
-				groups[2].potentialRooms = groups[2].potentialRooms.AddRangeToArray([.. floordata.Offices]);
-
-
-				foreach (var fl in floordata.Halls)
-				{
-					if (fl.Value)
-						ld.potentialPostPlotSpecialHalls = ld.potentialPostPlotSpecialHalls.AddToArray(fl.Key);
-					else
-						ld.potentialPrePlotSpecialHalls = ld.potentialPrePlotSpecialHalls.AddToArray(fl.Key);
-
-				}
-
-				foreach (var holder in floordata.SchoolTextures) // Add the school textures
-				{
-					switch (holder.SelectionLimiters[0])
+					// ----- Random Events -----
+					for (int i = 0; i < floordata.Events.Count; i++)
 					{
-						case RoomCategory.Hall:
-							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
-								ld.hallCeilingTexs = ld.hallCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
-							else if (holder.TextureType == Misc.SchoolTexture.Floor)
-								ld.hallFloorTexs = ld.hallFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
-							else if (holder.TextureType == Misc.SchoolTexture.Wall)
-								ld.hallWallTexs = ld.hallWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
-							break;
-						case RoomCategory.Class:
-							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
-								groups[0].ceilingTexture = groups[0].ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
-							else if (holder.TextureType == Misc.SchoolTexture.Floor)
-								groups[0].floorTexture = groups[0].floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
-							else if (holder.TextureType == Misc.SchoolTexture.Wall)
-								groups[0].wallTexture = groups[0].wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
-							break;
-						case RoomCategory.Faculty:
-							if (holder.TextureType == Misc.SchoolTexture.Ceiling)
-							{
-								groups[1].ceilingTexture = groups[1].ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
-								groups[2].ceilingTexture = groups[2].ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
-							}
-							else if (holder.TextureType == Misc.SchoolTexture.Floor)
-							{
-								groups[1].floorTexture = groups[1].floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
-								groups[2].floorTexture = groups[2].floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
-							}
-							else if (holder.TextureType == Misc.SchoolTexture.Wall)
-							{
-								groups[1].wallTexture = groups[1].wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
-								groups[2].wallTexture = groups[2].wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
-							}
-							break;
-						default:
-							string name = EnumExtensions.GetExtendedName<RoomCategory>((int)holder.SelectionLimiters[0]);
-							var group = ld.roomGroup.FirstOrDefault(x => x.potentialRooms.Any(z => z.selection.category == holder.SelectionLimiters[0]));
-							if (group == null)
-							{
-								//Debug.LogWarning("BBTimes: Failed to load texture for room category: " + name);
-								break;
-							}
-							switch (holder.TextureType)
-							{
-								case Misc.SchoolTexture.Ceiling:
-									group.ceilingTexture = group.ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
-									break;
-								case Misc.SchoolTexture.Floor:
-									group.floorTexture = group.floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
-									break;
-								case Misc.SchoolTexture.Wall:
-									group.wallTexture = group.wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
-									break;
-								default:
-									break;
-							}
-
-							break;
+						// --- Filter disabled random events and add to randomEvents ---
+						if (!Config.Bind("Random Event Settings", $"Enable {floordata.Events[i].selection.name}", true, "If set to true, this random event will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						{
+							disabledEvents.Add(floordata.Events[i].selection.name);
+							floordata.Events.RemoveAt(i--);
+							continue;
+						}
+						if (floordata.Events[i].AcceptsLevelType(ld.type))
+							ld.randomEvents.Add(floordata.Events[i].GetWeightedSelection());
 					}
+
+					// ----- Forced Object Builders -----
+					for (int i = 0; i < floordata.ForcedObjectBuilders.Count; i++)
+					{
+						// --- Filter disabled forced object builders and add to forcedStructures ---
+						if (!Config.Bind("Structure Settings", $"Enable {floordata.ForcedObjectBuilders[i].GetWeightedSelection().prefab.name}", true,
+							"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						{
+							disabledBuilders.Add(floordata.ForcedObjectBuilders[i].GetWeightedSelection().prefab.name);
+							floordata.ForcedObjectBuilders.RemoveAt(i--);
+							continue;
+						}
+						if (floordata.ForcedObjectBuilders[i].AcceptsLevelType(ld.type))
+							ld.forcedStructures.AddToArray(floordata.ForcedObjectBuilders[i].GetWeightedSelection());
+					}
+
+					/* Unused since Plus doesn't use this anymore (should be kept if weighted builders ever start existing again)
+					for (int i = 0; i < floordata.WeightedObjectBuilders.Count; i++)
+					{
+						if (!Config.Bind("Structure Settings", $"Enable {floordata.WeightedObjectBuilders[i].selection.prefab.name}", true,
+							"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+						{
+							if (!disabledBuilders.Contains(floordata.WeightedObjectBuilders[i].selection.prefab.name))
+								disabledBuilders.Add(floordata.WeightedObjectBuilders[i].selection.prefab.name);
+							floordata.WeightedObjectBuilders.RemoveAt(i--);
+						}
+					}
+					ld.potentialStructures = ld.potentialStructures.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
+					*/
+
+					// ----- Room Groups and Special Rooms -----
+					for (int i = 0; i < floordata.RoomAssets.Count; i++)
+					{
+						if (floordata.RoomAssets[i].AcceptsLevelType(ld.type))
+							ld.roomGroup = ld.roomGroup.AddToArray(floordata.RoomAssets[i].GetWeightedSelection());
+					}
+
+					for (int i = 0; i < floordata.SpecialRooms.Count; i++)
+					{
+						if (floordata.SpecialRooms[i].AcceptsLevelType(ld.type))
+							ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddToArray(floordata.SpecialRooms[i].GetWeightedSelection());
+					}
+
+					// Only these below ignores level types, even halls.
+					RoomGroup[] groups = [ld.roomGroup.First(x => x.name == "Class"), ld.roomGroup.First(x => x.name == "Faculty"), ld.roomGroup.First(x => x.name == "Office")];
+					groups[0].potentialRooms = groups[0].potentialRooms.AddRangeToArray([.. floordata.Classrooms]);
+					groups[1].potentialRooms = groups[1].potentialRooms.AddRangeToArray([.. floordata.Faculties]);
+					groups[2].potentialRooms = groups[2].potentialRooms.AddRangeToArray([.. floordata.Offices]);
+
+					// ----- Special Halls -----
+					foreach (var fl in floordata.Halls)
+					{
+						if (fl.Value)
+							ld.potentialPostPlotSpecialHalls = ld.potentialPostPlotSpecialHalls.AddToArray(fl.Key);
+						else
+							ld.potentialPrePlotSpecialHalls = ld.potentialPrePlotSpecialHalls.AddToArray(fl.Key);
+
+					}
+
 				}
 
 			});
 		}
+
+		static Type[] _disabledByDefault_NPCs = [typeof(Glubotrony)]; // As requested by MSF
 
 		static string _modPath = string.Empty;
 

@@ -1,15 +1,15 @@
-﻿using BBTimes.Extensions;
+﻿using System.Collections;
+using System.Collections.Generic;
 using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Stunly : NPC, INPCPrefab
+	public class Stunly : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -37,8 +37,9 @@ namespace BBTimes.CustomContent.NPCs
 			stars = billboard.gameObject.AddComponent<StarObject>();
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -101,7 +102,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			if (!subject)
 				return;
-			
+
 
 			if (blind)
 			{
@@ -302,7 +303,7 @@ namespace BBTimes.CustomContent.NPCs
 			cooldown -= stunly.TimeScale * Time.deltaTime;
 			if (cooldown < 0f)
 				stunly.behaviorStateMachine.ChangeState(new Stunly_WaitBeforeActive(stunly));
-			
+
 		}
 
 		float cooldown = 20f;
@@ -366,7 +367,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		readonly bool wasPlayer = npcOrPlayer;
 		readonly Entity subject = fleeSubject;
-		readonly DijkstraMap map = new(st.ec, PathType.Nav, fleeSubject.transform);
+		readonly DijkstraMap map = new(st.ec, PathType.Nav, int.MaxValue, fleeSubject.transform);
 
 		public override void Enter()
 		{

@@ -1,13 +1,13 @@
-﻿using BBTimes.CustomContent.Builders;
+﻿using System.IO;
+using BBTimes.CustomContent.Builders;
 using BBTimes.Extensions;
 using BBTimes.Helpers;
-using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI;
-using System.IO;
+using MTM101BaldAPI.AssetTools;
 
 namespace BBTimes.Manager
 {
-    internal static partial class BBTimesManager
+	internal static partial class BBTimesManager
 	{
 		static void CreateObjBuilders()
 		{
@@ -18,9 +18,8 @@ namespace BBTimes.Manager
 
 			// Vent Builder
 			StructureWithParameters vent = CreatorExtensions.CreateObjectBuilder<Structure_Duct>("DuctBuilder", out _, "Duct");
-			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 65 });
-			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 105 });
-			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 45 });
+			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
+			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
 
 			// Wall Bell Builder
 			vent = CreatorExtensions.CreateObjectBuilder<RandomForcedPostersBuilder>("ForcedPosterBuilder", out var forcedPosterBuilder);
@@ -29,37 +28,39 @@ namespace BBTimes.Manager
 			forcedPosterBuilder.posters = [
 				new WeightedPosterObject() {selection = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("wallbell.png")))]), weight = 100}
 				];
-			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(vent));
+			foreach (var fld in floorDatas)
+				fld.Value.ForcedObjectBuilders.Add(new(vent));
 
 			// Trapdoor Builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_Trapdoor>("Structure_Trapdoor", out _, "Trapdoor");
-			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
-			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 75 });
+			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
 
 			vent = CloneParameter(vent);
 			vent.parameters.minMax[0] = new(4, 5);
 			vent.parameters.chance[0] = 0.35f;
 
-			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 55 });
-			
+			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
+
 
 			// Camera Builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_Camera>("Structure_Camera", out _, "SecurityCamera");
 			vent.parameters.minMax[0] = new(3, 5);
 
-			//floorDatas[0].ForcedObjectBuilders.Add(vent);
+			//floorDatas[F1].ForcedObjectBuilders.Add(vent);
 
-			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
+			floorDatas[F2].ForcedObjectBuilders.Add(new(vent));
+			floorDatas[END].ForcedObjectBuilders.Add(new(vent));
 			vent = CloneParameter(vent);
 			vent.parameters.minMax[0] = new(5, 7);
 			vent.parameters.minMax[1] = new(12, 15);
 
-			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 45 });
+			floorDatas[F3].ForcedObjectBuilders.Add(new(vent));
 			vent = CloneParameter(vent);
 			vent.parameters.minMax[0] = new(3, 4);
 			vent.parameters.minMax[1] = new(9, 13);
 
-			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 25 });
+			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
+			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
 
 
 			// Squisher builder
@@ -67,8 +68,7 @@ namespace BBTimes.Manager
 
 			vent.parameters.minMax[0].z = 3;
 			vent.parameters.chance[0] = 0.15f;
-			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 25 });
-			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
+			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
 
 			vent = CloneParameter(vent);
 			vent.parameters.minMax[0] = new(2, 5);
@@ -76,27 +76,28 @@ namespace BBTimes.Manager
 			vent.parameters.minMax[2] = new(4, 6);
 			vent.parameters.chance[0] = 0.6f;
 
-			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 45 });
-			
+			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
+
 
 			// Small Door builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_SmallDoor>("Structure_SmallDoor", out _, "SmallDoor");
-			floorDatas.ForEach(x => x.ForcedObjectBuilders.Add(vent));
+			foreach (var fld in floorDatas)
+				fld.Value.ForcedObjectBuilders.Add(new(vent, LevelType.Schoolhouse, LevelType.Maintenance));
 
 			// ItemAlarm Builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_ItemAlarm>("Structure_ItemAlarm", out _, "ItemAlarm");
 
-			floorDatas[1].WeightedObjectBuilders.Add(new() { selection = vent, weight = 35 });
-			floorDatas[3].WeightedObjectBuilders.Add(new() { selection = vent, weight = 25 });
+			floorDatas[F3].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
+			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
 
 			vent = CloneParameter(vent);
 			vent.parameters.minMax[0] = new(6, 9);
-			floorDatas[2].WeightedObjectBuilders.Add(new() { selection = vent, weight = 55 });
-			
+			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
+
 
 			// SecretButton Builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_SecretButton>("Structure_SecretTimesButton", out _, "SecretButton");
-			floorDatas[2].ForcedObjectBuilders.Add(vent); // debugging purposes
+			floorDatas[F5].ForcedObjectBuilders.Add(new(vent));
 
 			static StructureWithParameters CloneParameter(StructureWithParameters bld) =>
 				new() { prefab = bld.prefab, parameters = new() { chance = bld.parameters.chance.CopyArray(), minMax = bld.parameters.minMax.CopyArray(), prefab = bld.parameters.prefab.CopyObjArray() } };

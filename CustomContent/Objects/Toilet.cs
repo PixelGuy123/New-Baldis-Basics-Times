@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
 {
-    public class Toilet : EnvironmentObject, IClickable<int>
-    {
+	public class Toilet : EnvironmentObject, IClickable<int>
+	{
 		[SerializeField]
 		internal SoundObject audFlush;
 
@@ -27,7 +27,7 @@ namespace BBTimes.CustomContent.Objects
 		public override void LoadingFinished()
 		{
 			base.LoadingFinished();
-			map = new(ec, PathType.Sound, transform);
+			map = new(ec, PathType.Sound, int.MaxValue, transform);
 		}
 
 		public void Clicked(int player)
@@ -90,5 +90,5 @@ namespace BBTimes.CustomContent.Objects
 		public void ClickableSighted(int player) { }
 		public void ClickableUnsighted(int player) { }
 
-    }
+	}
 }

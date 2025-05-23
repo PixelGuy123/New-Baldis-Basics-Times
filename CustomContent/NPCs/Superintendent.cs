@@ -1,7 +1,7 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using MTM101BaldAPI.Registers;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -30,7 +30,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -39,7 +39,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Initialize();
 
-			roomMap = new DijkstraMap(ec, PathType.Nav, transform);
+			roomMap = new DijkstraMap(ec, PathType.Nav, int.MaxValue, transform);
 
 			navigator.maxSpeed = speed;
 			navigator.SetSpeed(speed);

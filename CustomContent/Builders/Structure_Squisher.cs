@@ -1,4 +1,5 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
@@ -6,7 +7,6 @@ using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
@@ -52,7 +52,7 @@ namespace BBTimes.CustomContent.Builders
 			builder.squisherPre = squishBase;
 			builder.buttonPre = BBTimesManager.man.Get<GameButton>("buttonPre");
 
-			return new() { prefab = this, parameters = new() { chance = [0.35f], minMax = [new(1, 1), new(5, 9), new(4, 7)] } }; 
+			return new() { prefab = this, parameters = new() { chance = [0.35f], minMax = [new(1, 1), new(5, 9), new(4, 7)] } };
 			// Chance = chanceForButtons
 			// minMax = SquisherAmount, squisherSpeed, button range
 		}
@@ -102,7 +102,7 @@ namespace BBTimes.CustomContent.Builders
 				squ.GetComponentsInChildren<Renderer>().Do(spots[idx].AddRenderer);
 
 				if (rng.NextDouble() <= parameters.chance[0])
-					GameButton.BuildInArea(ec, spots[idx].position, spots[idx].position, rng.Next(parameters.minMax[2].x, parameters.minMax[2].z + 1), squ.gameObject, buttonPre, rng);
+					GameButton.BuildInArea(ec, spots[idx].position, rng.Next(parameters.minMax[2].x, parameters.minMax[2].z + 1), squ.gameObject, buttonPre, rng);
 
 				spots[idx].HardCover(CellCoverage.Up);
 				spots.RemoveAt(idx);
@@ -138,7 +138,7 @@ namespace BBTimes.CustomContent.Builders
 
 			Finished();
 		}
-		
+
 
 		[SerializeField]
 		internal Squisher squisherPre;
