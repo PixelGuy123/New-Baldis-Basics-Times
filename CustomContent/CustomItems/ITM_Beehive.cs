@@ -1,12 +1,12 @@
-﻿using BBTimes.Extensions;
-using BBTimes.CustomComponents;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-    public class ITM_Beehive : Item, IEntityTrigger, IItemPrefab
+	public class ITM_Beehive : Item, IEntityTrigger, IItemPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -26,12 +26,15 @@ namespace BBTimes.CustomContent.CustomItems
 			audStung = this.GetSound("poke.wav", "Beehive_Sting", SoundType.Effect, Color.white);
 
 			renderer = rendererBase;
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -66,16 +69,20 @@ namespace BBTimes.CustomContent.CustomItems
 			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
 			if (lifeTime < 0f)
 			{
+				if (caughtPlayer)
+					gauge.Deactivate();
 				Destroy(gameObject);
 				return;
 			}
-			
+
 			if (hasHit)
 			{
 				if (Time.timeScale != 0f)
 					renderer.transform.localPosition = Random.insideUnitSphere * 3f;
 				if (!e)
 				{
+					if (caughtPlayer)
+						gauge.Deactivate();
 					Destroy(gameObject);
 					return;
 				}
@@ -90,6 +97,9 @@ namespace BBTimes.CustomContent.CustomItems
 					e.AddForce(new((dir + Random.insideUnitSphere).normalized, force, -force * 0.8f));
 				}
 
+				if (caughtPlayer)
+					gauge.SetValue(stingingLifeTime, lifeTime);
+
 				return;
 			}
 			entity.UpdateInternalMovement(dir * speed * ec.EnvironmentTimeScale);
@@ -101,7 +111,8 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			if (hasHit || other.gameObject == target) return;
 			bool isnpc = other.CompareTag("NPC");
-			if (other.isTrigger && (isnpc || other.CompareTag("Player")))
+			caughtPlayer = other.CompareTag("Player");
+			if (other.isTrigger && (isnpc || caughtPlayer))
 			{
 				Entity e = other.GetComponent<Entity>();
 				if (e)
@@ -110,6 +121,12 @@ namespace BBTimes.CustomContent.CustomItems
 					this.e = e;
 					hasHit = true;
 					lifeTime = stingingLifeTime;
+					if (caughtPlayer)
+					{
+						gauge = Singleton<CoreGameManager>.Instance.GetHud(
+							other.GetComponent<PlayerManager>().playerNumber
+							).gaugeManager.ActivateNewGauge(gaugeSprite, stingingLifeTime);
+					}
 				}
 			}
 
@@ -125,7 +142,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		GameObject target = null;
 		float lifeTime = 200f, stingSecondsDelay = 0f;
-		bool hasHit = false;
+		bool hasHit = false, caughtPlayer = false;
 		EnvironmentController ec;
 		Entity e;
 
@@ -140,9 +157,13 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal SoundObject audBees, audStung;
+		[SerializeField]
+		Sprite gaugeSprite;
 
 		[SerializeField]
 		internal float minStingSecondDelayAddition = 0.01f, maxStingSecondDelayAddition = 0.8f, minStungForce = 4f, maxStungForce = 15f, speed = 35f, stingingLifeTime = 30f;
+
+		HudGauge gauge;
 
 		Vector3 dir;
 	}

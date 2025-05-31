@@ -588,7 +588,7 @@ namespace BBTimes
 			});
 		}
 
-		static Type[] _disabledByDefault_NPCs = [typeof(Glubotrony)]; // As requested by MSF
+		readonly static Type[] _disabledByDefault_NPCs = [typeof(Glubotrony)]; // As requested by MSF
 
 		static string _modPath = string.Empty;
 

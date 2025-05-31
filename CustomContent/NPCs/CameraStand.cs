@@ -1,10 +1,10 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
-using PixelInternalAPI.Classes;
+using BBTimes.Plugin;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -32,12 +32,14 @@ namespace BBTimes.CustomContent.NPCs
 
 			stunCanvas = canvas;
 			stunCanvas.gameObject.SetActive(false);
+
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 		}
 
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -67,12 +69,12 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void TakePicture(Entity e) =>
 			StartCoroutine(NormalPictureStun(e));
-		
+
 
 		IEnumerator NormalPictureStun(Entity e)
 		{
 			e?.ExternalActivity.moveMods.Add(moveMod);
-			float cooldown = 20f;
+			float cooldown = entityStunTime;
 			while (cooldown > 0f)
 			{
 				cooldown -= TimeScale * Time.deltaTime;
@@ -84,22 +86,26 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator PictureTimer(PlayerManager pm)
 		{
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, playerStunDelay);
+
 			Color color = image.color;
 			pm.Am.moveMods.Add(moveMod);
+
+			float totalDuration = playerStunDelay; // Total duration of the flash effect
+			float fadeInDuration = Singleton<PlayerFileManager>.Instance.reduceFlashing ? totalDuration * 0.25f : 0f; // Duration of the fade-in effect (25% of total duration if reduceFlashing is enabled)
+			float fadeOutDuration = totalDuration - fadeInDuration; // Duration of the fade-out effect
+
+			float timer = 0f;
 
 			if (Singleton<PlayerFileManager>.Instance.reduceFlashing)
 			{
 				color.a = 0f;
 				image.color = color;
-				while (true)
+
+				while (timer < fadeInDuration)
 				{
-					color.a += 3f * TimeScale * Time.deltaTime;
-					if (color.a >= 1f)
-					{
-						color.a = 1f;
-						image.color = color;
-						break;
-					}
+					timer += TimeScale * Time.deltaTime;
+					color.a = Mathf.Clamp01(timer / fadeInDuration); // Gradually increase alpha
 					image.color = color;
 					yield return null;
 				}
@@ -110,25 +116,20 @@ namespace BBTimes.CustomContent.NPCs
 				image.color = color;
 			}
 
-			float cooldown = 2.5f;
-			while (cooldown > 0f)
-			{
-				cooldown -= TimeScale * Time.deltaTime;
-				yield return null;
-			}
+			timer = 0f; // Reset timer for fade-out
 
-
-			while (true)
+			while (timer < fadeOutDuration)
 			{
-				color.a -= 0.25f * TimeScale * Time.deltaTime;
-				if (color.a <= 0f)
-				{
-					color.a = 0f;
-					break;
-				}
+				timer += TimeScale * Time.deltaTime;
+				color.a = Mathf.Clamp01(1f - (timer / fadeOutDuration)); // Gradually decrease alpha
+				gauge.SetValue(fadeOutDuration, fadeOutDuration - timer);
 				image.color = color;
 				yield return null;
 			}
+
+			color.a = 0f;
+			image.color = color;
+
 			pm.Am.moveMods.Remove(moveMod);
 			image.color = color;
 			DisableLatestTimer();
@@ -149,6 +150,11 @@ namespace BBTimes.CustomContent.NPCs
 				StopCoroutine(picTimer);
 				if (lastPlayer)
 				{
+					if (gauge)
+					{
+						gauge.Deactivate();
+						gauge = null;
+					}
 					lastPlayer.Am.moveMods.Remove(moveMod);
 					affectedByCamStand.RemoveAll(x => x.Key == this && x.Value == lastPlayer);
 				}
@@ -168,9 +174,16 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal UnityEngine.UI.Image image;
 
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float entityStunTime = 20f, playerStunDelay = 2.5f;
+
 		Coroutine picTimer;
 		PlayerManager lastPlayer;
-		
+		HudGauge gauge;
+
 		public static List<KeyValuePair<CameraStand, PlayerManager>> affectedByCamStand = [];
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.7f);
@@ -284,7 +297,7 @@ namespace BBTimes.CustomContent.NPCs
 						if (npc != cs && !npc.Blinded && npc.Navigator.isActiveAndEnabled && cs.looker.RaycastNPC(npc))
 							cs.TakePicture(npc.Navigator.Entity);
 				}
-				
+
 				cs.behaviorStateMachine.ChangeState(new CameraStand_WaitToRespawn(cs));
 			}
 		}

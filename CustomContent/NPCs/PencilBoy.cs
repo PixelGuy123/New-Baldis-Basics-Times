@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
 using BBTimes.Extensions;
+using BBTimes.Plugin;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
 using PixelInternalAPI.Components;
@@ -34,6 +35,8 @@ namespace BBTimes.CustomContent.NPCs
 			happySprite = storedSprites[2];
 			superAngrySprite = storedSprites[3];
 			spriteRenderer[0].sprite = storedSprites[0];
+
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 		}
 
 		public void SetupPrefabPost() { }
@@ -74,7 +77,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal void AngryWander(bool forced)
 		{
-			if (forced || Random.value <= 0.3f)
+			if (forced || Random.value <= angryHummingChance)
 				audMan.PlayRandomAudio(audWandering);
 		}
 
@@ -125,6 +128,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			PlayerTurnAround();
 			disabledPlayer = player.GetMovementStatModifier();
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(player.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, stabLifeTime);
 			if (superAngry)
 			{
 				player.plm.AddStamina(-player.plm.stamina, true);
@@ -147,13 +151,15 @@ namespace BBTimes.CustomContent.NPCs
 		IEnumerator DisabledPlayerCooldown(bool superStab)
 		{
 			disabledPlayer.AddModifier("staminaRise", superStab ? stMod : normStMod);
-			float time = 10f;
+			float time = stabLifeTime;
 			while (time > 0f)
 			{
 				time -= TimeScale * Time.deltaTime;
+				gauge.SetValue(stabLifeTime, time);
 				yield return null;
 			}
 			disabledPlayer.RemoveModifier(superStab ? stMod : normStMod);
+			gauge.Deactivate();
 
 			yield break;
 		}
@@ -166,6 +172,7 @@ namespace BBTimes.CustomContent.NPCs
 				disabledPlayer.RemoveModifier(stMod);
 				disabledPlayer.RemoveModifier(normStMod);
 			}
+			gauge?.Deactivate();
 		}
 
 		readonly ValueModifier stMod = new(0f), normStMod = new(0.45f);
@@ -181,13 +188,23 @@ namespace BBTimes.CustomContent.NPCs
 		internal SoundObject[] audWandering;
 
 		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float stabLifeTime = 10f, speed = 15f, foundSpeed = 18f, superAngrySpeed = 38f;
+
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float angryHummingChance = 0.3f;
+
+		[SerializeField]
 		internal Sprite findPlayerSprite, angrySprite, superAngrySprite, happySprite;
+
+		HudGauge gauge;
 
 		Vector3 lastSightedPlayerLocation = default;
 
 		internal Vector3 LastSightedPlayerLocation => lastSightedPlayerLocation;
-
-		const float speed = 15f, foundSpeed = 18f, superAngrySpeed = 38f;
 
 		readonly ValueModifier lookerMod = new(float.MaxValue);
 

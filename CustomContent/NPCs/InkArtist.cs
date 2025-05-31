@@ -1,17 +1,19 @@
-﻿using BBTimes.Extensions;
+﻿using System.Collections;
+using System.Collections.Generic;
 using BBTimes.CustomComponents;
-using PixelInternalAPI.Extensions;
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
+using BBTimes.Extensions;
+using BBTimes.Plugin;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Components;
-using System.Collections.Generic;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class InkArtist : NPC, INPCPrefab
+	// TODO: assign the blob sound recently added
+	public class InkArtist : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -37,12 +39,18 @@ namespace BBTimes.CustomContent.NPCs
 
 			inkWallRenderer.transform.localScale = new(2f, 1f, 1f);
 			inkWallRenderer.transform.localPosition = Vector3.forward * -0.5f;
+
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
+
+			// Blob Setup
+			blobImage = ObjectCreationExtensions.CreateImage(canvas, this.GetSprite(20f, "inkBlob.png"), false);
+			blobImage.gameObject.SetActive(false); // Will serve as prefab
 		}
 
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -52,22 +60,36 @@ namespace BBTimes.CustomContent.NPCs
 		internal AudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject audSplash;
+		internal SoundObject audSplash, audBlob;
 
 		[SerializeField]
 		internal Canvas stunCanvas;
 
 		[SerializeField]
-		internal Image image;
+		internal Image image, blobImage;
 
 		[SerializeField]
 		internal VisualAttacher attPre;
 
 		[SerializeField]
-		internal float maxInkCooldown = 12f;
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float maxInkCooldown = 12f, minRngBlobSize = 0.5f, maxRngBlobSize = 1.5f;
+		[SerializeField]
+		internal int inkShakeRemovals = 3, minBlobsPerShake = 2, maxBlobsPerShake = 5;
+		[SerializeField]
+		internal float shakeSensitivity = 120f; // degrees per second
+		[SerializeField]
+		internal float shakeCooldown = 0.5f; // seconds between shakes
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float fadeEffectFactor = 0.125f, blobBoundaryFactor = 0.8f;
+
+		HudGauge gauge;
 
 		Coroutine uiInkCooldown;
-		readonly List<KeyValuePair<NPCAttributesContainer ,ValueModifier>> affectedNpcs = [];
+		readonly List<KeyValuePair<NPCAttributesContainer, ValueModifier>> affectedNpcs = [];
 		static internal readonly List<KeyValuePair<PlayerManager, InkArtist>> affectedPlayers = [];
 
 		public override void Initialize()
@@ -88,7 +110,23 @@ namespace BBTimes.CustomContent.NPCs
 			if (uiInkCooldown != null)
 				StopCoroutine(uiInkCooldown);
 
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, maxInkCooldown);
+
 			uiInkCooldown = StartCoroutine(InkCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam));
+		}
+
+		void CreateRandomBlobAndDisperse(Vector2 boundaries)
+		{
+			var blob = Instantiate(blobImage);
+			blob.transform.SetParent(stunCanvas.transform, false);
+
+
+			var randPos = new Vector2(Random.Range(-boundaries.x, boundaries.x), Random.Range(-boundaries.y, boundaries.y));
+			blob.rectTransform.localPosition = new Vector2(randPos.x, randPos.y);
+			blob.rectTransform.localScale = Vector2.one * Random.Range(minRngBlobSize, maxRngBlobSize);
+
+			blob.gameObject.SetActive(true);
+			blob.StartCoroutine(BlobDisperse(blob));
 		}
 
 		public void InkEntity(NPC ent)
@@ -108,6 +146,160 @@ namespace BBTimes.CustomContent.NPCs
 			if (uiInkCooldown != null)
 				StopCoroutine(uiInkCooldown);
 			affectedPlayers.RemoveAll(x => x.Value == this);
+		}
+
+		public override void Despawn()
+		{
+			base.Despawn();
+			while (affectedNpcs.Count != 0)
+			{
+				affectedNpcs[0].Key?.RemoveLookerMod(affectedNpcs[0].Value);
+				affectedNpcs.RemoveAt(0);
+			}
+
+			affectedPlayers.RemoveAll(x => x.Value == this);
+
+			gauge?.Deactivate();
+		}
+
+		IEnumerator InkCamera(Camera target)
+		{
+			stunCanvas.gameObject.SetActive(true);
+			stunCanvas.worldCamera = target;
+			Vector3 ogSize = Vector3.one;
+			Vector3 zero = Vector3.zero;
+
+			float fadeTime = maxInkCooldown * fadeEffectFactor; // x% is used for fade in/out effect
+			float displayTime = maxInkCooldown * (1f - fadeEffectFactor * 2f); // The rest of the cooldown is display on screen
+			float totalTime = fadeTime * 2f + displayTime;
+			float t = 0f;
+
+			image.transform.localScale = Vector3.zero;
+
+			// --- Shake mechanic state ---
+			int shakesLeft = inkShakeRemovals;
+			Quaternion lastRot = target.transform.rotation;
+			float shakeTimer = 0f;
+
+			// Fade-in
+			t = 0f;
+			while (t < fadeTime)
+			{
+				t += ec.EnvironmentTimeScale * Time.deltaTime;
+				image.transform.localScale = Vector3.Lerp(zero, ogSize, t / fadeTime);
+				gauge.SetValue(totalTime, totalTime - t);
+				yield return null;
+			}
+			image.transform.localScale = ogSize;
+
+			// Full display with shake detection
+			t = 0f;
+			totalTime -= fadeTime; // Remove one fadeTime from the total
+			while (t < displayTime)
+			{
+				// --- Shake detection ---
+				shakeTimer -= ec.EnvironmentTimeScale * Time.deltaTime;
+				Quaternion currentRot = target.transform.rotation;
+				float angleDelta = Quaternion.Angle(lastRot, currentRot) / Time.deltaTime;
+				lastRot = currentRot;
+
+				if (shakesLeft > 0 && shakeTimer <= 0f && angleDelta > shakeSensitivity)
+				{
+					shakesLeft--;
+					shakeTimer = shakeCooldown;
+					// Shrink ink image with bouncy effect
+					yield return StartCoroutine(ShrinkInkBouncy(image, ogSize, zero, 0.18f, shakesLeft <= 0));
+
+					// Spawn blobs
+					int blobCount = Random.Range(minBlobsPerShake, maxBlobsPerShake + 1);
+					Vector2 bounds = new(image.rectTransform.rect.width, image.transform.localScale.x * blobBoundaryFactor);
+					for (int i = 0; i < blobCount; i++)
+						CreateRandomBlobAndDisperse(bounds);
+
+					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audBlob);
+
+					// If no shakes left, break early
+					if (shakesLeft <= 0)
+					{
+						goto finish;
+					}
+					// Restore ink image to full size for next shake
+					image.transform.localScale = ogSize;
+				}
+
+				t += ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge.SetValue(totalTime, totalTime - t);
+				yield return null;
+			}
+
+			// Fade-out
+			t = 0f;
+			totalTime -= displayTime; // Remove display time from the total
+			while (t < fadeTime)
+			{
+				t += ec.EnvironmentTimeScale * Time.deltaTime;
+				image.transform.localScale = Vector3.Lerp(ogSize, zero, t / fadeTime);
+				gauge.SetValue(totalTime, totalTime - t);
+				yield return null;
+			}
+			image.transform.localScale = zero;
+			stunCanvas.gameObject.SetActive(false);
+
+		finish:
+
+			gauge.Deactivate();
+
+			affectedPlayers.RemoveAll(x => x.Value == this);
+
+			yield break;
+		}
+
+		// --- Helper coroutine for bouncy shrink effect ---
+		IEnumerator ShrinkInkBouncy(Image img, Vector3 from, Vector3 to, float duration, bool disableAfterwards)
+		{
+			float t = 0f;
+			while (t < duration)
+			{
+				t += ec.EnvironmentTimeScale * Time.deltaTime;
+				// Bouncy effect using Mathf.PingPong
+				float progress = t / duration;
+				float bounce = Mathf.Sin(progress * Mathf.PI) * 0.2f + 0.8f; // 0.8-1.0 scale
+				img.transform.localScale = Vector3.Lerp(from, to, progress) * bounce;
+				yield return null;
+			}
+			img.transform.localScale = to;
+
+			if (disableAfterwards)
+				stunCanvas.gameObject.SetActive(false);
+		}
+
+		IEnumerator BlobDisperse(Image blob)
+		{
+			Vector2 startPos = blobImage.rectTransform.localPosition;
+			Vector2 endPos = Storage.Const_RefScreenSize * 2.5f; // Expand a bit to actually go off-screen
+
+			// If the blob is to the left, then does the screen size (-x)
+			if (startPos.x < 0)
+				endPos.x *= -1f;
+			// Same for the y position
+			if (startPos.y < 0)
+				endPos.y *= -1f;
+
+			// Choose between a random x or y direction to exit
+			if (Random.value < 0.5f)
+				endPos.x = Random.Range(-endPos.x, endPos.x);
+			else
+				endPos.y = Random.Range(-endPos.y, endPos.y);
+
+			float t = 0f;
+			while (t < 1f)
+			{
+				t += ec.EnvironmentTimeScale * Time.deltaTime;
+				blob.rectTransform.localPosition = Vector2.Lerp(startPos, endPos, t);
+				yield return null;
+			}
+
+			Destroy(blob.gameObject);
 		}
 
 		IEnumerator InkNPC(GameObject selfDestruct, NPC e)
@@ -132,65 +324,6 @@ namespace BBTimes.CustomContent.NPCs
 				Destroy(selfDestruct);
 			yield break;
 
-		}
-
-		public override void Despawn()
-		{
-			base.Despawn();
-			while (affectedNpcs.Count != 0)
-			{
-				affectedNpcs[0].Key?.RemoveLookerMod(affectedNpcs[0].Value);
-				affectedNpcs.RemoveAt(0);
-			}
-
-			affectedPlayers.RemoveAll(x => x.Value == this);
-		}
-
-		IEnumerator InkCamera(Camera target)
-		{
-			stunCanvas.gameObject.SetActive(true);
-			stunCanvas.worldCamera = target;
-			Vector3 ogSize = Vector3.one;
-			Vector3 zero = Vector3.zero;
-
-			float t = 0;
-			image.transform.localScale = Vector3.zero;
-			while (true)
-			{
-				t += ec.EnvironmentTimeScale * Time.deltaTime * 12f;
-				
-				if (t >= 1f)
-				{
-					image.transform.localScale = ogSize;
-					break;
-				}
-				image.transform.localScale = Vector3.Lerp(zero, ogSize, t);
-
-				yield return null;
-			}
-
-			float delay = maxInkCooldown * 0.95f;
-			while (delay > 0f)
-			{
-				delay -= ec.EnvironmentTimeScale * Time.deltaTime;
-				yield return null;
-			}
-			t = 0;
-			while (true)
-			{
-				t += ec.EnvironmentTimeScale * Time.deltaTime * 12f;
-				if (t >= 1)
-				{
-					stunCanvas.gameObject.SetActive(false);
-					break;
-				}
-				image.transform.localScale = Vector3.Lerp(ogSize, zero, t);
-				yield return null;
-			}
-
-			affectedPlayers.RemoveAll(x => x.Value == this);
-
-			yield break;
 		}
 
 		internal class InkArtist_StateBase(InkArtist art) : NpcState(art)
@@ -219,7 +352,7 @@ namespace BBTimes.CustomContent.NPCs
 					var isPlayer = other.CompareTag("Player");
 					if (isPlayer || other.CompareTag("NPC"))
 					{
-						
+
 						if (isPlayer)
 						{
 							var pm = other.GetComponent<PlayerManager>();
@@ -237,7 +370,7 @@ namespace BBTimes.CustomContent.NPCs
 							art.InkEntity(e);
 							inkCooldown += art.maxInkCooldown * 0.4f;
 						}
-						
+
 					}
 				}
 			}

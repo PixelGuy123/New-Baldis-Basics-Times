@@ -1,8 +1,8 @@
-﻿using BBTimes.Extensions;
+﻿using System.Collections;
 using BBTimes.CustomComponents;
-using System.Collections;
-using UnityEngine;
+using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -16,11 +16,14 @@ namespace BBTimes.CustomContent.CustomItems
 			canvas.name = "hardHatOverlay";
 			ObjectCreationExtensions.CreateImage(canvas, this.GetSprite(1f, "hardHatHud.png"));
 			this.canvas = canvas;
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 		public override bool Use(PlayerManager pm)
@@ -33,6 +36,7 @@ namespace BBTimes.CustomContent.CustomItems
 			this.pm = pm;
 			used = true;
 
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, lifeTime);
 			canvas.gameObject.SetActive(true);
 			canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 
@@ -47,9 +51,11 @@ namespace BBTimes.CustomContent.CustomItems
 			float cooldown = lifeTime;
 			while (cooldown > 0f)
 			{
+				gauge.SetValue(lifeTime, cooldown);
 				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
 				yield return null;
 			}
+			gauge.Deactivate();
 			comp.RemoveAttribute("protectedhead");
 			Destroy(gameObject);
 			yield break;
@@ -62,7 +68,11 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal float lifeTime = 120f;
+		[SerializeField]
+		internal Sprite gaugeSprite;
 
 		static bool used = false;
+
+		HudGauge gauge;
 	}
 }

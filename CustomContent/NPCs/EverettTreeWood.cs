@@ -4,6 +4,7 @@ using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents.EverettTreewood;
 using BBTimes.Extensions;
 using BBTimes.Manager;
+using BBTimes.Plugin;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -137,6 +138,8 @@ namespace BBTimes.CustomContent.NPCs
 			snowPre.canvas.name = "RedCanvas";
 			snowPre.canvas.gameObject.SetActive(false);
 			snowPre.canvas.transform.SetParent(snowPre.transform);
+
+			snowPre.gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 
 			ObjectCreationExtensions.CreateImage(snowPre.canvas, TextureExtensions.CreateSolidTexture(480, 360, new(1f, 0f, 0f, 0.45f))).name = "RedScreen";
 		}

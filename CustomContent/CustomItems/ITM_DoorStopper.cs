@@ -1,8 +1,7 @@
-﻿using BBTimes.Extensions;
+﻿using System.Collections;
 using BBTimes.CustomComponents;
-using UnityEngine;
-using System.Collections;
 using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -20,7 +19,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public string Name { get; set; }
 		public string Category => "items";
-		
+
 		public ItemObject ItmObj { get; set; }
 
 		public override bool Use(PlayerManager pm)
@@ -50,8 +49,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 			while (door.IsOpen)
 				yield return null;
-			
-			
+
+
 			Destroy(gameObject);
 		}
 

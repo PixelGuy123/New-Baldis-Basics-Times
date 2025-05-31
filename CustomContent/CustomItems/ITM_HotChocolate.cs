@@ -1,16 +1,16 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-    public class ITM_HotChocolate : ITM_StaminaDrinkable, IItemPrefab
-    {
+	public class ITM_HotChocolate : ITM_StaminaDrinkable, IItemPrefab
+	{
 		public void SetupPrefab()
 		{
 			var collider = gameObject.AddComponent<SphereCollider>();
@@ -26,6 +26,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 			image = ObjectCreationExtensions.CreateImage(canvas, this.GetSprite(1f, "hotCanvas.png"));
 			image.name = "HotImage";
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 
 		public void SetupPrefabPost() { }
@@ -52,7 +54,7 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public override void Despawn() =>
 			StartCoroutine(WaitForFade());
-		
+
 		IEnumerator FadeInImage()
 		{
 			image.color = new(1f, 1f, 1f, 0f);
@@ -87,7 +89,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		void Update() =>
 			transform.position = pm.transform.position;
-		
+
 
 		void OnTriggerStay(Collider other)
 		{

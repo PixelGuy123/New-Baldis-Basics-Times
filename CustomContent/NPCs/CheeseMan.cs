@@ -1,9 +1,10 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
-using System.Collections;
-using System.Collections.Generic;
+using BBTimes.Plugin;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -34,7 +35,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			audHitted = new SoundObject[5];
 			for (int i = 0; i < 5; i++)
-				audHitted[i] = this.GetSound($"CMS_Hit{i+1}.wav", $"Vfx_CheeseMan_Hit{i+1}", SoundType.Voice, subColor);
+				audHitted[i] = this.GetSound($"CMS_Hit{i + 1}.wav", $"Vfx_CheeseMan_Hit{i + 1}", SoundType.Voice, subColor);
 
 			audHumming = this.GetSound("CMS_Hum.wav", "Vfx_CheeseMan_Hum", SoundType.Voice, subColor);
 
@@ -47,18 +48,20 @@ namespace BBTimes.CustomContent.NPCs
 
 			audSorry = new SoundObject[5];
 			for (int i = 0; i < 5; i++)
-				audSorry[i] = this.GetSound($"CMS_Sorry{i+1}.wav", $"Vfx_CheeseMan_Sorry{i+1}", SoundType.Voice, subColor);
+				audSorry[i] = this.GetSound($"CMS_Sorry{i + 1}.wav", $"Vfx_CheeseMan_Sorry{i + 1}", SoundType.Voice, subColor);
 
 			audAngry = new SoundObject[3];
 			for (int i = 0; i < 3; i++)
-				audAngry[i] = this.GetSound($"CMS_Watch{i+1}.wav", $"Vfx_CheeseMan_Watch{i+1}", SoundType.Voice, subColor);
+				audAngry[i] = this.GetSound($"CMS_Watch{i + 1}.wav", $"Vfx_CheeseMan_Watch{i + 1}", SoundType.Voice, subColor);
 
 			audBumpNoise = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
+
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -90,6 +93,11 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal Sprite[] sprsWalking, sprsWalkHumming, sprHit, sprStunned, sprsOfferYTP, sprBlankFace, sprAngryTalk;
 
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		HudGauge gauge;
+
 		readonly MovementModifier moveMod = new(Vector3.zero, 1f);
 
 
@@ -118,7 +126,7 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.SetSpeed(17.5f);
 
 			animComp.animation = humming ? sprsWalkHumming : sprsWalking;
-			
+
 			if (humming)
 			{
 				audMan.FlushQueue(true);
@@ -146,7 +154,7 @@ namespace BBTimes.CustomContent.NPCs
 				StopCoroutine(sorrySequ);
 			sorrySequ = StartCoroutine(SorrySequence(wasPlayer ? e : null));
 
-			StartCoroutine(StunEntity(e));
+			StartCoroutine(StunEntity(e, wasPlayer));
 		}
 		IEnumerator SorrySequence(Entity playerToOffer)
 		{
@@ -187,7 +195,7 @@ namespace BBTimes.CustomContent.NPCs
 				audMan.FlushQueue(true);
 				if (!angry)
 					yield break;
-				
+
 				animComp.animation = sprBlankFace;
 
 				delay = 0.35f;
@@ -212,16 +220,21 @@ namespace BBTimes.CustomContent.NPCs
 
 			yield break;
 		}
-		IEnumerator StunEntity(Entity e)
+		IEnumerator StunEntity(Entity e, bool wasPlayer)
 		{
 			affectedActMods.Add(e.ExternalActivity);
 			e.ExternalActivity.moveMods.Add(moveMod);
-			float time = Random.Range(minStunDelay, maxStunDelay);
+			float time = Random.Range(minStunDelay, maxStunDelay), ogTime = time;
+			if (wasPlayer)
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(e.GetComponent<PlayerManager>().playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, time);
 			while (time > 0f)
 			{
 				time -= TimeScale * Time.deltaTime;
+				if (wasPlayer)
+					gauge.SetValue(ogTime, time);
 				yield return null;
 			}
+			gauge?.Deactivate();
 			if (e && e.ExternalActivity)
 			{
 				e.ExternalActivity.moveMods.Remove(moveMod);
@@ -231,6 +244,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Despawn()
 		{
 			base.Despawn();
+			gauge?.Deactivate();
 			while (affectedActMods.Count != 0)
 			{
 				affectedActMods[0]?.moveMods.Remove(moveMod);
@@ -264,7 +278,7 @@ namespace BBTimes.CustomContent.NPCs
 			humCool -= chm.TimeScale * Time.deltaTime;
 			if (humCool <= 0f)
 				chm.behaviorStateMachine.ChangeState(new CheeseMan_WalkingHumming(chm));
-			
+
 		}
 	}
 

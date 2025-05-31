@@ -101,7 +101,7 @@ namespace BBTimes.Manager
 				var floorData = floorDataPair.Value;
 				for (int i = 0; i < floorData.NPCs.Count; i++)
 				{
-					if (isChristmas && floorData.NPCs[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+					if (isChristmas && floorData.NPCs[i].selection.GetMeta().tags.Contains(Storage.ChristmasSpecial_TimesTag))
 					{
 						floorData.NPCs[i].weight = Mathf.FloorToInt(floorData.NPCs[i].weight * 1.45f);
 						var dat = floorData.NPCs[i].selection.GetComponent<INPCPrefab>();
@@ -113,14 +113,14 @@ namespace BBTimes.Manager
 				// -- Items --
 				for (int i = 0; i < floorData.Items.Count; i++)
 				{
-					if (isChristmas && floorData.Items[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+					if (isChristmas && floorData.Items[i].selection.GetMeta().tags.Contains(Storage.ChristmasSpecial_TimesTag))
 						floorData.Items[i].weight = Mathf.FloorToInt(floorData.Items[i].weight * 1.95f);
 				}
 
 				// -- Random Events --
 				for (int i = 0; i < floorData.Events.Count; i++)
 				{
-					if (isChristmas && floorData.Events[i].selection.GetMeta().tags.Contains(ConstantStorage.ChristmasSpecial_TimesTag))
+					if (isChristmas && floorData.Events[i].selection.GetMeta().tags.Contains(Storage.ChristmasSpecial_TimesTag))
 						floorData.Events[i].weight = Mathf.FloorToInt(floorData.Events[i].weight * 1.5f);
 				}
 			}

@@ -1,11 +1,11 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using System.Linq;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -26,7 +26,8 @@ namespace BBTimes.CustomContent.NPCs
 
 
 
-			var system = new GameObject("JerryParticles").AddComponent<ParticleSystem>();
+			var system = GameExtensions.GetNewParticleSystem();
+			system.name = "JerryParticles";
 			system.transform.SetParent(transform);
 			system.transform.localPosition = Vector3.forward * 1.25f;
 			system.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = this.GetTexture("freezingParticles.png") };
@@ -74,7 +75,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -179,7 +180,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.VirtualUpdate();
 			if (nextPos != zero)
 				transform.RotateSmoothlyToNextPoint(nextPos, 1f);
-			
+
 		}
 
 		public bool ItemFits(Items itm) =>
@@ -201,7 +202,7 @@ namespace BBTimes.CustomContent.NPCs
 
 				cells.RemoveAll(x => x.TileMatches(currentCell.room));
 
-				return cells.Count == 0 ? 
+				return cells.Count == 0 ?
 					this.cells[Random.Range(0, this.cells.Count)] :
 					cells[Random.Range(0, cells.Count)];
 			}

@@ -1,11 +1,11 @@
-﻿using BBTimes.Extensions;
-using PixelInternalAPI.Components;
+﻿using System.Collections;
 using BBTimes.CustomComponents;
-using System.Collections;
-using UnityEngine;
-using MTM101BaldAPI.PlusExtensions;
+using BBTimes.Extensions;
 using MTM101BaldAPI.Components;
+using MTM101BaldAPI.PlusExtensions;
+using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -16,11 +16,13 @@ namespace BBTimes.CustomContent.CustomItems
 			audPower = this.GetSoundNoSub("potion_speedCoilNoises.wav", SoundType.Effect);
 			audMan = gameObject.CreateAudioManager(75f, 75f)
 				.MakeAudioManagerNonPositional();
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -36,6 +38,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 			this.pm = pm;
 			pm.RuleBreak("Drinking", 1.5f);
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, lifeTime);
 			StartCoroutine(Timer(pm.GetMovementStatModifier(), pm.GetCustomCam()));
 
 			return true;
@@ -58,12 +61,15 @@ namespace BBTimes.CustomContent.CustomItems
 
 			comp.AddModifier("walkSpeed", speedMod);
 			comp.AddModifier("runSpeed", speedMod);
-			float cooldown = 12f;
+			float cooldown = lifeTime;
 			while (cooldown > 0f)
 			{
 				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
+				gauge.SetValue(lifeTime, cooldown);
 				yield return null;
 			}
+
+			gauge.Deactivate();
 
 			comp.RemoveModifier(speedMod);
 
@@ -79,7 +85,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		void OnDestroy() =>
 			usedPotions--;
-		
+
 
 		static internal SoundObject audDrink;
 
@@ -87,7 +93,15 @@ namespace BBTimes.CustomContent.CustomItems
 		internal SoundObject audPower;
 
 		[SerializeField]
+		internal float lifeTime = 12f;
+
+		[SerializeField]
 		internal AudioManager audMan;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		HudGauge gauge;
 
 		readonly ValueModifier speedMod = new(2f);
 

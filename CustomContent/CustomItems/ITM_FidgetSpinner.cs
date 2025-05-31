@@ -1,17 +1,17 @@
-﻿using PixelInternalAPI.Extensions;
-using UnityEngine;
-using BBTimes.Extensions;
+﻿using System.Collections.Generic;
 using BBTimes.CustomComponents;
-using System.Collections.Generic;
+using BBTimes.Extensions;
 using BBTimes.Manager;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
 	public class ITM_FidgetSpinner : Item, IItemPrefab
 	{
 
-		public void SetupPrefab() 
-		{ 
+		public void SetupPrefab()
+		{
 			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(9f, "SpinnerPlaced.png"), false).AddSpriteHolder(out var fidgetRenderer, 0.5f, 0);
 
 			renderer.transform.SetParent(transform);
@@ -30,14 +30,14 @@ namespace BBTimes.CustomContent.CustomItems
 
 			nav = gameObject.AddComponent<MomentumNavigator>();
 			nav.maxSpeed = 95f;
-			nav.accelerationAddend = 9f;
+			nav.accel = 9f;
 		}
 
 		public void SetupPrefabPost() { }
 
 		public string Name { get; set; }
 		public string Category => "items";
-		
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -61,7 +61,7 @@ namespace BBTimes.CustomContent.CustomItems
 			rooms.AddRange(ec.rooms);
 			rooms.RemoveAll(x => x.type == RoomType.Hall);
 
-			nav.Initialize(ec, true);
+			nav.Initialize(ec);
 			nav.OnMove += (pos, dir) =>
 			{
 				ray.origin = pos;
@@ -71,6 +71,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 				pm.Teleport(pos);
 			};
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 
 			return true;
 		}
@@ -109,7 +111,7 @@ namespace BBTimes.CustomContent.CustomItems
 					e.AddForce(new((other.transform.position - transform.position).normalized, push, -push * 0.95f));
 				}
 			}
-			
+
 		}
 
 		void Update()
@@ -120,24 +122,26 @@ namespace BBTimes.CustomContent.CustomItems
 				return;
 			}
 			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
-			if (lifeTime <= 0f && nav.Targets.Count == 0)
+			if (lifeTime <= 0f && !nav.HasDestination)
 			{
 				Destroy(gameObject);
 				return;
 			}
-			
-			if (nav.Targets.Count == 0)
+
+			if (!nav.HasDestination)
 			{
-				ec.FindPath(ec.CellFromPosition(transform.position), rooms.Count == 0 ? ec.mainHall.TileAtIndex(Random.Range(0, ec.mainHall.TileCount)) : rooms[Random.Range(0, rooms.Count)].RandomEntitySafeCellNoGarbage(), PathType.Nav, out var cells, out bool flag);
-				if (flag)
-					nav.Targets.AddRange(cells.ConvertAll(x => x.FloorWorldPosition));
+				nav.FindPath(
+					(rooms.Count == 0 ?
+					ec.mainHall.TileAtIndex(Random.Range(0, ec.mainHall.TileCount)) :
+					rooms[Random.Range(0, rooms.Count)].RandomEntitySafeCellNoGarbage()
+					).FloorWorldPosition);
 			}
 
 			rotation.y += 35f * nav.Acceleration * ec.EnvironmentTimeScale * Time.deltaTime;
 			rotation.y %= 360f;
 			renderer.eulerAngles = rotation;
 
-			
+
 		}
 
 		void OnDestroy()
@@ -171,6 +175,10 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal MomentumNavigator nav;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+		HudGauge gauge;
 
 		readonly EntityOverrider overrider = new();
 	}

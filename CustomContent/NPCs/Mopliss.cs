@@ -1,13 +1,14 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
+using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
-using MTM101BaldAPI;
-using System.Collections.Generic;
 
 namespace BBTimes.CustomContent.NPCs
 {
+	// TODO: Add bloxy cola physics to mopliss water
 	public class Mopliss : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
@@ -31,7 +32,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -94,15 +95,17 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		internal bool IsHome => home == ec.CellFromPosition(transform.position);
-		internal Cell RandomSpotToGo { get
+		internal Cell RandomSpotToGo
+		{
+			get
 			{
 				var rooms = new List<RoomController>(ec.rooms);
 				if (rooms.Count != 1)
 				{
 					var roomFound = ec.CellFromPosition(transform.position).room;
-					rooms.RemoveAll(x => 
+					rooms.RemoveAll(x =>
 					x.type == RoomType.Hall ||
-					roomFound == x || 
+					roomFound == x ||
 					accessedRooms.Contains(x) ||
 					x.entitySafeCells.Count == 0);
 				}

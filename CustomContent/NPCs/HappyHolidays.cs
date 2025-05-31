@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
+	// TODO: make this disabled by default when it is not christmas (to appear at the store); otherwise, leave it enabled in christmas mode
 	public class HappyHolidays : NPC, INPCPrefab, IClickable<int>, IItemAcceptor
 	{
 		public void SetupPrefab()

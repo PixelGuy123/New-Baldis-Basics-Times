@@ -1,8 +1,8 @@
 ﻿using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using BBTimes.Manager;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
-using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -22,20 +22,25 @@ namespace BBTimes.CustomContent.CustomItems
 
 			this.renderer = trapRenderer;
 			entity = gameObject.CreateEntity(1f, 1f, renderer.transform);
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 		// -------------------------------------------------------------------
 		public override bool Use(PlayerManager pm)
 		{
 			this.pm = pm;
+			ec = pm.ec;
 			entity.Initialize(pm.ec, pm.ec.CellFromPosition(pm.transform.position).FloorWorldPosition);
 			pm.RuleBreak("littering", 5f, 0.8f);
 			owner = pm.gameObject;
+			cooldown = maxCooldown;
 
 			return true;
 		}
@@ -45,7 +50,9 @@ namespace BBTimes.CustomContent.CustomItems
 			if (other.gameObject == owner || active)
 				return;
 
-			if (other.CompareTag("NPC") || other.CompareTag("Player"))
+			caughtPlayer = other.CompareTag("Player");
+
+			if (other.CompareTag("NPC") || caughtPlayer)
 			{
 				var e = other.GetComponent<Entity>();
 				if (e != null && e.Grounded)
@@ -55,6 +62,11 @@ namespace BBTimes.CustomContent.CustomItems
 					target.ExternalActivity.moveMods.Add(moveMod);
 					audMan.PlaySingle(audTrap);
 					renderer.sprite = closedTrap;
+
+					if (caughtPlayer)
+						gauge = Singleton<CoreGameManager>.Instance.GetHud(
+							other.GetComponent<PlayerManager>().playerNumber
+							).gaugeManager.ActivateNewGauge(gaugeSprite, maxCooldown);
 				}
 			}
 		}
@@ -73,11 +85,15 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			if (!active) return;
 
-			cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+			cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+			if (caughtPlayer)
+				gauge.SetValue(maxCooldown, cooldown);
 			if (cooldown < 0f)
 			{
 				target.ExternalActivity.moveMods.Remove(moveMod);
 				Destroy(gameObject);
+				if (caughtPlayer)
+					gauge.Deactivate();
 			}
 		}
 
@@ -94,11 +110,17 @@ namespace BBTimes.CustomContent.CustomItems
 		internal PropagatedAudioManager audMan;
 
 		[SerializeField]
-		internal Sprite closedTrap;
+		internal Sprite closedTrap, gaugeSprite;
+
+		[SerializeField]
+		internal float maxCooldown = 15f;
+
+		EnvironmentController ec;
+		HudGauge gauge;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
 
-		bool active = false;
+		bool active = false, caughtPlayer = false;
 
 		float cooldown = 15f;
 

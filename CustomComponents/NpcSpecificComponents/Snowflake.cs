@@ -1,5 +1,5 @@
-﻿using BBTimes.Extensions;
-using System.Collections;
+﻿using System.Collections;
+using BBTimes.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
@@ -66,23 +66,31 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		IEnumerator SlowDown(Entity e, PlayerManager pm = null)
 		{
+
 			AffectEntity(e, pm);
 			hidden = true;
 			renderer.SetActive(false);
 			e.ExternalActivity.moveMods.Add(moveMod);
 			targettedMod = e.ExternalActivity;
 			PlayerAttributesComponent pmm = null;
+			float ogCooldown = freezeCooldown;
 			if (pm)
+			{
 				pmm = pm.GetAttribute();
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, ogCooldown);
+			}
 
 			while (freezeCooldown > 0f)
 			{
 				freezeCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge?.SetValue(ogCooldown, freezeCooldown);
 
 				if (!ignoreBootAttribute && pmm && pmm.HasAttribute("boots"))
 					break;
 				yield return null;
 			}
+
+			gauge?.Deactivate();
 
 			Destroy(gameObject);
 		}
@@ -119,6 +127,11 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		[SerializeField]
 		internal bool ignoreBootAttribute = false;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		HudGauge gauge;
 
 
 		bool initialized = false, hidden = false;

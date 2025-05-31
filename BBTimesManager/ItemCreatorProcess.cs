@@ -55,7 +55,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_Present>()
 				.SetGeneratorCost(0)
 				.SetShopPrice(950)
-				.SetMeta(ItemFlags.None, [ConstantStorage.ChristmasSpecial_TimesTag])
+				.SetMeta(ItemFlags.None, [Storage.ChristmasSpecial_TimesTag])
 				.SetNameAndDescription("PRS_Name", "PRS_Desc")
 				.Build("Present");
 
@@ -204,6 +204,7 @@ namespace BBTimes.Manager
 			((ITM_StaminaDrinkable)item.item).SetMod(1f, 1.8f, 0.75f);
 			((ITM_StaminaDrinkable)item.item).SetStaminaIncrease(5f);
 			((ITM_StaminaDrinkable)item.item).audDrink = man.Get<SoundObject>("audRobloxDrink");
+			((ITM_StaminaDrinkable)item.item).gaugeSprite = item.itemSpriteSmall;
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 90 });
 			JoeChef.AddFood(item, 55);
 

@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using BBTimes.Extensions;
+﻿using System.Collections;
 using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -12,11 +12,13 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			audMan = gameObject.CreateAudioManager(45, 65).MakeAudioManagerNonPositional();
 			audBlow = this.GetSoundNoSub("blowDrier.wav", SoundType.Effect);
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -31,6 +33,7 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan.maintainLoop = true;
 			audMan.QueueAudio(audBlow);
 			audMan.SetLoop(true);
+
 			StartCoroutine(Blow());
 			return true;
 		}
@@ -40,7 +43,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Blow()
 		{
-			float timer = Random.Range(15f, 30f);
+			float timer = Random.Range(minLifeTime, maxLifeTime), ogTimer = timer;
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, ogTimer);
+
 			float speed = 0f;
 			MovementModifier moveMod = new(Vector3.zero, 0.85f) { forceTrigger = true };
 			pm.Am.moveMods.Add(moveMod);
@@ -49,6 +54,7 @@ namespace BBTimes.CustomContent.CustomItems
 			while (timer > 0f)
 			{
 				timer -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge.SetValue(ogTimer, timer);
 				speed += Time.deltaTime * pm.ec.EnvironmentTimeScale * 1.2f;
 				if (speed > maxSpeed)
 					speed = maxSpeed;
@@ -56,6 +62,7 @@ namespace BBTimes.CustomContent.CustomItems
 				moveMod.movementAddend.Limit(maxSpeed, maxSpeed, maxSpeed);
 				yield return null;
 			}
+			gauge.Deactivate();
 
 			pm.Am.moveMods.Remove(moveMod);
 			Destroy(gameObject);
@@ -67,6 +74,14 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal SoundObject audBlow;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float minLifeTime = 15f, maxLifeTime = 30f;
+
+		HudGauge gauge;
 
 		const float maxSpeed = 45f;
 

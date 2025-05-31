@@ -14,8 +14,25 @@ using UnityEngine.UI;
 
 namespace BBTimes.Extensions
 {
-	public static class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
+	public static partial class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
 	{
+		public static ParticleSystem GetNewParticleSystem()
+		{
+			var particle = Object.Instantiate(
+						(
+							ItemMetaStorage.Instance.FindByEnum(Items.ChalkEraser).value.item as ChalkEraser
+						).cloud);
+
+			var obj = particle.gameObject;
+
+			Object.DestroyImmediate(particle.particles); // Destroys original Particle instance
+
+			particle.particles = obj.AddComponent<ParticleSystem>(); // Adds a new fresh ParticleSystem to have everything set to default values
+			var renderer = obj.GetComponent<ParticleSystemRenderer>();
+
+			renderer.material = new(renderer.material) { name = $"{particle.name}_Mat" };
+			return particle.particles;
+		}
 		public static T SpawnForeignNPC<T>(this EnvironmentController ec, T prefab, Vector3 position) where T : NPC
 		{
 			T npc2 = Object.Instantiate(prefab, ec.transform);

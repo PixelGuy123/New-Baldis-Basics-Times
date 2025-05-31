@@ -59,7 +59,7 @@ namespace BBTimes.Manager
 					SchoolTexture texType = data[1].GetSchoolTextureFromName(); // 1 expected to be the type
 					if (texType == SchoolTexture.Null)
 					{
-						//Debug.LogWarning("BB TIMES: Invalid data in SchoolTexture: " + data[1]);
+						Debug.LogWarning("BB TIMES: Invalid data in SchoolTexture: " + data[1]);
 						continue;
 					}
 					Texture2D tex = AssetLoader.TextureFromFile(file);
@@ -67,7 +67,7 @@ namespace BBTimes.Manager
 					if (modded)
 						AddTextureToEditor(data[0], tex);
 
-					//Debug.Log($"Texture size is {tex.width}x{tex.height}");
+					Debug.Log($"Texture size is {tex.width}x{tex.height}");
 
 					int weight = 50;
 					if (data.Length < 3 || int.TryParse(data[2], out weight))
@@ -101,8 +101,8 @@ namespace BBTimes.Manager
 							});
 						}
 					}
-					//else
-					//Debug.LogWarning("BB TIMES: Invalid data in Weight: " + data[2]);
+					else
+						Debug.LogWarning("BB TIMES: Invalid data in Weight: " + data[2]);
 
 				}
 			}

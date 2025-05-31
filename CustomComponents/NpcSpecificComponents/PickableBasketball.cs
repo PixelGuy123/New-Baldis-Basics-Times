@@ -1,7 +1,7 @@
-﻿using BBTimes.CustomContent.NPCs;
-using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using BBTimes.CustomContent.NPCs;
+using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
 {
@@ -97,6 +97,9 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 				Entity e = other.GetComponent<Entity>();
 				if (e)
 				{
+					// Already expects to be the Player only
+					gauge = Singleton<CoreGameManager>.Instance.GetHud(other.GetComponent<PlayerManager>().playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, stunCooldown);
+
 					Hide();
 					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audHit);
 
@@ -108,20 +111,22 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			}
 
 		}
-		public void EntityTriggerStay(Collider other){}
-		public void EntityTriggerExit(Collider other){}
+		public void EntityTriggerStay(Collider other) { }
+		public void EntityTriggerExit(Collider other) { }
 
 		IEnumerator Timer(Entity e)
 		{
 			e.ExternalActivity.moveMods.Add(moveMod);
 			affectedEntities.Add(e);
-			float cooldown = 15f;
+			float cooldown = stunCooldown;
 			while (cooldown > 0)
 			{
 				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge.SetValue(stunCooldown, cooldown);
 				yield return null;
 			}
 
+			gauge.Deactivate();
 			affectedEntities.Remove(e);
 			e.ExternalActivity.moveMods.Remove(moveMod);
 
@@ -133,6 +138,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		EnvironmentController ec;
 		PlayerManager expectedPlayer;
 		RoomController expectedRoom;
+		HudGauge gauge;
 		readonly List<Entity> affectedEntities = [];
 		float speed = 25f;
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.7f);
@@ -142,6 +148,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float stunCooldown = 15f;
 
 		[SerializeField]
 		internal Sprite[] spriteAnim;

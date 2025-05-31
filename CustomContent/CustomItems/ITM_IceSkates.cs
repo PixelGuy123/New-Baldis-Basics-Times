@@ -1,10 +1,10 @@
-﻿using BBTimes.CustomComponents;
-using PixelInternalAPI.Extensions;
-using UnityEngine;
-using PixelInternalAPI.Classes;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
-using System.Collections.Generic;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -23,6 +23,8 @@ namespace BBTimes.CustomContent.CustomItems
 			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
 			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(13.85f, "iceFloor.png");
 			slipMatPre.name = "IceFloor";
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 
 		public void SetupPrefabPost() { }
@@ -34,6 +36,8 @@ namespace BBTimes.CustomContent.CustomItems
 		public override bool Use(PlayerManager pm)
 		{
 			if (active) return false;
+
+			lifeTime = totalLifeTime;
 
 			this.pm = pm;
 			ec = pm.ec;
@@ -51,6 +55,8 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan.QueueAudio(audSkateloop);
 			audMan.SetLoop(true);
 
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, totalLifeTime);
+
 			currentDirection = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
 
 			return true;
@@ -65,6 +71,7 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 
 			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
+			gauge.SetValue(totalLifeTime, lifeTime);
 
 			if (lifeTime <= 0f)
 			{
@@ -97,6 +104,7 @@ namespace BBTimes.CustomContent.CustomItems
 			for (int i = 0; i < generatedSlippers.Count; i++)
 				Destroy(generatedSlippers[i].gameObject);
 			Destroy(gameObject);
+			gauge.Deactivate();
 		}
 
 		void CreateSlipper(Cell cell)
@@ -121,9 +129,11 @@ namespace BBTimes.CustomContent.CustomItems
 			if (active) Cleanup();
 		}
 
+		float lifeTime;
+
 		[SerializeField]
-		private float skateSpeed = 60f, rotationSpeed = 1.85f, lifeTime = 45f;
-		[SerializeField] 
+		private float skateSpeed = 60f, rotationSpeed = 1.85f, totalLifeTime = 45f;
+		[SerializeField]
 		private SoundObject audSkateloop, audSkateHitWall;
 		[SerializeField]
 		Entity entity;
@@ -132,6 +142,10 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		internal SlippingMaterial slipMatPre;
 
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		HudGauge gauge;
 		Vector3 currentDirection;
 		bool active = false;
 		EnvironmentController ec;

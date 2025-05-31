@@ -1,21 +1,24 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.PlusExtensions;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
-using BBTimes.Extensions;
 
 namespace BBTimes.CustomContent.CustomItems
 {
 	public class ITM_SugarFlavoredZestyBar : Item, IItemPrefab
 	{
-		public void SetupPrefab() =>
+		public void SetupPrefab()
+		{
 			audEat = GenericExtensions.FindResourceObject<ITM_ZestyBar>().audEat;
+			gaugeSprite = ItmObj.itemSpriteSmall;
+		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -23,6 +26,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			this.pm = pm;
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audEat);
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, lifeTime);
 			StartCoroutine(SugarEffect());
 			return true;
 		}
@@ -52,12 +56,15 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			cooldown = 10f;
+			cooldown = lifeTime;
 			while (cooldown > 0f)
 			{
 				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge.SetValue(lifeTime, cooldown);
 				yield return null;
 			}
+
+			gauge.Deactivate();
 
 			while (true)
 			{
@@ -75,5 +82,13 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal SoundObject audEat;
+
+		[SerializeField]
+		internal float lifeTime = 10f;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		HudGauge gauge;
 	}
 }

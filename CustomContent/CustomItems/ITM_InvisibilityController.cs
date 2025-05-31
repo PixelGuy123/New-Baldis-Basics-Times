@@ -11,6 +11,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			audUse = this.GetSound("longHighBeep.wav", "InvCon_Active", SoundType.Effect, Color.white);
 			audDeuse = this.GetSound("longDownBeep.wav", "InvCon_Deactive", SoundType.Effect, Color.white);
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 		public void SetupPrefabPost() { }
 
@@ -30,7 +31,9 @@ namespace BBTimes.CustomContent.CustomItems
 			use = true;
 			this.pm = pm;
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audUse);
-			pm.plm.Entity.SetVisible(true);
+			pm.plm.Entity.SetHidden(true);
+
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, totalCooldown);
 
 			StartCoroutine(Timer());
 
@@ -41,20 +44,30 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Timer()
 		{
-			float cooldown = 10f;
+			float cooldown = totalCooldown;
 			while (cooldown > 0f)
 			{
 				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
+				gauge.SetValue(totalCooldown, cooldown);
 				yield return null;
 			}
+			gauge.Deactivate();
 			Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audDeuse);
-			pm.plm.Entity.SetVisible(false);
+			pm.plm.Entity.SetHidden(false);
 			Destroy(gameObject);
 			yield break;
 		}
 
 		[SerializeField]
 		internal SoundObject audUse, audDeuse;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float totalCooldown = 10f;
+
+		HudGauge gauge;
 
 		static bool use = false;
 	}

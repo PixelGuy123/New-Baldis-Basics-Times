@@ -37,7 +37,7 @@ namespace BBTimes.Manager
 				.SetEnum("Frozenschool")
 				.SetMinMaxTime(85f, 110f)
 				.SetName("FrozenEvent")
-				.SetMeta(RandomEventFlags.None, ConstantStorage.ChristmasSpecial_TimesTag)
+				.SetMeta(RandomEventFlags.None, Storage.ChristmasSpecial_TimesTag)
 				.Build()
 				.SetupEvent();
 

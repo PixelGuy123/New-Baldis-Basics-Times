@@ -51,6 +51,9 @@ namespace BBTimes.ModPatches
 				core.audMan.FlushQueue(true);
 				return;
 			}
+			Debug.Log(__instance.Ec.timeOut);
+			Debug.Log(__instance.levelObject.finalLevel);
+
 			if (!BBTimesManager.plug.disableSchoolhouseEscape.Value && !__instance.Ec.timeOut && !__instance.levelObject.finalLevel) // Not F3
 				Singleton<MusicManager>.Instance.PlayMidi("Level_1_End", true); // Music
 		}

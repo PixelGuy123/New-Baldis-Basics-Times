@@ -4,6 +4,15 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
+	// TODO:
+	/*
+	Unlock metal windows (with my redesign)
+	Take basketballs from basketball shooters
+	Take notebooks from maintenance math machines
+	Tape (if it cant already)
+	Unlock super doors
+	Make Detention Bot redirect itself to another npc when trying to catch the player
+	*/
 	public class ITM_Screwdriver : Item, IItemPrefab
 	{
 		public void SetupPrefab()
@@ -13,8 +22,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 

@@ -1,9 +1,9 @@
 ﻿using System.Collections;
-using UnityEngine;
-using MTM101BaldAPI.PlusExtensions;
-using MTM101BaldAPI.Components;
-using BBTimes.Extensions;
 using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using MTM101BaldAPI.Components;
+using MTM101BaldAPI.PlusExtensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -28,6 +28,12 @@ namespace BBTimes.CustomContent.CustomItems
 			comp.AddModifier("staminaRise", stamRise);
 			comp.AddModifier("staminaDrop", stamDrop);
 
+			usesGauge = gaugeSprite != null;
+			if (usesGauge)
+			{
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, cooldown);
+			}
+
 			StartCoroutine(Timer(pm.plm, comp, mod));
 
 			return true;
@@ -35,13 +41,21 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Timer(PlayerMovement plm, PlayerMovementStatModifier comp, PlayerAttributesComponent mod)
 		{
-			
+			float total = cooldown;
+
 			while (cooldown > 0f)
 			{
 				plm.AddStamina(staminaIncreasePerTime * Time.deltaTime * plm.pm.PlayerTimeScale, true);
 				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
+
+				if (usesGauge)
+					gauge.SetValue(total, cooldown);
+
 				yield return null;
 			}
+
+			if (usesGauge)
+				gauge.Deactivate();
 
 			comp.RemoveModifier(stamMax);
 			comp.RemoveModifier(stamRise);
@@ -58,7 +72,7 @@ namespace BBTimes.CustomContent.CustomItems
 			Destroy(gameObject);
 		}
 
-		internal void SetMod(float staminamax, float staminarise, float staminadrop) 
+		internal void SetMod(float staminamax, float staminarise, float staminadrop)
 		{
 			staminaMaxMod = staminamax;
 			staminaRiseMod = staminarise;
@@ -81,5 +95,11 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal string attribute;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		protected HudGauge gauge;
+		bool usesGauge = false;
 	}
 }

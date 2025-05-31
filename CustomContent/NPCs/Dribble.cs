@@ -5,6 +5,7 @@ using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using MTM101BaldAPI;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -111,7 +112,10 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		const float pixelsPerUnit = 48f;
-		public void SetupPrefabPost() { }
+		public void SetupPrefabPost()
+		{
+			basketPre.gaugeSprite = ItemMetaStorage.Instance.FindByEnumFromMod(EnumExtensions.GetFromExtendedName<Items>("Basketball"), BBTimesManager.plug.Info).value.itemSpriteSmall;
+		}
 		public string Name { get; set; }
 		public string Category => "npcs";
 

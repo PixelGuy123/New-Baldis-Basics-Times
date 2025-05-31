@@ -1,15 +1,15 @@
-﻿using BBTimes.Extensions;
+﻿using System.Collections;
+using System.Collections.Generic;
 using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-    public class ITM_Basketball : Item, IEntityTrigger, IItemPrefab
+	public class ITM_Basketball : Item, IEntityTrigger, IItemPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -31,12 +31,15 @@ namespace BBTimes.CustomContent.CustomItems
 			spriteAnim = sprs;
 
 			renderer = rendererBase;
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -92,8 +95,8 @@ namespace BBTimes.CustomContent.CustomItems
 		public void EntityTriggerEnter(Collider other)
 		{
 			if (hasHit || other.gameObject == target) return;
-			bool isnpc = other.CompareTag("NPC");
-			if (other.isTrigger && (isnpc || other.CompareTag("Player")))
+			bool isnpc = other.CompareTag("NPC"), isPlayer = other.CompareTag("Player");
+			if (other.isTrigger && (isnpc || isPlayer))
 			{
 				Entity e = other.GetComponent<Entity>();
 				if (e)
@@ -104,16 +107,17 @@ namespace BBTimes.CustomContent.CustomItems
 					var offset = (other.transform.position - transform.position).normalized;
 					e.AddForce(new(offset, speed * 1.9f, -speed));
 
-					if (--maxHitsBeforeDying <= 0) {
+					if (--maxHitsBeforeDying <= 0)
+					{
 						renderer.enabled = false;
 						hasHit = true;
-						StartCoroutine(Timer(e, true));
+						StartCoroutine(Timer(e, isPlayer ? other.GetComponent<PlayerManager>() : null, true));
 						return;
 					}
 
 					dir = Vector3.Reflect(dir, offset);
 					entity.AddForce(new(dir, hitExtraMomentum, -hitExtraMomentum));
-					StartCoroutine(Timer(e, false));
+					StartCoroutine(Timer(e, isPlayer ? other.GetComponent<PlayerManager>() : null, false));
 				}
 			}
 
@@ -138,23 +142,30 @@ namespace BBTimes.CustomContent.CustomItems
 			yield break;
 		}
 
-		IEnumerator Timer(Entity e, bool destroy = true)
+		IEnumerator Timer(Entity e, PlayerManager player, bool destroy = true)
 		{
+			bool hasPlayer = player != null;
+			if (hasPlayer)
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(player.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, hitCooldown);
 			affectedEntities.Add(e);
 			e.ExternalActivity.moveMods.Add(moveMod);
-			float cooldown = 15f;
+			float cooldown = hitCooldown;
 			while (cooldown > 0)
 			{
 				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+				if (hasPlayer)
+					gauge.SetValue(hitCooldown, cooldown);
 				yield return null;
 			}
+
+			gauge?.Deactivate();
 
 			if (e)
 			{
 				e.ExternalActivity.moveMods.Remove(moveMod);
 				affectedEntities.Remove(e);
 			}
-			
+
 			if (destroy)
 				Destroy(gameObject);
 
@@ -193,7 +204,11 @@ namespace BBTimes.CustomContent.CustomItems
 		internal int maxHitsBeforeDying = 3;
 
 		[SerializeField]
-		internal float hitExtraMomentum = 6f;
+		internal float hitExtraMomentum = 6f, hitCooldown = 15f;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+		HudGauge gauge;
 
 		Vector3 dir;
 

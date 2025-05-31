@@ -1,10 +1,10 @@
-﻿using BBTimes.CustomComponents;
-using BBTimes.Extensions.ObjectCreationExtensions;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -26,6 +26,10 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		internal ParticleSystem breezeParticles;
 
+		[SerializeField]
+		internal Sprite gaugeSprite;
+		HudGauge gauge;
+
 		public void SetupPrefab()
 		{
 			gameObject.layer = LayerStorage.ignoreRaycast;
@@ -39,7 +43,8 @@ namespace BBTimes.CustomContent.CustomItems
 			audEat = GenericExtensions.FindResourceObjectByName<SoundObject>("ChipCrunch");
 			audBreathing = this.GetSoundNoSub("breathing.wav", SoundType.Effect);
 
-			breezeParticles = new GameObject("BreezeParticles").AddComponent<ParticleSystem>();
+			breezeParticles = GameExtensions.GetNewParticleSystem();
+			breezeParticles.name = "BreezeParticles";
 			breezeParticles.transform.SetParent(transform);
 			breezeParticles.transform.localPosition = Vector3.forward * 0.05f;
 			breezeParticles.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = this.GetTexture("breath.png") };
@@ -66,6 +71,8 @@ namespace BBTimes.CustomContent.CustomItems
 			col.enabled = true;
 			col.type = ParticleSystemCollisionType.World;
 			col.enableDynamicColliders = false;
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 
 		public void SetupPrefabPost() { }
@@ -79,6 +86,7 @@ namespace BBTimes.CustomContent.CustomItems
 			this.pm = pm;
 			ec = pm.ec;
 			audMan.QueueAudio(audEat);
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, lifeTime);
 			StartCoroutine(LifetimeCountdown());
 			return true;
 		}
@@ -88,7 +96,7 @@ namespace BBTimes.CustomContent.CustomItems
 			while (audMan.QueuedAudioIsPlaying)
 				yield return null;
 			isBreathing = true;
-			
+
 			audMan.maintainLoop = true;
 			audMan.SetLoop(true);
 			audMan.QueueAudio(audBreathing);
@@ -107,6 +115,7 @@ namespace BBTimes.CustomContent.CustomItems
 				if (timer > 0f)
 				{
 					timer -= ec.EnvironmentTimeScale * Time.deltaTime;
+					gauge.SetValue(lifeTime, timer);
 					if (timer <= 0f) // Should be triggered once
 					{
 						isBreathing = false;
@@ -120,6 +129,8 @@ namespace BBTimes.CustomContent.CustomItems
 				transform.rotation = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.rotation;
 				yield return null;
 			}
+
+			gauge.Deactivate();
 			Destroy(gameObject);
 		}
 

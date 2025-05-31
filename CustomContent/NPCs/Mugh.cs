@@ -1,17 +1,18 @@
-﻿using BBTimes.CustomComponents;
-using PixelInternalAPI.Extensions;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using MTM101BaldAPI;
 using System.Linq;
-using UnityEngine.UI;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Plugin;
+using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Mugh : NPC, IItemAcceptor, INPCPrefab
+	public class Mugh : NPC, IItemAcceptor, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -56,10 +57,13 @@ namespace BBTimes.CustomContent.NPCs
 
 			mudCanvas = can;
 			mudImage = img;
+
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -90,6 +94,12 @@ namespace BBTimes.CustomContent.NPCs
 			walkMod.movementMultiplier = spd;
 		}
 
+		public override void Despawn()
+		{
+			base.Despawn();
+			gauge?.Deactivate();
+		}
+
 		public void SeeYouNoise()
 		{
 			audMan.FlushQueue(true);
@@ -105,7 +115,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void HugState() =>
 			renderer.sprite = hugSprite;
-		
+
 
 		public void NormalState() =>
 			renderer.sprite = normSprite;
@@ -147,12 +157,24 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			mudCanvas.gameObject.SetActive(true);
 			mudCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, hugCooldown);
+		}
+
+		public void UpdateHugStatus(float time) =>
+			gauge?.SetValue(hugCooldown, time);
+
+		public void EndHug(bool success)
+		{
+			gauge?.Deactivate();
+			behaviorStateMachine.ChangeState(new Mugh_Wandering(this, success ? normalPostHugCooldown : sadPostHugCooldown, !success));
 		}
 
 		public void DisablePlayerHug() => mudCanvas.gameObject.SetActive(false);
 
 
 		public Image MudImg => mudImage;
+
+		HudGauge gauge;
 
 		[SerializeField]
 		internal SpriteRenderer renderer;
@@ -183,10 +205,16 @@ namespace BBTimes.CustomContent.NPCs
 		internal float slownessWalkFactor = 0.1f;
 
 		[SerializeField]
+		internal float hugCooldown = 20f, hugDistanceTolerance = 14f, normalPostHugCooldown = 5f, sadPostHugCooldown = 15f;
+
+		[SerializeField]
 		internal Canvas mudCanvas;
 
 		[SerializeField]
 		internal Image mudImage;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
 
 		readonly MovementModifier walkMod = new(Vector3.zero, 1f);
 
@@ -241,7 +269,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		readonly Entity pm = pm;
 		readonly MovementModifier hugMod = new(Vector3.zero, 0.72f);
-		float hugTolerance = 14f, hugCooldown = 12f;
+		float hugTolerance = mu.hugDistanceTolerance, hugCooldown = mu.hugCooldown;
 		const float minHugTolerance = 3f;
 
 		public override void Enter()
@@ -263,14 +291,14 @@ namespace BBTimes.CustomContent.NPCs
 			hugCooldown -= mu.TimeScale * Time.deltaTime;
 			if (!pm || hugCooldown < 0f)
 			{
-				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 5f));
+				mu.EndHug(true);
 				return;
 			}
 			var dist = mu.transform.position - pm.transform.position;
 			hugMod.movementAddend = dist * 212f * Time.deltaTime * mu.TimeScale;
 
 			if (dist.magnitude >= hugTolerance)
-				mu.behaviorStateMachine.ChangeState(new Mugh_Wandering(mu, 30f, true));
+				mu.EndHug(false);
 
 			hugTolerance -= mu.TimeScale * Time.deltaTime * dist.magnitude * 0.5f;
 			if (hugTolerance < minHugTolerance)

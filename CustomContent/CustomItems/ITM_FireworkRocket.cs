@@ -1,12 +1,12 @@
-﻿using BBTimes.CustomComponents;
-using PixelInternalAPI.Extensions;
-using UnityEngine;
-using System.Collections;
-using PixelInternalAPI.Classes;
-using MTM101BaldAPI;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
+using MTM101BaldAPI;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -77,6 +77,8 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan = gameObject.CreateAudioManager(75f, 95f).MakeAudioManagerNonPositional();
 			audRocketLoopSound = this.GetSoundNoSub("rocketLaunch.wav", SoundType.Effect);
 			audExplosionSound = BBTimesManager.man.Get<SoundObject>("audExplosion");
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 
 		public void SetupPrefabPost() { }
@@ -95,6 +97,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 			audMan.QueueAudio(audRocketLoopSound);
 			audMan.SetLoop(true);
+
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, maxLifeTime);
 
 			StartCoroutine(RocketLifetime());
 			return true;
@@ -139,18 +143,23 @@ namespace BBTimes.CustomContent.CustomItems
 				smokeParticles.transform.position = pm.transform.position + smokeParticles.transform.forward * 1.5f;
 				lifetime -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
 
-				if (prevMagnitude > hitSpeed && 
-					Physics.Raycast(pm.transform.position, moveMod.movementAddend.normalized, out var hit, rayCastHitDistance, collisionLayer, QueryTriggerInteraction.Collide) && 
+				gauge.SetValue(maxLifeTime, lifetime);
+
+				if (prevMagnitude > hitSpeed &&
+					Physics.Raycast(pm.transform.position, moveMod.movementAddend.normalized, out var hit, rayCastHitDistance, collisionLayer, QueryTriggerInteraction.Collide) &&
 					hit.transform.CompareTag("Wall"))
 					Explode();
 
 				yield return null;
 			}
+
 			Explode();
 		}
 
 		void Explode()
 		{
+			gauge.Deactivate();
+
 			active = false;
 			audMan.FlushQueue(true);
 			audMan.PlaySingle(audExplosionSound);
@@ -171,7 +180,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator DelayedDestroy()
 		{
-			
+
 			yield return new WaitForSecondsEnvironmentTimescale(pm.ec, dieDelay);
 			while (audMan.QueuedAudioIsPlaying)
 				yield return null;
@@ -197,13 +206,13 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		private int particleExplosionAmount = 100;
 
-		[SerializeField] 
+		[SerializeField]
 		private Canvas rocketCanvas;
 
 		[SerializeField]
 		private ParticleSystem smokeParticles, explosionSmokeParticles;
 
-		[SerializeField] 
+		[SerializeField]
 		private UnityEngine.UI.Image rocketImage;
 
 		[SerializeField]
@@ -217,6 +226,10 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		private LayerMask collisionLayer = LayerStorage.gumCollisionMask;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+		HudGauge gauge;
 
 		bool active = false;
 		MovementModifier moveMod;
