@@ -1,14 +1,15 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Plugin;
 using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Pix : NPC, INPCPrefab
+	public class Pix : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -65,12 +66,16 @@ namespace BBTimes.CustomContent.NPCs
 			laser.entity.SetGrounded(false);
 			laser.audMan = laserRend.gameObject.CreatePropagatedAudioManager(15, 45);
 			laser.audShock = soundObjects[9];
+
+			laser.gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
+
 			laserPre = laser;
 		}
 
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -107,7 +112,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void SetToNormalState() =>
 			currentState = 0;
-		
+
 
 		public override void VirtualUpdate()
 		{
@@ -146,7 +151,7 @@ namespace BBTimes.CustomContent.NPCs
 			var l = Instantiate(laserPre);
 			l.InitBeam(this, player);
 			StartCoroutine(ShootingAnimation(l));
-			
+
 
 			audMan.PlaySingle(audShoot);
 		}
@@ -185,7 +190,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator ShootingAnimation(PixLaserBeam beam)
 		{
-			
+
 			rotator.targetSprite = idleShootingSprites[1];
 			yield return null;
 			if (beam)
@@ -291,7 +296,7 @@ namespace BBTimes.CustomContent.NPCs
 			pix.Navigator.SetSpeed(26f);
 			pix.Navigator.FindPath(pix.transform.position, player.transform.position);
 			ChangeNavigationState(new NavigationState_TargetPosition(pix, 63, pix.Navigator.NextPoint));
-			
+
 		}
 		public override void DestinationEmpty()
 		{

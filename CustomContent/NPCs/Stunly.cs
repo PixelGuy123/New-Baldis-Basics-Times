@@ -35,6 +35,8 @@ namespace BBTimes.CustomContent.NPCs
 			billboard.transform.SetParent(transform);
 			billboard.gameObject.SetActive(false);
 			stars = billboard.gameObject.AddComponent<StarObject>();
+
+
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
@@ -121,6 +123,8 @@ namespace BBTimes.CustomContent.NPCs
 					var pm = subject.GetComponent<PlayerManager>();
 					if (pm)
 					{
+						gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, blindTime);
+
 						stunlyCanvas.gameObject.SetActive(true);
 						stunlyCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 						if (stunCor != null)
@@ -150,46 +154,55 @@ namespace BBTimes.CustomContent.NPCs
 			image.sprite = allSprites[7];
 			var color = image.color;
 			color.a = 0f;
-			while (true)
+			image.color = color;
+
+			// Define durations as percentages of blindTime:
+			float fadeInDuration = fadeInFactor * blindTime;
+			float holdDuration = (1f - (fadeInFactor * 2f)) * blindTime;
+			float fadeOutDuration = blindTime - fadeInDuration - holdDuration;
+			float additionConstant = 0f;
+
+			// Fade in phase:
+			float t = 0f;
+			while (t < fadeInDuration)
 			{
-				color.a += 4f * TimeScale * Time.deltaTime;
-				if (color.a >= 1f)
-				{
-					color.a = 1f;
-					break;
-				}
+				t += TimeScale * Time.deltaTime;
+				color.a = Mathf.Lerp(0f, 1f, Mathf.Clamp01(t / fadeInDuration));
+				gauge.SetValue(blindTime, blindTime - t); // t must reach fadeInDuration here
 				image.color = color;
 				yield return null;
 			}
-
-			image.color = color;
-
-			float cooldown = 2f;
-
-			while (cooldown > 0f)
-			{
-				cooldown -= TimeScale * Time.deltaTime;
-				yield return null;
-			}
-
-			image.sprite = allSprites[8];
 			color.a = 1f;
-			while (true)
+			image.color = color;
+
+			// Hold phase:
+			t = 0f;
+			additionConstant = fadeInDuration; // Store the fadeIn duration to add it later
+			while (t < holdDuration)
 			{
-				color.a -= 0.07f * TimeScale * Time.deltaTime;
-				if (color.a <= 0f)
-				{
-					color.a = 0f;
-					break;
-				}
-				image.color = color;
+				t += TimeScale * Time.deltaTime;
+				gauge.SetValue(blindTime, blindTime - (t + additionConstant)); // additionConstant is added from the previous phase
 				yield return null;
 			}
 
+			// Fade out phase:
+			t = 0f;
+			additionConstant += holdDuration; // Update additionConstant to include the hold duration
+			while (t < fadeOutDuration)
+			{
+				t += TimeScale * Time.deltaTime;
+				color.a = Mathf.Lerp(1f, 0f, Mathf.Clamp01(t / fadeOutDuration));
+				gauge.SetValue(blindTime, blindTime - (t + additionConstant)); // Should reach 0 here
+				image.color = color;
+				yield return null;
+			}
+			color.a = 0f;
 			image.color = color;
+
 			stunlyCanvas.gameObject.SetActive(false);
 			affectedByStunly.RemoveAll(x => x.Key == this);
 
+			gauge.Deactivate();
 			yield break;
 		}
 
@@ -207,6 +220,7 @@ namespace BBTimes.CustomContent.NPCs
 			stunlyState?.ForceRemoveEffect();
 			if (activeStar != null)
 				Destroy(activeStar);
+			gauge?.Deactivate();
 			base.Despawn();
 		}
 
@@ -236,12 +250,24 @@ namespace BBTimes.CustomContent.NPCs
 		public Canvas stunlyCanvas;
 
 		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float blindTime = 8.5f;
+
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float fadeInFactor = 0.2f;
+
+		[SerializeField]
 		internal UnityEngine.UI.Image image;
 
 		[SerializeField]
 		internal StarObject stars;
 
 		StarObject activeStar;
+
+		HudGauge gauge;
 
 		readonly ValueModifier lookerMod = new(0);
 

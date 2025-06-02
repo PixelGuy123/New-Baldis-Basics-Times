@@ -1,6 +1,6 @@
-﻿using BBTimes.CustomContent.Events;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using BBTimes.CustomContent.Events;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
@@ -11,7 +11,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		public void Initialize(NatureEvent ev, EnvironmentController ec, Cell cell, Vector3 spawnPos)
 		{
 			if (despawned || initialized) return;
-			
+
 			natEv = ev;
 			this.ec = ec;
 			spawn = cell;
@@ -121,7 +121,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		}
 
 		public bool ItemFits(Items item) =>
-			!despawned && initialized && cuttableItems.Contains(item); 
+			!despawned && initialized && cuttableItems.Contains(item);
 
 		NatureEvent natEv;
 		public NatureEvent NatureEv => natEv;
@@ -144,6 +144,11 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		[SerializeField]
 		internal BoxCollider collider;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		protected HudGauge gauge;
 
 		public static HashSet<Items> cuttableItems = [Items.Scissors];
 	}

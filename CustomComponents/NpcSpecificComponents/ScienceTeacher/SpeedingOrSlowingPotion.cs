@@ -15,6 +15,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 				_entityList[0].ExternalActivity.moveMods.Remove(speedMod);
 				_entityList.RemoveAt(0);
 			}
+
+			gauge?.Deactivate();
 		}
 
 		protected override void Initialize()
@@ -34,19 +36,26 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 
 				audMan.PlaySingle(buff ? audSpeedBuff : audSpeedNerf);
 				splashRenderer.sprite = buff ? sprFast : sprSlow;
-				StartCoroutine(Timer(entity, buff ? speedMod : slowMod));
+				StartCoroutine(Timer(entity, buff ? speedMod : slowMod, entity.GetComponent<PlayerManager>()));
 			}
 		}
 
-		IEnumerator Timer(Entity e, MovementModifier moveMod)
+		IEnumerator Timer(Entity e, MovementModifier moveMod, PlayerManager pm)
 		{
+			bool hasPm = pm != null;
 			e.ExternalActivity.moveMods.Add(moveMod);
-			float timer = Random.Range(minEffectCooldown, maxEffectCooldown);
+			float timer = Random.Range(minEffectCooldown, maxEffectCooldown), ogTimer = timer;
+			if (hasPm)
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, ogTimer);
+
 			while (timer > 0f)
 			{
 				timer -= ec.EnvironmentTimeScale * Time.deltaTime;
+				if (hasPm) gauge.SetValue(ogTimer, timer);
 				yield return null;
 			}
+
+			if (hasPm) gauge.Deactivate();
 
 			_entityList.Remove(e);
 			e.ExternalActivity.moveMods.Remove(moveMod);

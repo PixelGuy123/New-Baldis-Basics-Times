@@ -1,4 +1,5 @@
 ﻿using BBTimes.CustomContent.Objects;
+using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using UnityEngine;
 
@@ -19,7 +20,8 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public override void OnGenerationFinished()
 		{
 			base.OnGenerationFinished();
-			var particle = new GameObject(room.name + "_particles").AddComponent<ParticleSystem>();
+			var particle = GameExtensions.GetNewParticleSystem();
+			particle.gameObject.name = room.name + "_particles";
 			particle.transform.SetParent(transform);
 			particle.transform.localPosition = Vector3.up * 1.25f;
 			particle.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = particleTexture };

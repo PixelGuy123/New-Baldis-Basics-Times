@@ -1,24 +1,24 @@
-﻿using BBTimes.CustomContent.Objects;
-using BBTimes.Extensions;
-using PixelInternalAPI.Extensions;
-using BBTimes.ModPatches.EnvironmentPatches;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using BBTimes.CustomComponents;
+using BBTimes.CustomContent.Objects;
+using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.ModPatches.EnvironmentPatches;
 using MTM101BaldAPI;
-using PixelInternalAPI.Components;
 using PixelInternalAPI.Classes;
+using PixelInternalAPI.Components;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 
 namespace BBTimes.CustomContent.Builders
 {
-    public class Structure_Duct : StructureBuilder, IBuilderPrefab
+	public class Structure_Duct : StructureBuilder, IBuilderPrefab
 	{
 		public StructureWithParameters SetupBuilderPrefabs()
 		{
 			// Making of the main vent
-			var vent = new GameObject("Duct", typeof(Duct)) { layer = LayerStorage.ignoreRaycast};
+			var vent = new GameObject("Duct", typeof(Duct)) { layer = LayerStorage.ignoreRaycast };
 			vent.AddBoxCollider(Vector3.zero, new(9.99f, 10f, 9.99f), true);
 
 			var blockObj = new GameObject("VentPrefab_RaycastBlock");
@@ -48,7 +48,7 @@ namespace BBTimes.CustomContent.Builders
 			v.ventTexs = texs;
 			v.normalVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f); // Two propagated audio managers
 			v.gasLeakVentAudioMan = vent.CreatePropagatedAudioManager(2f, 25f);
-			v.ventAudios = [this.GetSoundNoSub("vent_normal.wav", SoundType.Effect), 
+			v.ventAudios = [this.GetSoundNoSub("vent_normal.wav", SoundType.Effect),
 				this.GetSound("vent_gasleak_start.wav", "Vfx_VentGasLeak", SoundType.Effect, Color.white),
 				this.GetSound("vent_gasleak_loop.wav", "Vfx_VentGasLeak", SoundType.Effect, Color.white),
 				this.GetSound("vent_gasleak_end.wav", "Vfx_VentGasLeak", SoundType.Effect, Color.white)];
@@ -62,7 +62,8 @@ namespace BBTimes.CustomContent.Builders
 
 			// Making of particles
 
-			var particle = new GameObject("VentPrefab_ParticleEmitter", typeof(BillboardRotator)).AddComponent<ParticleSystem>();
+			var particle = GameExtensions.GetNewParticleSystem();
+			particle.gameObject.name = "VentPrefab_ParticleEmitter";
 			particle.transform.SetParent(vent.transform);
 			particle.transform.localPosition = Vector3.up * 10f;
 			particle.transform.localRotation = Quaternion.Euler(15f, 0f, 0f);
@@ -131,7 +132,8 @@ namespace BBTimes.CustomContent.Builders
 
 		const float connectionSize = 2f;
 
-		public string Name { get; set; } public string Category => "objects";
+		public string Name { get; set; }
+		public string Category => "objects";
 
 
 
@@ -201,7 +203,7 @@ namespace BBTimes.CustomContent.Builders
 					{
 						if (connectionpos.ContainsKey(t.position)) continue;
 						var c = Instantiate(ventConnectionPrefab, t.ObjectBase); // Connection prefab will be index 1
-						//t.HardCover(CellCoverage.Up); Avoid this so lights aren't blocked off
+																				 //t.HardCover(CellCoverage.Up); Avoid this so lights aren't blocked off
 
 						t.AddRenderer(c.GetComponent<MeshRenderer>());
 
@@ -309,7 +311,7 @@ namespace BBTimes.CustomContent.Builders
 
 			Finished();
 		}
-		
+
 
 		[SerializeField]
 		public GameObject ventPrefab;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents.Mopliss;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using MTM101BaldAPI;
@@ -8,7 +9,6 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	// TODO: Add bloxy cola physics to mopliss water
 	public class Mopliss : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
@@ -19,8 +19,7 @@ namespace BBTimes.CustomContent.NPCs
 			var mop = this.GetSprite(29f, "mopliss.png");
 			spriteRenderer[0].sprite = mop;
 
-			slipMatPre = BBTimesManager.man.Get<SlippingMaterial>("SlipperyMatPrefab").SafeDuplicatePrefab(true);
-			((SpriteRenderer)slipMatPre.GetComponent<RendererContainer>().renderers[0]).sprite = this.GetSprite(26.1f, "mopLissWater.png");
+			SlipperController.CreateSlipperPackPrefab(this, this.GetSprite(26.1f, "mopLissWater.png"));
 
 			bucketPre = ObjectCreationExtensions.CreateSpriteBillboard(BBTimesManager.man.Get<Sprite>("fieldTripBucket")) // FireFuel_Sheet_0 is bucket
 				.AddSpriteHolder(out var renderer, 1.2f);
@@ -88,10 +87,9 @@ namespace BBTimes.CustomContent.NPCs
 
 		void SpawnSlipper(Cell cell)
 		{
-			var slip = Instantiate(slipMatPre);
-			slip.SetAnOwner(gameObject);
-			slip.transform.position = cell.FloorWorldPosition;
-			slip.StartCoroutine(GameExtensions.TimerToDestroy(slip.gameObject, ec, 30f));
+			var controller = SlipperController.CreateSlipperController(this);
+			controller.transform.position = cell.FloorWorldPosition;
+			controller.StartCoroutine(GameExtensions.TimerToDestroy(controller.gameObject, ec, 30f));
 		}
 
 		internal bool IsHome => home == ec.CellFromPosition(transform.position);
@@ -131,7 +129,9 @@ namespace BBTimes.CustomContent.NPCs
 		internal SoundObject audRefill;
 
 		[SerializeField]
-		internal SlippingMaterial slipMatPre;
+		internal Slipper slipperPre;
+		[SerializeField]
+		internal SlipperEffector slipperEffectorPre;
 
 		[SerializeField]
 		internal RendererContainer bucketPre;

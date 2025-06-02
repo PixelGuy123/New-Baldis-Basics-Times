@@ -1,10 +1,11 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
+using BBTimes.Plugin;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -43,11 +44,13 @@ namespace BBTimes.CustomContent.NPCs
 			snowPre.audHit = BBTimesManager.man.Get<SoundObject>("audGenericSnowHit");
 
 			snowPre.renderer = snowBallRenderer.transform;
+
+			snowPre.gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }

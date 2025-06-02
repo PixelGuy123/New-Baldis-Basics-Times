@@ -1,11 +1,12 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Plugin;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -30,7 +31,8 @@ namespace BBTimes.CustomContent.NPCs
 
 
 
-			var system = new GameObject("QuikerParticles").AddComponent<ParticleSystem>();
+			var system = GameExtensions.GetNewParticleSystem();
+			system.gameObject.name = "QuikerParticles";
 			system.transform.SetParent(transform);
 			system.transform.localPosition = Vector3.zero;
 			system.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = this.GetTexture("shadw.png") };
@@ -85,11 +87,13 @@ namespace BBTimes.CustomContent.NPCs
 			emission.rateOverTimeMultiplier = 30f;
 
 			blindingNpcPre = visualParts.gameObject.AddComponent<VisualAttacher>();
+
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -112,6 +116,12 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal VisualAttacher blindingNpcPre;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float blindnessTime = 15f;
 
 		public override void Initialize()
 		{
@@ -192,6 +202,8 @@ namespace BBTimes.CustomContent.NPCs
 				else
 					affectedPlayers.RemoveAt(i--);
 			}
+
+			gauge?.Deactivate();
 		}
 
 		public void BlindNPC(NPC npc)
@@ -202,9 +214,10 @@ namespace BBTimes.CustomContent.NPCs
 		public void BlindPlayer(PlayerManager player)
 		{
 			audMan.PlaySingle(audBlind);
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(player.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, blindnessTime);
 			affectedPlayers.Add(new(new(player, this), new(moveMod, new(fog, StartCoroutine(AffectPlayer(player))))));
 		}
-		
+
 
 		IEnumerator AffectNPC(NPC npc)
 		{
@@ -218,7 +231,7 @@ namespace BBTimes.CustomContent.NPCs
 			npc.Navigator.Am.moveMods.Add(moveMod);
 			affectedNpcs.Add(npc, att);
 
-			float delay = 15f;
+			float delay = blindnessTime;
 			while (delay > 0f)
 			{
 				delay -= ec.EnvironmentTimeScale * Time.deltaTime;
@@ -236,19 +249,22 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator AffectPlayer(PlayerManager pm)
 		{
+
 			pm.Am.moveMods.Add(moveMod);
 			ec.AddFog(fog);
 			var attacher = Instantiate(blindingNpcPre);
 			attacher.AttachTo(pm.transform, true);
 			attacher.SetOwnerRefToSelfDestruct(gameObject);
 
-			float delay = 15f;
+			float delay = blindnessTime;
 			while (delay > 0f)
 			{
 				delay -= ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge.SetValue(blindnessTime, delay);
 				yield return null;
 			}
 
+			gauge.Deactivate();
 			pm.Am.moveMods.Remove(moveMod);
 			affectedPlayers.RemoveAll(x => x.Key.Key == pm);
 			ec.RemoveFog(fog);
@@ -259,6 +275,7 @@ namespace BBTimes.CustomContent.NPCs
 			yield break;
 		}
 
+		HudGauge gauge;
 		Vector3 rendererPos, offset;
 		readonly Dictionary<NPC, ValueModifier> affectedNpcs = [];
 		internal static readonly List<KeyValuePair<KeyValuePair<PlayerManager, Quiker>, KeyValuePair<MovementModifier, KeyValuePair<Fog, Coroutine>>>> affectedPlayers = []; // yes
@@ -300,7 +317,7 @@ namespace BBTimes.CustomContent.NPCs
 					var pm = other.GetComponent<PlayerManager>();
 					if (pm && Quiker.affectedPlayers.FindIndex(x => x.Key.Key == pm) == -1)
 					{
-						pm.plm.Entity.AddForce(new(Quaternion.AngleAxis(Random.Range(-0.7854f, 0.7854f), Vector3.up) * (qu.Navigator.NextPoint - qu.transform.position).normalized, 
+						pm.plm.Entity.AddForce(new(Quaternion.AngleAxis(Random.Range(-0.7854f, 0.7854f), Vector3.up) * (qu.Navigator.NextPoint - qu.transform.position).normalized,
 							qu.Navigator.Speed, -qu.Navigator.Speed * 0.85f)); // 0.7854 radians = 45° degrees
 						qu.BlindPlayer(pm);
 

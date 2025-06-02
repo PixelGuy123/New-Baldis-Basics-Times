@@ -446,7 +446,7 @@ namespace BBTimes.Manager
 				.SetupNPCData("Quiker", "PST_Quiker_Name", "PST_Quiker_Desc", 0)
 				.MarkAsReplacement(55, Character.LookAt);
 
-			floorDatas[F3].NPCs.Add(new(npc, 20));
+			floorDatas[F4].NPCs.Add(new(npc, 20, LevelType.Maintenance));
 
 			// Jerry The Air Conditioner
 			npc = new NPCBuilder<JerryTheAC>(plug.Info)

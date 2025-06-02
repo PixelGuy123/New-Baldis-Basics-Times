@@ -1,5 +1,5 @@
-﻿using BBTimes.CustomContent.NPCs;
-using System.Collections;
+﻿using System.Collections;
+using BBTimes.CustomContent.NPCs;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents
@@ -41,11 +41,11 @@ namespace BBTimes.CustomComponents
 		public void EntityTriggerEnter(Collider other)
 		{
 			if (!flying || (other.gameObject == pix.gameObject && ignorePix)) return;
-
-			if (other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
+			bool wasPlayer = other.CompareTag("Player");
+			if (other.isTrigger && (other.CompareTag("NPC") || wasPlayer))
 			{
 				var entity = other.GetComponent<Entity>();
-				if (entity) 
+				if (entity)
 				{
 					flying = false;
 					if (other.gameObject == targetPlayer.gameObject)
@@ -53,7 +53,7 @@ namespace BBTimes.CustomComponents
 						pix?.SetAsSuccess();
 						renderer.gameObject.SetActive(false);
 					}
-						
+
 
 					audMan.QueueAudio(audShock);
 					audMan.SetLoop(true);
@@ -63,6 +63,9 @@ namespace BBTimes.CustomComponents
 					actMod = entity.ExternalActivity;
 					actMod.moveMods.Add(moveMod);
 					entity.AddForce(new(other.transform.position - transform.position, 9f, -8.5f));
+
+					if (wasPlayer)
+						gauge = Singleton<CoreGameManager>.Instance.GetHud(other.GetComponent<PlayerManager>().playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, lifeTime);
 
 					StartCoroutine(Timer());
 				}
@@ -94,13 +97,15 @@ namespace BBTimes.CustomComponents
 
 		IEnumerator Timer()
 		{
-			float time = 15f;
+			float time = lifeTime;
 			while (time > 0f)
 			{
 				time -= ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge?.SetValue(lifeTime, time);
 				yield return null;
 			}
 			actMod?.moveMods.Remove(moveMod);
+			gauge?.Deactivate();
 
 			Destroy(gameObject);
 
@@ -128,6 +133,13 @@ namespace BBTimes.CustomComponents
 		[SerializeField]
 		internal AudioManager audMan;
 
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float lifeTime = 15f;
+
+		HudGauge gauge;
 		Pix pix;
 		PlayerManager targetPlayer;
 		EnvironmentController ec;

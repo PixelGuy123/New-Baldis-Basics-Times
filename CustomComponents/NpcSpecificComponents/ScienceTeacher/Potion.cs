@@ -156,7 +156,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 				if (cooldown <= 0f)
 					Despawn();
-				
+
 				return;
 			}
 			entity.UpdateInternalMovement(dir);
@@ -202,8 +202,13 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 		internal CapsuleCollider collider, realCollider;
 
 		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
 		internal float gravityConstant = -4f, heightLimit = 9f, puddleRadius = 6.5f;
 
 		const float slownessConstant = 0.15f, heightForcedOffset = 5f, puddleSpeed = 2f;
+
+		protected HudGauge gauge;
 	}
 }

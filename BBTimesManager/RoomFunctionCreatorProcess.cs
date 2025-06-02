@@ -1,18 +1,18 @@
-﻿using MTM101BaldAPI.AssetTools;
-using BBTimes.Helpers;
-using BBTimes.CustomContent.RoomFunctions;
+﻿using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
-using MTM101BaldAPI;
 using System.Linq;
-using BBTimes.Extensions.ObjectCreationExtensions;
-using HarmonyLib;
+using BBTimes.CustomContent.Objects;
+using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Helpers;
+using HarmonyLib;
+using MTM101BaldAPI;
+using MTM101BaldAPI.AssetTools;
+using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
-using BBTimes.CustomContent.Objects;
-using MTM101BaldAPI.Registers;
+using UnityEngine;
 
 namespace BBTimes.Manager
 {
@@ -97,7 +97,8 @@ namespace BBTimes.Manager
 			shroom.sprUsed = sprites[1];
 			shroom.sprActive = sprites[0];
 
-			var system = new GameObject("Dusts").AddComponent<ParticleSystem>();
+			var system = GameExtensions.GetNewParticleSystem();
+			system.gameObject.name = "Dusts";
 			system.transform.SetParent(shroom.transform);
 			system.transform.localPosition = Vector3.up * shroom.renderer.transform.localPosition.y;
 			system.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
@@ -148,15 +149,17 @@ namespace BBTimes.Manager
 			rendCont.renderers = rendCont.renderers.AddToArray(partsRenderer);
 
 			var rngSpawner = AddFunctionToEveryRoom<RandomObjectSpawner>(PlaygroundPrefix);
-			rngSpawner.objectPlacer = new ObjectPlacer() { 
-				prefab = shroomObject.gameObject, 
-				coverage = CellCoverage.Down, 
+			rngSpawner.objectPlacer = new ObjectPlacer()
+			{
+				prefab = shroomObject.gameObject,
+				coverage = CellCoverage.Down,
 				eligibleShapes = TileShapeMask.Open | TileShapeMask.Corner | TileShapeMask.Straight | TileShapeMask.Single,
-			min = 4,
-			max = 8,
-			useOpenDir = true,
-			useWallDir = false,
-			includeOpen = true};
+				min = 4,
+				max = 8,
+				useOpenDir = true,
+				useWallDir = false,
+				includeOpen = true
+			};
 
 			static R AddFunctionToEveryRoom<R>(string prefix) where R : RoomFunction
 			{

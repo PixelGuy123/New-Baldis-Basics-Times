@@ -12,7 +12,6 @@ using UnityEngine.UI;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	// TODO: assign the blob sound recently added
 	public class InkArtist : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
@@ -20,6 +19,7 @@ namespace BBTimes.CustomContent.NPCs
 			spriteRenderer[0].sprite = this.GetSprite(25f, "Ink_Artist.png");
 			audMan = GetComponent<PropagatedAudioManager>();
 			audSplash = this.GetSound("splash.wav", "Vfx_InkArt_Splash", SoundType.Effect, Color.white);
+			audBlob = this.GetSoundNoSub("blob.wav", SoundType.Effect);
 
 			var canvas = ObjectCreationExtensions.CreateCanvas();
 			canvas.transform.SetParent(transform);

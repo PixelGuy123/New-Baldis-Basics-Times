@@ -26,7 +26,8 @@ namespace BBTimes.CustomContent.CustomItems
 			explosionAnimation.animation = imageSprs;
 
 
-			smokeParticles = new GameObject("NormalSmokeParticles").AddComponent<ParticleSystem>();
+			smokeParticles = GameExtensions.GetNewParticleSystem();
+			smokeParticles.gameObject.name = "NormalSmokeParticles";
 			smokeParticles.transform.SetParent(transform);
 			smokeParticles.transform.localPosition = Vector3.zero;
 			Texture2D smokeTexture = TextureExtensions.CreateSolidTexture(64, 64, Color.white);

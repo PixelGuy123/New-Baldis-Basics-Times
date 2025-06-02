@@ -1,13 +1,14 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
-using BBTimes.Extensions;
-using BBTimes.Manager;
-using System.Collections.Generic;
-using UnityEngine;
-using PixelInternalAPI.Extensions;
 using BBTimes.CustomComponents.NpcSpecificComponents.ZapZap;
-using PixelInternalAPI.Classes;
+using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Manager;
+using BBTimes.Plugin;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
@@ -72,13 +73,16 @@ namespace BBTimes.CustomContent.NPCs
 
 			eletricityPre.compPre.audMan = eletricityPre.compPre.gameObject.CreatePropagatedAudioManager(35f, 65f);
 			eletricityPre.compPre.audEletrecute = eletricityPre.GetComponent<AudioManager>().soundOnStart[0]; // Shock audio
+			eletricityPre.compPre.gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 
 			var zapCol = eletricityPre.compPre.gameObject.AddComponent<CapsuleCollider>();
 			zapCol.isTrigger = true;
 			zapCol.radius = 20f;
 			zapCol.height = 10f;
 
-			var system = eletricityPre.compPre.gameObject.AddComponent<ParticleSystem>();
+			var system = GameExtensions.GetNewParticleSystem();
+			system.transform.SetParent(eletricityPre.transform);
+			system.transform.localPosition = Vector3.zero;
 			system.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = this.GetTexture("zapParticles.png") };
 
 			var main = system.main;
@@ -117,7 +121,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }

@@ -14,7 +14,7 @@ using UnityEngine.UI;
 
 namespace BBTimes.Extensions
 {
-	public static partial class GameExtensions // A whole storage of extension methods thrown into a single class, how organized.
+	public static partial class GameExtensions // A whole storage of extension methods thrown into a single class, how organized (irony intended).
 	{
 		public static ParticleSystem GetNewParticleSystem()
 		{

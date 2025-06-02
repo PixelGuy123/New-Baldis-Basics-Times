@@ -4,6 +4,7 @@ using System.Linq;
 using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Plugin;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -51,6 +52,8 @@ namespace BBTimes.CustomContent.NPCs
 			spriteRenderer[0].sprite = happyTalk[0];
 
 			this.CreateClickableLink().CopyColliderAttributes((CapsuleCollider)baseTrigger[0]);
+
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
@@ -83,6 +86,12 @@ namespace BBTimes.CustomContent.NPCs
 		[Range(0f, 1f)]
 		internal float wanderChance = 0.65f;
 
+		[SerializeField]
+		internal float eatTimer = 10f;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+		public HudGauge Gauge { get; private set; }
 		readonly EntityOverrider overrider = new();
 
 		public EntityOverrider Overrider => overrider;
@@ -136,6 +145,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void EatPlayer(PlayerManager pm)
 		{
+			Gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, eatTimer);
 			angryAudMan.FadeOut(1.3f);
 			audMan.PlaySingle(audHeavyCrunch);
 			canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
@@ -149,6 +159,7 @@ namespace BBTimes.CustomContent.NPCs
 			behaviorStateMachine.ChangeState(new NpcState(this));
 			navigator.maxSpeed = 0f;
 			navigator.SetSpeed(0f);
+			Gauge.Deactivate();
 			StartCoroutine(TasteLikeDirt());
 		}
 
@@ -416,7 +427,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.OnStateTriggerEnter(other);
 			if (other.gameObject == pm.gameObject && pm.plm.Entity.Override(or.Overrider))
-				or.behaviorStateMachine.ChangeState(new Oran_EatenPlayer(or, pm, 10f));
+				or.behaviorStateMachine.ChangeState(new Oran_EatenPlayer(or, pm));
 		}
 		public override void Exit()
 		{
@@ -425,11 +436,11 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-	internal class Oran_EatenPlayer(SerOran or, PlayerManager pm, float eatCooldown) : Oran_StateBase(or)
+	internal class Oran_EatenPlayer(SerOran or, PlayerManager pm) : Oran_StateBase(or)
 	{
 		readonly PlayerManager pm = pm;
 		readonly float baseHeight = pm.plm.Entity.InternalHeight;
-		float eatCooldown = eatCooldown;
+		float eatCooldown = or.eatTimer;
 
 		public override void Enter()
 		{
@@ -448,8 +459,11 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 			eatCooldown -= or.TimeScale * Time.deltaTime;
+			or.Gauge.SetValue(or.eatTimer, eatCooldown);
 			if (eatCooldown <= 0f || or.Navigator.Entity.InteractionDisabled || !or.Navigator.Entity.InBounds)
+			{
 				or.TakePlayerOut();
+			}
 
 			pm.Teleport(or.transform.position + ((or.Navigator.NextPoint - or.transform.position).normalized * 2f));
 		}

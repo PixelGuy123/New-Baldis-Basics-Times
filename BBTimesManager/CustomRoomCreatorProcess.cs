@@ -509,7 +509,8 @@ namespace BBTimes.Manager
 			snowPileComp.audMan = snowPile.CreatePropagatedAudioManager(55f, 75f);
 			snowPileComp.audPop = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("SnowyPlayground", "lowPop.wav")), "Sfx_Effects_Pop", SoundType.Effect, Color.white);
 
-			var system = new GameObject("snowPileParticles").AddComponent<ParticleSystem>();
+			var system = GameExtensions.GetNewParticleSystem();
+			system.gameObject.name = "snowPileParticles";
 			system.transform.SetParent(snowPileComp.transform);
 			system.transform.localPosition = Vector3.up * 1.25f;
 			system.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "blueSnowBall.png")) };
@@ -611,7 +612,8 @@ namespace BBTimes.Manager
 			mtm.tresentPre.entity = mtm.tresentPre.gameObject.CreateEntity(1f, rendererBase: tresentRenderbase);
 
 			// Tresent particles
-			mtm.tresentPre.confettiParts = new GameObject("TresentConfetti").AddComponent<ParticleSystem>();
+			mtm.tresentPre.confettiParts = GameExtensions.GetNewParticleSystem();
+			mtm.tresentPre.confettiParts.name = "TresentConfetti";
 			mtm.tresentPre.confettiParts.transform.SetParent(tresentRenderbase);
 			mtm.tresentPre.confettiParts.transform.localPosition = Vector3.zero;
 			mtm.tresentPre.confettiParts.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "numberFettis.png")) };
@@ -1242,6 +1244,8 @@ namespace BBTimes.Manager
 			sets = RegisterSpecialRoom("IceRink", Color.cyan);
 
 			commonRoomWeight = Storage.IsChristmas ? 265 : 85;
+
+
 
 			// TODO: Add variants of this special room, so it doesn't crash
 			//room = GetAllAssets(GetRoomAsset("IceRink"), commonRoomWeight, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "mapIcon_iceRink.png")) : null, squaredShape: true);

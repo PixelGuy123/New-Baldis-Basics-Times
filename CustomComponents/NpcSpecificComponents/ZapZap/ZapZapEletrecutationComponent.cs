@@ -15,11 +15,15 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 			target.moveMods.Add(moveMod);
 			this.ec = ec;
 
+			if (target.TryGetComponent<PlayerManager>(out var pm))
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, lifeTime);
+
+
 			audMan.maintainLoop = true;
 			audMan.SetLoop(true);
 			audMan.QueueAudio(audEletrecute);
 
-
+			lifeTime = timer;
 			initialized = true;
 		}
 
@@ -56,15 +60,17 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 
 			transform.position = target.transform.position;
 
-			timer -= ec.EnvironmentTimeScale * Time.deltaTime;
-			if (timer < 0f)
+			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
+			gauge?.SetValue(timer, lifeTime);
+			if (lifeTime < 0f)
 				Despawn();
-			
+
 		}
 
 		public void Despawn()
 		{
 			target?.moveMods.Remove(moveMod);
+			gauge?.Deactivate();
 			eletricity.EletrecutationComponents.Remove(this);
 			Destroy(gameObject);
 		}
@@ -85,6 +91,11 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		[SerializeField]
 		internal LayerMask raycastLayer = LayerStorage.principalLookerMask;
 
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		HudGauge gauge;
+
 		readonly MovementModifier moveMod = new(Vector3.zero, 1f);
 
 		ZapZapEletricity eletricity;
@@ -96,5 +107,6 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		EnvironmentController ec;
 		Ray ray = new();
 		RaycastHit hit;
+		float lifeTime;
 	}
 }

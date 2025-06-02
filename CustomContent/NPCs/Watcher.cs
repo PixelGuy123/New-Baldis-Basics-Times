@@ -1,18 +1,20 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
+using BBTimes.Plugin;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Watcher : NPC, INPCPrefab
+	// TODO: Remake his mechanic
+	public class Watcher : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -48,10 +50,13 @@ namespace BBTimes.CustomContent.NPCs
 			hall.renderer = hallRender;
 
 			hallPre = hall;
+
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -62,7 +67,7 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.maintainLoop = true;
 			screenAudMan.maintainLoop = true;
 
-			behaviorStateMachine.ChangeState(new Watcher_WaitBelow(this));
+			behaviorStateMachine.ChangeState(new Watcher_WaitBelow(this, false));
 		}
 
 		public void DespawnHallucinations(bool instaDespawn)
@@ -103,7 +108,7 @@ namespace BBTimes.CustomContent.NPCs
 				return;
 			}
 			audMan.SetLoop(true);
-			audMan.QueueAudio(audAmbience);			
+			audMan.QueueAudio(audAmbience);
 		}
 
 		public void SetFrozen(bool freeze)
@@ -115,7 +120,7 @@ namespace BBTimes.CustomContent.NPCs
 			}
 			else
 				navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
-			
+
 		}
 
 		public void GoToRandomSpot()
@@ -137,11 +142,15 @@ namespace BBTimes.CustomContent.NPCs
 		public void TeleportPlayer(PlayerManager pm)
 		{
 			pm.GetCustomCam().ReverseSlideFOVAnimation(new ValueModifier(), 115f, 4f);
-			List<NPC> npcs = new(ec.Npcs);
+			List<NPC> npcs = [.. ec.Npcs];
 			npcs.RemoveAll(x => x == this || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.Entity || ec.CellFromPosition(x.transform.position).Null);
 
 			if (npcs.Count != 0)
 				StartCoroutine(TeleportDelay(pm, npcs[Random.Range(0, npcs.Count)]));
+
+			var waitBelowState = new Watcher_WaitBelow(this, true);
+			behaviorStateMachine.ChangeState(waitBelowState);
+			Gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, waitBelowState.OriginalCooldown);
 		}
 
 		IEnumerator TeleportDelay(PlayerManager pm, NPC npc)
@@ -181,7 +190,7 @@ namespace BBTimes.CustomContent.NPCs
 				curHeight += (normHeight - curHeight) / 3f * TimeScale * Time.deltaTime * 15f;
 				if (curHeight >= tar)
 					break;
-				
+
 				overrider.SetHeight(curHeight);
 				yield return null;
 			}
@@ -207,7 +216,15 @@ namespace BBTimes.CustomContent.NPCs
 		internal Hallucinations hallPre;
 
 		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
 		internal int minHallucinations = 7, maxHallucinations = 9;
+
+		[SerializeField]
+		internal float minWaitCooldown = 20f, maxWaitCooldown = 40f;
+
+		public HudGauge Gauge { get; private set; }
 
 		readonly List<Hallucinations> hallucinations = [];
 
@@ -219,13 +236,16 @@ namespace BBTimes.CustomContent.NPCs
 		protected Watcher w = w;
 	}
 
-	internal class Watcher_WaitBelow(Watcher w) : Watcher_StateBase(w)
+	internal class Watcher_WaitBelow(Watcher w, bool activeHallucinations) : Watcher_StateBase(w)
 	{
-		float cooldown = Random.Range(20f, 40f);
-
+		public float Cooldown { get; private set; }
+		public float OriginalCooldown { get; private set; }
+		bool hasActiveHallucinations = activeHallucinations;
 		public override void Enter()
 		{
 			base.Enter();
+			Cooldown = Random.Range(w.minWaitCooldown, w.maxWaitCooldown);
+			OriginalCooldown = Cooldown;
 			ChangeNavigationState(new NavigationState_DoNothing(w, 0));
 			w.Hide(true);
 		}
@@ -233,9 +253,17 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			cooldown -= w.TimeScale * Time.deltaTime;
-			if (cooldown <= 0f)
+			Cooldown -= w.TimeScale * Time.deltaTime;
+			if (hasActiveHallucinations)
+			{
+				w.Gauge?.SetValue(OriginalCooldown, Cooldown);
+			}
+			if (Cooldown <= 0f)
+			{
 				w.behaviorStateMachine.ChangeState(new Watcher_Active(w));
+				if (hasActiveHallucinations)
+					w.Gauge?.Deactivate();
+			}
 		}
 	}
 
@@ -243,7 +271,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public override void Initialize()
 		{
-			base.Initialize();			
+			base.Initialize();
 			w.DespawnHallucinations(false);
 			w.GoToRandomSpot();
 			w.SetFrozen(true);
@@ -305,7 +333,7 @@ namespace BBTimes.CustomContent.NPCs
 			var moveMod = new MovementModifier(Vector3.zero, 1f);
 			player.Am.moveMods.Add(moveMod);
 			moveMods.Add(player, moveMod);
-			
+
 			mod.addend = 0;
 			player.GetCustomCam().AddModifier(mod);
 		}
@@ -328,7 +356,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			leaveCooldown -= w.TimeScale * Time.deltaTime;
 			if (leaveCooldown <= 0f)
-				w.behaviorStateMachine.ChangeState(new Watcher_WaitBelow(w));
+				w.behaviorStateMachine.ChangeState(new Watcher_WaitBelow(w, false));
 		}
 
 		public override void Exit()
@@ -389,8 +417,6 @@ namespace BBTimes.CustomContent.NPCs
 				w.screenAudMan.FlushQueue(true);
 				w.screenAudMan.PlaySingle(w.audTeleport);
 				w.TeleportPlayer(target);
-
-				w.behaviorStateMachine.ChangeState(new Watcher_WaitBelow(w));
 			}
 		}
 

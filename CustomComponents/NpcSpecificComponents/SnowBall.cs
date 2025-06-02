@@ -1,5 +1,5 @@
-﻿using BBTimes.Extensions;
-using System.Collections;
+﻿using System.Collections;
+using BBTimes.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
@@ -76,7 +76,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		public void EntityTriggerStay(Collider other) { }
 
-		public void EntityTriggerExit(Collider other) 
+		public void EntityTriggerExit(Collider other)
 		{
 			if (other.gameObject == owner)
 				owner = null;
@@ -91,15 +91,23 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			targettedMod = e.ExternalActivity;
 			PlayerAttributesComponent pmm = null;
 			if (pm)
+			{
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, freezeCooldown);
 				pmm = pm.GetAttribute();
+			}
+
+			float ogCooldown = freezeCooldown;
 
 			while (freezeCooldown > 0f)
 			{
 				freezeCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge.SetValue(freezeCooldown, ogCooldown);
 				if (pmm && pmm.HasAttribute("boots"))
 					break;
 				yield return null;
 			}
+
+			gauge.Deactivate();
 
 			Destroy(gameObject);
 		}
@@ -121,6 +129,9 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		internal SoundObject audHit;
 
 		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
 		internal float freezeCooldown = 5f, hitForce = 25.5f;
 
 		[SerializeField]
@@ -128,6 +139,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		internal float slowFactor = 0.05f;
 
 		ActivityModifier targettedMod;
+
+		HudGauge gauge;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.12f);
 	}

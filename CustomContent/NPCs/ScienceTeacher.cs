@@ -1,13 +1,14 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher;
 using BBTimes.Extensions;
+using BBTimes.Manager;
+using BBTimes.Plugin;
+using HarmonyLib;
+using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
-using MTM101BaldAPI;
-using BBTimes.Manager;
-using System.Collections;
-using HarmonyLib;
 
 namespace BBTimes.CustomContent.NPCs
 {
@@ -23,7 +24,7 @@ namespace BBTimes.CustomContent.NPCs
 			footStepAudMan = gameObject.CreatePropagatedAudioManager(85f, 100f);
 			var subColor = new Color(0.159765625f, 0.43125f, 0.133203125f);
 
-			audComplains = 
+			audComplains =
 				[
 				this.GetSound("Potion_Fired.wav", "Vfx_SciTeacher_spillComplain1", SoundType.Voice, subColor),
 				this.GetSound("Potion_Job.wav", "Vfx_SciTeacher_spillComplain2", SoundType.Voice, subColor)
@@ -50,7 +51,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			CreatePotion<AcidPotion>("Acid", potDesings[0]).audAcidicEffect = this.GetSoundNoSub("acid.wav", SoundType.Effect);
 
-			var speedingPot = CreatePotion<SpeedingOrSlowingPotion>("SpeedOrSlow", potDesings[1]);
+			var speedingPot = CreatePotion<SpeedingOrSlowingPotion>("SpeedOrSlow", potDesings[1], this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeSprite.png"));
 			speedingPot.audSpeedBuff = this.GetSoundNoSub("speedup.wav", SoundType.Effect);
 			speedingPot.audSpeedNerf = this.GetSoundNoSub("slowdown.wav", SoundType.Effect);
 			speedingPot.sprFast = potDesings[2];
@@ -59,9 +60,9 @@ namespace BBTimes.CustomContent.NPCs
 			var slipPot = CreatePotion<SlipperyPotion>("Slippery", potDesings[3]);
 			slipPot.audSlip = BBTimesManager.man.Get<SoundObject>("slipAud");
 
-			
 
-			T CreatePotion<T>(string name, Sprite potionSpillingVisual) where T : Potion
+
+			T CreatePotion<T>(string name, Sprite potionSpillingVisual, Sprite gaugeSprite = null) where T : Potion
 			{
 				var potionObj = ObjectCreationExtensions.CreateSpriteBillboard(potionDefaultVisual).AddSpriteHolder(out var potionRenderer, 0f, LayerStorage.ignoreRaycast);
 				potionObj.name = $"{name}Potion";
@@ -94,6 +95,8 @@ namespace BBTimes.CustomContent.NPCs
 				potion.splashRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
 				potion.splashRenderer.enabled = false;
 
+				potion.gaugeSprite = gaugeSprite;
+
 				potionObj.renderers = potionObj.renderers.AddToArray(potion.splashRenderer);
 
 				potion.sprPuddleVariant = potionSpillingVisual;
@@ -107,7 +110,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
