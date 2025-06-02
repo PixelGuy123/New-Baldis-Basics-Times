@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Plugin;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
@@ -36,7 +37,7 @@ namespace BBTimes.CustomContent.NPCs
 			billboard.gameObject.SetActive(false);
 			stars = billboard.gameObject.AddComponent<StarObject>();
 
-
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }

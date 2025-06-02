@@ -31,6 +31,8 @@ namespace BBTimes.CustomContent.CustomItems
 			nav = gameObject.AddComponent<MomentumNavigator>();
 			nav.maxSpeed = 95f;
 			nav.accel = 9f;
+
+			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 
 		public void SetupPrefabPost() { }
@@ -71,8 +73,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 				pm.Teleport(pos);
 			};
-
-			gaugeSprite = ItmObj.itemSpriteSmall;
+			maxLifeTimeReference = lifeTime;
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, lifeTime);
 
 			return true;
 		}
@@ -122,9 +124,11 @@ namespace BBTimes.CustomContent.CustomItems
 				return;
 			}
 			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
+			gauge.SetValue(maxLifeTimeReference, lifeTime);
 			if (lifeTime <= 0f && !nav.HasDestination)
 			{
 				Destroy(gameObject);
+				gauge.Deactivate();
 				return;
 			}
 
@@ -160,6 +164,7 @@ namespace BBTimes.CustomContent.CustomItems
 		EnvironmentController ec;
 		float height = 5f;
 		readonly List<RoomController> rooms = [];
+		float maxLifeTimeReference;
 
 		[SerializeField]
 		internal float lifeTime = 15f;
