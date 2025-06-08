@@ -1,12 +1,12 @@
-﻿using BBTimes.CustomContent;
+﻿using System.Collections;
+using BBTimes.CustomContent;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 {
-    public class SunFlower : Plant
+	public class SunFlower : Plant
 	{
 		protected override void TriggerEnterNPC(NPC npc)
 		{
@@ -41,14 +41,17 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		IEnumerator BlindPlayer(PlayerManager pm)
 		{
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, maxBlindDelay);
 			blindCanvas.gameObject.SetActive(true);
 			blindCanvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
-			float time = Random.Range(minBlindDelay, maxBlindDelay);
+			float time = Random.Range(minBlindDelay, maxBlindDelay), ogTime = time;
 			while (time > 0f)
 			{
 				time -= ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge.SetValue(ogTime, time);
 				yield return null;
 			}
+			gauge.Deactivate();
 			Destroy(gameObject);
 		}
 
@@ -63,5 +66,9 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		[SerializeField]
 		internal SoundObject audTouch;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+		HudGauge gauge;
 	}
 }

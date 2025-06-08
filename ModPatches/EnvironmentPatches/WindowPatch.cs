@@ -38,14 +38,12 @@ namespace BBTimes.ModPatches
 			if (lg == null || wComp != null)
 				return;
 
-			var dataLvl = Singleton<CoreGameManager>.Instance.sceneObject.levelObject;
+			var dataLvl = Singleton<BaseGameManager>.Instance.levelObject;
 
-			if (dataLvl == null || dataLvl is not CustomLevelObject) return;
-
-
+			if (dataLvl == null || dataLvl is not CustomLevelObject customDataLvl) return;
 
 
-			var listObj = ((CustomLevelObject)dataLvl).GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
+			var listObj = customDataLvl.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
 
 			if (listObj == null)
 				return;

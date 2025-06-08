@@ -11,7 +11,7 @@ using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
-namespace BBTimes.ModPatches
+namespace BBTimes.ModPatches.EnvironmentPatches
 {
 
 	[ConditionalPatchNoMod("rad.rulerp.baldiplus.arcaderenovations")]

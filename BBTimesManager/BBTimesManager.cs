@@ -12,6 +12,7 @@ using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager.InternalClasses;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches;
+using BBTimes.ModPatches.EnvironmentPatches;
 using BBTimes.ModPatches.NpcPatches;
 using BBTimes.Plugin;
 using BepInEx.Bootstrap;

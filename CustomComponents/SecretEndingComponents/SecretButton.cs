@@ -1,4 +1,4 @@
-﻿using BBTimes.ModPatches;
+﻿using BBTimes.ModPatches.EnvironmentPatches;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.SecretEndingComponents

@@ -35,6 +35,7 @@ public class SlipperController : MonoBehaviour // Copy paste from BloxyCola from
 
 		owner.slipperEffectorPre = new GameObject("SlipperEffector").AddComponent<SlipperEffector>();
 		owner.slipperEffectorPre.gameObject.ConvertToPrefab(true);
+		owner.slipperEffectorPre.gameObject.layer = LayerStorage.standardEntities;
 		owner.slipperEffectorPre.entity = owner.slipperEffectorPre.gameObject.CreateEntity(4.5f, 2f);
 		owner.slipperEffectorPre.entity.collisionLayerMask = ((ITM_NanaPeel)ItemMetaStorage.Instance.FindByEnum(Items.NanaPeel).value.item).entity.collisionLayerMask;
 
@@ -98,7 +99,7 @@ public class Slipper : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
-		if (spawnDelay > 0f)
+		if (spawnDelay > 0f || other.gameObject == controller.owner.gameObject)
 			return;
 
 		Entity entity = other.GetComponent<Entity>();
@@ -129,11 +130,13 @@ public class SlipperEffector : MonoBehaviour, IEntityTrigger
 	{
 		this.controller = controller;
 		targetEntity = target;
+		targetEntity.ExternalActivity.ignoreFrictionForce = true;
 		targetEntity.ExternalActivity.moveMods.Add(slipMod);
 		speed += targetEntity.Velocity.magnitude * 22.5f;
 		if (speed > speedLimit)
 			speed = speedLimit;
 		slipDirection = targetEntity.Velocity.normalized;
+		entity.IgnoreEntity(target, true); // Ignores collision to avoid breaking itself
 
 		entity.Initialize(controller.owner.ec, target.transform.position);
 		entity.OnEntityMoveInitialCollision += (hit) =>

@@ -75,13 +75,13 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite gaugeSprite;
 
 		[SerializeField]
-		internal float maxInkCooldown = 12f, minRngBlobSize = 0.5f, maxRngBlobSize = 1.5f;
+		internal float maxInkCooldown = 20f, minRngBlobSize = 0.15f, maxRngBlobSize = 1.15f;
 		[SerializeField]
-		internal int inkShakeRemovals = 3, minBlobsPerShake = 2, maxBlobsPerShake = 5;
+		internal int minInkShakeRemovals = 3, maxInkShakeRemovals = 6, minBlobsPerShake = 2, maxBlobsPerShake = 5;
 		[SerializeField]
-		internal float shakeSensitivity = 120f; // degrees per second
+		internal float shakeSensitivity = 35f, shakeToleranceVariation = 15f; // degrees per second
 		[SerializeField]
-		internal float shakeCooldown = 0.5f; // seconds between shakes
+		internal float shakeCooldown = 0.25f; // seconds between shakes
 		[SerializeField]
 		[Range(0f, 1f)]
 		internal float fadeEffectFactor = 0.125f, blobBoundaryFactor = 0.8f;
@@ -112,7 +112,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, maxInkCooldown);
 
-			uiInkCooldown = StartCoroutine(InkCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam));
+			uiInkCooldown = StartCoroutine(InkCamera(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber)));
 		}
 
 		void CreateRandomBlobAndDisperse(Vector2 boundaries)
@@ -162,23 +162,25 @@ namespace BBTimes.CustomContent.NPCs
 			gauge?.Deactivate();
 		}
 
-		IEnumerator InkCamera(Camera target)
+		IEnumerator InkCamera(GameCamera target)
 		{
 			stunCanvas.gameObject.SetActive(true);
-			stunCanvas.worldCamera = target;
+			stunCanvas.worldCamera = target.canvasCam;
 			Vector3 ogSize = Vector3.one;
 			Vector3 zero = Vector3.zero;
 
 			float fadeTime = maxInkCooldown * fadeEffectFactor; // x% is used for fade in/out effect
 			float displayTime = maxInkCooldown * (1f - fadeEffectFactor * 2f); // The rest of the cooldown is display on screen
-			float totalTime = fadeTime * 2f + displayTime;
+			float totalTime = fadeTime * 2f + displayTime, runTime = totalTime;
 			float t = 0f;
+			float shakeSensitivity = this.shakeSensitivity;
 
 			image.transform.localScale = Vector3.zero;
 
 			// --- Shake mechanic state ---
-			int shakesLeft = inkShakeRemovals;
-			Quaternion lastRot = target.transform.rotation;
+			int shakesLeft = Random.Range(minInkShakeRemovals, maxInkShakeRemovals + 1);
+			//Quaternion lastRot = target.transform.rotation;
+			float lastYaw = target.transform.eulerAngles.y;
 			float shakeTimer = 0f;
 
 			// Fade-in
@@ -186,29 +188,39 @@ namespace BBTimes.CustomContent.NPCs
 			while (t < fadeTime)
 			{
 				t += ec.EnvironmentTimeScale * Time.deltaTime;
+				runTime -= ec.EnvironmentTimeScale * Time.deltaTime;
 				image.transform.localScale = Vector3.Lerp(zero, ogSize, t / fadeTime);
-				gauge.SetValue(totalTime, totalTime - t);
+				gauge.SetValue(totalTime, runTime);
 				yield return null;
 			}
 			image.transform.localScale = ogSize;
 
 			// Full display with shake detection
 			t = 0f;
-			totalTime -= fadeTime; // Remove one fadeTime from the total
 			while (t < displayTime)
 			{
+				if (Time.timeScale == 0)
+				{
+					yield return null;
+					continue;
+				}
+
 				// --- Shake detection ---
 				shakeTimer -= ec.EnvironmentTimeScale * Time.deltaTime;
-				Quaternion currentRot = target.transform.rotation;
-				float angleDelta = Quaternion.Angle(lastRot, currentRot) / Time.deltaTime;
-				lastRot = currentRot;
 
-				if (shakesLeft > 0 && shakeTimer <= 0f && angleDelta > shakeSensitivity)
+				float currentYaw = target.transform.eulerAngles.y;
+				float angleDelta = Mathf.DeltaAngle(lastYaw, currentYaw);
+				// Debug.Log("Current angle delta: " + angleDelta + " || Pure Angle Delta: " + Mathf.DeltaAngle(lastYaw, currentYaw));
+
+				lastYaw = currentYaw;
+
+				if (shakesLeft > 0 && shakeTimer <= 0f && Mathf.Abs(angleDelta) > shakeSensitivity)
 				{
 					shakesLeft--;
+					shakeSensitivity = this.shakeSensitivity + (1 - Random.Range(0, 3)) * shakeToleranceVariation;
 					shakeTimer = shakeCooldown;
 					// Shrink ink image with bouncy effect
-					yield return StartCoroutine(ShrinkInkBouncy(image, ogSize, zero, 0.18f, shakesLeft <= 0));
+					image.transform.localScale = Vector3.one * (1f - 1f / (shakesLeft + 1));
 
 					// Spawn blobs
 					int blobCount = Random.Range(minBlobsPerShake, maxBlobsPerShake + 1);
@@ -223,23 +235,24 @@ namespace BBTimes.CustomContent.NPCs
 					{
 						goto finish;
 					}
-					// Restore ink image to full size for next shake
-					image.transform.localScale = ogSize;
 				}
 
 				t += ec.EnvironmentTimeScale * Time.deltaTime;
-				gauge.SetValue(totalTime, totalTime - t);
+				runTime -= ec.EnvironmentTimeScale * Time.deltaTime;
+				// Update gauge value
+				gauge.SetValue(totalTime, runTime);
 				yield return null;
 			}
 
 			// Fade-out
+			ogSize = image.transform.localScale;
 			t = 0f;
-			totalTime -= displayTime; // Remove display time from the total
 			while (t < fadeTime)
 			{
 				t += ec.EnvironmentTimeScale * Time.deltaTime;
+				runTime -= ec.EnvironmentTimeScale * Time.deltaTime;
 				image.transform.localScale = Vector3.Lerp(ogSize, zero, t / fadeTime);
-				gauge.SetValue(totalTime, totalTime - t);
+				gauge.SetValue(totalTime, runTime);
 				yield return null;
 			}
 			image.transform.localScale = zero;
@@ -252,25 +265,6 @@ namespace BBTimes.CustomContent.NPCs
 			affectedPlayers.RemoveAll(x => x.Value == this);
 
 			yield break;
-		}
-
-		// --- Helper coroutine for bouncy shrink effect ---
-		IEnumerator ShrinkInkBouncy(Image img, Vector3 from, Vector3 to, float duration, bool disableAfterwards)
-		{
-			float t = 0f;
-			while (t < duration)
-			{
-				t += ec.EnvironmentTimeScale * Time.deltaTime;
-				// Bouncy effect using Mathf.PingPong
-				float progress = t / duration;
-				float bounce = Mathf.Sin(progress * Mathf.PI) * 0.2f + 0.8f; // 0.8-1.0 scale
-				img.transform.localScale = Vector3.Lerp(from, to, progress) * bounce;
-				yield return null;
-			}
-			img.transform.localScale = to;
-
-			if (disableAfterwards)
-				stunCanvas.gameObject.SetActive(false);
 		}
 
 		IEnumerator BlobDisperse(Image blob)

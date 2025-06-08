@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 {
@@ -8,6 +8,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		protected override void TriggerEnterPlayer(PlayerManager pm)
 		{
 			base.TriggerEnterPlayer(pm);
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, speedTime);
 			SpeedSomeone(pm.Am);
 		}
 		protected override void TriggerEnterNPC(NPC npc)
@@ -31,9 +32,10 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 			while (timer > 0f)
 			{
 				timer -= ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge?.SetValue(speedTime, timer);
 				yield return null;
 			}
-
+			gauge?.Deactivate();
 			actMod?.moveMods.Remove(moveMod);
 			Destroy(gameObject);
 		}
@@ -48,5 +50,10 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		[SerializeField]
 		internal SoundObject audAffect;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		HudGauge gauge;
 	}
 }

@@ -1,8 +1,8 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using BBTimes.CustomComponents;
 using BepInEx.Bootstrap;
 using HarmonyLib;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace BBTimes.ModPatches
@@ -50,7 +50,7 @@ namespace BBTimes.ModPatches
 		{
 			var ec = Singleton<BaseGameManager>.Instance.Ec;
 
-			var dat =ec.GetComponent<EnvironmentControllerData>();
+			var dat = ec.GetComponent<EnvironmentControllerData>();
 			foreach (var ev in dat.OngoingEvents)
 				if (ev != null)
 					ec.StopCoroutine(ev);
@@ -66,36 +66,41 @@ namespace BBTimes.ModPatches
 		}
 	}
 
-	//[HarmonyPatch]
-	//internal class CrashDebugging
-	//{
-	//	[HarmonyTargetMethods]
-	//	static MethodInfo[] AllTheBuildCalls()
-	//	{
-	//		List<MethodInfo> methods = [AccessTools.Method(typeof(RoomFunctionContainer), "Build")];
+	// [HarmonyPatch]
+	// internal class CrashDebugging
+	// {
+	// 	[HarmonyTargetMethods]
+	// 	static MethodInfo[] AllTheBuildCalls()
+	// 	{
+	// 		List<MethodInfo> methods = [];
 
-	//		foreach (var type in AccessTools.AllTypes())
-	//		{
-	//			if (type.IsSubclassOf(typeof(ObjectBuilder)) || type.IsSubclassOf(typeof(HallBuilder)))
-	//			{
-	//				Debug.Log("type detected: " + type.FullName);
-	//				methods.Add(type.GetMethod("Build"));
-	//			}
-	//		}
-	//		return [.. methods];
-	//	}
+	// 		foreach (var type in AccessTools.AllTypes())
+	// 		{
+	// 			if (type.IsSubclassOf(typeof(StructureBuilder)) || type == typeof(RoomFunctionContainer))
+	// 			{
+	// 				Debug.LogWarning("TIMES: Type detected: " + type.FullName);
+	// 				foreach (var methodName in AccessTools.GetMethodNames(type))
+	// 				{
+	// 					var method = type.GetMethod(methodName);
+	// 					if (method != null && method.Name == "Build")
+	// 					{
+	// 						methods.Add(method);
+	// 					}
+	// 				}
+	// 			}
+	// 		}
 
-	//	[HarmonyFinalizer]
-	//	static System.Exception DebugLogFinalizer(System.Exception __exception)
-	//	{
-	//		if (__exception != null)
-	//			Debug.LogException(__exception);
+	// 		return [.. methods];
+	// 	}
 
-	//		return null;
-	//	}
+	// 	[HarmonyFinalizer]
+	// 	static System.Exception DebugLogFinalizer(System.Exception __exception)
+	// 	{
+	// 		if (__exception != null)
+	// 			Debug.LogException(__exception);
 
-
-
-	//}
+	// 		return null;
+	// 	}
+	// }
 #pragma warning restore Harmony003 // Harmony non-ref patch parameters modified
 }

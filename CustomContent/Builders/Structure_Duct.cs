@@ -6,7 +6,6 @@ using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.ModPatches.EnvironmentPatches;
 using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
-using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 

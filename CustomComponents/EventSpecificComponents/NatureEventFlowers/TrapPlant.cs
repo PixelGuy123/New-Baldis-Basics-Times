@@ -17,6 +17,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 			if (catched) return;
 
 			base.TriggerEnterPlayer(pm);
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, timeTrapped);
 
 			Catch(pm.Am);
 		}
@@ -31,7 +32,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 			base.TriggerExitPlayer(pm);
 			if (target == pm.Am)
 				DespawnEarlier();
-			
+
 		}
 
 		void DespawnEarlier()
@@ -58,9 +59,11 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 			while (time > 0f)
 			{
 				time -= ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge?.SetValue(timeTrapped, time);
 				yield return null;
 			}
 			actMod?.moveMods.Remove(moveMod);
+			gauge?.Deactivate();
 			Despawn(true);
 		}
 
@@ -73,9 +76,11 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		internal SoundObject audCatch;
 
 		[SerializeField]
-		internal Sprite sprCatch;
+		internal Sprite sprCatch, gaugeSprite;
 
 		[SerializeField]
 		internal float timeTrapped = 5f;
+
+		HudGauge gauge;
 	}
 }

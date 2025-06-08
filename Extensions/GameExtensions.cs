@@ -7,6 +7,7 @@ using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 using UnityEngine.AI;
@@ -16,7 +17,7 @@ namespace BBTimes.Extensions
 {
 	public static partial class GameExtensions // A whole storage of extension methods thrown into a single class, how organized (irony intended).
 	{
-		public static ParticleSystem GetNewParticleSystem()
+		public static ParticleSystem GetNewParticleSystem(bool visualOnly = true)
 		{
 			var particle = Object.Instantiate(
 						(
@@ -31,7 +32,17 @@ namespace BBTimes.Extensions
 			var renderer = obj.GetComponent<ParticleSystemRenderer>();
 
 			renderer.material = new(renderer.material) { name = $"{particle.name}_Mat" };
-			return particle.particles;
+
+			var particleSystem = particle.particles;
+			if (visualOnly)
+			{
+				foreach (var collider in particle.GetComponentsInChildren<Collider>())
+				{
+					Object.DestroyImmediate(collider); // Destroys all colliders, since this particle won't be used for covering
+				}
+				Object.DestroyImmediate(particle); // Destroys the CoverCloud component since this particle won't be primarily used for covering
+			}
+			return particleSystem;
 		}
 		public static T SpawnForeignNPC<T>(this EnvironmentController ec, T prefab, Vector3 position) where T : NPC
 		{

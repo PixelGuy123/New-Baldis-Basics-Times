@@ -480,6 +480,7 @@ namespace BBTimes.Manager
 			trap.sprClosed = man.Get<Sprite[]>("Beartrap")[0];
 			trap.sprOpen = trapRender.sprite;
 			trap.renderer = trapRender;
+			trap.gaugeSprite = (ItemMetaStorage.Instance.FindByEnumFromMod(EnumExtensions.GetFromExtendedName<Items>("Beartrap"), plug.Info).value.item as ITM_Beartrap).gaugeSprite;
 
 			// ------------------------------------------------------------------------------------------
 			// -------------------------- SNOWY PLAYGROUND STRUCTURES -----------------------------------
@@ -835,7 +836,7 @@ namespace BBTimes.Manager
 				name = "Bathroom",
 				light = [new() { selection = bathLightPre }]
 			};
-			floorDatas[F2].RoomAssets.Add(new(group));
+			floorDatas[END].RoomAssets.Add(new(group));
 
 			// ------------------------------------------------------------------------------------------
 			// -------------------------- ABANDONED ROOM REGISTRATION -----------------------------------
@@ -1041,7 +1042,7 @@ namespace BBTimes.Manager
 				name = "Kitchen",
 				light = [new() { selection = EmptyGameObject.transform }],
 				ceilingTexture = [ceiling],
-				wallTexture = [normWall]
+				wallTexture = [normWall],
 			};
 
 			AddGroupToAllFloors(group);
@@ -1252,13 +1253,13 @@ namespace BBTimes.Manager
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "IceRinkFloor.png"));
 			AddTextureToEditor("IceRinkFloor", floorTex);
 
-			room.ForEach(x =>
-			{
-				x.selection.keepTextures = true;
-				x.selection.florTex = floorTex;
-				x.selection.wallTex = playgroundRoomRef.wallTex;
-				x.selection.ceilTex = playgroundRoomRef.ceilTex;
-			});
+			// room.ForEach(x =>
+			// {
+			// 	x.selection.keepTextures = true;
+			// 	x.selection.florTex = floorTex;
+			// 	x.selection.wallTex = playgroundRoomRef.wallTex;
+			// 	x.selection.ceilTex = playgroundRoomRef.ceilTex;
+			// });
 
 			sets.container = playgroundClonedRoomContainer;
 

@@ -51,7 +51,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			CreatePotion<AcidPotion>("Acid", potDesings[0]).audAcidicEffect = this.GetSoundNoSub("acid.wav", SoundType.Effect);
 
-			var speedingPot = CreatePotion<SpeedingOrSlowingPotion>("SpeedOrSlow", potDesings[1], this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeSprite.png"));
+			var speedingPot = CreatePotion<SpeedingOrSlowingPotion>("SpeedOrSlow", potDesings[1], this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png"));
 			speedingPot.audSpeedBuff = this.GetSoundNoSub("speedup.wav", SoundType.Effect);
 			speedingPot.audSpeedNerf = this.GetSoundNoSub("slowdown.wav", SoundType.Effect);
 			speedingPot.sprFast = potDesings[2];

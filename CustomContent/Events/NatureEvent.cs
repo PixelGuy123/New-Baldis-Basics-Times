@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using BBTimes.CustomComponents;
-using BBTimes.Extensions;
 using BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers;
-using PixelInternalAPI.Extensions;
-using MTM101BaldAPI;
+using BBTimes.Extensions;
 using BBTimes.Manager;
+using BBTimes.Plugin;
+using MTM101BaldAPI;
 using PixelInternalAPI.Components;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 
 namespace BBTimes.CustomContent.Events
 {
-    public class NatureEvent : RandomEvent, IObjectPrefab
+	public class NatureEvent : RandomEvent, IObjectPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -26,17 +27,22 @@ namespace BBTimes.CustomContent.Events
 
 			var vineSound = this.GetSoundNoSub("vines.wav", SoundType.Effect);
 			var sprites = this.GetSpriteSheet(5, 1, plantsPixPerUnit, "timesFlowersPack.png");
+			Sprite[] gaugeSpritesPack = this.GetSpriteSheet(2, 2, Storage.GaugeSprite_PixelsPerUnit, "GaugeSpritesPack.png");
 
 			// Normal flowers
+			// High speed flower
 			var speedChanging = CreatePlant<SpeedChangingFlower>(sprites[0], 75);
 			speedChanging.audAffect = this.GetSoundNoSub("BluePlantSpeedUp.wav", SoundType.Effect);
+			speedChanging.gaugeSprite = gaugeSpritesPack[0];
 
 			CreatePlant<PurpleFlower>(sprites[1], 110).audPush = this.GetSound("PurplePlantBang.wav", "Vfx_Prize_Bang", SoundType.Effect, Color.white);
 			CreatePlant<MysteryFlower>(sprites[2], 75).audTeleport = BBTimesManager.man.Get<SoundObject>("teleportAud");
 
+			// Slowdown Speed Flower
 			speedChanging = CreatePlant<SpeedChangingFlower>(sprites[3], 100);
 			speedChanging.audAffect = this.GetSoundNoSub("RedPlantSlowDown.wav", SoundType.Effect);
 			speedChanging.moveMultiplier = 0.75f;
+			speedChanging.gaugeSprite = gaugeSpritesPack[1];
 
 			var sunFlower = CreatePlant<SunFlower>(sprites[4], 45);
 
@@ -45,6 +51,7 @@ namespace BBTimes.CustomContent.Events
 			sunFlower.attPre.gameObject.AddComponent<BillboardRotator>();
 			sunFlower.attPre.name = "SunFlowerVisual";
 			sunFlower.attPre.gameObject.ConvertToPrefab(true);
+			sunFlower.gaugeSprite = gaugeSpritesPack[2];
 
 			var sunFlowCanvas = ObjectCreationExtensions.CreateCanvas();
 			ObjectCreationExtensions.CreateImage(sunFlowCanvas, this.GetSprite(1f, "sunFlowerLeaves.png"));
@@ -68,16 +75,17 @@ namespace BBTimes.CustomContent.Events
 			ytpFlower.value = 75;
 			ytpFlower.audPickup = BBTimesManager.man.Get<SoundObject>("tierThreePickup");
 
-			
+
 			CreatePlant<Vines>(this.GetSprite(plantsPixPerUnit, "Vines.png"), 65).audCatch = vineSound;
 			sprites = this.GetSpriteSheet(2, 1, plantsPixPerUnit, "carnivorousPlants.png");
 
 			var catchPlant = CreatePlant<TrapPlant>(sprites[0], 50);
 			catchPlant.sprCatch = sprites[1];
 			catchPlant.audCatch = this.GetSoundNoSub("plantTrapCatch.wav", SoundType.Effect);
+			catchPlant.gaugeSprite = gaugeSpritesPack[3];
 
 
-			flowerPres = [..flowers];
+			flowerPres = [.. flowers];
 
 			var grassPreRenderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(plantsPixPerUnit, "Grass.png")).AddSpriteHolder(out var grassRenderer, 0f);
 			grassRenderer.transform.localPosition = Vector3.forward * 0.1f;
@@ -116,8 +124,9 @@ namespace BBTimes.CustomContent.Events
 		}
 		const float plantsPixPerUnit = 15f;
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "events";
-		
+		public string Name { get; set; }
+		public string Category => "events";
+
 		// ---------------------------------------------------
 		public override void Begin()
 		{

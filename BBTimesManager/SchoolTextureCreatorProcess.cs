@@ -22,9 +22,8 @@ namespace BBTimes.Manager
 				RoomCategory cat;
 				bool modded = false;
 				string dirName = Path.GetFileName(rootDir); // Yes, file name. Get Directory name isn't as it looks
-#if CHEAT
 				Debug.Log($"Loading texture from dir: {dirName}");
-#endif
+
 				try
 				{
 					if (Enum.TryParse(dirName, out RoomCategory c))
@@ -41,7 +40,7 @@ namespace BBTimes.Manager
 				}
 				catch
 				{
-					//Debug.LogWarning("BB TIMES: Failed to load texture for the room category, it doesn\'t exist: " + dirName);
+					Debug.LogWarning("BB TIMES: Failed to load texture for the room category, it doesn\'t exist: " + dirName);
 					continue;
 				}
 
@@ -51,9 +50,8 @@ namespace BBTimes.Manager
 					if (data.Length < (modded ? 2 : 3)) // Not a data file
 						continue;
 
-#if CHEAT
 					Debug.Log("Loading texture file: " + data[0]);
-#endif
+
 
 
 					SchoolTexture texType = data[1].GetSchoolTextureFromName(); // 1 expected to be the type
@@ -75,7 +73,7 @@ namespace BBTimes.Manager
 						var holder = new SchoolTextureHolder(tex, weight, cat, texType);
 
 						if (!modded)
-							return;
+							continue;
 						{
 							foreach (var fData in floorDatas)
 								fData.Value.SchoolTextures.Add(holder);

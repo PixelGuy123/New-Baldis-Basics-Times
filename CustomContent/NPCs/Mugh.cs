@@ -289,6 +289,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 			hugCooldown -= mu.TimeScale * Time.deltaTime;
+			mu.UpdateHugStatus(hugCooldown);
 			if (!pm || hugCooldown < 0f)
 			{
 				mu.EndHug(true);

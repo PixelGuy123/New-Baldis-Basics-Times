@@ -145,11 +145,6 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		[SerializeField]
 		internal BoxCollider collider;
 
-		[SerializeField]
-		internal Sprite gaugeSprite;
-
-		protected HudGauge gauge;
-
 		public static HashSet<Items> cuttableItems = [Items.Scissors];
 	}
 }

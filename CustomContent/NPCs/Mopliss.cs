@@ -68,6 +68,11 @@ namespace BBTimes.CustomContent.NPCs
 			IntVector2 pos = cell.position;
 			var room = cell.room;
 
+			var controller = SlipperController.CreateSlipperController(this);
+			controller.transform.position = cell.FloorWorldPosition;
+			controller.StartCoroutine(GameExtensions.TimerToDestroy(controller.gameObject, ec, 30f));
+			controllers.Add(controller);
+
 			for (int x = pos.x - slipperRadius; x < pos.x + slipperRadius; x++)
 			{
 				for (int z = pos.z - slipperRadius; z < pos.z + slipperRadius; z++)
@@ -76,20 +81,33 @@ namespace BBTimes.CustomContent.NPCs
 					{
 						var foundCell = ec.CellFromPosition(x, z);
 						if (!foundCell.Null && foundCell.TileMatches(room))
-							SpawnSlipper(foundCell);
+							controller.CreateStain(foundCell);
 					}
 				}
 			}
 		}
 
-		public void RefillWater() =>
+		public override void Despawn()
+		{
+			base.Despawn();
+			while (controllers.Count != 0)
+			{
+				if (controllers[0])
+					Destroy(controllers[0].gameObject);
+				controllers.RemoveAt(0);
+			}
+		}
+
+		public void RefillWater()
+		{
 			audMan.QueueAudio(audRefill);
 
-		void SpawnSlipper(Cell cell)
-		{
-			var controller = SlipperController.CreateSlipperController(this);
-			controller.transform.position = cell.FloorWorldPosition;
-			controller.StartCoroutine(GameExtensions.TimerToDestroy(controller.gameObject, ec, 30f));
+			// Remove any destroyed controllers (this is a good place to have this, tbh lol)
+			for (int i = 0; i < controllers.Count; i++)
+			{
+				if (!controllers[i])
+					controllers.RemoveAt(i--);
+			}
 		}
 
 		internal bool IsHome => home == ec.CellFromPosition(transform.position);
@@ -121,6 +139,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal float WaitCooldown => Random.Range(minWait, maxWait);
 		internal Cell home;
 		readonly HashSet<RoomController> accessedRooms = [];
+		readonly List<SlipperController> controllers = [];
 
 		[SerializeField]
 		internal AudioManager audMan;

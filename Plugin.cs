@@ -12,7 +12,7 @@ using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.Manager.InternalClasses;
 using BBTimes.Manager.InternalClasses.LevelTypeWeights;
-using BBTimes.ModPatches;
+using BBTimes.ModPatches.EnvironmentPatches;
 using BBTimes.Plugin;
 using BepInEx;
 using BepInEx.Bootstrap;
@@ -537,7 +537,7 @@ namespace BBTimes
 							continue;
 						}
 						if (floordata.ForcedObjectBuilders[i].AcceptsLevelType(ld.type))
-							ld.forcedStructures.AddToArray(floordata.ForcedObjectBuilders[i].GetWeightedSelection());
+							ld.forcedStructures = ld.forcedStructures.AddToArray(floordata.ForcedObjectBuilders[i].GetWeightedSelection());
 					}
 
 					/* Unused since Plus doesn't use this anymore (should be kept if weighted builders ever start existing again)
@@ -581,6 +581,33 @@ namespace BBTimes
 						else
 							ld.potentialPrePlotSpecialHalls = ld.potentialPrePlotSpecialHalls.AddToArray(fl.Key);
 
+					}
+
+					// ----- *MODDED* School Textures -----
+					foreach (var holder in floordata.SchoolTextures)
+					{
+						string name = EnumExtensions.GetExtendedName<RoomCategory>((int)holder.SelectionLimiters[0]);
+						var group = ld.roomGroup.FirstOrDefault(x => x.potentialRooms.Any(z => z.selection.category == holder.SelectionLimiters[0]));
+						if (group == null)
+						{
+							Debug.LogWarning("BBTimes: Failed to load texture for room category: " + name);
+							continue;
+						}
+						// Debug.Log($"BBTimes: Adding texture {holder.Selection.selection.name} to room category: {name} in level: {ld.name}");
+						switch (holder.TextureType)
+						{
+							case Misc.SchoolTexture.Ceiling:
+								group.ceilingTexture = group.ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
+								break;
+							case Misc.SchoolTexture.Floor:
+								group.floorTexture = group.floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
+								break;
+							case Misc.SchoolTexture.Wall:
+								group.wallTexture = group.wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
+								break;
+							default:
+								break;
+						}
 					}
 
 				}

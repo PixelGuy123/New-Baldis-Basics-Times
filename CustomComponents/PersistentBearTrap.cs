@@ -12,27 +12,33 @@ namespace BBTimes.CustomComponents
 			if (other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
 			{
 				var e = other.GetComponent<Entity>();
-                if (e)
-                {
+				if (e)
+				{
 					active = true;
-					StartCoroutine(Trap(e));
-                }
-            }
+					StartCoroutine(Trap(e, other.GetComponent<PlayerManager>()));
+				}
+			}
 		}
 
-		IEnumerator Trap(Entity e)
+		IEnumerator Trap(Entity e, PlayerManager pm)
 		{
 			audMan.PlaySingle(audCatch);
 			renderer.sprite = sprClosed;
 			e.ExternalActivity.moveMods.Add(moveMod);
-			float cooldown = Random.Range(5f, 10f);
+
+			float cooldown = Random.Range(minTrapTime, maxTrapTime), ogCooldown = cooldown;
+			if (pm)
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(pm.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, cooldown);
+
 			while (cooldown > 0f)
 			{
 				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
+				gauge?.SetValue(cooldown, ogCooldown);
 				yield return null;
 			}
 			e.ExternalActivity.moveMods.Remove(moveMod);
-			cooldown = Random.Range(30f, 60f);
+			gauge?.Deactivate();
+			cooldown = Random.Range(minRechargeTime, maxRechargeTime);
 			while (cooldown > 0f)
 			{
 				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
@@ -55,6 +61,14 @@ namespace BBTimes.CustomComponents
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
+
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal float minTrapTime = 5f, maxTrapTime = 10f, minRechargeTime = 30f, maxRechargeTime = 60f;
+
+		HudGauge gauge;
 
 		bool active = false;
 

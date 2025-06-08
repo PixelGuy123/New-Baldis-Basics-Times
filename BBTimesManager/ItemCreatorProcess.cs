@@ -11,6 +11,7 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI;
+using PixelInternalAPI.Extensions;
 
 namespace BBTimes.Manager
 {
@@ -25,6 +26,7 @@ namespace BBTimes.Manager
 			// 3 - END
 			ItemObject item;
 			const string PIRATE_CANN_HATE = "cann_hate", CRIMINALPACK_CONTRABAND = "crmp_contraband";
+			LayerMaskObject playerClickLayer = GenericExtensions.FindResourceObjectByName<LayerMaskObject>("PlayerClickLayerMask");
 
 			// Hammer
 			item = new ItemBuilder(plug.Info)
@@ -1027,6 +1029,7 @@ namespace BBTimes.Manager
 			floorDatas[F1].ForcedItems.Add(new(item));
 
 			((ITM_Acceptable)item.item).item = item.itemType;
+			((ITM_Acceptable)item.item).layerMask = playerClickLayer;
 
 			// Mr Molar
 			item = new ItemBuilder(plug.Info)

@@ -32,7 +32,7 @@ namespace BBTimes.Plugin
 		public const string ChristmasSpecial_TimesTag = "Times_SpecialTags_ChristmasSpecial";
 
 		// ------------------- Constant Floats ---------------------
-		public const float GaugeSprite_PixelsPerUnit = 12.5f;
+		public const float GaugeSprite_PixelsPerUnit = 1f;
 
 		// ------------------- Readonly Vector2s ---------------------
 		public static readonly Vector2 Const_RefScreenSize = new(480f, 360f);
