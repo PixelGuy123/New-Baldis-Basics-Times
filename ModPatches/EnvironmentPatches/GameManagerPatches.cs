@@ -51,10 +51,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				core.audMan.FlushQueue(true);
 				return;
 			}
-			Debug.Log(__instance.Ec.timeOut);
-			Debug.Log(__instance.levelObject.finalLevel);
 
-			if (!BBTimesManager.plug.disableSchoolhouseEscape.Value && !__instance.Ec.timeOut && !__instance.levelObject.finalLevel) // Not F3
+			if (
+				!BBTimesManager.plug.disableSchoolhouseEscape.Value &&
+				!__instance.Ec.timeOut &&
+				__instance.levelObject && // Premade levels have this as null, so a careful check is required
+				!__instance.levelObject.finalLevel) // Not F3
 				Singleton<MusicManager>.Instance.PlayMidi("Level_1_End", true); // Music
 		}
 
@@ -217,7 +219,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		[HarmonyPostfix]
 		private static void REDAnimation(Elevator elevator, BaseGameManager __instance, int ___elevatorsClosed, EnvironmentController ___ec)
 		{
-			if (___ec.timeOut || __instance.GetType() != typeof(MainGameManager) || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free) // MainGameManager expected
+			if (___ec.timeOut || !__instance.levelObject || __instance.GetType() != typeof(MainGameManager) || Singleton<CoreGameManager>.Instance.currentMode == Mode.Free) // MainGameManager expected
 				return;
 
 			if (___elevatorsClosed == 1)

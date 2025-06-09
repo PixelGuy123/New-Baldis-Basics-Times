@@ -18,8 +18,7 @@ namespace BBTimes.Manager
 
 			// Vent Builder
 			StructureWithParameters vent = CreatorExtensions.CreateObjectBuilder<Structure_Duct>("DuctBuilder", out _, "Duct");
-			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
-			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
+			floorDatas[F3].ForcedObjectBuilders.Add(new(vent));
 
 			// Wall Bell Builder
 			vent = CreatorExtensions.CreateObjectBuilder<RandomForcedPostersBuilder>("ForcedPosterBuilder", out var forcedPosterBuilder);

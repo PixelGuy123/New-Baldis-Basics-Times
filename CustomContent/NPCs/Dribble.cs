@@ -163,7 +163,6 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			navigator.Entity.Teleport(ec.RealRoomMid(Home));
 			pm.Teleport(Home.RandomEntitySafeCellNoGarbage().CenterWorldPosition);
-			Physics.SyncTransforms();
 			pm.transform.LookAt(transform);
 		}
 
@@ -214,7 +213,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			var mod = new MovementModifier(Vector3.zero, 0.35f / (1 + minigameRecord));
 			entity.ExternalActivity.moveMods.Add(mod);
-			float cool = 5f;
+			float cool = punchCooldown;
 			while (cool > 0f)
 			{
 				cool -= Time.deltaTime * ec.EnvironmentTimeScale;
@@ -280,15 +279,15 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal PickableBasketball basketPre;
 
+		[SerializeField]
+		internal float punchCooldown = 5f;
+
 		PickableBasketball basketball;
 		bool _step = false;
 		Sprite[] currentArrayInUsage;
 		int idxInCurrentArray, clapIndex = 0;
 
-
-		readonly internal TimeScaleModifier introMod = new(0f, 0f, 0f);
-
-		readonly internal MovementModifier moveMod = new(Vector3.zero, 0f);
+		readonly internal MovementModifier moveMod = new(Vector3.zero, 0.85f);
 
 		internal float normSpeed = 14f, chaseSpeed = 21f, angryChaseSpeed = 22.5f;
 
@@ -439,7 +438,6 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			dr.ec.AddTimeScale(dr.introMod);
 			dr.ComingNoise();
 			dr.StartCoroutine(WaitForInform());
 		}
@@ -455,7 +453,7 @@ namespace BBTimes.CustomContent.NPCs
 				yield return null;
 			}
 			player.plm.am.moveMods.Remove(dr.moveMod);
-			float cool = Random.Range(1f, 1.5f);
+			float cool = Random.Range(0.25f, 0.75f);
 			while (cool > 0f)
 			{
 				player.transform.RotateSmoothlyToNextPoint(dr.transform.position, 0.8f);
@@ -465,7 +463,6 @@ namespace BBTimes.CustomContent.NPCs
 			dr.ApplyArray(dr.clapSprs, 1);
 			dr.Clap();
 			dr.TeleportToClass(player);
-			dr.ec.RemoveTimeScale(dr.introMod);
 
 			for (int i = 0; i < 3; i++) // Frame delay
 				yield return null;

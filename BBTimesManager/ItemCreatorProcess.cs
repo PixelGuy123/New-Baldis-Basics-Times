@@ -1023,7 +1023,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(99)
 				.SetShopPrice(9999)
 				.SetNameAndDescription("SmallTimesKey_Name", "SmallTimesKey_Desc")
-				.SetMeta(ItemFlags.Persists, [])
+				.SetMeta(ItemFlags.Persists, [CRIMINALPACK_CONTRABAND])
 				.Build("SmallTimesKey");
 
 			floorDatas[F1].ForcedItems.Add(new(item));

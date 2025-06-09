@@ -123,7 +123,7 @@ namespace BBTimes.CustomContent.Builders
 			Destroy(connection2);
 			connection.ConvertToPrefab(true);
 
-			return new() { prefab = this, parameters = null };
+			return new() { prefab = this, parameters = new() { chance = [0.45f] } };
 		}
 
 		public void SetupPrefab() { }
@@ -141,6 +141,13 @@ namespace BBTimes.CustomContent.Builders
 		public override void PostOpenCalcGenerate(LevelGenerator lg, System.Random rng)
 		{
 			base.PostOpenCalcGenerate(lg, rng);
+
+			// Chance for the ducts to spawn in the seed (since it is forced)
+			if (rng.NextDouble() < parameters.chance[0])
+			{
+				Finished();
+				return;
+			}
 
 			var room = lg.Ec.mainHall;
 
