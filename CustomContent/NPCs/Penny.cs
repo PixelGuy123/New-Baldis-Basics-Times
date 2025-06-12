@@ -1,4 +1,5 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
@@ -6,7 +7,6 @@ using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -18,7 +18,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			renderer = spriteRenderer[0];
 			audMan = GetComponent<PropagatedAudioManager>();
-			stepAudMan = gameObject.CreatePropagatedAudioManager(115, 125);
+			stepAudMan = gameObject.CreatePropagatedAudioManager(115, 145);
 
 			var myCol = (CapsuleCollider)baseTrigger[0];
 			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
@@ -96,7 +96,7 @@ namespace BBTimes.CustomContent.NPCs
 			SoundObject[] sds = new SoundObject[easyWords.Length];
 			for (int i = 0; i < sds.Length; i++)
 				sds[i] = this.GetSound($"{easyWords[i]}.wav", HideWords(easyWords[i]), SoundType.Voice, new(1f, 0.15f, 0f));
-			
+
 			easyWordSoundPair = sds;
 
 			sds = new SoundObject[hardWords.Length];
@@ -158,7 +158,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -324,7 +324,7 @@ namespace BBTimes.CustomContent.NPCs
 			EnableLetters(false);
 		}
 		public void HideAboveText() => aboveText.gameObject.SetActive(false);
-		IEnumerator Minigame() 
+		IEnumerator Minigame()
 		{
 			audMan.FlushQueue(true);
 			if (angry)

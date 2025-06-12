@@ -178,6 +178,7 @@ namespace BBTimes.Manager
 			ObjectCreationExtension.defaultDustMaterial = GenericExtensions.FindResourceObjectByName<Material>("DustTest");
 			ObjectCreationExtension.defaultCubemap = GenericExtensions.FindResourceObjectByName<Cubemap>("Cubemap_DayStandard");
 			ObjectCreationExtension.mapMaterial = GenericExtensions.FindResourceObjectByName<MapIcon>("Icon_Prefab").spriteRenderer.material;
+			man.Add("TransparentTileMaterial", GenericExtensions.FindResourceObjectByName<Material>("TileBase_Alpha"));
 			man.Add("buttonPre", GenericExtensions.FindResourceObject<RotoHallBuilder>().buttonPre);
 			man.AddFromResources<StandardDoorMats>();
 
@@ -387,7 +388,7 @@ namespace BBTimes.Manager
 			sd = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("shock.wav"))), string.Empty, SoundType.Effect, Color.white);
 			sd.subtitle = false;
 
-			ele.gameObject.CreatePropagatedAudioManager(10f, 30f).AddStartingAudiosToAudioManager(true, sd);
+			ele.gameObject.CreatePropagatedAudioManager(10f, 40f).AddStartingAudiosToAudioManager(true, sd);
 
 			ele.collider = ele.gameObject.AddBoxCollider(Vector3.zero, Vector3.one * (LayerStorage.TileBaseOffset / 2), true);
 			man.Add("EletricityPrefab", ele);
@@ -404,7 +405,7 @@ namespace BBTimes.Manager
 			waterRenderer.name = "SlippingWaterRender";
 
 			var slipMatPre = watRender.gameObject.AddComponent<SlippingMaterial>();
-			slipMatPre.audMan = slipMatPre.gameObject.CreatePropagatedAudioManager(45f, 60f);
+			slipMatPre.audMan = slipMatPre.gameObject.CreatePropagatedAudioManager(10f, 40f);
 			slipMatPre.audSlip = man.Get<SoundObject>("slipAud");
 			slipMatPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(9.9f, 10f, 9.9f), true);
 			man.Add("SlipperyMatPrefab", slipMatPre);
@@ -550,7 +551,7 @@ namespace BBTimes.Manager
 			var genNoise = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "SecretBaldi", "generatorLoop.wav")), string.Empty, SoundType.Effect, Color.white);
 			genNoise.subtitle = false;
 
-			generatorComp.gameObject.CreatePropagatedAudioManager(0f, 65f)
+			generatorComp.gameObject.CreatePropagatedAudioManager(10f, 65f)
 				.AddStartingAudiosToAudioManager(true, genNoise);
 
 			var generatorCylinderRenderer = ObjectCreationExtension.CreatePrimitiveObject(PrimitiveType.Cylinder, TextureExtensions.CreateSolidTexture(1, 1, new(0.35f, 0.35f, 0.35f)));

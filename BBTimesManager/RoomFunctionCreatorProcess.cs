@@ -83,7 +83,7 @@ namespace BBTimes.Manager
 
 			shroom.renderer = shroomRenderer;
 
-			shroom.audMan = shroom.gameObject.CreatePropagatedAudioManager(55f, 65f);
+			shroom.audMan = shroom.gameObject.CreatePropagatedAudioManager(15f, 65f);
 			shroom.audUsed = ObjectCreators.CreateSoundObject(
 				AssetLoader.AudioClipFromFile(Path.Combine(BasePlugin.ModPath, "objects", "DustShroom", GetAssetName("deflate.wav"))),
 				"Vfx_DustShroom_Deflate", SoundType.Voice, Color.white);
@@ -98,7 +98,7 @@ namespace BBTimes.Manager
 			shroom.sprActive = sprites[0];
 
 			var system = GameExtensions.GetNewParticleSystem();
-			system.gameObject.name = "Dusts";
+			system.name = "Dusts";
 			system.transform.SetParent(shroom.transform);
 			system.transform.localPosition = Vector3.up * shroom.renderer.transform.localPosition.y;
 			system.transform.rotation = Quaternion.Euler(90f, 0f, 0f);

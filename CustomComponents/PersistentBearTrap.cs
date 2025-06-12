@@ -33,7 +33,7 @@ namespace BBTimes.CustomComponents
 			while (cooldown > 0f)
 			{
 				cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
-				gauge?.SetValue(cooldown, ogCooldown);
+				gauge?.SetValue(ogCooldown, cooldown);
 				yield return null;
 			}
 			e.ExternalActivity.moveMods.Remove(moveMod);

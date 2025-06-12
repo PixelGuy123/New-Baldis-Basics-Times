@@ -108,13 +108,13 @@ namespace BBTimes.CustomContent.CustomItems
 		void UpdateVelocity()
 		{
 			Vector3 vel = moveMod.movementAddend;
-			float offset = pm.ec.EnvironmentTimeScale * Time.deltaTime * deacceleration;
+			float offset = pm.PlayerTimeScale * Time.deltaTime * deacceleration;
 
 			vel.x += Mathf.Sign(vel.x) * offset;
 			vel.z += Mathf.Sign(vel.z) * offset;
 
 			vel += Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward *
-				   acceleration * Time.deltaTime * pm.ec.EnvironmentTimeScale;
+				   acceleration * Time.deltaTime * pm.PlayerTimeScale;
 			vel.Limit(maxSpeed, 0f, maxSpeed);
 
 			if (vel.magnitude > 0f)

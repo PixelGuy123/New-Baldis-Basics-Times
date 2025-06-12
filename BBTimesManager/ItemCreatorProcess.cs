@@ -463,6 +463,7 @@ namespace BBTimes.Manager
 			DetentionBot.AddDisablingItem(item.itemType);
 			JerryTheAC.AddDisablingItem(item.itemType);
 			ItemAlarm.disablingItems.Add(item.itemType);
+			MetalWindow.acceptableItems.Add(item.itemType);
 
 			// Hardhat
 			item = new ItemBuilder(plug.Info)

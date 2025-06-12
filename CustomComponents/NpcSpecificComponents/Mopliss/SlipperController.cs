@@ -136,13 +136,15 @@ public class SlipperEffector : MonoBehaviour, IEntityTrigger
 		if (speed > speedLimit)
 			speed = speedLimit;
 		slipDirection = targetEntity.Velocity.normalized;
-		entity.IgnoreEntity(target, true); // Ignores collision to avoid breaking itself
 
 		entity.Initialize(controller.owner.ec, target.transform.position);
 		entity.OnEntityMoveInitialCollision += (hit) =>
 		{
-			slipDirection = Vector3.Reflect(slipDirection, hit.normal);
-			audMan.PlaySingle(audHitWall);
+			if (hit.transform != targetEntity.transform)
+			{
+				slipDirection = Vector3.Reflect(slipDirection, hit.normal);
+				audMan.PlaySingle(audHitWall);
+			}
 		};
 
 		audMan.PlaySingle(audStartSlip);

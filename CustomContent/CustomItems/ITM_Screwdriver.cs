@@ -4,15 +4,6 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-	// TODO:
-	/*
-	Unlock metal windows (with my redesign)
-	Take basketballs from basketball shooters
-	Take notebooks from maintenance math machines
-	Tape (if it cant already)
-	Unlock super doors
-	Make Detention Bot redirect itself to another npc when trying to catch the player
-	*/
 	public class ITM_Screwdriver : Item, IItemPrefab
 	{
 		public void SetupPrefab()
@@ -31,27 +22,44 @@ namespace BBTimes.CustomContent.CustomItems
 		public override bool Use(PlayerManager pm)
 		{
 			Destroy(gameObject);
+			bool success = false;
 
 			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.reach))
 			{
 				var math = hit.transform.GetComponentInParent<MathMachine>();
 				if (math && !math.IsCompleted)
 				{
-					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audScrew);
 					math.Completed(pm.playerNumber, true, math);
 					math.NumberDropped(pm.playerNumber);
-					return true;
+					success = true;
 				}
-				var machine = hit.transform.GetComponent<IItemAcceptor>();
-				if (machine != null && machine.ItemFits(item))
+				else
 				{
-					machine.InsertItem(pm, pm.ec);
-					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audScrew);
-					return true;
+					var lockdownDoor = hit.transform.GetComponentInParent<LockdownDoor>();
+					if (lockdownDoor && !lockdownDoor.IsOpen)
+					{
+						lockdownDoor.Open(true, false);
+						success = true;
+					}
+					else
+					{
+						var machine = hit.transform.GetComponent<IItemAcceptor>();
+						if (machine != null && machine.ItemFits(item))
+						{
+							machine.InsertItem(pm, pm.ec);
+							success = true;
+						}
+					}
 				}
+
 			}
 
-			return false;
+			if (success)
+			{
+				Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audScrew);
+			}
+
+			return success;
 		}
 
 		[SerializeField]

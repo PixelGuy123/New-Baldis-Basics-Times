@@ -1,10 +1,11 @@
-﻿using BBTimes.CustomComponents;
+﻿using System;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
@@ -36,12 +37,12 @@ namespace BBTimes.CustomContent.Builders
 
 			for (int i = 0; i < doorPre.mask.Length; i++)
 				doorPre.mask[i] = matTemplate;
-			
+
 
 			activeTex = this.GetTexture("smallDoorClosed.png");
 
 			doorPre.doors = templateDoor.doors;
-			
+
 			doorPre.overlayShut = templateDoor.overlayShut;
 			matTemplate = new(doorPre.overlayShut[0])
 			{
@@ -53,7 +54,7 @@ namespace BBTimes.CustomContent.Builders
 
 			for (int i = 0; i < doorPre.overlayShut.Length; i++)
 				doorPre.overlayShut[i] = matTemplate;
-			
+
 
 			activeTex = this.GetTexture("smallDoorOpen.png");
 
@@ -66,7 +67,7 @@ namespace BBTimes.CustomContent.Builders
 
 			for (int i = 0; i < doorPre.overlayOpen.Length; i++)
 				doorPre.overlayOpen[i] = matTemplate;
-			
+
 
 			doorPre.bg = templateDoor.bg;
 
@@ -104,12 +105,13 @@ namespace BBTimes.CustomContent.Builders
 				{
 					var nextCell = ec.CellFromPosition(cells[i].position + dir.ToIntVector2());
 					if (!nextCell.Null &&
-						!cells[i].WallHardCovered(dir) && 
-						nextCell.room.potentialDoorPositions.Contains(nextCell.position))
+						!cells[i].WallHardCovered(dir) &&
+						nextCell.room.potentialDoorPositions.Contains(nextCell.position) &&
+						!nextCell.room.functions.functions.Exists(x => roomFunctionsToAvoid.Contains(x.GetType())))
 					{
 						availableCells.Add(new(cells[i], dir));
 					}
-						
+
 				}
 			}
 
@@ -170,7 +172,6 @@ namespace BBTimes.CustomContent.Builders
 		internal SmallDoor doorPre;
 
 		[SerializeField]
-		[Range(0f, 1f)]
-		internal float roomWithSmallDoorFactor = 0.5f;
+		internal List<Type> roomFunctionsToAvoid = [typeof(LockedRoomFunction)];
 	}
 }

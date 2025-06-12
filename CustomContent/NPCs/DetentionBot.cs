@@ -121,10 +121,21 @@ namespace BBTimes.CustomContent.NPCs
 			renderer.sprite = sprCarrying;
 		}
 		public bool ItemFits(Items itm) =>
-			IsAngryAtSomeone && disablingItems.Contains(itm);
+			IsAngryAtSomeone && behaviorStateMachine.CurrentState is DetentionBot_GoAfterPlayer && disablingItems.Contains(itm);
 
-		public void InsertItem(PlayerManager pm, EnvironmentController ec) =>
-			behaviorStateMachine.ChangeState(new DetentionBot_Wandering(this));
+		public void InsertItem(PlayerManager pm, EnvironmentController ec)
+		{
+			potentialNPCs.Clear();
+			for (int i = 0; i < ec.Npcs.Count; i++)
+			{
+				if (ec.Npcs[i].isActiveAndEnabled && ec.Npcs[i] != this)
+					potentialNPCs.Add(ec.Npcs[i]);
+			}
+			if (potentialNPCs.Count != 0)
+				behaviorStateMachine.ChangeState(new DetentionBot_GoAfterNPC(this, potentialNPCs[Random.Range(0, potentialNPCs.Count)]));
+			else
+				behaviorStateMachine.ChangeState(new DetentionBot_Wandering(this));
+		}
 
 
 
@@ -148,6 +159,7 @@ namespace BBTimes.CustomContent.NPCs
 		private float[] timeInSight;
 
 		readonly List<RoomController> offices = [];
+		readonly List<NPC> potentialNPCs = [];
 		public RoomController PickRandomOffice => offices[Random.Range(0, offices.Count)];
 
 		readonly static HashSet<Items> disablingItems = [Items.Scissors];

@@ -1,17 +1,17 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Linq;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
+using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
-using System.Linq;
-using MTM101BaldAPI;
 
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Glubotrony : NPC, INPCPrefab
+	public class Glubotrony : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -25,9 +25,9 @@ namespace BBTimes.CustomContent.NPCs
 		this.GetSoundNoSub("glueSplash.wav", SoundType.Voice),
 		this.GetSoundNoSub("glueStep.wav", SoundType.Voice)
 		];
-			
+
 			audMan = GetComponent<PropagatedAudioManager>();
-			stepAudMan = gameObject.CreatePropagatedAudioManager(90f, 165f);
+			stepAudMan = gameObject.CreatePropagatedAudioManager(25f, 90f);
 			audPrepareStep = soundObjects[0];
 			audStep = soundObjects[1];
 			audPutGlue = [soundObjects[2], soundObjects[3]];
@@ -67,8 +67,9 @@ namespace BBTimes.CustomContent.NPCs
 		const float pixelsPerUnit = 55f;
 
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -93,7 +94,7 @@ namespace BBTimes.CustomContent.NPCs
 		IEnumerator Walk()
 		{
 			isWalking = true;
-			
+
 			float stepCool = 0.35f;
 			while (stepCool > 0f)
 			{
@@ -103,7 +104,7 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.maxSpeed = speed;
 			navigator.SetSpeed(speed);
 			stepCool = 0.5f;
-			
+
 			while (stepCool > 0f)
 			{
 				stepCool -= TimeScale * Time.deltaTime;

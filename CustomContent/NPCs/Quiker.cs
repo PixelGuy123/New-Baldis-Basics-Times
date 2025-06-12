@@ -20,7 +20,7 @@ namespace BBTimes.CustomContent.NPCs
 			audFlying = this.GetSound("Quiker_Sound.wav", "Vfx_Quiker_Noises", SoundType.Effect, new(0.1f, 0.1f, 0.1f));
 			audBlind = this.GetSoundNoSub("Quiker_Caught.wav", SoundType.Effect);
 
-			flyingAudMan = gameObject.CreatePropagatedAudioManager(175f, 255f);
+			flyingAudMan = gameObject.CreatePropagatedAudioManager(75f, 185f);
 
 			anim = gameObject.AddComponent<AnimationComponent>();
 			anim.renderers = [spriteRenderer[0]];
@@ -122,6 +122,12 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal float blindnessTime = 15f;
+
+		[SerializeField]
+		internal float activeCooldownMin = 45f, activeCooldownMax = 60f;
+
+		[SerializeField]
+		internal float hideCooldownMin = 45f, hideCooldownMax = 70f;
 
 		public override void Initialize()
 		{
@@ -285,6 +291,14 @@ namespace BBTimes.CustomContent.NPCs
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.45f);
 		readonly Fog fog = new() { color = Color.black, maxDist = 1000f, startDist = 0, strength = 45f };
+
+		internal Vector3 GetRandomTeleportCell()
+		{
+			var cells = ec.mainHall.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.End, CellCoverage.Center, true);
+			return cells.Count != 0 ?
+			cells[Random.Range(0, cells.Count)].FloorWorldPosition :
+			ec.mainHall.RandomEntitySafeCellNoGarbage().FloorWorldPosition;
+		}
 	}
 
 	internal class Quiker_StateBase(Quiker qu) : NpcState(qu)
@@ -294,7 +308,7 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class Quiker_Active(Quiker qu) : Quiker_StateBase(qu)
 	{
-		float activeCooldown = Random.Range(45f, 60f);
+		float activeCooldown;
 		NavigationState_WanderRandom nav;
 		public override void Enter()
 		{
@@ -305,6 +319,7 @@ namespace BBTimes.CustomContent.NPCs
 			qu.Navigator.SetSpeed(45f);
 			nav = new NavigationState_WanderRandom(qu, 64);
 			ChangeNavigationState(nav);
+			activeCooldown = Random.Range(qu.activeCooldownMin, qu.activeCooldownMax);
 		}
 
 		public override void OnStateTriggerEnter(Collider other)
@@ -355,7 +370,7 @@ namespace BBTimes.CustomContent.NPCs
 
 	internal class Quiker_HideBelow(Quiker qu) : Quiker_StateBase(qu)
 	{
-		float waitCooldown = Random.Range(45f, 70f);
+		float waitCooldown;
 
 		public override void Enter()
 		{
@@ -364,6 +379,7 @@ namespace BBTimes.CustomContent.NPCs
 			qu.Navigator.SetSpeed(0f);
 			qu.Navigator.maxSpeed = 0f;
 			ChangeNavigationState(new NavigationState_DoNothing(qu, 0));
+			waitCooldown = Random.Range(qu.hideCooldownMin, qu.hideCooldownMax);
 		}
 
 		public override void Update()
@@ -372,8 +388,7 @@ namespace BBTimes.CustomContent.NPCs
 			waitCooldown -= qu.TimeScale * Time.deltaTime;
 			if (waitCooldown <= 0f)
 			{
-				var cells = qu.ec.mainHall.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.End, true);
-				qu.Navigator.Entity.Teleport(cells[Random.Range(0, cells.Count)].FloorWorldPosition);
+				qu.Navigator.Entity.Teleport(qu.GetRandomTeleportCell());
 				qu.behaviorStateMachine.ChangeState(new Quiker_Active(qu));
 			}
 		}

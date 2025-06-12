@@ -21,7 +21,7 @@ namespace BBTimes.CustomContent.NPCs
 			renderer = spriteRenderer[0];
 
 			audMan = GetComponent<PropagatedAudioManager>();
-			footStepAudMan = gameObject.CreatePropagatedAudioManager(85f, 100f);
+			footStepAudMan = gameObject.CreatePropagatedAudioManager(85f, 120f);
 			var subColor = new Color(0.159765625f, 0.43125f, 0.133203125f);
 
 			audComplains =
@@ -82,7 +82,7 @@ namespace BBTimes.CustomContent.NPCs
 				potion.entity.SetGrounded(false);
 				potion.collider = (CapsuleCollider)potion.entity.Trigger;
 				potion.realCollider = (CapsuleCollider)potion.entity.collider;
-				potion.audMan = potionObj.gameObject.CreatePropagatedAudioManager(45f, 75f);
+				potion.audMan = potionObj.gameObject.CreatePropagatedAudioManager(45f, 90f);
 				potion.audCrashOnGround = spillingNoise;
 				potion.audThrow = BBTimesManager.man.Get<SoundObject>("audGenericThrow");
 				potion.potionRenderer = potionRenderer;

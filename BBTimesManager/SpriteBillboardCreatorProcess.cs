@@ -1,14 +1,11 @@
-﻿using BBTimes.CustomContent.Misc;
-using BBTimes.ModPatches;
-using BBTimes.ModPatches.EnvironmentPatches;
-using MTM101BaldAPI.AssetTools;
-using System.IO;
-using UnityEngine;
-using HarmonyLib;
-using PixelInternalAPI.Classes;
-using PixelInternalAPI.Extensions;
+﻿using System.IO;
+using BBTimes.CustomContent.Misc;
 using BBTimes.Extensions;
+using BBTimes.ModPatches.EnvironmentPatches;
 using MTM101BaldAPI;
+using MTM101BaldAPI.AssetTools;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.Manager
 {
@@ -23,7 +20,7 @@ namespace BBTimes.Manager
 			for (int i = 0; i < flowers.Length; i++)
 			{
 				flowers[i] = ObjectCreationExtensions.CreateSpriteBillboard(flowerSprites[i]).AddSpriteHolder(out _, 2.6f).gameObject;
-				flowers[i].name = $"TimesGenericOutsideFlower_{i+1}";
+				flowers[i].name = $"TimesGenericOutsideFlower_{i + 1}";
 				flowers[i].AddObjectToEditor();
 			}
 
@@ -61,7 +58,7 @@ namespace BBTimes.Manager
 				.AddSpriteHolder(out _, 18.1f).gameObject.SetAsPrefab(true));
 
 			// Misc Decorations
-			AddDecoration("SecretBread","bread.png", 35f, Vector3.up * 1.3f);
+			AddDecoration("SecretBread", "bread.png", 35f, Vector3.up * 1.3f);
 			AddDecoration("TimesKitchenSteak", "Steak.png", 30f, Vector3.up);
 
 			static void AddDecoration(string name, string fileName, float pixelsPerUnit, Vector3 offset)

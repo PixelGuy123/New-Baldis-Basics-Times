@@ -101,13 +101,13 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			while (freezeCooldown > 0f)
 			{
 				freezeCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
-				gauge.SetValue(freezeCooldown, ogCooldown);
+				gauge?.SetValue(freezeCooldown, ogCooldown);
 				if (pmm && pmm.HasAttribute("boots"))
 					break;
 				yield return null;
 			}
 
-			gauge.Deactivate();
+			gauge?.Deactivate();
 
 			Destroy(gameObject);
 		}

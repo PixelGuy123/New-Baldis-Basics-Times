@@ -52,8 +52,8 @@ namespace BBTimes.CustomContent.NPCs
 			];
 
 			audMan = GetComponent<PropagatedAudioManager>();
-			bounceAudMan = gameObject.CreatePropagatedAudioManager(85f, 125f);
-			clapAudMan = gameObject.CreatePropagatedAudioManager(85f, 125f);
+			bounceAudMan = gameObject.CreatePropagatedAudioManager(30f, 100f);
+			clapAudMan = gameObject.CreatePropagatedAudioManager(30f, 100f);
 			audBounceBall = soundObjects[0];
 			audThrow = soundObjects[1];
 			audIdle = [soundObjects[2], soundObjects[3]];

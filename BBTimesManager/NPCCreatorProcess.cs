@@ -21,7 +21,7 @@ namespace BBTimes.Manager
 			// Office Chair
 			//npc = CreatorExtensions.CreateNPC<OfficeChair, OfficeChairCustomData>("OfficeChair", 35f, 60f, [RoomCategory.Office, RoomCategory.Faculty], [], "PST_OFC_Name", "PST_OFC_Desc", true, ignorePlayerOnSpawn: true, spriteYOffset:-2f).AddMeta(plug, "OfficeChair", NPCFlags.Standard).value;
 			npc = new NPCBuilder<OfficeChair>(plug.Info)
-				.SetMinMaxAudioDistance(35f, 60f)
+				.SetMinMaxAudioDistance(20f, 80f)
 				.AddSpawnableRoomCategories(RoomCategory.Office, RoomCategory.Faculty)
 				.IgnorePlayerOnSpawn()
 				.SetEnum("OfficeChair")
@@ -37,7 +37,7 @@ namespace BBTimes.Manager
 
 			// Happy Holidays
 			npc = new NPCBuilder<HappyHolidays>(plug.Info)
-				.SetMinMaxAudioDistance(45f, 80f)
+				.SetMinMaxAudioDistance(25f, 100f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("HappyHolidays")
 				.SetName("Happy Holidays")
@@ -60,7 +60,7 @@ namespace BBTimes.Manager
 
 			// Superintendent
 			npc = new NPCBuilder<Superintendent>(plug.Info)
-				.SetMinMaxAudioDistance(110f, 140f)
+				.SetMinMaxAudioDistance(25f, 120f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall, RoomCategory.Class, RoomCategory.Faculty)
 				.SetEnum("Superintendent")
 				.SetName("Superintendent")
@@ -79,7 +79,7 @@ namespace BBTimes.Manager
 
 			// Stunly
 			npc = new NPCBuilder<Stunly>(plug.Info)
-				.SetMinMaxAudioDistance(75f, 100f)
+				.SetMinMaxAudioDistance(20f, 90f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Stunly")
 				.SetName("Stunly")
@@ -96,7 +96,7 @@ namespace BBTimes.Manager
 
 			// Pix
 			npc = new NPCBuilder<Pix>(plug.Info)
-				.SetMinMaxAudioDistance(155f, 165f)
+				.SetMinMaxAudioDistance(25f, 100f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Pix")
 				.SetName("Pix")
@@ -117,7 +117,7 @@ namespace BBTimes.Manager
 			// Zero Prize
 
 			npc = new NPCBuilder<ZeroPrize>(plug.Info)
-				.SetMinMaxAudioDistance(135f, 175f)
+				.SetMinMaxAudioDistance(25f, 120f)
 				.SetEnum("ZeroPrize")
 				.SetName("ZeroPrize")
 				.SetMetaName("PST_0TH_Name")
@@ -132,7 +132,7 @@ namespace BBTimes.Manager
 
 			// Pencil Boy
 			npc = new NPCBuilder<PencilBoy>(plug.Info)
-				.SetMinMaxAudioDistance(75f, 100f)
+				.SetMinMaxAudioDistance(30f, 90f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("PencilBoy")
 				.SetName("Pencil Boy")
@@ -149,7 +149,7 @@ namespace BBTimes.Manager
 
 			// Rolling Bot
 			npc = new NPCBuilder<RollingBot>(plug.Info)
-				.SetMinMaxAudioDistance(55f, 135f)
+				.SetMinMaxAudioDistance(30f, 110f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Rollingbot")
 				.SetName("Rollingbot")
@@ -165,7 +165,7 @@ namespace BBTimes.Manager
 
 			// Watcher
 			npc = new NPCBuilder<Watcher>(plug.Info)
-				.SetMinMaxAudioDistance(75f, 185f)
+				.SetMinMaxAudioDistance(30f, 120f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Watcher")
 				.SetName("Watcher")
@@ -181,7 +181,7 @@ namespace BBTimes.Manager
 
 			// MGS
 			npc = new NPCBuilder<MagicalStudent>(plug.Info)
-				.SetMinMaxAudioDistance(400f, 500f)
+				.SetMinMaxAudioDistance(40f, 200f)
 				.AddSpawnableRoomCategories(RoomCategory.Office)
 				.SetEnum("Magicalstudent")
 				.SetName("Magicalstudent")
@@ -200,7 +200,7 @@ namespace BBTimes.Manager
 
 			// Superintendent Jr.
 			npc = new NPCBuilder<SuperIntendentJr>(plug.Info)
-				.SetMinMaxAudioDistance(245f, 365f)
+				.SetMinMaxAudioDistance(40f, 180f)
 				.AddSpawnableRoomCategories(RoomCategory.Faculty, RoomCategory.Office)
 				.SetEnum("Superintendentjr")
 				.SetName("Superintendentjr")
@@ -219,7 +219,7 @@ namespace BBTimes.Manager
 
 			// Leapy
 			npc = new NPCBuilder<Leapy>(plug.Info)
-				.SetMinMaxAudioDistance(100f, 135f)
+				.SetMinMaxAudioDistance(25f, 100f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Leapy")
 				.SetName("Leapy")
@@ -234,7 +234,7 @@ namespace BBTimes.Manager
 
 			// Glue boy
 			npc = new NPCBuilder<Glubotrony>(plug.Info)
-				.SetMinMaxAudioDistance(75f, 110f)
+				.SetMinMaxAudioDistance(25f, 90f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Glubotrony")
 				.SetName("Glubotrony")
@@ -253,7 +253,7 @@ namespace BBTimes.Manager
 
 			// Dribble
 			npc = new NPCBuilder<Dribble>(plug.Info)
-				.SetMinMaxAudioDistance(85f, 135f)
+				.SetMinMaxAudioDistance(30f, 110f)
 				.SetEnum("Dribble")
 				.SetName("Coach Dribble")
 				.SetMetaName("PST_Dribble_Name")
@@ -272,8 +272,8 @@ namespace BBTimes.Manager
 
 			// Bubbly
 			npc = new NPCBuilder<Bubbly>(plug.Info)
+				.SetMinMaxAudioDistance(25f, 90f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
-				.SetMinMaxAudioDistance(90f, 110f)
 				.SetEnum("Bubbly")
 				.SetName("Bubbly")
 				.SetMetaName("PST_Bubbly_Name")
@@ -288,7 +288,7 @@ namespace BBTimes.Manager
 
 			// Phawillow
 			npc = new NPCBuilder<Phawillow>(plug.Info)
-				.SetMinMaxAudioDistance(100f, 200f)
+				.SetMinMaxAudioDistance(30f, 120f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Phawillow")
 				.SetName("Phawillow")
@@ -305,7 +305,7 @@ namespace BBTimes.Manager
 
 			// Faker
 			npc = new NPCBuilder<Faker>(plug.Info)
-				.SetMinMaxAudioDistance(90f, 140f)
+				.SetMinMaxAudioDistance(30f, 110f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Faker")
 				.SetMetaName("PST_Faker_Name")
@@ -322,7 +322,7 @@ namespace BBTimes.Manager
 
 			// Camera Stand
 			npc = new NPCBuilder<CameraStand>(plug.Info)
-				.SetMinMaxAudioDistance(90f, 140f)
+				.SetMinMaxAudioDistance(30f, 110f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Camerastand")
 				.SetMetaName("PST_CamSt_Name")
@@ -339,7 +339,7 @@ namespace BBTimes.Manager
 
 			// Mugh
 			npc = new NPCBuilder<Mugh>(plug.Info)
-				.SetMinMaxAudioDistance(165f, 175f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetMetaTags(["student"])
 				.SetEnum("Mugh")
@@ -354,7 +354,7 @@ namespace BBTimes.Manager
 
 			// Penny
 			npc = new NPCBuilder<Penny>(plug.Info)
-				.SetMinMaxAudioDistance(140f, 170f)
+				.SetMinMaxAudioDistance(30f, 110f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Penny")
 				.SetMetaName("PST_PEN_Name")
@@ -372,7 +372,7 @@ namespace BBTimes.Manager
 
 			// Ser Oran
 			npc = new NPCBuilder<SerOran>(plug.Info)
-				.SetMinMaxAudioDistance(165f, 170f)
+				.SetMinMaxAudioDistance(30f, 110f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("SerOran")
 				.SetMetaName("PST_Oran_Name")
@@ -389,7 +389,7 @@ namespace BBTimes.Manager
 
 			// CoolMop
 			npc = new NPCBuilder<CoolMop>(plug.Info)
-				.SetMinMaxAudioDistance(215f, 250f)
+				.SetMinMaxAudioDistance(35f, 120f)
 				.SetEnum("CoolMop")
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetMetaName("PST_MOP_Name")
@@ -406,7 +406,7 @@ namespace BBTimes.Manager
 
 			// Ink Artist
 			npc = new NPCBuilder<InkArtist>(plug.Info)
-				.SetMinMaxAudioDistance(155f, 175f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("InkArtist")
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetMetaName("PST_InkArt_Name")
@@ -420,7 +420,7 @@ namespace BBTimes.Manager
 
 			// Tick Tock
 			npc = new NPCBuilder<TickTock>(plug.Info)
-				.SetMinMaxAudioDistance(155f, 175f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("TickTock")
 				.AddSpawnableRoomCategories(RoomCategory.Faculty, RoomCategory.Office)
 				.SetMetaTags(["neither"])
@@ -435,7 +435,7 @@ namespace BBTimes.Manager
 
 			// Quiker
 			npc = new NPCBuilder<Quiker>(plug.Info)
-				.SetMinMaxAudioDistance(155f, 165f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("Quiker")
 				.SetMetaName("PST_Quiker_Name")
 				.SetMetaTags(["neither"])
@@ -450,7 +450,7 @@ namespace BBTimes.Manager
 
 			// Jerry The Air Conditioner
 			npc = new NPCBuilder<JerryTheAC>(plug.Info)
-				.SetMinMaxAudioDistance(145f, 200f)
+				.SetMinMaxAudioDistance(35f, 120f)
 				.SetEnum("JerryTheAC")
 				.SetMetaName("PST_JerryAc_Name")
 				.SetName("JerryTheAirConditioner")
@@ -465,7 +465,7 @@ namespace BBTimes.Manager
 
 			// Zap Zap
 			npc = new NPCBuilder<ZapZap>(plug.Info)
-				.SetMinMaxAudioDistance(100f, 125f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.AddSpawnableRoomCategories(RoomCategory.Office, RoomCategory.Faculty)
 				.SetEnum("ZapZap")
 				.SetMetaTags(["neither"])
@@ -483,7 +483,7 @@ namespace BBTimes.Manager
 
 			// Cheese McSwiss
 			npc = new NPCBuilder<CheeseMan>(plug.Info)
-				.SetMinMaxAudioDistance(125f, 155f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("CheeseMan")
 				.SetMetaTags(["student"])
 				.SetMetaName("PST_CheeseMan_Name")
@@ -497,10 +497,10 @@ namespace BBTimes.Manager
 
 			// Detention Bot
 			npc = new NPCBuilder<DetentionBot>(plug.Info)
+				.SetMinMaxAudioDistance(35f, 120f)
 				.AddSpawnableRoomCategories(RoomCategory.Office)
 				.AddHeatmap()
 				.AddLooker()
-				.SetMinMaxAudioDistance(215f, 255f)
 				.SetEnum("DetentionBot")
 				.SetMetaName("PST_DetentionBot_Name")
 				.SetMetaTags(["faculty"])
@@ -517,7 +517,7 @@ namespace BBTimes.Manager
 
 			// Science Teacher
 			npc = new NPCBuilder<ScienceTeacher>(plug.Info)
-				.SetMinMaxAudioDistance(122f, 165.5f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("ScienceTeacher")
 				.SetMetaName("PST_SciTeacher_Name")
 				.SetMetaTags(["faculty"])
@@ -567,7 +567,7 @@ namespace BBTimes.Manager
 
 			// Mopliss
 			npc = new NPCBuilder<Mopliss>(plug.Info)
-				.SetMinMaxAudioDistance(215f, 250f)
+				.SetMinMaxAudioDistance(35f, 120f)
 				.SetEnum("Mopliss")
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetMetaName("PST_MOPLISS_Name")
@@ -584,7 +584,7 @@ namespace BBTimes.Manager
 
 			// Nose
 			npc = new NPCBuilder<NoseMan>(plug.Info)
-				.SetMinMaxAudioDistance(165f, 175f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("NoseMan")
 				.SetMetaName("PST_NOSE_Name")
 				.SetName("NoseMan")
@@ -599,7 +599,7 @@ namespace BBTimes.Manager
 
 			// Mimicry
 			npc = new NPCBuilder<Mimicry>(plug.Info)
-				.SetMinMaxAudioDistance(165f, 175f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("Mimicry")
 				.SetMetaName("PST_Mimi_Name")
 				.SetName("Mimicry")
@@ -618,7 +618,7 @@ namespace BBTimes.Manager
 
 			// Pran the Dancer
 			npc = new NPCBuilder<PranTheDancer>(plug.Info)
-				.SetMinMaxAudioDistance(165f, 170f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Pran")
 				.SetMetaTags(["neither"])
@@ -632,7 +632,7 @@ namespace BBTimes.Manager
 
 			// Winterry
 			npc = new NPCBuilder<Winterry>(plug.Info)
-				.SetMinMaxAudioDistance(165f, 175f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("Winterry")
 				.SetMetaName("PST_Winterry_Name")
 				.SetName("Winterry")
@@ -652,7 +652,7 @@ namespace BBTimes.Manager
 
 			// Snowfolke
 			npc = new NPCBuilder<Snowfolke>(plug.Info)
-				.SetMinMaxAudioDistance(135f, 175f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("Snowfolke")
 				.SetMetaName("PST_Snowfolke_Name")
 				.SetAirborne()
@@ -668,7 +668,7 @@ namespace BBTimes.Manager
 
 			// Everett Treewood
 			npc = new NPCBuilder<EverettTreewood>(plug.Info)
-				.SetMinMaxAudioDistance(125f, 155f)
+				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("EverettTreewood")
 				.SetMetaName("PST_EverettTree_Name")
 				.SetName("EverettTreewood")
@@ -687,7 +687,7 @@ namespace BBTimes.Manager
 
 			// Mr. Kreye
 			npc = new NPCBuilder<MrKreye>(plug.Info)
-				.SetMinMaxAudioDistance(175f, 200f)
+				.SetMinMaxAudioDistance(65f, 200f)
 				.SetEnum("MrKreye")
 				.SetMetaName("PST_Kreye_Name")
 				.SetName("MrKreye")

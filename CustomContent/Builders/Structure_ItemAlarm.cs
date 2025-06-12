@@ -1,9 +1,9 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
@@ -39,7 +39,7 @@ namespace BBTimes.CustomContent.Builders
 			base.OnGenerationFinished(lg);
 
 			var potentialPickups = new List<Pickup>(ec.items);
-			potentialPickups.RemoveAll(pic => !pic.free || pic.showDescription); // Only store items show description... Hopefully that stays like that
+			potentialPickups.RemoveAll(pic => !pic.free || pic.showDescription || ec.CellFromPosition(pic.transform.position).room.type == RoomType.Hall); // Only store items show description... Hopefully that stays like that
 
 			if (potentialPickups.Count == 0)
 			{
@@ -60,7 +60,6 @@ namespace BBTimes.CustomContent.Builders
 				int idx = lg.controlledRNG.Next(potentialPickups.Count);
 				var alarm = Instantiate(alarmPre, holder);
 
-				
 				alarm.AttachToPickup(potentialPickups[idx]);
 				alarm.Ec = ec;
 

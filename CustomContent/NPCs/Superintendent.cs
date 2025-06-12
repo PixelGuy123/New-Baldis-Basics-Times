@@ -101,7 +101,7 @@ namespace BBTimes.CustomContent.NPCs
 		public bool Drag(Entity entity)
 		{
 			float num = Mathf.Abs((transform.position - entity.transform.position).magnitude);
-			if (entity.InteractionDisabled || !entity.InBounds || num > dragBreakDistance)
+			if (entity.Frozen || !entity.InBounds || num > dragBreakDistance)
 				return false;
 
 			entity.Teleport(transform.position);

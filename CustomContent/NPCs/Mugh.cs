@@ -31,7 +31,7 @@ namespace BBTimes.CustomContent.NPCs
 			];
 
 			audMan = GetComponent<PropagatedAudioManager>();
-			walkAudMan = gameObject.CreatePropagatedAudioManager(65, 75);
+			walkAudMan = gameObject.CreatePropagatedAudioManager(30f, 100f);
 			renderer = spriteRenderer[0];
 			var storedSprites = this.GetSpriteSheet(5, 1, 55f, "muggy.png");
 			normSprite = storedSprites[0];

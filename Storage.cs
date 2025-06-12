@@ -28,7 +28,9 @@ namespace BBTimes.Plugin
 
 		// ------------------- Constant Strings ---------------------
 
-		public const string HOTCHOCOLATE_ATTR_TAG = "hotchocolateactive";
+		public const string
+		HOTCHOCOLATE_ATTR_TAG = "hotchocolateactive",
+		HARDHAT_ATTR_TAG = "protectedhead";
 		public const string ChristmasSpecial_TimesTag = "Times_SpecialTags_ChristmasSpecial";
 
 		// ------------------- Constant Floats ---------------------

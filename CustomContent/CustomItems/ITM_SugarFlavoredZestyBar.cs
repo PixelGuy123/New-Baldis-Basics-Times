@@ -38,39 +38,40 @@ namespace BBTimes.CustomContent.CustomItems
 			m.AddModifier("staminaMax", mod);
 			yield return null;
 			pm.plm.AddStamina(pm.plm.staminaMax - pm.plm.stamina, true);
-			float cooldown = 25f;
-			while (cooldown > 0f)
+
+			float boostDuration = lifeTime * 0.4f;
+			float decayDuration = lifeTime * 0.6f;
+			float timer = 0f;
+
+			// Boost phase
+			while (timer < boostDuration)
 			{
-				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				timer += pm.PlayerTimeScale * Time.deltaTime;
+				gauge.SetValue(lifeTime, lifeTime - timer);
 				yield return null;
 			}
 
-			while (true)
+			// Decay phase
+			float decayTimer = 0f;
+			while (decayTimer < decayDuration)
 			{
-				mod.multiplier -= pm.ec.EnvironmentTimeScale * Time.deltaTime * 0.7f;
+				decayTimer += pm.PlayerTimeScale * Time.deltaTime;
+				// Gradually reduce multiplier from 4f to 0.5f over decayDuration
+				mod.multiplier = Mathf.Lerp(4f, 0.5f, decayTimer / decayDuration);
 				pm.plm.stamina = Mathf.Min(pm.plm.stamina, pm.plm.staminaMax);
-				if (mod.multiplier <= 0.5f)
-				{
-					break;
-				}
-				yield return null;
-			}
-
-			cooldown = lifeTime;
-			while (cooldown > 0f)
-			{
-				cooldown -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
-				gauge.SetValue(lifeTime, cooldown);
+				gauge.SetValue(lifeTime, lifeTime - (decayTimer + timer));
 				yield return null;
 			}
 
 			gauge.Deactivate();
 
-			while (true)
+			// Restore multiplier back to 1f smoothly
+			while (mod.multiplier < 1f)
 			{
-				mod.multiplier += pm.ec.EnvironmentTimeScale * Time.deltaTime * 0.7f;
+				mod.multiplier += pm.PlayerTimeScale * Time.deltaTime * 0.7f;
 				if (mod.multiplier >= 1f)
 				{
+					mod.multiplier = 1f;
 					break;
 				}
 				yield return null;
@@ -84,7 +85,7 @@ namespace BBTimes.CustomContent.CustomItems
 		internal SoundObject audEat;
 
 		[SerializeField]
-		internal float lifeTime = 10f;
+		internal float lifeTime = 50f;
 
 		[SerializeField]
 		internal Sprite gaugeSprite;

@@ -114,7 +114,7 @@ namespace BBTimes.CustomContent.CustomItems
 				}
 				if (timer > 0f)
 				{
-					timer -= ec.EnvironmentTimeScale * Time.deltaTime;
+					timer -= pm.PlayerTimeScale * Time.deltaTime;
 					gauge.SetValue(lifeTime, timer);
 					if (timer <= 0f) // Should be triggered once
 					{

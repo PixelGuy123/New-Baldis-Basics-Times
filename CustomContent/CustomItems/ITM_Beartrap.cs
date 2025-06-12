@@ -17,7 +17,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(trapSprs[1]).AddSpriteHolder(out var trapRenderer, 1f);
 			renderer.transform.SetParent(transform);
-			renderer.transform.localPosition = Vector3.zero;
+			renderer.transform.localPosition = Vector3.down * 4.75f;
 
 			this.renderer = trapRenderer;
 			entity = gameObject.CreateEntity(1f, 1f, renderer.transform);

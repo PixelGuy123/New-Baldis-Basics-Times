@@ -7,7 +7,6 @@ using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.Registers;
-using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 using UnityEngine.AI;
@@ -19,29 +18,29 @@ namespace BBTimes.Extensions
 	{
 		public static ParticleSystem GetNewParticleSystem(bool visualOnly = true)
 		{
-			var particle = Object.Instantiate(
+			var cloud = Object.Instantiate(
 						(
 							ItemMetaStorage.Instance.FindByEnum(Items.ChalkEraser).value.item as ChalkEraser
 						).cloud);
 
-			var obj = particle.gameObject;
+			Object.Destroy(cloud.GetComponent<ChalkEraser>()); // Destroys the useless ChalkEraser component
 
-			Object.DestroyImmediate(particle.particles); // Destroys original Particle instance
+			var particleSystem = cloud.particles;
+			var obj = particleSystem.gameObject;
 
-			particle.particles = obj.AddComponent<ParticleSystem>(); // Adds a new fresh ParticleSystem to have everything set to default values
+			Object.DestroyImmediate(particleSystem); // Destroys original Particle instance
+
+			particleSystem = obj.AddComponent<ParticleSystem>(); // Adds a new fresh ParticleSystem to have everything set to default values
+
 			var renderer = obj.GetComponent<ParticleSystemRenderer>();
+			renderer.material = new(renderer.material) { name = $"{particleSystem.name}_Mat" };
 
-			renderer.material = new(renderer.material) { name = $"{particle.name}_Mat" };
-
-			var particleSystem = particle.particles;
 			if (visualOnly)
 			{
-				foreach (var collider in particle.GetComponentsInChildren<Collider>())
-				{
-					Object.DestroyImmediate(collider); // Destroys all colliders, since this particle won't be used for covering
-				}
-				Object.DestroyImmediate(particle); // Destroys the CoverCloud component since this particle won't be primarily used for covering
+				obj.transform.SetParent(null);
+				Object.Destroy(cloud.gameObject);
 			}
+
 			return particleSystem;
 		}
 		public static T SpawnForeignNPC<T>(this EnvironmentController ec, T prefab, Vector3 position) where T : NPC

@@ -70,7 +70,7 @@ namespace BBTimes.CustomContent.CustomItems
 				return;
 			}
 
-			lifeTime -= ec.EnvironmentTimeScale * Time.deltaTime;
+			lifeTime -= pm.PlayerTimeScale * Time.deltaTime;
 			gauge.SetValue(totalLifeTime, lifeTime);
 
 			if (lifeTime <= 0f)
@@ -88,8 +88,8 @@ namespace BBTimes.CustomContent.CustomItems
 				entity.SetInteractionState(!tar.InteractionDisabled);
 
 			Vector3 tarDir = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward;
-			currentDirection = Vector3.RotateTowards(currentDirection, tarDir, rotationSpeed * Time.deltaTime * ec.EnvironmentTimeScale, 0f).normalized;
-			entity.UpdateInternalMovement(tar.ExternalActivity.Addend + currentDirection * skateSpeed * ec.EnvironmentTimeScale);
+			currentDirection = Vector3.RotateTowards(currentDirection, tarDir, rotationSpeed * Time.deltaTime * pm.PlayerTimeScale, 0f).normalized;
+			entity.UpdateInternalMovement(tar.ExternalActivity.Addend + currentDirection * skateSpeed * pm.PlayerTimeScale);
 			pm.Teleport(transform.position);
 
 			CreateSlipper(ec.CellFromPosition(transform.position));

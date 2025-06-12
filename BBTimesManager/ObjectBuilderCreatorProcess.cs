@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using BBTimes.CustomContent.Builders;
-using BBTimes.Extensions;
 using BBTimes.Helpers;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
@@ -32,6 +31,7 @@ namespace BBTimes.Manager
 
 			// Trapdoor Builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_Trapdoor>("Structure_Trapdoor", out _, "Trapdoor");
+
 			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
 
 			vent = CloneParameter(vent);
@@ -92,6 +92,12 @@ namespace BBTimes.Manager
 			vent = CloneParameter(vent);
 			vent.parameters.minMax[0] = new(6, 9);
 			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
+
+			// Notebook Machine Builder
+			vent = CreatorExtensions.CreateObjectBuilder<Structure_NotebookMachine>("Structure_NotebookMachine", out _, "NotebookMachine");
+
+			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
+			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
 
 
 			// SecretButton Builder

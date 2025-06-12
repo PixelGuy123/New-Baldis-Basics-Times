@@ -1,7 +1,9 @@
-﻿using BBTimes.Extensions;
-using HarmonyLib;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using BBTimes.Plugin;
+using HarmonyLib;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
@@ -61,7 +63,7 @@ namespace BBTimes.CustomContent.Objects
 
 			normalVentAudioMan.SetLoop(true);
 			normalVentAudioMan.QueueAudio(ventAudios[0]);
-			
+
 			float sprite = ventTexs.Length - 1;
 			float speed = 0f;
 			while (sprite > 1f)
@@ -83,7 +85,7 @@ namespace BBTimes.CustomContent.Objects
 			}
 
 			nVent.BlockMe();
-			
+
 
 			yield break;
 		}
@@ -112,14 +114,23 @@ namespace BBTimes.CustomContent.Objects
 			}
 		}
 
-		private void OnTriggerEnter(Collider other)
+		private void OnTriggerStay(Collider other)
 		{
+			if (!other.isTrigger)
+				return;
+
 			var entity = other.GetComponent<Entity>();
-			if (entity == null || touchedEntity.Contains(entity)) return;
+			if (entity == null || touchedEntity.Contains(entity))
+				return;
 
 			if (Enabled)
+			{
+				if (other.CompareTag("Player") && other.TryGetComponent<PlayerAttributesComponent>(out var comp) && comp.HasAttribute(Storage.HARDHAT_ATTR_TAG))
+					return;
+
 				entity.AddForce(new((entity.transform.position - transform.position).normalized, leakPushForce, leakAccelerationForce));
-			touchedEntity.Add(entity);
+				touchedEntity.Add(entity);
+			}
 		}
 
 		private void OnTriggerExit(Collider other)
@@ -157,7 +168,7 @@ namespace BBTimes.CustomContent.Objects
 
 		Coroutine animation;
 
-		readonly List<Entity> touchedEntity = [];
+		readonly HashSet<Entity> touchedEntity = [];
 
 		internal List<Duct> nextVents = [];
 

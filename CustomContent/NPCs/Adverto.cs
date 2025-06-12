@@ -1,10 +1,10 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -41,7 +41,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -92,20 +92,25 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.VirtualUpdate();
 			for (int i = 0; i < playerAdvertisements.Count; i++)
+			{
 				if (!playerAdvertisements[i])
 					playerAdvertisements.RemoveAt(i--);
+			}
 
 			if (playerAdvertisements.Count == 0)
+			{
 				affectedPlayers.RemoveAll(x => x.Key == this);
-
-			for (int i = 0; i < advertisements.Count; i++)
-				if (!advertisements[i])
-					advertisements.RemoveAt(i--);
-			
-			if (playerAdvertisements.Count != 0 && Singleton<InputManager>.Instance.GetDigitalInput("Interact", true) && Time.timeScale != 0f)
+			}
+			else if (Singleton<InputManager>.Instance.GetDigitalInput("Interact", true) && Time.timeScale != 0f)
 			{
 				playerAdvertisements[0].Click();
 				playerAdvertisements.RemoveAt(0);
+			}
+
+			for (int i = 0; i < advertisements.Count; i++)
+			{
+				if (!advertisements[i])
+					advertisements.RemoveAt(i--);
 			}
 		}
 
@@ -161,7 +166,7 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					foreach (NPC npc in ad.ec.Npcs)
 					{
-						if (npc != ad && npc.looker.enabled && !npc.Blinded && ad.looker.RaycastNPC(npc))
+						if (npc != ad && !npc.Blinded && ad.looker.RaycastNPC(npc))
 						{
 							adCooldown += ad.timeBeforeAdvertisement;
 							ad.AdNPC(npc);

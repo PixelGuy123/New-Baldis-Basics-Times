@@ -1,9 +1,9 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
@@ -38,7 +38,7 @@ namespace BBTimes.CustomContent.Builders
 
 			camPre = cam.transform;
 
-			return new() { prefab = this, parameters = new() { minMax = [new(1, 1), new(5,10)] } }; // 0 = Amount of cameras, 1 = minMax distance for them
+			return new() { prefab = this, parameters = new() { minMax = [new(1, 1), new(5, 10)] } }; // 0 = Amount of cameras, 1 = minMax distance for them
 		}
 		public void SetupPrefab() { }
 		public void SetupPrefabPost() { }

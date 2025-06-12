@@ -1,9 +1,8 @@
-﻿using BBTimes.CustomComponents.NpcSpecificComponents;
-using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using BBTimes.CustomComponents;
+using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.CustomContent.NPCs;
-using BBTimes.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -18,8 +17,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 		public override bool Use(PlayerManager pm)
 		{

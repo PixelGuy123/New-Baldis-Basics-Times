@@ -1,13 +1,13 @@
-﻿using UnityEngine;
-using MTM101BaldAPI.AssetTools;
-using System.IO;
-using MTM101BaldAPI;
-using PixelInternalAPI.Extensions;
-using BBTimes.CustomComponents;
+﻿using System.IO;
 using System.Linq;
-using BBTimes.Manager;
-using MTM101BaldAPI.OBJImporter;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Manager;
+using MTM101BaldAPI;
+using MTM101BaldAPI.AssetTools;
+using MTM101BaldAPI.OBJImporter;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.Extensions
 {
@@ -73,15 +73,14 @@ namespace BBTimes.Extensions
 			s.subtitle = false;
 			return s;
 		}
+		public static GameObject GetModel(this IPrefab pr, string modelName, bool includeRendererContainer, bool includeMeshCollider, out Transform rendererHolder, Material mat = null) =>
+			pr.GetModel(modelName, includeRendererContainer, includeMeshCollider, Vector3.one, out rendererHolder, mat);
 
-		public static GameObject GetModel(this IPrefab pr, string modelName, bool includeRendererContainer, bool includeMeshCollider, out Transform rendererHolder) =>
-			pr.GetModel(modelName, includeRendererContainer, includeMeshCollider, Vector3.one, out rendererHolder);
-
-		public static GameObject GetModel(this IPrefab pr, string modelName, bool includeRendererContainer, bool includeMeshCollider, Vector3 scale, out Transform rendererHolder)
+		public static GameObject GetModel(this IPrefab pr, string modelName, bool includeRendererContainer, bool includeMeshCollider, Vector3 scale, out Transform rendererHolder, Material mat = null)
 		{
 			string normalPath = Path.Combine(BasePlugin.ModPath, pr.Category, pr.Name, modelsFolderName, BBTimesManager.GetAssetName(modelName));
 
-			var obj = new OBJLoader().Load(normalPath + ".obj", normalPath + ".mtl", ObjectCreationExtension.defaultMaterial);
+			var obj = new OBJLoader().Load(normalPath + ".obj", normalPath + ".mtl", mat ?? ObjectCreationExtension.defaultMaterial);
 
 			obj.transform.localScale = Vector3.one;
 			if (includeRendererContainer)
@@ -99,7 +98,7 @@ namespace BBTimes.Extensions
 
 			childObject.transform.localScale = scale;
 			rendererHolder = childObject.transform;
-			
+
 			return obj;
 		}
 	}

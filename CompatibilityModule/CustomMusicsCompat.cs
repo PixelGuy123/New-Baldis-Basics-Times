@@ -10,6 +10,7 @@ namespace BBTimes.CompatibilityModule
 			CustomMusicPlug.AddMidisFromDirectory(true, BasePlugin.ModPath, "misc", "Audios", "Elevator");
 			CustomMusicPlug.AddAmbiencesFromDirectory(BasePlugin.ModPath, "misc", "Audios", "Ambiences");
 			CustomMusicPlug.AddPlaytimeMusicsFromDirectory(BasePlugin.ModPath, "misc", "Audios", "Playtime");
+			CustomMusicPlug.AddJhonnyMusicsFromDirectory(BasePlugin.ModPath, "misc", "Audios", "Store");
 		}
 	}
 }

@@ -1,8 +1,8 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Linq;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using PixelInternalAPI.Extensions;
-using System.Linq;
 using UnityEngine;
 namespace BBTimes.CustomContent.NPCs
 {
@@ -11,7 +11,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefab()
 		{
 			audMan = GetComponent<PropagatedAudioManager>();
-			musicAudMan = gameObject.CreatePropagatedAudioManager(162, 210);
+			musicAudMan = gameObject.CreatePropagatedAudioManager(53, 175);
 			audGrab = BBTimesManager.man.Get<SoundObject>("audGenericGrab");
 			audThrow = BBTimesManager.man.Get<SoundObject>("audGenericThrow");
 			audLetGo = this.GetSound("Pran_LetGo.wav", "Vfx_Pran_LetGo", SoundType.Voice, new(1f, 0.6f, 0.2f));
@@ -38,7 +38,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }

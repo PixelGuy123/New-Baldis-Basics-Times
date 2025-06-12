@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using BBTimes.CustomContent.Builders;
 using BBTimes.CustomContent.MapIcons;
+using BBTimes.CustomContent.Objects;
 using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.ModPatches;
@@ -27,6 +28,7 @@ namespace BBTimes.Manager
 				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(sprs[2], "ButtonMapIcon_South"),
 				ObjectCreationExtension.CreateMapIcon<SelfRotatingIcon>(sprs[3], "ButtonMapIcon_East")
 				];
+
 			// map icon for Event Machine
 			EventMachineSpawner.iconPre = ObjectCreationExtension.CreateMapIcon<MapIcon>(AssetLoader.TextureFromFile(Path.Combine(IconPath, GetAssetName("fogMachineIcon.png"))), "EventMachineIcon");
 

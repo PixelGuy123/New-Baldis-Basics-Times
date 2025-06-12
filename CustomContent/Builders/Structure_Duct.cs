@@ -65,7 +65,7 @@ namespace BBTimes.CustomContent.Builders
 			particle.gameObject.name = "VentPrefab_ParticleEmitter";
 			particle.transform.SetParent(vent.transform);
 			particle.transform.localPosition = Vector3.up * 10f;
-			particle.transform.localRotation = Quaternion.Euler(15f, 0f, 0f);
+			particle.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
 
 
 			var m = particle.main;
@@ -81,9 +81,11 @@ namespace BBTimes.CustomContent.Builders
 
 			var vp = particle.velocityOverLifetime;
 			vp.enabled = true;
-			vp.zMultiplier = -4f;
-			vp.yMultiplier = -24f;
+			vp.x = new(-5f, 5f);
+			vp.z = new(-11f, 5f);
+			vp.y = new(-24f, -15f);
 			vp.radialMultiplier = 1.5f;
+			vp.space = ParticleSystemSimulationSpace.World;
 
 			var vs = particle.rotationBySpeed;
 			vs.enabled = true;

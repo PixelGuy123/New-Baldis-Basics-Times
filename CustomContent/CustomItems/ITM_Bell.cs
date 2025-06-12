@@ -1,9 +1,9 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -18,7 +18,7 @@ namespace BBTimes.CustomContent.CustomItems
 			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(storedSprites[0]).AddSpriteHolder(out var rendererBell, 1f);
 
 			renderer.transform.SetParent(transform);
-			renderer.transform.localPosition = Vector3.zero;
+			renderer.transform.localPosition = Vector3.down * 5.1f;
 
 			gameObject.layer = LayerStorage.standardEntities;
 			entity = gameObject.CreateEntity(1.5f, 2.5f, renderer.transform);
@@ -32,8 +32,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -61,7 +62,7 @@ namespace BBTimes.CustomContent.CustomItems
 					active = false;
 					renderer.sprite = deactiveSprite;
 					var baldi = ec.GetBaldi();
-					if (baldi) 
+					if (baldi)
 					{
 						baldi.ClearSoundLocations(); // Forcefully makes him follow the bell
 						baldi.GetNPCContainer()?.AddLookerMod(valMod);
@@ -89,9 +90,9 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			var baldi = ec.GetBaldi();
 			var cell = ec.CellFromPosition(transform.position);
-			while (audMan.AnyAudioIsPlaying || 
+			while (audMan.AnyAudioIsPlaying ||
 				(baldi && (ec.CellFromPosition(baldi.transform.position) != cell
-				&& baldi.soundLocations[noiseVal] == transform.position))) 
+				&& baldi.soundLocations[noiseVal] == transform.position)))
 
 				yield return null;
 

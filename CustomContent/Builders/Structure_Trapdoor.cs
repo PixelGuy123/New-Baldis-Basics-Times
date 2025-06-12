@@ -57,13 +57,13 @@ namespace BBTimes.CustomContent.Builders
 			Destroy(trapdoor.GetComponent<RendererContainer>());
 
 			trapdoorholder.renderer = trapdoor;
-			trapdoorholder.audMan = trapdoorholder.gameObject.CreatePropagatedAudioManager(35f, 45f);
+			trapdoorholder.audMan = trapdoorholder.gameObject.CreatePropagatedAudioManager(35f, 70f);
 
 
 			// Fake trapdoor
 			var fake = trapdoor.SafeDuplicatePrefab(true);
 			fake.name = "FakeTrapDoor";
-			fake.gameObject.CreatePropagatedAudioManager(35f, 45f);
+			fake.gameObject.CreatePropagatedAudioManager(35f, 70f);
 			trapdoorholder.fakeTrapdoorPre = fake.transform;
 
 			return new() { prefab = this, parameters = new() { minMax = [new(3, 4)], chance = [0.55f] } };
@@ -88,10 +88,8 @@ namespace BBTimes.CustomContent.Builders
 
 			var ecData = ec.GetComponent<EnvironmentControllerData>();
 
-			var tiles = ec.mainHall.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.End, false);
-			for (int i = 0; i < tiles.Count; i++)
-				if (tiles[i].offLimits || !tiles[i].HardCoverageFits(CellCoverage.Up | CellCoverage.Center | CellCoverage.Down))
-					tiles.RemoveAt(i--);
+			var tiles = ec.mainHall.GetTilesOfShape(TileShapeMask.Corner | TileShapeMask.End | TileShapeMask.Single, CellCoverage.Center | CellCoverage.Down, false);
+			//Debug.Log("BBTimes: available tiles: " + tiles.Count);
 
 			if (tiles.Count == 0)
 			{
@@ -111,8 +109,6 @@ namespace BBTimes.CustomContent.Builders
 
 
 				var trap = CreateTrapDoor(GetCell(), ec);
-
-				//Debug.Log("weightedCell count: " + weightedCells.Count);
 
 				if (weightedCells.Count >= 1 && rng.NextDouble() <= parameters.chance[0]) // Checks 1 in the count because every GetCell() removes an item from this list
 				{

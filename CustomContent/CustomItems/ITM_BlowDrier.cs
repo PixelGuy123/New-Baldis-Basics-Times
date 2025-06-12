@@ -53,9 +53,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 			while (timer > 0f)
 			{
-				timer -= pm.ec.EnvironmentTimeScale * Time.deltaTime;
+				timer -= pm.PlayerTimeScale * Time.deltaTime;
 				gauge.SetValue(ogTimer, timer);
-				speed += Time.deltaTime * pm.ec.EnvironmentTimeScale * 1.2f;
+				speed += Time.deltaTime * pm.PlayerTimeScale * 1.2f;
 				if (speed > maxSpeed)
 					speed = maxSpeed;
 				moveMod.movementAddend += -cam.transform.forward * speed;

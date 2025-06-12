@@ -144,9 +144,13 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Timer(Entity e, PlayerManager player, bool destroy = true)
 		{
+			HudGauge gauge = null;
 			bool hasPlayer = player != null;
 			if (hasPlayer)
+			{
 				gauge = Singleton<CoreGameManager>.Instance.GetHud(player.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, hitCooldown);
+				gauges.Add(gauge);
+			}
 			affectedEntities.Add(e);
 			e.ExternalActivity.moveMods.Add(moveMod);
 			float cooldown = hitCooldown;
@@ -158,7 +162,11 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			gauge?.Deactivate();
+			if (hasPlayer)
+			{
+				gauge.Deactivate();
+				gauges.Remove(gauge);
+			}
 
 			if (e)
 			{
@@ -176,6 +184,8 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			for (int i = 0; i < affectedEntities.Count; i++)
 				affectedEntities[i]?.ExternalActivity.moveMods.Remove(moveMod);
+			for (int i = 0; i < gauges.Count; i++)
+				gauges[i].Deactivate();
 		}
 
 		GameObject target = null;
@@ -208,7 +218,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal Sprite gaugeSprite;
-		HudGauge gauge;
+		readonly List<HudGauge> gauges = [];
 
 		Vector3 dir;
 

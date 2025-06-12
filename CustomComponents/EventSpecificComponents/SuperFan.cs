@@ -27,8 +27,8 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 			tileB = ec.CellFromPosition(p - d);
 
 			windManager.transform.SetParent(ec.transform);
-			windManager.SetSpeed(pushForce);
 			windManager.Initialize(ec);
+			windManager.SetSpeed(pushForce);
 
 			for (int i = 0; i < windGraphics.Length; i++)
 				windGraphics[i].sharedMaterial = windManager.newMaterial;
@@ -79,8 +79,8 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 			else
 				animSpeed += animSpeedFactor * ec.EnvironmentTimeScale * Time.deltaTime * pushForce * 1.6f;
 			animSpeed = Mathf.Clamp(animSpeed, 0, maxAnimSpeed);
-			
-			
+
+
 		}
 
 		float frame = 0f, animSpeed = 0f;

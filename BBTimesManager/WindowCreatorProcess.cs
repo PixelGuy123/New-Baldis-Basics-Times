@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BBTimes.CustomContent.Objects;
 using BBTimes.Helpers;
 using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches.EnvironmentPatches;
@@ -16,13 +17,12 @@ namespace BBTimes.Manager
 			var brokenTex = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("MetalWindow.png")));
 			var tex = brokenTex;
 			var window = CreatorExtensions.CreateWindow("MetalWindow", tex, brokenTex, unbreakable: true);
+			window.windowPre.gameObject.AddComponent<MetalWindow>().window = window.windowPre;
 			var windowSel = new WindowObjectHolder(window, 75, [RoomCategory.Office]);
 
-			AddWindowsToFloor(F1, windowSel);
-			AddWindowsToFloor(F2, windowSel);
-			AddWindowsToFloor(F3, windowSel);
-			AddWindowsToFloor(F4, windowSel);
-			AddWindowsToFloor(F5, windowSel);
+			AddWindowsToFloor(F4, windowSel, LevelType.Maintenance, LevelType.Laboratory);
+			AddWindowsToFloor(F5, windowSel, LevelType.Maintenance, LevelType.Laboratory);
+			AddWindowsToFloor(END, windowSel);
 
 			// Round Window
 			brokenTex = AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("roundWindow.png")));

@@ -1,5 +1,4 @@
 ﻿using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents
@@ -14,7 +13,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 		public void Initialize(Entity target, EnvironmentController ec)
 		{
 			tar = target;
-			tarHeight = tar.InternalHeight;
+			tarHeight = Entity.physicalHeight; // Always default to the physical height, to avoid issues
 			this.ec = ec;
 			entity.Initialize(ec, target.transform.position);
 			entity.SetHeight(2f);
@@ -49,7 +48,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 
 			if (tar.InteractionDisabled != entity.InteractionDisabled)
 				entity.SetInteractionState(!tar.InteractionDisabled);
-				
+
 			entity.UpdateInternalMovement(tar.ExternalActivity.Addend + (direction * speed * ec.EnvironmentTimeScale));
 
 			// Get all these velocities to 0

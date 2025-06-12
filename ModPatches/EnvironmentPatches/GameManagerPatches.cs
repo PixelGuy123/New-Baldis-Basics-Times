@@ -247,6 +247,10 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				return;
 			}
+
+			if (!__instance.levelObject.finalLevel)
+				return;
+
 			if (___elevatorsClosed == 3)
 			{
 				___ec.GetComponent<EnvironmentControllerData>()?.OngoingEvents.ForEach(x => { if (x != null) ___ec.StopCoroutine(x); }); // Disable active/about to activate events

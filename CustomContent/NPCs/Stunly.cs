@@ -22,7 +22,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			noiseMan = GetComponent<PropagatedAudioManager>();
 
-			laughterMan = gameObject.CreatePropagatedAudioManager(75f, 100f);
+			laughterMan = gameObject.CreatePropagatedAudioManager(25f, 65f);
 
 			stunlyCanvas = ObjectCreationExtensions.CreateCanvas();
 			stunlyCanvas.transform.SetParent(transform);
@@ -157,19 +157,20 @@ namespace BBTimes.CustomContent.NPCs
 			color.a = 0f;
 			image.color = color;
 
-			// Define durations as percentages of blindTime:
-			float fadeInDuration = fadeInFactor * blindTime;
-			float holdDuration = (1f - (fadeInFactor * 2f)) * blindTime;
+			// Adjusted durations:
+			float fadeInDuration = fadeInFactor * blindTime; // e.g., 0.2 * blindTime
+			float holdDuration = Mathf.Min(1.0f, blindTime * 0.2f); // Hold for up to 1 second or 20% of blindTime, whichever is less
 			float fadeOutDuration = blindTime - fadeInDuration - holdDuration;
-			float additionConstant = 0f;
+			float timeWasted = blindTime;
 
 			// Fade in phase:
 			float t = 0f;
 			while (t < fadeInDuration)
 			{
 				t += TimeScale * Time.deltaTime;
+				timeWasted -= TimeScale * Time.deltaTime;
 				color.a = Mathf.Lerp(0f, 1f, Mathf.Clamp01(t / fadeInDuration));
-				gauge.SetValue(blindTime, blindTime - t); // t must reach fadeInDuration here
+				gauge.SetValue(blindTime, timeWasted);
 				image.color = color;
 				yield return null;
 			}
@@ -178,22 +179,24 @@ namespace BBTimes.CustomContent.NPCs
 
 			// Hold phase:
 			t = 0f;
-			additionConstant = fadeInDuration; // Store the fadeIn duration to add it later
 			while (t < holdDuration)
 			{
 				t += TimeScale * Time.deltaTime;
-				gauge.SetValue(blindTime, blindTime - (t + additionConstant)); // additionConstant is added from the previous phase
+				timeWasted -= TimeScale * Time.deltaTime;
+				gauge.SetValue(blindTime, timeWasted);
 				yield return null;
 			}
 
+			image.sprite = allSprites[8];
+
 			// Fade out phase:
 			t = 0f;
-			additionConstant += holdDuration; // Update additionConstant to include the hold duration
 			while (t < fadeOutDuration)
 			{
 				t += TimeScale * Time.deltaTime;
+				timeWasted -= TimeScale * Time.deltaTime;
 				color.a = Mathf.Lerp(1f, 0f, Mathf.Clamp01(t / fadeOutDuration));
-				gauge.SetValue(blindTime, blindTime - (t + additionConstant)); // Should reach 0 here
+				gauge.SetValue(blindTime, timeWasted);
 				image.color = color;
 				yield return null;
 			}
@@ -254,7 +257,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite gaugeSprite;
 
 		[SerializeField]
-		internal float blindTime = 8.5f;
+		internal float blindTime = 13.5f;
 
 		[SerializeField]
 		[Range(0f, 1f)]

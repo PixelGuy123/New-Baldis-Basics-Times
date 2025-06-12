@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using BBTimes.CustomComponents;
+using BBTimes.Manager;
 using BepInEx.Bootstrap;
 using HarmonyLib;
 using UnityEngine;
@@ -66,41 +67,110 @@ namespace BBTimes.ModPatches
 		}
 	}
 
-	// [HarmonyPatch]
-	// internal class CrashDebugging
-	// {
-	// 	[HarmonyTargetMethods]
-	// 	static MethodInfo[] AllTheBuildCalls()
-	// 	{
-	// 		List<MethodInfo> methods = [];
+	/*
 
-	// 		foreach (var type in AccessTools.AllTypes())
-	// 		{
-	// 			if (type.IsSubclassOf(typeof(StructureBuilder)) || type == typeof(RoomFunctionContainer))
-	// 			{
-	// 				Debug.LogWarning("TIMES: Type detected: " + type.FullName);
-	// 				foreach (var methodName in AccessTools.GetMethodNames(type))
-	// 				{
-	// 					var method = type.GetMethod(methodName);
-	// 					if (method != null && method.Name == "Build")
-	// 					{
-	// 						methods.Add(method);
-	// 					}
-	// 				}
-	// 			}
-	// 		}
+	[HarmonyPatch]
+	internal class CrashDebugging
+	{
+		[HarmonyTargetMethods]
+		static List<MethodInfo> AllTheBuildCalls()
+		{
+			List<MethodInfo> methodInfos = [];
+			HashSet<Assembly> allowedAssemblies = [Assembly.GetAssembly(typeof(BBTimesManager))];
+			List<string> allowedNames = ["BaldisBasicsPlusAdvanced", "BBTimes"];
 
-	// 		return [.. methods];
-	// 	}
+			foreach (var info in Chainloader.PluginInfos)
+			{
+				if (info.Value != null && info.Value.Instance != null)
+					allowedAssemblies.Add(Assembly.GetAssembly(info.Value.Instance.GetType()));
+			}
 
-	// 	[HarmonyFinalizer]
-	// 	static System.Exception DebugLogFinalizer(System.Exception __exception)
-	// 	{
-	// 		if (__exception != null)
-	// 			Debug.LogException(__exception);
+			foreach (var assembly in allowedAssemblies)
+			{
+				if (!allowedAssemblies.Contains(assembly) || !allowedNames.Exists(assembly.FullName.Contains))
+					continue;
 
-	// 		return null;
-	// 	}
-	// }
+				bool isAssemblyCSharp = assembly.FullName.Contains("Assembly-CSharp");
+
+				foreach (var type in assembly.GetTypes())
+				{
+					try
+					{
+						if (!type.IsClass || !type.IsPublic)
+							continue;
+						if (isAssemblyCSharp && type.Namespace != string.Empty) // Empty because that's what the game types comes from
+							continue;
+
+						// Skip problematic types known to throw exceptions in their static constructors
+						if (type.FullName == "BaldisBasicsPlusAdvanced.Game.Objects.Voting.Topics.LightsEconomyTopic" || type.FullName == "BaldisBasicsPlusAdvanced.Cache.AssetsManagment.AssetsStorage")
+						{
+							Debug.LogWarning($"TIMES: Skipping problematic type: {type.FullName}");
+							continue;
+						}
+
+						Debug.LogWarning($"TIMES: Type detected: {type.FullName} | Assembly: {assembly.FullName} | Namespace: {type.Namespace}");
+						MethodInfo[] methods;
+						try
+						{
+							methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						}
+						catch (System.Exception ex)
+						{
+							Debug.LogWarning($"TIMES: Failed to get methods for type {type.FullName}: {ex.Message}");
+							continue;
+						}
+						for (int i = 0; i < methods.Length; i++)
+						{
+							try
+							{
+								var m = methods[i];
+								// Filter out methods that Harmony/Mono.Cecil can't handle
+								if (m == null)
+									continue;
+								if (m.IsAbstract)
+									continue;
+								if (m.IsGenericMethodDefinition)
+									continue;
+								if (m.ContainsGenericParameters)
+									continue;
+								if (m.DeclaringType == null)
+									continue;
+								if (!m.IsPublic)
+									continue;
+								// Harmony also can't patch methods with no body (e.g. interface methods)
+								if (m.GetMethodBody() == null)
+									continue;
+
+								methodInfos.Add(m);
+							}
+							catch (System.Exception ex)
+							{
+								Debug.LogWarning($"TIMES: Skipped method due to exception: {ex.Message}");
+							}
+						}
+					}
+					catch (System.Exception e)
+					{
+						Debug.LogError("TIMES: Error while doing the funny: " + e.Message);
+					}
+				}
+			}
+
+			return methodInfos;
+
+
+		}
+
+		[HarmonyFinalizer]
+		static System.Exception DebugLogFinalizer(System.Exception __exception)
+		{
+			if (__exception != null)
+				Debug.LogException(__exception);
+
+			return null;
+		}
+	}
+	
 #pragma warning restore Harmony003 // Harmony non-ref patch parameters modified
+*/
 }

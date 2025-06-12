@@ -1,12 +1,12 @@
 ﻿
+using System.Collections;
+using System.Collections.Generic;
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.EventSpecificComponents;
 using BBTimes.Extensions;
 using MTM101BaldAPI;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Events
@@ -24,7 +24,7 @@ namespace BBTimes.CustomContent.Events
 			curt.audClose = this.GetSound("curtainClose.wav", "Vfx_Curtain_Slide", SoundType.Effect, Color.white);
 			curt.audOpen = this.GetSound("curtainOpen.wav", "Vfx_Curtain_Slide", SoundType.Effect, Color.white);
 
-			var storedSprites = this.GetSpriteSheet(2, 1, 26f, "curtains.png");
+			var storedSprites = this.GetSpriteSheet(2, 1, 25.25f, "curtains.png");
 			curt.sprClosed = storedSprites[0];
 			curt.sprOpen = storedSprites[1];
 			curt.audMan = curt.gameObject.CreatePropagatedAudioManager(65, 85);
@@ -51,7 +51,7 @@ namespace BBTimes.CustomContent.Events
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "events";
-		
+
 		// ---------------------------------------------------
 
 		public override void AfterUpdateSetup(System.Random rng)
@@ -67,7 +67,7 @@ namespace BBTimes.CustomContent.Events
 				for (int i = 0; i < list[num2].Count; i++)
 					if (list[num2][i].HasAnyHardCoverage || !list[num2][i].shape.HasFlag(TileShapeMask.Straight))
 						list[num2].RemoveAt(i--);
-					
+
 				if (list[num2].Count > 0)
 				{
 					int num3 = rng.Next(0, list[num2].Count);

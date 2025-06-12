@@ -56,7 +56,7 @@ namespace BBTimes.CustomContent.Objects
 				yield return null;
 			}
 
-			
+
 			IsActive = true;
 			renderer.sprite = sprActive;
 		}
@@ -65,8 +65,7 @@ namespace BBTimes.CustomContent.Objects
 		{
 			if (enable)
 				audMan.PlaySingle(audUsed);
-			
-		
+
 			var emission = particles.emission;
 			emission.enabled = enable;
 			raycastBlockingCollider.enabled = enable;

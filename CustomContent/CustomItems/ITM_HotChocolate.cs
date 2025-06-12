@@ -61,7 +61,7 @@ namespace BBTimes.CustomContent.CustomItems
 			float t = 0;
 			while (t < 1f)
 			{
-				t += pm.ec.EnvironmentTimeScale * Time.deltaTime * 5f;
+				t += pm.PlayerTimeScale * Time.deltaTime * 5f;
 				image.color = new(1f, 1f, 1f, t);
 				yield return null;
 			}
@@ -73,7 +73,7 @@ namespace BBTimes.CustomContent.CustomItems
 			float t = 1;
 			while (t > 0f)
 			{
-				t -= pm.ec.EnvironmentTimeScale * Time.deltaTime * 5f;
+				t -= pm.PlayerTimeScale * Time.deltaTime * 5f;
 				image.color = new(1f, 1f, 1f, t);
 				yield return null;
 			}

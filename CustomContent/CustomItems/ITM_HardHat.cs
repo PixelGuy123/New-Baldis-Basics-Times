@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using BBTimes.CustomComponents;
 using BBTimes.Extensions;
+using BBTimes.Plugin;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 
@@ -47,16 +48,16 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Timer(PlayerAttributesComponent comp)
 		{
-			comp.AddAttribute("protectedhead");
+			comp.AddAttribute(Storage.HARDHAT_ATTR_TAG);
 			float cooldown = lifeTime;
 			while (cooldown > 0f)
 			{
-				gauge.SetValue(lifeTime, cooldown);
 				cooldown -= pm.PlayerTimeScale * Time.deltaTime;
+				gauge.SetValue(lifeTime, cooldown);
 				yield return null;
 			}
 			gauge.Deactivate();
-			comp.RemoveAttribute("protectedhead");
+			comp.RemoveAttribute(Storage.HARDHAT_ATTR_TAG);
 			Destroy(gameObject);
 			yield break;
 		}

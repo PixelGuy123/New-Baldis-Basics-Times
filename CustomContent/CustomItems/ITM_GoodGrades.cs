@@ -1,8 +1,8 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -40,6 +40,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public override bool Use(PlayerManager pm)
 		{
+			owner = pm.gameObject;
 			pm.RuleBreak("littering", litteringTimer, 0.8f);
 			transform.position = pm.ec.CellFromPosition(pm.transform.position).FloorWorldPosition;
 			return true;
@@ -47,7 +48,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		void OnTriggerEnter(Collider other)
 		{
-			if (triggered || !other.isTrigger) return;
+			if (triggered || !other.isTrigger || other.gameObject == owner) return;
 
 			var npc = other.GetComponent<NPC>();
 
@@ -65,7 +66,12 @@ namespace BBTimes.CustomContent.CustomItems
 					StartCoroutine(DeathSequence());
 				}
 			}
+		}
 
+		void OnTriggerExit(Collider other)
+		{
+			if (other.gameObject == owner)
+				owner = null;
 		}
 
 		IEnumerator DeathSequence()
@@ -89,6 +95,8 @@ namespace BBTimes.CustomContent.CustomItems
 		private PropagatedAudioManager audMan;
 		[SerializeField]
 		readonly float praiseTimer = 10f, litteringTimer = 2f;
+
+		GameObject owner;
 
 		bool triggered = false;
 	}

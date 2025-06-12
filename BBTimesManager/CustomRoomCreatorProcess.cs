@@ -58,6 +58,13 @@ namespace BBTimes.Manager
 			var blackTexture = TextureExtensions.CreateSolidTexture(1, 1, Color.black); // It'll be stretched anyways lol
 			var grass = man.Get<Texture2D>("Tex_Grass");
 
+			// --- Misc References that involves Categories ---
+			var powerLeverRoomRef = GenericExtensions.FindResourceObject<Structure_PowerLever>();
+			System.Action<RoomCategory>
+			addAsPowerReceiver = powerLeverRoomRef.poweredRoomCategories.Add,
+			addAsBreakerRoom = powerLeverRoomRef.breakerRoomCategories.Add,
+			addAsLeverRoom = powerLeverRoomRef.leverRoomCategories.Add;
+
 			// ------------------------------------------------------------------------------------------
 			// -------------------------- BATHROOM STRUCTURES -------------------------------------------
 			// ------------------------------------------------------------------------------------------
@@ -224,8 +231,8 @@ namespace BBTimes.Manager
 			teleporter.gameObject.AddBoxCollider(Vector3.up * 5f, new(5f, 10f, 5f), true);
 			teleporter.sprDisabled = machine.sprite;
 
-			teleporter.audMan = teleporter.gameObject.CreatePropagatedAudioManager(maxDistance: 40f);
-			teleporter.loopingAudMan = teleporter.gameObject.CreatePropagatedAudioManager(maxDistance: 40f);
+			teleporter.audMan = teleporter.gameObject.CreatePropagatedAudioManager(15f, 50f);
+			teleporter.loopingAudMan = teleporter.gameObject.CreatePropagatedAudioManager(15f, 50f);
 			teleporter.audTeleport = man.Get<SoundObject>("teleportAud");
 			teleporter.audLoop = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", GetAssetName("teleportationNoises.wav"))), "Vfx_CompTel_Working", SoundType.Voice, Color.white);
 
@@ -402,7 +409,9 @@ namespace BBTimes.Manager
 			basketMachine.AddObjectToEditor();
 
 			var shooter = basketMachine.AddComponent<BasketBallCannon>();
-			shooter.basketPre = (ITM_Basketball)ItemMetaStorage.Instance.FindByEnumFromMod(EnumExtensions.GetFromExtendedName<Items>("Basketball"), plug.Info).value.item;
+			var basketballItmObj = ItemMetaStorage.Instance.FindByEnumFromMod(EnumExtensions.GetFromExtendedName<Items>("Basketball"), plug.Info).value;
+			shooter.basketPre = (ITM_Basketball)basketballItmObj.item;
+			shooter.basketItem = basketballItmObj;
 			shooter.audMan = basketMachine.CreatePropagatedAudioManager(65, 200);
 			shooter.audBoom = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("BasketballArea", "shootBoom.wav")), string.Empty, SoundType.Voice, Color.white);
 			shooter.audBoom.subtitle = false;
@@ -686,7 +695,7 @@ namespace BBTimes.Manager
 			student.gameObject.AddObjectToEditor();
 
 			var focusedStudent = student.gameObject.AddComponent<FocusedStudent>();
-			focusedStudent.audMan = student.gameObject.CreatePropagatedAudioManager(95f, 125f);
+			focusedStudent.audMan = student.gameObject.CreatePropagatedAudioManager(20f, 60f);
 			focusedStudent.audAskSilence = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please.wav")), "Vfx_FocusStd_Disturbed1", SoundType.Voice, new(0f, 0.65f, 0f));
 			focusedStudent.audAskSilence2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please2.wav")), "Vfx_FocusStd_Disturbed2", SoundType.Voice, new(0f, 0.65f, 0f));
 			focusedStudent.audDisturbed = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_scream.wav")), "Vfx_FocusStd_Scream1", SoundType.Voice, new(0f, 0.65f, 0f));
@@ -733,8 +742,12 @@ namespace BBTimes.Manager
 				.AddSpriteHolder(out _, 3.1f, LayerStorage.ignoreRaycast)
 				.gameObject.SetAsPrefab(true)
 				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 55 },
-				];
 
+				new() { selection =  ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("neatlySideLamp.png"))), 35f))
+				.AddSpriteHolder(out _, 3.6f, LayerStorage.ignoreRaycast)
+				.gameObject.SetAsPrefab(true)
+				.AddBoxCollider(Vector3.zero, new Vector3(0.8f, 10f, 0.8f), false).transform, weight = 45 },
+				];
 
 			TextureExtensions.LoadSpriteSheet(3, 1, 40f, MiscPath, TextureFolder, GetAssetName("SugaLamps.png")).Do(x =>
 			{
@@ -867,6 +880,7 @@ namespace BBTimes.Manager
 			floorDatas[F3].RoomAssets.Add(new(group));
 
 			AddCategoryForNPCToSpawn(sets.category, typeof(TickTock), typeof(Phawillow));
+			addAsBreakerRoom(sets.category);
 
 			// ------------------------------------------------------------------------------------------
 			// -------------------------- COMPUTER ROOM REGISTRATION ------------------------------------
@@ -922,6 +936,9 @@ namespace BBTimes.Manager
 			levelTypeGroup = new(group, LevelType.Laboratory);
 			floorDatas[F4].RoomAssets.Add(levelTypeGroup);
 			floorDatas[F5].RoomAssets.Add(levelTypeGroup);
+
+			addAsBreakerRoom(sets.category);
+			addAsLeverRoom(sets.category);
 
 			// ------------------------------------------------------------------------------------------
 			// -------------------------- DRIBBLE ROOM REGISTRATION -------------------------------------
@@ -1316,6 +1333,7 @@ namespace BBTimes.Manager
 			room.ForEach(foc => foc.selection.basicObjects.ForEach(basO => { if (basO.prefab.name == "Couch") basO.prefab = redCouchprefab.transform; }));
 
 			RegisterFalseClass();
+			addAsPowerReceiver(sets.category);
 
 			// ****** Art Room *******
 			sets = RegisterRoom("ExibitionRoom", new(0.54296875f, 0.18359375f, 0.95703125f),
@@ -1328,6 +1346,7 @@ namespace BBTimes.Manager
 			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: false);
 
 			RegisterFalseClass();
+			addAsPowerReceiver(sets.category);
 
 			void RegisterFalseClass()
 			{

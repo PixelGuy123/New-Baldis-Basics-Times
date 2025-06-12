@@ -1,18 +1,18 @@
-﻿using BBTimes.Extensions;
+﻿using System.Collections.Generic;
 using BBTimes.CustomComponents;
-using System.Collections.Generic;
-using UnityEngine;
-using PixelInternalAPI.Extensions;
-using PixelInternalAPI.Classes;
 using BBTimes.CustomComponents.NpcSpecificComponents;
+using BBTimes.Extensions;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class MrKreye : NPC, INPCPrefab
+	public class MrKreye : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
-			
+
 			audMan = GetComponent<PropagatedAudioManager>();
 			audStatic = this.GetSound("active.wav", "Sfx_Crafters_Intro", SoundType.Effect, audMan.subtitleColor);
 			audOpenChest = this.GetSound("open.wav", "Sfx_Effects_Pop", SoundType.Effect, audMan.subtitleColor);
@@ -24,7 +24,7 @@ namespace BBTimes.CustomContent.NPCs
 			sprWalk = sprs.ExcludeNumOfSpritesFromSheet(4).MirrorSprites();
 			sprOpenEye = sprs.ExcludeNumOfSpritesFromSheet(4, false).ExcludeNumOfSpritesFromSheet(1); // Makes two new arrays, but since GC exists, this can be ignored lol
 			sprChestOpen = [sprs[sprs.Length - 1]];
-			
+
 
 			hookPre = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(25f, "hook.png"))
 				.AddSpriteHolder(out var hookRenderer, 0f, LayerStorage.standardEntities).gameObject.SetAsPrefab(true)
@@ -44,7 +44,7 @@ namespace BBTimes.CustomContent.NPCs
 			hookPre.entity = hookPre.gameObject.CreateEntity(2.5f, 3f, hookRenderer.transform);
 			hookPre.entity.SetGrounded(false);
 
-			hookPre.audMan = hookPre.gameObject.CreatePropagatedAudioManager(35f, 85f);
+			hookPre.audMan = hookPre.gameObject.CreatePropagatedAudioManager(30f, 100f);
 			hookPre.audGrab = this.GetSound("hookGrab.wav", "Vfx_Kreye_Grab", SoundType.Effect, audMan.subtitleColor);
 
 			animComp = gameObject.AddComponent<AnimationComponent>();
@@ -53,13 +53,14 @@ namespace BBTimes.CustomContent.NPCs
 			animComp.animation = sprWalk;
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
 		// --------------------------------------------------
-		
+
 		public override void Initialize()
 		{
 			base.Initialize();
@@ -276,7 +277,7 @@ namespace BBTimes.CustomContent.NPCs
 				{
 					if (kre.looker.RaycastNPC(kre.ec.Npcs[i]))
 						kre.WatchEntity(kre.ec.Npcs[i].Navigator.Entity);
-					
+
 					else if (kre.watchingEntities.Contains(kre.ec.Npcs[i].Navigator.Entity))
 						TryCancelWatch(kre.ec.Npcs[i].Navigator.Entity);
 				}

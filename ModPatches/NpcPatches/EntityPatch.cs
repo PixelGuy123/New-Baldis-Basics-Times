@@ -1,5 +1,6 @@
-﻿using HarmonyLib;
-using BBTimes.CustomComponents;
+﻿using BBTimes.CustomComponents;
+using BBTimes.Plugin;
+using HarmonyLib;
 
 namespace BBTimes.ModPatches.NpcPatches
 {
@@ -9,7 +10,7 @@ namespace BBTimes.ModPatches.NpcPatches
 		private static bool Prefix(Entity __instance)
 		{
 			var p = __instance.GetComponent<PlayerAttributesComponent>();
-			if (p && p.HasAttribute("protectedhead"))
+			if (p && p.HasAttribute(Storage.HARDHAT_ATTR_TAG))
 				return false;
 			return true;
 		}
