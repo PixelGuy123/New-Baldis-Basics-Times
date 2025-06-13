@@ -18,12 +18,16 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
-			SoundObject[] soundObjects = [this.GetSound("WCH_ambience.wav", "Vfx_Wch_Idle", SoundType.Effect, new Color(0.8f, 0.8f, 0.8f)),
+			Color
+			normalColor = new(0.6f, 0.6f, 0.6f),
+			shadowColor = new(0.45f, 0.45f, 0.45f);
+
+			SoundObject[] soundObjects = [this.GetSound("WCH_ambience.wav", "Vfx_Wch_Idle", SoundType.Effect, normalColor),
 		this.GetSoundNoSub("WCH_see.wav", SoundType.Effect),
-		this.GetSound("WCH_angered.wav", "Vfx_Wch_Angry", SoundType.Effect, new Color(0.8f, 0.8f, 0.8f)),
-		this.GetSound("WCH_teleport.wav", "Vfx_Wch_Teleport", SoundType.Effect, new Color(0.8f, 0.8f, 0.8f)),
-		this.GetSound("SHDWCH_spawn.wav", "Vfx_Wch_Spawn", SoundType.Effect, new Color(0.6f, 0.6f, 0.6f)),
-		this.GetSound("SHDWCH_ambience.wav", "Vfx_Wch_Idle", SoundType.Effect, new Color(0.6f, 0.6f, 0.6f))
+		this.GetSound("WCH_angered.wav", "Vfx_Wch_Angry", SoundType.Effect, normalColor),
+		this.GetSound("WCH_teleport.wav", "Vfx_Wch_Teleport", SoundType.Effect, normalColor),
+		this.GetSound("SHDWCH_spawn.wav", "Vfx_Wch_Spawn", SoundType.Effect, shadowColor),
+		this.GetSound("SHDWCH_ambience.wav", "Vfx_Wch_Idle", SoundType.Effect, shadowColor)
 			];
 			var storedSprites = this.GetSpriteSheet(2, 1, 35f, "watcher.png");
 			spriteRenderer[0].sprite = storedSprites[0];
@@ -80,6 +84,16 @@ namespace BBTimes.CustomContent.NPCs
 					hallucinations[0]?.SetToDespawn();
 
 				hallucinations.RemoveAt(0);
+			}
+		}
+
+		public override void VirtualUpdate()
+		{
+			base.VirtualUpdate();
+			for (int i = 0; i < hallucinations.Count; i++)
+			{
+				if (!hallucinations[i]) // remove any destroyed hallucination
+					hallucinations.RemoveAt(i--);
 			}
 		}
 
@@ -156,13 +170,11 @@ namespace BBTimes.CustomContent.NPCs
 		IEnumerator TeleportDelay(PlayerManager pm, NPC npc)
 		{
 			pm.plm.Entity.IgnoreEntity(npc.Navigator.Entity, true);
+
 			Vector3 pos = npc.transform.position;
 			npc.Navigator.Entity.Teleport(pm.transform.position);
 			pm.plm.Entity.Teleport(pos);
 
-			yield return null;
-
-			pm.plm.Entity.IgnoreEntity(npc.Navigator.Entity, false);
 			int halls = Random.Range(minHallucinations, maxHallucinations);
 			for (int i = 0; i < halls; i++)
 			{
@@ -172,6 +184,10 @@ namespace BBTimes.CustomContent.NPCs
 				hallucinations.Add(hal);
 				yield return null;
 			}
+
+			yield return null;
+
+			pm.plm.Entity.IgnoreEntity(npc.Navigator.Entity, false);
 
 			yield break;
 		}
@@ -226,6 +242,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		public HudGauge Gauge { get; private set; }
 
+		public bool HasActiveHallucinations => hallucinations.Count != 0;
+
 		readonly List<Hallucinations> hallucinations = [];
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
@@ -257,6 +275,11 @@ namespace BBTimes.CustomContent.NPCs
 			if (hasActiveHallucinations)
 			{
 				w.Gauge?.SetValue(OriginalCooldown, Cooldown);
+				if (w.HasActiveHallucinations)
+				{
+					hasActiveHallucinations = false;
+					w.Gauge?.Deactivate();
+				}
 			}
 			if (Cooldown <= 0f)
 			{

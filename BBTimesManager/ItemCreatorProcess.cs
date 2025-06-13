@@ -464,6 +464,7 @@ namespace BBTimes.Manager
 			JerryTheAC.AddDisablingItem(item.itemType);
 			ItemAlarm.disablingItems.Add(item.itemType);
 			MetalWindow.acceptableItems.Add(item.itemType);
+			NotebookMachine.unlockableItems.Add(item.itemType);
 
 			// Hardhat
 			item = new ItemBuilder(plug.Info)

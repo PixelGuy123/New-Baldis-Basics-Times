@@ -2,7 +2,9 @@ using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Manager;
 using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
@@ -29,11 +31,16 @@ namespace BBTimes.CustomContent.Builders
 				mainTexture = this.GetTexture("NtbMachine_On.png")
 			}];
 
-			ntbMachinePre.capsuleRenderer = renderer.transform.Find("NtbkMachine_Capsule").gameObject;
-
 			// Map Icon for Notebook
 			ntbMachinePre.spriteMapIcon = this.GetSprite(ObjectCreationExtension.defaultMapIconPixelsPerUnit, "NtbkMachine_MapIcon.png");
 
+			// Rest of the Setup
+			ntbMachinePre.audMan = ntbMachinePre.gameObject.CreatePropagatedAudioManager();
+			ntbMachinePre.audClick = BBTimesManager.man.Get<GameButton>("buttonPre").audPress;
+
+			ntbMachinePre.gameObject.AddBoxCollider(Vector3.up * 0.75f, new(3.25f, 1.5f, 1f), true);
+
+			ntbMachinePre.gameObject.layer = LayerMask.NameToLayer("ClickableCollideable");
 
 			return new() { prefab = this, parameters = null }; // 0 = Amount of cameras, 1 = minMax distance for them
 		}

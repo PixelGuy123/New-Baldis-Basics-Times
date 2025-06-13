@@ -1,10 +1,10 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -30,8 +30,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -86,20 +87,20 @@ namespace BBTimes.CustomContent.CustomItems
 
 				if ((transform.position - pm.transform.position).magnitude > 5f)
 				{
-					height = 0f;
+					height = Entity.physicalHeight;
 					break;
 				}
-					
+
 
 				pm.Teleport(transform.position);
 
-				if (height < 0f)
+				if (height < Entity.physicalHeight)
 				{
-					height = 0f;
+					height = Entity.physicalHeight;
 					break;
 				}
 
-				entity.SetHeight(pm.plm.Entity.InternalHeight + height);
+				entity.SetHeight(height);
 
 				yield return null;
 			}
@@ -142,24 +143,24 @@ namespace BBTimes.CustomContent.CustomItems
 					if (yVelocity < 0f)
 						yVelocity = 0f;
 					yVelocity += 10f;
-					
+
 				}
 			}
 		}
 
-		public void EntityTriggerStay(Collider other){}
+		public void EntityTriggerStay(Collider other) { }
 
-		public void EntityTriggerExit(Collider other){}
+		public void EntityTriggerExit(Collider other) { }
 
 		void OnDestroy() => usingPogo = false;
 
 		static bool usingPogo = false;
 
-		float height = 0f, yVelocity = 10f;
+		float height = Entity.physicalHeight, yVelocity = 10f;
 
 		const int targetIdx = 15;
 
-		const float maxHeight = 4.7f;
+		const float maxHeight = 9.5f;
 
 		readonly EntityOverrider overrider = new();
 

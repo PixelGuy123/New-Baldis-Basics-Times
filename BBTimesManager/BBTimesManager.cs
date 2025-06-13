@@ -187,7 +187,7 @@ namespace BBTimes.Manager
 			foreach (var obj in Resources.FindObjectsOfTypeAll<SceneObject>())
 			{
 				var lds = obj.GetCustomLevelObjects();
-				if (lds.Length == 0) continue; ;
+				if (lds.Length == 0) continue;
 
 				KeyValuePair<string, FloorData>? data = floorDatas.FirstOrDefault(x => x.Key == obj.levelTitle);
 				if (!data.HasValue) // Why didn't I add this earlier, bruh
@@ -197,7 +197,8 @@ namespace BBTimes.Manager
 
 				// Some additional LevelObject
 				foreach (var ld in lds)
-					ld.SetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn", new List<WindowObjectHolder>());
+					ld.SetCustomModValue(plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn", new List<WindowObjectHolder>() { new(null, 100, [RoomCategory.Office]) });
+
 			}
 
 			// Make a transparent texture

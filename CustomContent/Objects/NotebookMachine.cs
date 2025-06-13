@@ -1,26 +1,33 @@
+using System.Collections.Generic;
 using BBTimes.CustomComponents;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
 {
-    public class NotebookMachine : EnvironmentObject
+    public class NotebookMachine : EnvironmentObject, IClickable<int>, IItemAcceptor
     {
         Notebook linkedNotebook;
         RoomController room;
 
-        bool initialized = false, powered = true;
+        bool initialized = false, powered = true, pressed = false;
+
+        public bool IsClickable => initialized && !pressed && powered && linkedNotebook && !linkedNotebook.collected;
 
         [SerializeField]
         internal MeshRenderer boxRenderer;
 
         [SerializeField]
-        internal GameObject capsuleRenderer;
-
-        [SerializeField]
         internal Material[] offMat, onMat;
 
         [SerializeField]
+        internal AudioManager audMan;
+
+        [SerializeField]
+        internal SoundObject audClick;
+
+        [SerializeField]
         internal Sprite spriteMapIcon;
+        readonly public static HashSet<Items> unlockableItems = [];
 
         public void LinkToNotebook(Notebook notebook, EnvironmentController ec)
         {
@@ -34,6 +41,7 @@ namespace BBTimes.CustomContent.Objects
             notebook.sprite.gameObject.AddComponent<OffsettledPickupBob>().offset = 1.25f;
 
             UpdateState();
+            RevealNotebook(false);
         }
 
         void Update()
@@ -52,14 +60,49 @@ namespace BBTimes.CustomContent.Objects
 
             // Updates electricity state
             boxRenderer.materials = powered ? onMat : offMat;
+        }
 
-            // Disables the capsule if needed
-            capsuleRenderer.SetActive(!powered);
-
+        public void RevealNotebook(bool reveal)
+        {
             if (!linkedNotebook.collected)
-                linkedNotebook.sphereCollider.enabled = powered; // Easiest way to disable Notebook click
+            {
+                linkedNotebook.sphereCollider.enabled = reveal; // Easiest way to disable Notebook click
+                linkedNotebook.sprite.enabled = reveal;
+            }
+        }
+
+        public void Pressed()
+        {
+            if (pressed)
+                return;
+
+            audMan.PlaySingle(audClick);
+            RevealNotebook(true);
+            pressed = true;
         }
 
         public Notebook LinkedNotebook => linkedNotebook;
+
+        public void Clicked(int player)
+        {
+            if (IsClickable)
+                Pressed();
+        }
+
+        public void ClickableSighted(int player) { }
+
+        public void ClickableUnsighted(int player) { }
+
+        public bool ClickableHidden() => !IsClickable;
+
+
+        public bool ClickableRequiresNormalHeight() => true;
+
+
+        public void InsertItem(PlayerManager player, EnvironmentController ec) =>
+            Pressed();
+
+        public bool ItemFits(Items item) => IsClickable && unlockableItems.Contains(item);
+
     }
 }

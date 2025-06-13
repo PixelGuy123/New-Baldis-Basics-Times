@@ -1048,7 +1048,15 @@ namespace BBTimes.Manager
 
 			room.ForEach(x => x.selection.basicSwaps.AddRange(swaps));
 
-			Object.Destroy(room[0].selection.roomFunctionContainer.gameObject); // It doesn't need one, it's empty
+			var joeKitchenMusic = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Kitchen", "Mus_Joe.wav")), string.Empty, SoundType.Music, Color.white);
+			joeKitchenMusic.subtitle = false;
+
+			var roomBaseFunction = room[0].selection.AddRoomFunctionToContainer<RoomBaseFunction>();
+			roomBaseFunction.roomBase = room[0].selection.roomFunctionContainer.transform;
+
+			room[0].selection.roomFunctionContainer
+			.gameObject
+			.CreatePropagatedAudioManager(35f, 85f).AddStartingAudiosToAudioManager(true, joeKitchenMusic);
 
 			group = new RoomGroup()
 			{
