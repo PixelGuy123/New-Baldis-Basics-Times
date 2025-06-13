@@ -41,6 +41,9 @@ public class MomentumNavigator : MonoBehaviour
 	[SerializeField]
 	public bool useAcceleration = false;
 
+	[SerializeField]
+	public float height = 5f;
+
 	protected bool recalculatePath;
 
 	protected Vector3 destination;
@@ -172,7 +175,7 @@ public class MomentumNavigator : MonoBehaviour
 
 	private void FindPath(Vector3 startPos, Vector3 targetPos)
 	{
-		targetPos.y = 5f + ec.Height;
+		targetPos.y = height;
 		_startTile = ec.CellFromPosition(GetGridPosition(startPos));
 		_targetTile = ec.CellFromPosition(GetGridPosition(targetPos));
 
@@ -196,7 +199,7 @@ public class MomentumNavigator : MonoBehaviour
 
 	protected void ConvertPath(List<Cell> path, Vector3 targetPos)
 	{
-		targetPos.y = 5f + ec.Height;
+		targetPos.y = height;
 		Cell currentCell = null;
 		Cell lastOpenCell = null;
 		bool inOpenGroup = false;
@@ -239,14 +242,14 @@ public class MomentumNavigator : MonoBehaviour
 					inOpenGroup = false;
 					BuildNavPath(currentCell, lastOpenCell, targetPos);
 				}
-				destinationPoints.Add(path[0].FloorWorldPosition + Vector3.up * (5f + ec.Height));
+				destinationPoints.Add(path[0].FloorWorldPosition + Vector3.up * height);
 			}
 			path.RemoveAt(0);
 		}
 
 		if (preciseTarget)
 		{
-			destinationPoints.Add(new Vector3(targetPos.x, 5f + ec.Height, targetPos.z));
+			destinationPoints.Add(new Vector3(targetPos.x, height, targetPos.z));
 		}
 	}
 
@@ -277,7 +280,7 @@ public class MomentumNavigator : MonoBehaviour
 
 		foreach (Vector3 corner in _navMeshPath.corners)
 		{
-			destinationPoints.Add(new Vector3(corner.x, 5f + ec.Height, corner.z));
+			destinationPoints.Add(new Vector3(corner.x, height, corner.z));
 		}
 	}
 

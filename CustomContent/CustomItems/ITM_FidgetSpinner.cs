@@ -12,7 +12,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void SetupPrefab()
 		{
-			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(9f, "SpinnerPlaced.png"), false).AddSpriteHolder(out var fidgetRenderer, 0.5f, 0);
+			var renderer = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(9f, "SpinnerPlaced.png"), false).AddSpriteHolder(out var fidgetRenderer, 0f, 0);
 
 			renderer.transform.SetParent(transform);
 			renderer.transform.localPosition = Vector3.zero;
@@ -31,6 +31,7 @@ namespace BBTimes.CustomContent.CustomItems
 			nav = gameObject.AddComponent<MomentumNavigator>();
 			nav.maxSpeed = 95f;
 			nav.accel = 9f;
+			nav.height = 0.5f;
 
 			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
