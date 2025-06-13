@@ -55,9 +55,6 @@
     <Reference Include="GrapplingHookTweaks">
       <HintPath>References\GrapplingHookTweaks.dll</HintPath>
     </Reference>
-    <Reference Include="InfiniteFloorsRemake">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins\InfiniteFloorsRemake.dll</HintPath>
-    </Reference>
     <Reference Include="Infinte floors Hotfix">
       <HintPath>References\Infinte floors Hotfix.dll</HintPath>
     </Reference>
