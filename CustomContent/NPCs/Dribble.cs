@@ -129,10 +129,27 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Initialize()
 		{
 			base.Initialize();
+			// Setup
 			navigator.maxSpeed = normSpeed;
 			navigator.SetSpeed(normSpeed);
 			behaviorStateMachine.ChangeState(new Dribble_Idle(this));
-			Home = ec.CellFromPosition(transform.position).room;
+
+			// Home Setup
+			bool foundCat = false;
+			for (int i = 0; i < ec.rooms.Count; i++)
+			{
+				if (ec.rooms[i].category == expectedCategory)
+				{
+					foundCat = true;
+					Home = ec.rooms[i];
+					break;
+				}
+			}
+
+			if (!foundCat) // Uses the spawned position as default
+				Home = ec.CellFromPosition(transform.position).room;
+
+			// Initializes Basketball Instance
 			basketball = Instantiate(basketPre);
 			basketball.Initialize(this);
 		}
@@ -281,6 +298,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal float punchCooldown = 5f;
+		[SerializeField]
+		internal RoomCategory expectedCategory;
 
 		PickableBasketball basketball;
 		bool _step = false;

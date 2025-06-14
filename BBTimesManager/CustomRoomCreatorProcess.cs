@@ -962,9 +962,10 @@ namespace BBTimes.Manager
 			{
 				x.selection.wallTex = saloonWall.selection;
 				x.selection.ceilTex = ceiling.selection;
+				x.selection.lightPre = lightPre.selection;
 			});
 
-			AddAssetsToNpc<Dribble>(room);
+			AddAssetsToNpc<Dribble>(room, (dribble) => dribble.expectedCategory = sets.category);
 
 			// ------------------------------------------------------------------------------------------
 			// -------------------------- SWEEP'S CLOSET REGISTRATION -----------------------------------
@@ -1046,7 +1047,11 @@ namespace BBTimes.Manager
 				}
 				];
 
-			room.ForEach(x => x.selection.basicSwaps.AddRange(swaps));
+			room.ForEach(x =>
+			{
+				x.selection.basicSwaps.AddRange(swaps);
+				x.selection.lightPre = EmptyGameObject.transform;
+			});
 
 			var joeKitchenMusic = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("Kitchen", "Mus_Joe.wav")), string.Empty, SoundType.Music, Color.white);
 			joeKitchenMusic.subtitle = false;
@@ -1065,7 +1070,7 @@ namespace BBTimes.Manager
 				maxRooms = 1,
 				potentialRooms = [.. room],
 				name = "Kitchen",
-				light = [new() { selection = EmptyGameObject.transform }],
+				light = [new() { selection = EmptyGameObject.transform, weight = 100 }],
 				ceilingTexture = [ceiling],
 				wallTexture = [normWall],
 			};
@@ -1511,7 +1516,7 @@ namespace BBTimes.Manager
 
 			}
 
-			static void AddAssetsToNpc<N>(List<WeightedRoomAsset> assets) where N : NPC
+			static void AddAssetsToNpc<N>(List<WeightedRoomAsset> assets, System.Action<N> customAction = null) where N : NPC
 			{
 				NPCMetaStorage.Instance.All().Do(x =>
 				{
@@ -1519,7 +1524,10 @@ namespace BBTimes.Manager
 						return;
 
 					foreach (var npc in x.prefabs)
+					{
 						npc.Value.potentialRoomAssets = npc.Value.potentialRoomAssets.AddRangeToArray([.. assets]);
+						customAction?.Invoke((N)npc.Value);
+					}
 				});
 
 			}

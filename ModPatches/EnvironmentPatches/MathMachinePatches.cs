@@ -1,8 +1,8 @@
-﻿using BBTimes.Manager;
+﻿using System.Collections.Generic;
+using System.Reflection.Emit;
+using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 using TMPro;
 using UnityEngine;
 
@@ -37,11 +37,11 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				)
 			.SetInstruction(Transpilers.EmitDelegate(() =>
 			{
-				var ld = Singleton<CoreGameManager>.Instance.sceneObject.levelObject;
-				if (ld == null || ld is not CustomLevelObject)
+				var ld = Singleton<BaseGameManager>.Instance.levelObject;
+				if (ld == null || ld is not CustomLevelObject cld)
 					return BBTimesManager.MaximumNumballs + 1;
 
-				var minMaxObj = ((CustomLevelObject)ld).GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_MathMachineNumballsMinMax");
+				var minMaxObj = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_MathMachineNumballsMinMax");
 
 				if (minMaxObj == null)
 					return BBTimesManager.MaximumNumballs + 1;
@@ -65,7 +65,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				)
 			.Advance(-1)
 			.RemoveInstructions(2) // Removes the subtraction
-			
+
 			.InstructionEnumeration();
 
 		internal static Sprite rightSprite;
