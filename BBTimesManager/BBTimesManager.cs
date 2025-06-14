@@ -621,6 +621,9 @@ namespace BBTimes.Manager
 		F5 = "F5",
 		END = "END";
 
+		public static bool IsAFloorName(string str) =>
+		str == F1 || str == F2 || str == F3 || str == F4 || str == F5 || str == END;
+
 		internal const int MaximumNumballs = 18;
 
 		public readonly static Dictionary<string, FloorData> floorDatas = new() {

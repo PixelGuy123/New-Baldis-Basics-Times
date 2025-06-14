@@ -72,32 +72,43 @@ namespace BBTimes.Manager
 					{
 						var holder = new SchoolTextureHolder(tex, weight, cat, texType);
 
-						if (!modded)
-							continue;
+						if (!modded) // Add to normal rooms in-game based on floor (NOTE: REMOVE THIS ONCE CUSTOM TEXTURES IS A THING)
 						{
-							foreach (var fData in floorDatas)
-								fData.Value.SchoolTextures.Add(holder);
-							_moddedAssets.ForEach((x) =>
+							for (int i = 3; i < data.Length; i++)
 							{
-								if (x.category == cat)
-								{
-									switch (holder.TextureType)
-									{
-										case SchoolTexture.Ceiling:
-											x.ceilTex = holder.Selection.selection;
-											break;
-										case SchoolTexture.Floor:
-											x.florTex = holder.Selection.selection;
-											break;
-										case SchoolTexture.Wall:
-											x.wallTex = holder.Selection.selection;
-											break;
-										default:
-											break;
-									}
-								}
-							});
+								string floorData = data[i].ToUpper();
+								if (IsAFloorName(floorData))
+									floorDatas[floorData].SchoolTextures.Add(holder);
+							}
+							continue;
 						}
+
+						foreach (var fData in floorDatas)
+						{
+							fData.Value.SchoolTextures.Add(holder);
+						}
+
+						_moddedAssets.ForEach((x) => // Adds to every floor the modded rooms (even special rooms)
+						{
+							if (x.category == cat)
+							{
+								switch (holder.TextureType)
+								{
+									case SchoolTexture.Ceiling:
+										x.ceilTex = holder.Selection.selection;
+										break;
+									case SchoolTexture.Floor:
+										x.florTex = holder.Selection.selection;
+										break;
+									case SchoolTexture.Wall:
+										x.wallTex = holder.Selection.selection;
+										break;
+									default:
+										break;
+								}
+							}
+						});
+
 					}
 					else
 						Debug.LogWarning("BB TIMES: Invalid data in Weight: " + data[2]);
