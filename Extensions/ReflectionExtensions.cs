@@ -1,13 +1,13 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using HarmonyLib;
 using UnityEngine;
 
 namespace BBTimes.Extensions
 {
 	public static class ReflectionExtensions
-		// yoinked this from my Infinite Floors mod
+	// yoinked this from my Infinite Floors mod
 	{
 		static bool IsInheritFromType<T, T2>() =>
 			typeof(T).IsSubclassOf(typeof(T2)) || typeof(T) == typeof(T2);
@@ -44,4 +44,5 @@ namespace BBTimes.Extensions
 			return original;
 		}
 	}
+
 }

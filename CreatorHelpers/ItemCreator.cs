@@ -1,20 +1,20 @@
-﻿using HarmonyLib;
+﻿using System.IO;
+using System.Linq;
+using BBTimes.CustomComponents;
+using BBTimes.Manager;
+using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
+using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
-using System.IO;
-using System.Linq;
+using PlusLevelLoader;
 using UnityEngine;
 using static UnityEngine.Object;
-using MTM101BaldAPI.ObjectCreation;
-using BBTimes.CustomComponents;
-using PlusLevelLoader;
-using BBTimes.Manager;
 
 namespace BBTimes.Helpers
 {
-    public static partial class CreatorExtensions
+	public static partial class CreatorExtensions
 	{
 		public static ItemObject Build(this ItemBuilder itmB, string name) =>
 			Build(itmB, name, itemsEnum: Items.None);
@@ -53,7 +53,7 @@ namespace BBTimes.Helpers
 		}
 
 		public static ItemObject DuplicateItem(this ItemObject item, string nameKey, bool createNewMeta, string newItemEnumString = "", bool registerToLevelLoader = true)
-			// Used for making unique items out of others or if they accomplish different functions (like variants)
+		// Used for making unique items out of others or if they accomplish different functions (like variants)
 		{
 			var it = Instantiate(item);
 			it.nameKey = nameKey;
@@ -100,8 +100,7 @@ namespace BBTimes.Helpers
 			var path = Path.Combine(BasePlugin.ModPath, "items", name, "Textures");
 			if (!Directory.Exists(path))
 			{
-				Debug.LogWarning("Failed to grab folder: " + path);
-				return [];
+				throw new DirectoryNotFoundException("Failed to grab folder: " + path);
 			}
 
 			string[] files = Directory.GetFiles(path);

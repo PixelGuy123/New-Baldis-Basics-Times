@@ -55,7 +55,7 @@ namespace BBTimes.Manager
 			yield return "Creating object builders...";
 			GameExtensions.TryRunMethod(CreateObjBuilders);
 			yield return "Creating windows...";
-			CreateWindows();
+			GameExtensions.TryRunMethod(CreateWindows);
 			yield return "Creating custom rooms...";
 			GameExtensions.TryRunMethod(CreateCustomRooms);
 			yield return "Creating room functions...";

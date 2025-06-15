@@ -1,29 +1,27 @@
-﻿using BBTimes.CustomComponents;
-using UnityEngine;
-using PixelInternalAPI.Extensions;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
-using UnityEngine.UI;
-using BBTimes.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
 using TMPro;
-
-// TODO: Transform this into an actual Yearbook later on
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace BBTimes.CustomContent.CustomItems
 {
 	public class ITM_BaldiYearbook : Item, IItemPrefab
 	{
-		[SerializeField] 
+		[SerializeField]
 		internal Canvas canvas;
 
 		[SerializeField]
 		internal Image background, npcPosterVisual;
 
-		[SerializeField] 
+		[SerializeField]
 		internal SoundObject audFail, audOpenBook, audFlipOver;
 
 		[SerializeField]
@@ -49,8 +47,8 @@ namespace BBTimes.CustomContent.CustomItems
 			initiator.graphicRaycaster.blockingMask = -1;
 
 			background = ObjectCreationExtensions.CreateImage(
-				canvas, 
-				AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, new(0.5f, 0.5f, 0.5f, 0.45f)), 1f), 
+				canvas,
+				AssetLoader.SpriteFromTexture2D(TextureExtensions.CreateSolidTexture(480, 360, new(0.5f, 0.5f, 0.5f, 0.45f)), 1f),
 				true);
 			background.name = "YearbookBg";
 
@@ -140,8 +138,8 @@ namespace BBTimes.CustomContent.CustomItems
 				if (!npc.Poster || !npc.Poster.baseTexture || npcBookRepresentations.ContainsKey(npcType))
 					continue;
 
-	
-				npcBookRepresentations.Add(npcType, 
+
+				npcBookRepresentations.Add(npcType,
 					AssetLoader.SpriteFromTexture2D(
 						generatorRef.GenerateTextTexture(npc.Poster)
 					.ConvertToGrayscale(), 1f
@@ -172,6 +170,7 @@ namespace BBTimes.CustomContent.CustomItems
 			canvas.gameObject.SetActive(true);
 			canvas.worldCamera = Singleton<GlobalCam>.Instance.Cam;
 
+			Singleton<CoreGameManager>.Instance.paused = true;
 			Singleton<CoreGameManager>.Instance.disablePause = true;
 			Singleton<GlobalCam>.Instance.FadeIn(UiTransition.Dither, 0.01666667f);
 			Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).SetControllable(false);
@@ -183,6 +182,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		void UnpauseGame()
 		{
+			Singleton<CoreGameManager>.Instance.paused = false;
 			Singleton<CoreGameManager>.Instance.disablePause = false;
 			Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).SetControllable(true);
 			Singleton<InputManager>.Instance.ActivateActionSet("InGame");
@@ -197,7 +197,7 @@ namespace BBTimes.CustomContent.CustomItems
 			canvas.gameObject.SetActive(false);
 		}
 
-		public void AdvancePage(int offset) 
+		public void AdvancePage(int offset)
 		{
 			currentNPCIndex += offset;
 			if (offset > 0)
@@ -239,7 +239,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 			PauseGame();
 			Singleton<MusicManager>.Instance.PlaySoundEffect(audOpenBook);
-			
+
 
 			exitButton.OnPress.AddListener(CloseBook);
 			nextPageBut.OnPress.AddListener(() => AdvancePage(1));

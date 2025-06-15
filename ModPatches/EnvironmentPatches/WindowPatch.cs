@@ -31,7 +31,7 @@ namespace BBTimes.ModPatches
 		[HarmonyPrefix]
 		private static bool NaturalSpawnWindows(Window __instance, EnvironmentController ec, IntVector2 pos, Direction dir)
 		{
-			if (hasSpawnedWindow)
+			if (hasSpawnedWindow || ec.Active)
 			{
 				hasSpawnedWindow = false;
 				return true;
