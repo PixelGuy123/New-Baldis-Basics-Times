@@ -25,7 +25,11 @@ namespace BBTimes.Manager
 			// 2 - F3
 			// 3 - END
 			ItemObject item;
-			const string PIRATE_CANN_HATE = "cann_hate", CRIMINALPACK_CONTRABAND = "crmp_contraband";
+			const string
+			PIRATE_CANN_HATE = "cann_hate",
+			CRIMINALPACK_CONTRABAND = "crmp_contraband",
+			FOODTAG = Storage.FOOD_TAG,
+			DRINKTAG = Storage.DRINK_TAG;
 			LayerMaskObject playerClickLayer = GenericExtensions.FindResourceObjectByName<LayerMaskObject>("PlayerClickLayerMask");
 
 			// Hammer
@@ -76,7 +80,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(20)
 				.SetShopPrice(325)
 				.SetNameAndDescription("GUM_Name", "GUM_Desc")
-				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, ["Food"])
+				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [FOODTAG])
 				.Build("Gum");
 
 			//CreatorExtensions.CreateItem<ITM_Gum, GumCustomData>("Gum", "GUM_Name", "GUM_Desc", 225, 20).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
@@ -188,7 +192,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(20)
 				.SetShopPrice(400)
 				.SetNameAndDescription("BSED_Name", "BSED_Desc")
-				.SetMeta(ItemFlags.Persists, ["Drink"])
+				.SetMeta(ItemFlags.Persists, [DRINKTAG])
 				.Build("BSED");
 			//CreatorExtensions.CreateItem<ITM_StaminaDrinkable, CustomItemData>("BSED", "BSED_Name", "BSED_Desc", 245, 20).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[F2].Items.Add(new(item, 35));
@@ -216,7 +220,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(28)
 				.SetShopPrice(450)
 				.SetNameAndDescription("SPP_Name", "SPP_Desc")
-				.SetMeta(ItemFlags.Persists, ["Drink", CRIMINALPACK_CONTRABAND])
+				.SetMeta(ItemFlags.Persists, [DRINKTAG, CRIMINALPACK_CONTRABAND])
 				.Build("SpeedPotion");
 
 			//CreatorExtensions.CreateItem<ITM_SpeedPotion, SpeedPotionCustomData>("SpeedPotion", "SPP_Name", "SPP_Desc", 165, 28).AddMeta(plug, ItemFlags.Persists).value;
@@ -268,7 +272,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(20)
 				.SetShopPrice(200)
 				.SetNameAndDescription("WBottle_Name", "WBottle_Desc")
-				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, ["Drink"])
+				.SetMeta(ItemFlags.MultipleUse | ItemFlags.Persists, [DRINKTAG])
 				.Build("WaterBottle");
 			//CreatorExtensions.CreateItem<ITM_WaterBottle, CustomItemData>("WaterBottle", "WBottle_Name", "WBottle_Desc", 155, 20).AddMeta(plug, ItemFlags.MultipleUse | ItemFlags.Persists).value;
 			floorDatas[F2].Items.Add(new(item, 15));
@@ -389,7 +393,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(24)
 				.SetShopPrice(200)
 				.SetNameAndDescription("HotChoc_Name", "HotChoc_Desc")
-				.SetMeta(ItemFlags.Persists, ["Drink"])
+				.SetMeta(ItemFlags.Persists, [DRINKTAG])
 				.Build("HotChocolate");
 			//CreatorExtensions.CreateItem<ITM_StaminaDrinkable, CustomItemData>("HotChocolate", "HotChoc_Name", "HotChoc_Desc", 365, 24).AddMeta(plug, ItemFlags.Persists).value;
 			floorDatas[F1].Items.Add(new(item, 35));
@@ -687,7 +691,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(55)
 				.SetShopPrice(600)
 				.SetNameAndDescription("SugZestyBar_Name", "SugZestyBar_Desc")
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, ["Food"])
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [FOODTAG])
 				.Build("SugarFlavorZestyBar");
 
 			floorDatas[F1].Items.Add(new(item, 12));
@@ -1100,7 +1104,7 @@ namespace BBTimes.Manager
 			.SetItemComponent<ITM_ChillyChilli>()
 			.SetGeneratorCost(32)
 			.SetShopPrice(650)
-			.SetMeta(ItemFlags.Persists, ["Food", PIRATE_CANN_HATE])
+			.SetMeta(ItemFlags.Persists, [FOODTAG, PIRATE_CANN_HATE])
 			.SetNameAndDescription("ChillyChilli_Name", "ChillyChilli_Desc")
 			.Build("ChillyChilli");
 
@@ -1121,7 +1125,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_ComicallyLargeJello>()
 				.SetGeneratorCost(38)
 				.SetShopPrice(450)
-				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, ["Food", PIRATE_CANN_HATE])
+				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [FOODTAG, PIRATE_CANN_HATE])
 				.SetNameAndDescription("ComicallyLargeJello_Name", "ComicallyLargeJello_Desc")
 				.Build("ComicallyLargeJello");
 
@@ -1223,7 +1227,7 @@ namespace BBTimes.Manager
 			.SetItemComponent<ITM_AaaahTomato>()
 			.SetGeneratorCost(28)
 			.SetShopPrice(450)
-			.SetMeta(ItemFlags.Persists, ["Food"])
+			.SetMeta(ItemFlags.Persists, [FOODTAG])
 			.SetNameAndDescription("AAAHTomato_Name", "AAAHTomato_Desc")
 			.Build("AAAHTomato");
 

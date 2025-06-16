@@ -90,6 +90,9 @@ namespace BBTimes.CustomContent.NPCs
 		internal float eatTimer = 10f;
 
 		[SerializeField]
+		int maxAmountOfSlotsToAccept = 9;
+
+		[SerializeField]
 		internal Sprite gaugeSprite;
 		public HudGauge Gauge { get; private set; }
 		readonly EntityOverrider overrider = new();
@@ -228,6 +231,42 @@ namespace BBTimes.CustomContent.NPCs
 				}
 			}
 		}
+
+		bool IsItemEatable(ItemManager itm, int index)
+		{
+			if (itm.IsSlotLocked(index) || itm.items[index].itemType == Items.None)
+				return false;
+
+			var meta = itm.items[index].GetMeta();
+			return meta != null && meta.tags.Any(x => x == Storage.FOOD_TAG || x == Storage.DRINK_TAG);
+		}
+		public List<int> GetAllPlayerEatables(PlayerManager pm)
+		{
+			playerSlots.Clear();
+			int max = Mathf.Min(maxAmountOfSlotsToAccept, pm.itm.items.Length);
+			for (int i = 0; i < max; i++)
+			{
+				if (IsItemEatable(pm.itm, i))
+				{
+					playerSlots.Add(i);
+				}
+			}
+			return playerSlots;
+		}
+		public bool PlayerHasEatable(PlayerManager pm)
+		{
+			int max = Mathf.Min(maxAmountOfSlotsToAccept, pm.itm.items.Length);
+			for (int i = 0; i < max; i++)
+			{
+				if (IsItemEatable(pm.itm, i))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		readonly List<int> playerSlots = [];
 		bool talkingMood = true;
 		public bool TalkingMood
 		{
@@ -243,7 +282,6 @@ namespace BBTimes.CustomContent.NPCs
 			}
 		}
 
-		public const int slotsItCanAccept = 9;
 		int requiredSlot = -1;
 	}
 
@@ -266,7 +304,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			if (cooldown <= 0f && !player.Tagged && player.itm.items.Any(x => x.GetMeta()?.tags.Any(x => { string n = x.ToLower(); return n == "food" || n == "drink"; }) ?? false)) // player.itm.HasItem()
+			if (cooldown <= 0f && !player.Tagged && or.PlayerHasEatable(player)) // player.itm.HasItem()
 				or.behaviorStateMachine.ChangeState(new Oran_ChasePlayer(or, player, this));
 		}
 
@@ -314,7 +352,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.PlayerInSight(player);
 			if (pm == player && !player.Tagged)
 			{
-				if (!pm.itm.items.Any(x => x.GetMeta().tags.Any(x => { string n = x.ToLower(); return n == "food" || n == "drink"; })))
+				if (!or.PlayerHasEatable(player))
 					or.behaviorStateMachine.ChangeState(prevState);
 
 				tar.UpdatePosition(player.transform.position);
@@ -354,11 +392,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		void ChooseSlot()
 		{
-			List<int> slots = [];
-			int max = Mathf.Min(SerOran.slotsItCanAccept, pm.itm.maxItem);
-			for (int i = 0; i <= max; i++)
-				if (!pm.itm.IsSlotLocked(i) && pm.itm.items[i].itemType != Items.None && pm.itm.items[i].GetMeta().tags.Any(x => { string n = x.ToLower(); return n == "food" || n == "drink"; }))
-					slots.Add(i);
+			var slots = or.GetAllPlayerEatables(pm);
 
 			if (slots.Count == 0)
 			{

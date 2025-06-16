@@ -30,7 +30,9 @@ namespace BBTimes.Plugin
 
 		public const string
 		HOTCHOCOLATE_ATTR_TAG = "hotchocolateactive",
-		HARDHAT_ATTR_TAG = "protectedhead";
+		HARDHAT_ATTR_TAG = "protectedhead",
+		FOOD_TAG = "food",
+		DRINK_TAG = "drink";
 		public const string ChristmasSpecial_TimesTag = "Times_SpecialTags_ChristmasSpecial";
 
 		// ------------------- Constant Floats ---------------------
