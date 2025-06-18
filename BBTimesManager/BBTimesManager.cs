@@ -16,6 +16,7 @@ using BBTimes.ModPatches.EnvironmentPatches;
 using BBTimes.ModPatches.NpcPatches;
 using BBTimes.Plugin;
 using BepInEx.Bootstrap;
+using CustomContent.LevelTypes;
 using CustomMainMenusAPI;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -34,7 +35,7 @@ namespace BBTimes.Manager
 		internal static BasePlugin plug;
 		internal static IEnumerator InitializeContentCreation()
 		{
-			yield return 13 + (EditorExists ? 1 : 0);
+			yield return 14 + (EditorExists ? 1 : 0);
 
 			yield return "Loading assets...";
 			GameExtensions.TryRunMethod(SetAssets);
@@ -64,7 +65,8 @@ namespace BBTimes.Manager
 			GameExtensions.TryRunMethod(CreateSchoolTextures);
 			yield return "Creating map icons...";
 			GameExtensions.TryRunMethod(GetIcons);
-
+			yield return "Loading floor types stuff...";
+			GameExtensions.TryRunMethod(LoadLevelTypeAssets);
 			if (plug.enableYoutuberMode.Value)
 			{
 				foreach (var flDatPair in floorDatas)

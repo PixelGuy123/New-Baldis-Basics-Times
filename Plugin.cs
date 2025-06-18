@@ -17,6 +17,7 @@ using BBTimes.Plugin;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using CustomContent.LevelTypes;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
@@ -286,11 +287,12 @@ namespace BBTimes
 		internal List<string> disabledCharacters = [], disabledItems = [], disabledEvents = [], disabledBuilders = [];
 		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") ||
 			Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
-
+		public static ConfigFile config; 
 		private void Awake()
 		{
+			config = Config;
 			BBTimesManager.plug = this;
-
+			
 			disableOutside = Config.Bind("Environment Settings", "Disable the outside", false, "Setting this \"true\" will completely disable the outside seen in-game. This should increase performance BUT will also change the seed layouts in the game.");
 			disableHighCeilings = Config.Bind("Environment Settings", "Disable high ceilings", false, "Setting this \"true\" will completely disable the high ceilings from existing in pre-made levels (that includes the ones made with the Level Editor).");
 			enableBigRooms = Config.Bind("Environment Settings", "Enable big rooms", false, "Setting this \"true\" will add the rest of the layouts Times also comes with. WARNING: These layouts completely unbalance the game, making it a lot harder than the usual.");
@@ -332,7 +334,7 @@ namespace BBTimes
 				if (!isNextlevel)
 					MainGameManagerPatches.allowEndingToBePlayed = false;
 			});
-
+		GeneratorManagement.Register(this, GenerationModType.Preparation, MainFloorTypeStuff.FloorTypesHandler);
 			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, sco) =>
 			{
 				var lds = sco.GetCustomLevelObjects();
@@ -397,6 +399,8 @@ namespace BBTimes
 				}
 
 			});
+
+			
 
 			GeneratorManagement.RegisterFieldTripLootChange(this, (fieldTripType, fieldTripLoot) =>
 			{

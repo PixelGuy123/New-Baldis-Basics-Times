@@ -361,7 +361,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+<<<<<<< Updated upstream
 
 # Project itself
 BBTimes.csproj
 global.json
+=======
+global.json
+BBTimes.csproj
+BBTimes.csproj
+>>>>>>> Stashed changes
