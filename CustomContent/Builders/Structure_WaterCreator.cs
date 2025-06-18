@@ -1,3 +1,4 @@
+using MTM101BaldAPI;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Builders
@@ -15,22 +16,29 @@ namespace BBTimes.CustomContent.Builders
             inst.ec = ec;
             inst.transform.SetParent(ec.transform, false);
             inst.transform.position = new Vector3(0, 0, 0);
-            inst.transform.localScale = new Vector3(2500, 1, 2500);
-
+            inst.transform.localScale = new Vector3(2500, 2500, 0.1f);
+            
         }
     }
 
     public class WaterMover : MonoBehaviour
     {
         Vector2 LimitPos = new Vector2(50, 50);
-        Vector3 Speed = new Vector3(0.45f, 0, 0.45f);
+        Vector3 Speed = new Vector3(0.8f, 0, 0.8f);
 
         [SerializeField]
         public EnvironmentController ec;
 
+        public AudioManager AudMan;
+
         void Start()
         {
-            
+            AudMan = PixelInternalAPI.Extensions.ObjectCreationExtensions.CreateAudioManager(gameObject, 5000, 50000);
+            var reverb = AudMan.audioDevice.gameObject.AddComponent<AudioReverbFilter>();
+            reverb.reverbPreset = AudioReverbPreset.SewerPipe;
+            AudMan.QueueAudio(BBTimes.Manager.BBTimesManager.levelTypeAssetManager.Get<SoundObject>("snd_floodloop"));
+            AudMan.SetLoop(true);
+            AudMan.volumeMultiplier = 0.7f;
         }
         void Update()
         {

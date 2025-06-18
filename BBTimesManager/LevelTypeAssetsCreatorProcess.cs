@@ -23,11 +23,11 @@ namespace BBTimes.Manager
             levelTypeAssetManager.Add("tex_sewer_ceil", AssetLoader.TextureFromFile(Path.Combine(LevelTypeAssetPath, "Sewer", "Textures", "ceiltex.png")));
 
             Material WaterFlood = new Material(Resources.FindObjectsOfTypeAll<Material>().First(x => x.name == "FloodWater"));
-            // WaterFlood.SetVector("_Tiling", new Vector4(100, 100, 1, 1));
-
+            WaterFlood.SetVector("_Tiling", new Vector4(100, 100, 1, 1));
+            // its time to drink (sewage) water
             GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.ConvertToPrefab(true);
-            quad.transform.localScale = new Vector3(1000, 1, 1000);
+            quad.transform.localScale = new Vector3(2500, 2500, 0.01f);
             quad.GetComponent<MeshRenderer>().material = WaterFlood;
             quad.transform.rotation = Quaternion.Euler(90, 0, 0);
             quad.AddComponent<WaterMover>();
@@ -37,6 +37,10 @@ namespace BBTimes.Manager
             Structure_WaterCreator waterCreator = prefabWaterCreatorStructure.AddComponent<Structure_WaterCreator>();
             waterCreator.waterPrefab = quad.GetComponent<WaterMover>();
             levelTypeAssetManager.Add("Structure_WC", waterCreator);
+            levelTypeAssetManager.Add("snd_floodloop",
+               ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LevelTypeAssetPath, "Sewer", "Audios", "FloodLoop.wav")), "imagine needing sounds for environmental stuff lol", SoundType.Effect, Color.gray));
+            levelTypeAssetManager.Get<SoundObject>("snd_floodloop").subtitle = false;
+
         }
     }
 }
