@@ -1,5 +1,7 @@
 
+using System.Collections.Generic;
 using BBTimes;
+using MTM101BaldAPI;
 
 namespace CustomContent.LevelTypes
 {
@@ -14,13 +16,27 @@ namespace CustomContent.LevelTypes
         }
     }
 
-   
+    
+    public static class FloorTypeEnums
+    {
+        public static List<LevelType> levelTypesEnum = new List<LevelType>();
+        public static void GenerateEnums()
+        {
+            levelTypesEnum.Add(EnumExtensions.ExtendEnum<LevelType>("Sewer"));
+
+        }
+    }
+
 
     public static class MainFloorTypeStuff
     {
+
+
         public static void FloorTypesHandler(string floorname, int floorId, SceneObject scene)
         {
-            SewerFloorType.SewerTypeCreator(floorname,floorId, scene);
+            SewerFloorType.SewerTypeCreator(floorname, floorId, scene);
         }
+
+
     }
 }

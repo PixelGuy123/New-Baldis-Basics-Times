@@ -22,6 +22,8 @@ namespace CustomContent.LevelTypes
             toModify.bridgeTurnChance = 0;
             toModify.maxHallsToRemove = 0;
             toModify.minHallsToRemove = 0;
+            toModify.prePlotSpecialHallChance = 0;
+            toModify.postPlotSpecialHallChance = 0;
             toModify.minPlotSize = 10;
             toModify.hallFloorTexs = new WeightedTexture2D[] {
                 new() {
@@ -65,13 +67,26 @@ namespace CustomContent.LevelTypes
                 {
                     parameters = new()
                     {
-                        
+
                     }
                     ,
                     prefab = AssetMan.Get<Structure_WaterCreator>("Structure_WC")
 
                 }
             );
+            toModify.forcedStructures = toModify.forcedStructures.AddToArray(
+                new StructureWithParameters()
+                {
+                    parameters = new()
+                    {
+
+                    }
+                    ,
+                    prefab = AssetMan.Get<Structure_DoorLockerSmth>("Structure_DL")
+
+                }
+            );
+            
             
 
 
@@ -85,7 +100,7 @@ namespace CustomContent.LevelTypes
             CustomLevelObject factoryLevel = supportedObjects.First(x => x.type == LevelType.Factory);
             if (factoryLevel == null) return;
             CustomLevelObject SewerClone = factoryLevel.MakeClone();
-            SewerClone.type = EnumExtensions.ExtendEnum<LevelType>("Sewer"); 
+            SewerClone.type = FloorTypeEnums.levelTypesEnum[0];
             SewerClone.name = "Sewer";
             List<StructureWithParameters> structures = SewerClone.forcedStructures.ToList();
             structures.RemoveAll(x => x.prefab is Structure_Rotohalls);

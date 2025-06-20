@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using BBTimes.CustomContent.Builders;
+using BBTimes.Helpers;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using UnityEngine;
@@ -40,7 +41,21 @@ namespace BBTimes.Manager
             levelTypeAssetManager.Add("snd_floodloop",
                ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(LevelTypeAssetPath, "Sewer", "Audios", "FloodLoop.wav")), "imagine needing sounds for environmental stuff lol", SoundType.Effect, Color.gray));
             levelTypeAssetManager.Get<SoundObject>("snd_floodloop").subtitle = false;
+            levelTypeAssetManager.Add("spr_ClassStandard_Off", AssetLoader.SpriteFromFile(Path.Combine(LevelTypeAssetPath, "Sewer", "Textures", "ClassStandard_Off.png"), Vector2.one / 2, 10));
+            levelTypeAssetManager.Add("spr_ClassStandard_On", AssetLoader.SpriteFromFile(Path.Combine(LevelTypeAssetPath, "Sewer", "Textures", "ClassStandard_On.png"), Vector2.one / 2, 10));
+            GameObject prefabDoorLocker = new GameObject("Structure_DoorLocker");
+            prefabDoorLocker.ConvertToPrefab(true);
+            Structure_DoorLockerSmth doorLocker = prefabDoorLocker.AddComponent<Structure_DoorLockerSmth>();
 
+
+            var lightGO = new GameObject("RendererLight");
+            lightGO.ConvertToPrefab(true);
+            lightGO.transform.localPosition = new Vector3(0, 0f, 0);
+            lightGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            var sprRender = lightGO.AddComponent<SpriteRenderer>();
+            sprRender.sprite = BBTimesManager.levelTypeAssetManager.Get<Sprite>("spr_ClassStandard_Off");
+            doorLocker.Prefab = lightGO;
+            levelTypeAssetManager.Add("Structure_DL", doorLocker);
         }
     }
 }

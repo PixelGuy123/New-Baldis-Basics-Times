@@ -54,6 +54,7 @@ namespace BBTimes.Manager
 			yield return "Creating events...";
 			GameExtensions.TryRunMethod(CreateEvents);
 			yield return "Creating object builders...";
+			GameExtensions.TryRunMethod(FloorTypeEnums.GenerateEnums);
 			GameExtensions.TryRunMethod(CreateObjBuilders);
 			yield return "Creating windows...";
 			GameExtensions.TryRunMethod(CreateWindows);
@@ -66,6 +67,7 @@ namespace BBTimes.Manager
 			yield return "Creating map icons...";
 			GameExtensions.TryRunMethod(GetIcons);
 			yield return "Loading floor types stuff...";
+			
 			GameExtensions.TryRunMethod(LoadLevelTypeAssets);
 			if (plug.enableYoutuberMode.Value)
 			{
