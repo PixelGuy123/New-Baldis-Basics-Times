@@ -36,10 +36,10 @@ namespace BBTimes.Manager
 			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, FloorTypeEnums.levelTypesEnum[0]));
 
 			vent = CloneParameter(vent);
-			vent.parameters.minMax[0] = new(4, 5);
-			vent.parameters.chance[0] = 0.35f;
+			vent.parameters.minMax[0] = new(1, 1);
+			vent.parameters.chance[0] = 1f;
 
-			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
+			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, FloorTypeEnums.levelTypesEnum[0]));
 
 
 			// Camera Builder
