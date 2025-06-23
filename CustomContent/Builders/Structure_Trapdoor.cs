@@ -104,9 +104,9 @@ for (int i = 0; i < tiles.Count; i++){
 
 			List<WeightedSelection<Cell>> weightedCells = tiles.ConvertAll(x => new WeightedSelection<Cell>() { selection = x, weight = 100 });
 			List<IntVector2> positionsToAvoid = [];
-			IntVector2 bottomLeft = new IntVector2(lg.ld.outerEdgeBuffer, lg.ld.outerEdgeBuffer);
-			IntVector2 TopLeft = new IntVector2(lg.ld.outerEdgeBuffer, lg.levelSize.z - lg.ld.outerEdgeBuffer);
-			IntVector2 TopRight = new IntVector2(lg.levelSize.x - lg.ld.outerEdgeBuffer, lg.levelSize.z - lg.ld.outerEdgeBuffer);
+			IntVector2 bottomLeft = new IntVector2(lg.ld.outerEdgeBuffer + 1, lg.ld.outerEdgeBuffer);
+			IntVector2 TopLeft = new IntVector2(lg.ld.outerEdgeBuffer - 1, lg.levelSize.z - lg.ld.outerEdgeBuffer - 1);
+			IntVector2 TopRight = new IntVector2(lg.levelSize.x - lg.ld.outerEdgeBuffer, lg.levelSize.z - lg.ld.outerEdgeBuffer - 1);
 			IntVector2 BottomRight = new IntVector2(lg.levelSize.x - lg.ld.outerEdgeBuffer, lg.ld.outerEdgeBuffer);
 			Cell[] corners = [
 				ec.CellFromPosition(bottomLeft),
