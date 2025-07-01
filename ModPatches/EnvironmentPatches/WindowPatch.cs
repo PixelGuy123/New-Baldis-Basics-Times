@@ -45,14 +45,9 @@ namespace BBTimes.ModPatches
 
 			var dataLvl = Singleton<BaseGameManager>.Instance.levelObject;
 
-			var ldParam = Singleton<BaseGameManager>.Instance.levelObject;
-			if (ldParam == null)
-				return true;
-			// Current ugly way to deal with this for now (until the mtm101 api fixes custom level objects)
-			var cld = Resources.FindObjectsOfTypeAll<CustomLevelObject>().FirstOrDefault(x => x.name == ldParam.name);
+			var cld = Singleton<CoreGameManager>.Instance.sceneObject.GetCurrentCustomLevelObject();
 			if (!cld)
 				return true;
-
 
 			var listObj = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
 

@@ -38,11 +38,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				)
 			.SetInstruction(Transpilers.EmitDelegate(() =>
 			{
-				var ldParam = Singleton<BaseGameManager>.Instance.levelObject;
-				if (ldParam == null)
-					return BBTimesManager.MaximumNumballs + 1;
-				// Current ugly way to deal with this for now (until the mtm101 api fixes custom level objects)
-				var cld = Resources.FindObjectsOfTypeAll<CustomLevelObject>().FirstOrDefault(x => x.name == ldParam.name);
+				var cld = Singleton<CoreGameManager>.Instance.sceneObject.GetCurrentCustomLevelObject();
 				if (!cld)
 					return BBTimesManager.MaximumNumballs + 1;
 

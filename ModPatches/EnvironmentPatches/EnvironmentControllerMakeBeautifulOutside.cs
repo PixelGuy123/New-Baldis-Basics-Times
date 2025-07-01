@@ -27,12 +27,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				if (BBTimesManager.plug.disableOutside.Value || lg == null) // Make sure this only happens in generated maps
 					return;
 
-				var ldParam = Singleton<BaseGameManager>.Instance.levelObject;
-				if (ldParam == null)
-					return;
-
-				// Current ugly way to deal with this for now (until the mtm101 api fixes custom level objects)
-				var cld = Resources.FindObjectsOfTypeAll<CustomLevelObject>().FirstOrDefault(x => x.name == ldParam.name);
+				// Current way to deal with level objects I guess lol
+				var cld = Singleton<CoreGameManager>.Instance.sceneObject.GetCurrentCustomLevelObject();
 				if (cld)
 				{
 					var modVal = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_GenConfig_DisableOutside");
