@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using BBTimes.Manager;
 using HarmonyLib;
@@ -37,8 +38,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				)
 			.SetInstruction(Transpilers.EmitDelegate(() =>
 			{
-				var ld = Singleton<BaseGameManager>.Instance.levelObject;
-				if (ld == null || ld is not CustomLevelObject cld)
+				var ldParam = Singleton<BaseGameManager>.Instance.levelObject;
+				if (ldParam == null)
+					return BBTimesManager.MaximumNumballs + 1;
+				// Current ugly way to deal with this for now (until the mtm101 api fixes custom level objects)
+				var cld = Resources.FindObjectsOfTypeAll<CustomLevelObject>().FirstOrDefault(x => x.name == ldParam.name);
+				if (!cld)
 					return BBTimesManager.MaximumNumballs + 1;
 
 				var minMaxObj = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_MathMachineNumballsMinMax");

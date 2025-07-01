@@ -9,6 +9,7 @@ using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches.GeneratorPatches;
 using HarmonyLib;
 using MTM101BaldAPI;
+using UnityEngine;
 
 namespace BBTimes.ModPatches
 {
@@ -44,10 +45,16 @@ namespace BBTimes.ModPatches
 
 			var dataLvl = Singleton<BaseGameManager>.Instance.levelObject;
 
-			if (dataLvl == null || dataLvl is not CustomLevelObject customDataLvl) return true;
+			var ldParam = Singleton<BaseGameManager>.Instance.levelObject;
+			if (ldParam == null)
+				return true;
+			// Current ugly way to deal with this for now (until the mtm101 api fixes custom level objects)
+			var cld = Resources.FindObjectsOfTypeAll<CustomLevelObject>().FirstOrDefault(x => x.name == ldParam.name);
+			if (!cld)
+				return true;
 
 
-			var listObj = customDataLvl.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
+			var listObj = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
 
 			if (listObj == null)
 				return true;
@@ -78,7 +85,7 @@ namespace BBTimes.ModPatches
 			// Destroy the Window
 			__instance.StartCoroutine(OneFrameDestruction(__instance.gameObject));
 
-			static IEnumerator OneFrameDestruction(UnityEngine.GameObject obj)
+			static IEnumerator OneFrameDestruction(GameObject obj)
 			{
 				yield return null;
 				UnityEngine.Object.Destroy(obj);
