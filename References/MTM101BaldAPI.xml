@@ -646,6 +646,14 @@
             <param name="sceneObj"></param>
             <returns></returns>
         </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObjectExtensions.GetCurrentCustomLevelObject(SceneObject)">
+            <summary>
+            Returns the current level object for the specified SceneObject
+            CoreGameManager MUST exist for this to not return null.
+            </summary>
+            <param name="me"></param>
+            <returns></returns>
+        </member>
         <member name="T:MTM101BaldAPI.CustomLevelObject">
             <summary>
             A custom version of the LevelObject class, currently doesn't contain much else but it serves as a good base to make extending level generator functionality easy in the future.
@@ -791,6 +799,15 @@
             <param name="materials"></param>
             <param name="mask"></param>
         </member>
+        <member name="M:MTM101BaldAPI.Extensions.ApplyDoorMaterialsToSide(StandardDoor,System.Int32,StandardDoorMats,UnityEngine.Material)">
+            <summary>
+            Applies the StandardDoorMats materials to the specified StandardDoor, optionally changing the mask.
+            </summary>
+            <param name="me"></param>
+            <param name="materials"></param>
+            <param name="mask"></param>
+            <param name="side">The index into overlayShut and overlayOpen to use</param>
+        </member>
         <member name="M:MTM101BaldAPI.Registers.MetaExtensions.ToValues``1(System.Collections.Generic.List{MTM101BaldAPI.Registers.IMetadata{``0}})">
             <summary>
             Converts metadata into a list of the metadata's values.
@@ -821,6 +838,51 @@
             <summary>
             The color that won't have a new material generated for it.
             </summary>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.Buttons.ButtonColorManager.GetColorFromKey(System.String)">
+            <summary>
+            Gets the specified color from the color key
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.Buttons.ButtonColorManager.GetMaterialsForButtonType(System.Type,System.String)">
+            <summary>
+            Gets the material for the specified button type with the specified key
+            </summary>
+            <param name="t"></param>
+            <param name="colorKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.Buttons.ButtonColorManager.ApplyButtonMaterials(GameButtonBase,System.String)">
+            <summary>
+            Applies materials to the specified button, based off its type.
+            </summary>
+            <param name="button"></param>
+            <param name="colorKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.Buttons.ButtonColorManager.TypeSupportsButtonColors(System.Type)">
+            <summary>
+            Returns true if the specified type supports button colors.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.Buttons.ButtonColorManager.ApplyButtonMaterials(GameButtonBase,UnityEngine.Material[])">
+            <summary>
+            Applies the custom button materials to the button, automatically running the appropiate functions depending on the type.
+            </summary>
+            <param name="button"></param>
+            <param name="customMaterials"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.Buttons.ButtonColorManager.CreateButtonColor(System.String,UnityEngine.Color)">
+            <summary>
+            Creates a new button color and generates material variants for all registered button types.
+            </summary>
+            <param name="name"></param>
+            <param name="color"></param>
         </member>
         <member name="F:MTM101BaldAPI.Registers.GenerationModType.Preparation">
             <summary>
@@ -854,6 +916,11 @@
             A helper class used to store fieldtrip loot during the mod loading phase.
             </summary>
         </member>
+        <member name="T:MTM101BaldAPI.Registers.CustomLoot">
+            <summary>
+            A helper class used for easy modification of WeightedItemObject arrays and lists during the mod loading phase.
+            </summary>
+        </member>
         <member name="M:MTM101BaldAPI.Registers.GeneratorManagement.Register(BepInEx.BaseUnityPlugin,MTM101BaldAPI.Registers.GenerationModType,System.Action{System.String,System.Int32,SceneObject})">
             <summary>
             Register a generator action, called during mod loading.
@@ -861,6 +928,12 @@
             <param name="plug">The plugin adding the generator modifiers.</param>
             <param name="type"></param>
             <param name="action">The first parameter is the level name, the second one is the level id, and the last is the SceneObject itself.</param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.GeneratorManagement.InvokeFieldTripLootChange(FieldTripObject)">
+            <summary>
+            Invoke FieldTrip loot table changes for the specified field trip.
+            </summary>
+            <param name="trip"></param>
         </member>
         <member name="M:MTM101BaldAPI.Registers.GeneratorManagement.RegisterFieldTripLootChange(BepInEx.BaseUnityPlugin,System.Action{FieldTrips,MTM101BaldAPI.Registers.FieldTripLoot})">
             <summary>
@@ -870,6 +943,13 @@
             <param name="plug"></param>
             <param name="action"></param>
         </member>
+        <member name="M:MTM101BaldAPI.Registers.GeneratorManagement.EnqueueGeneratorChanges(SceneObject)">
+            <summary>
+            This adds the specified SceneObject to the queue to be processed during the loading screen.
+            Only use this for custom SceneObjecst you create.
+            This will only work properly if called before the loading screen applies generator changes, aka not in post.
+            </summary>
+        </member>
         <member name="M:MTM101BaldAPI.Registers.GeneratorManagement.Invoke(System.String,System.Int32,SceneObject)">
             <summary>
             Invoke the generator actions for the specified SceneObject.
@@ -877,6 +957,30 @@
             <param name="name"></param>
             <param name="floorNumber"></param>
             <param name="obj"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.ModdedHighscoreManager.AddModToList(BepInEx.PluginInfo,System.String[])">
+            <summary>
+            Adds the specified mod to the highscore list. Do this if your mod modifies endless mode but doesn't directly add any levels itself.
+            Or, if you want to add tags. You can call this whenever you want to change tags.
+            </summary>
+            <param name="info"></param>
+            <param name="tags"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.EndlessModeManagement.AddEndlessLevel(MTM101BaldAPI.Registers.ModdedEndlessLevel)">
+            <summary>
+            Adds an entirely new level to endless mode.
+            This automatically adds your mod to the ModdedHighscoreManager.
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.EndlessModeManagement.AddEndlessAction(BepInEx.PluginInfo,System.Action{System.Collections.Generic.List{EndlessLevelTypeContainer}})">
+            <summary>
+            Adds an action to be called when the EndlessLevelTypeContainer array is being finalized.
+            Use this to add sizes to existing levels or re-order things.
+            This automatically adds your mod to the ModdedHighscoreManager.
+            </summary>
+            <param name="key"></param>
+            <param name="act"></param>
         </member>
         <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Collections.IEnumerator,System.Boolean)">
             <summary>
@@ -1301,6 +1405,12 @@
             Builds the NPC.
             </summary>
             <returns>The created NPC prefab.</returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetWanderEnterRooms">
+            <summary>
+            Makes it so that the wandering code will enter rooms, instead of avoiding them.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.DisableNavigationPrecision">
             <summary>
@@ -1842,6 +1952,16 @@
         <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveSystem.AddSaveLoadAction(BepInEx.BaseUnityPlugin,System.Action{System.Boolean,System.String})">
             <summary>
             Allows you to add an action to be called when the game saves and loads, please only use this system if you plan to save data.
+            The first value passed to the action is whether or not its saving (true if saving, false if loading)
+            The second is the path allocated to your mod to save your modded save data
+            </summary>
+            <param name="p"></param>
+            <param name="act"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.SaveSystem.ModdedSaveSystem.AddUnmanagedSaveLoadAction(BepInEx.BaseUnityPlugin,System.Action{System.Boolean,System.String})">
+            <summary>
+            Allows you to add an action to be called when the game saves and loads, please only use this system if you plan to save data.
+            Unlike AddSaveLoadAction, Unmanaged SaveLoad actions are all given the same directory regardless of who is playing.
             The first value passed to the action is whether or not its saving (true if saving, false if loading)
             The second is the path allocated to your mod to save your modded save data
             </summary>
