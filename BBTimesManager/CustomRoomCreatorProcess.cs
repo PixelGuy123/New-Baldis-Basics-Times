@@ -1335,6 +1335,7 @@ namespace BBTimes.Manager
 				AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "Focus_Room_Door_Closed.png"))));
 
 			Superintendent.AddAllowedRoom(sets.category);
+			CameraStand.allowedRoomsToSpawn.Add(sets.category);
 
 			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: -1f);
 			// Workaround to not have to edit every focus room layout lol
@@ -1351,6 +1352,7 @@ namespace BBTimes.Manager
 				AssetLoader.TextureFromFile(GetRoomAsset("ExibitionRoom", "ExibitClassStandard_Closed.png"))));
 
 			Superintendent.AddAllowedRoom(sets.category);
+			CameraStand.allowedRoomsToSpawn.Add(sets.category);
 
 			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: -1f);
 

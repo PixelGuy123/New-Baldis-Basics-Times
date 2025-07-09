@@ -163,7 +163,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void Disappear(bool spawnPicture)
 		{
-			Navigator.Entity.Enable(false);
+			navigator.Entity.Enable(false);
 			navigator.Entity.SetHeight(-15);
 			if (spawnPicture)
 			{
@@ -173,6 +173,12 @@ namespace BBTimes.CustomContent.NPCs
 					new(transform.position.x, transform.position.z)
 					);
 			}
+		}
+
+		public void Appear()
+		{
+			navigator.Entity.Enable(true);
+			navigator.Entity.SetHeight(Entity.physicalHeight);
 		}
 
 		public void DisableLatestTimer()
@@ -221,6 +227,8 @@ namespace BBTimes.CustomContent.NPCs
 
 		public static List<KeyValuePair<CameraStand, PlayerManager>> affectedByCamStand = [];
 
+		public static HashSet<RoomCategory> allowedRoomsToSpawn = [RoomCategory.Class];
+
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.7f);
 
 	}
@@ -236,7 +244,6 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			ChangeNavigationState(new NavigationState_DoNothing(cs, 0));
-			prevHeight = cs.Navigator.Entity.InternalHeight;
 		}
 
 		public override void Update()
@@ -244,7 +251,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Update();
 			cooldown -= cs.TimeScale * Time.deltaTime;
 			if (cooldown < 0f)
-				cs.behaviorStateMachine.ChangeState(new CameraStand_AboutToRespawn(cs, prevHeight));
+				cs.behaviorStateMachine.ChangeState(new CameraStand_AboutToRespawn(cs));
 
 		}
 
@@ -253,19 +260,22 @@ namespace BBTimes.CustomContent.NPCs
 			base.Exit();
 			List<Cell> cells = [];
 			foreach (var room in cs.ec.rooms)
-				if (room.category == RoomCategory.Class)
+			{
+				if (CameraStand.allowedRoomsToSpawn.Contains(room.category))
 					cells.AddRange(room.AllEntitySafeCellsNoGarbage());
+			}
 
 			if (cells.Count > 0)
-				cs.transform.position = cells[Random.Range(0, cells.Count)].CenterWorldPosition;
+			{
+				cs.Navigator.Entity.Teleport(cells[Random.Range(0, cells.Count)].CenterWorldPosition);
+			}
 
 		}
 
-		float prevHeight;
 		float cooldown = 3f;//30f;
 	}
 
-	internal class CameraStand_AboutToRespawn(CameraStand cs, float height) : CameraStand_StateBase(cs)
+	internal class CameraStand_AboutToRespawn(CameraStand cs) : CameraStand_StateBase(cs)
 	{
 		public override void Update()
 		{
@@ -273,8 +283,7 @@ namespace BBTimes.CustomContent.NPCs
 			ableOfRespawning -= cs.TimeScale * Time.deltaTime;
 			if (ableOfRespawning < 0f)
 			{
-				cs.Navigator.Entity.Enable(true);
-				cs.Navigator.Entity.SetHeight(prevHeight);
+				cs.Appear();
 				cs.behaviorStateMachine.ChangeState(new CameraStand_Active(cs));
 			}
 		}
@@ -290,8 +299,6 @@ namespace BBTimes.CustomContent.NPCs
 			base.InPlayerSight(player);
 			ableOfRespawning = 5f;
 		}
-
-		readonly float prevHeight = height;
 
 		float ableOfRespawning = 5f;
 	}
