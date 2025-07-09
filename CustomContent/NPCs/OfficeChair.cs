@@ -1,8 +1,8 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -27,8 +27,9 @@ namespace BBTimes.CustomContent.NPCs
 			spriteRenderer[0].sprite = normalSprs[0];
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -52,7 +53,7 @@ namespace BBTimes.CustomContent.NPCs
 			behaviorStateMachine.ChangeState(new OfficeChair_FindOffice(this, false, awaitCooldown, en));
 
 
-		public void SetEnabled(bool active) => 
+		public void SetEnabled(bool active) =>
 			rotator.targetSprite = active ? sprActive : sprDeactive;
 
 		const float normSpeed = 50f;
@@ -67,7 +68,8 @@ namespace BBTimes.CustomContent.NPCs
 			base.Despawn();
 		}
 
-		public bool ItemFits(Items itm) {
+		public bool ItemFits(Items itm)
+		{
 			if (behaviorStateMachine.CurrentState is OfficeChair_WaitForCollision col && col.cooldown > 0f && itemsThatFixMe.Contains(itm))
 				return true;
 			return false;
@@ -87,6 +89,9 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal AnimatedSpriteRotator rotator;
+
+		[SerializeField]
+		internal float pickupThreshold = 11.5f;
 
 		[SerializeField]
 		internal int maxAttemptsBeforeGivingUpNavigation = 5;
@@ -131,9 +136,6 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter() // Basically go to a random spot
 		{
 			base.Enter();
-
-
-			
 
 			var room = chair.ec.CellFromPosition(chair.transform.position).room;
 			List<Cell> cells = useCurrent ? room.GetTilesOfShape(TileShapeMask.Single, true) : GetRandomOffice(room);
@@ -194,7 +196,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			if (!target) return;
 
-			if (!chair || chair.Navigator.Entity.Frozen || (chair.transform.position - target.transform.position).magnitude > 5f) // If chair ever becomes null, also stop this
+			if (!chair || chair.Navigator.Entity.Frozen || (chair.transform.position - target.transform.position).magnitude > chair.pickupThreshold) // If chair ever becomes null, also stop this
 			{
 				CancelTargetGrab();
 			}

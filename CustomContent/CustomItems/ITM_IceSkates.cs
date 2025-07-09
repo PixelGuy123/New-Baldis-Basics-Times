@@ -99,7 +99,6 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			active = false;
 			pm.Am.moveMods.Remove(blockMovementMod);
-			audMan.FlushQueue(true);
 			pm.plm.Entity.OnTeleport -= OnTeleportEv;
 			for (int i = 0; i < generatedSlippers.Count; i++)
 				Destroy(generatedSlippers[i].gameObject);
@@ -122,6 +121,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			if (pos != transform.position)
 				entity.Teleport(pos); // To not spam the teleport on itself
+
 		}
 
 		void OnDestroy()

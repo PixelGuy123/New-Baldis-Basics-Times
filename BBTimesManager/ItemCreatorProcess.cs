@@ -28,8 +28,11 @@ namespace BBTimes.Manager
 			const string
 			PIRATE_CANN_HATE = "cann_hate",
 			CRIMINALPACK_CONTRABAND = "crmp_contraband",
+			NONSTACKABLE_TAG = "StackableItems_NotAllowStacking",
 			FOODTAG = Storage.FOOD_TAG,
 			DRINKTAG = Storage.DRINK_TAG;
+
+			var cameraStandEnum = EnumExtensions.GetFromExtendedName<Character>("Camerastand");
 			LayerMaskObject playerClickLayer = GenericExtensions.FindResourceObjectByName<LayerMaskObject>("PlayerClickLayerMask");
 
 			// Hammer
@@ -61,7 +64,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_Present>()
 				.SetGeneratorCost(0)
 				.SetShopPrice(950)
-				.SetMeta(ItemFlags.None, [Storage.ChristmasSpecial_TimesTag])
+				.SetMeta(ItemFlags.None, [Storage.ChristmasSpecial_TimesTag, NONSTACKABLE_TAG])
 				.SetNameAndDescription("PRS_Name", "PRS_Desc")
 				.Build("Present");
 
@@ -839,7 +842,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(40)
 				.SetShopPrice(200)
 				.SetNameAndDescription("Pickupgun_Name", "Pickupgun_Desc")
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [NONSTACKABLE_TAG])
 				.Build("GrabGun");
 
 			floorDatas[F1].Items.Add(new(item, 45));
@@ -877,6 +880,26 @@ namespace BBTimes.Manager
 			floorDatas[END].ShopItems.Add(new() { selection = item, weight = 16 });
 			floorDatas[F2].FieldTripItems.Add(new() { selection = item, weight = 25 });
 			ResourceManager.AddWeightedItemToCrazyMachine(new() { selection = item, weight = 35 });
+
+			// Crumbled Paper (Camera Stand)
+			item = item.DuplicateItem("Crumpledpaper_Name", true, "CrumpledPaper");
+			item.descKey = "Crumpledpaper_Desc";
+			item.SetupItemObjectSprites("CrumpledPaper");
+			var toiletPaper = (ITM_ToiletPaper)item.item;
+			toiletPaper.animComp.animation = [item.itemSpriteLarge];
+			toiletPaper.rotationSpeed = 12f;
+
+			// Ugly Picture
+			var uglyPictureItem = new ItemBuilder(plug.Info)
+				.SetItemComponent<ITM_UglyPicture>()
+				.SetGeneratorCost(999)
+				.SetShopPrice(-1000000) // Sell this and Johnny will ask you a refund for looking at it
+				.SetNameAndDescription("UglyPicture_Name", "UglyPicture_Desc")
+				.SetMeta(ItemFlags.Persists, [NONSTACKABLE_TAG])
+				.Build("UglyPicture");
+			((ITM_UglyPicture)uglyPictureItem.item).crumpledPaper = item;
+
+			((CameraStand)NPCMetaStorage.Instance.Find(x => x.info == plug.Info && x.character == cameraStandEnum).value).paperItem = uglyPictureItem;
 
 			// FidgetSpinner
 			item = new ItemBuilder(plug.Info)
@@ -1027,7 +1050,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Acceptable>()
 				.SetGeneratorCost(99)
-				.SetShopPrice(9999)
+				.SetShopPrice(99999999)
 				.SetNameAndDescription("SmallTimesKey_Name", "SmallTimesKey_Desc")
 				.SetMeta(ItemFlags.Persists, [CRIMINALPACK_CONTRABAND])
 				.Build("SmallTimesKey");

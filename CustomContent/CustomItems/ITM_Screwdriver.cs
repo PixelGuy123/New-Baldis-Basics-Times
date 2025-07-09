@@ -36,18 +36,27 @@ namespace BBTimes.CustomContent.CustomItems
 				else
 				{
 					var lockdownDoor = hit.transform.GetComponentInParent<LockdownDoor>();
-					if (lockdownDoor && !lockdownDoor.IsOpen)
+					if (lockdownDoor && !lockdownDoor.IsOpen && !lockdownDoor.moving)
 					{
 						lockdownDoor.Open(true, false);
 						success = true;
 					}
 					else
 					{
-						var machine = hit.transform.GetComponent<IItemAcceptor>();
-						if (machine != null && machine.ItemFits(item))
+						var facultyOnlyDoor = hit.transform.GetComponentInParent<FacultyOnlyDoor>();
+						if (facultyOnlyDoor && !facultyOnlyDoor.IsOpen)
 						{
-							machine.InsertItem(pm, pm.ec);
+							facultyOnlyDoor.gameObject.AddComponent<FacultyDoorOpener>(); // Faculty Only Door killer lol
 							success = true;
+						}
+						else
+						{
+							var machine = hit.transform.GetComponent<IItemAcceptor>();
+							if (machine != null && machine.ItemFits(item))
+							{
+								machine.InsertItem(pm, pm.ec);
+								success = true;
+							}
 						}
 					}
 				}

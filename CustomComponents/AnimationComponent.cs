@@ -42,16 +42,22 @@ namespace BBTimes.CustomComponents
 		public void ChangeRendererSpritesTo(Sprite sprite)
 		{
 			if (renderers != null)
+			{
 				for (int i = 0; i < renderers.Length; i++)
 					renderers[i].sprite = sprite;
+			}
 
 			if (imageRenderers != null)
+			{
 				for (int i = 0; i < imageRenderers.Length; i++)
 					imageRenderers[i].sprite = sprite;
+			}
 
 			if (rotators != null)
+			{
 				for (int i = 0; i < rotators.Length; i++)
 					rotators[i].targetSprite = sprite;
+			}
 		}
 
 		public void StopLastFrameMode() =>
@@ -61,6 +67,7 @@ namespace BBTimes.CustomComponents
 		public void ResetFrame(bool resetPause)
 		{
 			frame = 0f;
+			ChangeRendererSpritesTo(animation[Mathf.FloorToInt(frame)]);
 			if (resetPause)
 			{
 				lastFrameMode = false;

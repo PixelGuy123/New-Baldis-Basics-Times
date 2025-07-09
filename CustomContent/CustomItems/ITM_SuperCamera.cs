@@ -1,11 +1,11 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
-using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using PixelInternalAPI.Extensions;
 using BBTimes.Manager;
 using MTM101BaldAPI.Components;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -26,7 +26,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public string Name { get; set; }
 		public string Category => "items";
-		
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -39,8 +39,10 @@ namespace BBTimes.CustomContent.CustomItems
 			StartCoroutine(Photo());
 
 			for (int i = 0; i < ec.Npcs.Count; i++)
-				if (ec.Npcs[i].looker.IsVisible && ec.Npcs[i].looker.PlayerInSight(pm))
+			{
+				if (ec.Npcs[i].looker && ec.Npcs[i].looker.IsVisible && ec.Npcs[i].looker.PlayerInSight(pm))
 					StartCoroutine(StunNPC(ec.Npcs[i]));
+			}
 
 			return true;
 		}
@@ -57,7 +59,7 @@ namespace BBTimes.CustomContent.CustomItems
 					color.a += ec.EnvironmentTimeScale * Time.deltaTime * 3f;
 					if (color.a >= 1f)
 						break;
-					
+
 					image.color = color;
 					yield return null;
 				}

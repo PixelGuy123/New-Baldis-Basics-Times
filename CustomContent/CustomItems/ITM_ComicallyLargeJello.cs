@@ -1,11 +1,11 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -18,7 +18,7 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		internal Entity entity;
 
-		[SerializeField] 
+		[SerializeField]
 		internal SoundObject audThrow, audLand;
 
 		[SerializeField]
@@ -45,22 +45,22 @@ namespace BBTimes.CustomContent.CustomItems
 			entity = gameObject.CreateEntity(3f, 4.5f, renderer.transform);
 
 			audMan = gameObject.CreatePropagatedAudioManager(75f, 105f);
-			audThrow = this.GetSound("JelloThrow.wav", "Vfx_ComicallyLargeJello_Throw", SoundType.Effect, new(66f/256f, 99f/256f, 60f/256f));
-			audLand = this.GetSound("JelloLand.wav", "Vfx_ComicallyLargeJello_Land", SoundType.Effect, new(66f/256f, 99f/256f, 60f/256f));
+			audThrow = this.GetSound("JelloThrow.wav", "Vfx_ComicallyLargeJello_Throw", SoundType.Effect, new(66f / 256f, 99f / 256f, 60f / 256f));
+			audLand = this.GetSound("JelloLand.wav", "Vfx_ComicallyLargeJello_Land", SoundType.Effect, new(66f / 256f, 99f / 256f, 60f / 256f));
 
 			canvasPre = ObjectCreationExtensions.CreateCanvas();
 			canvasPre.name = "JelloSwallowCanvas";
 			canvasPre.gameObject.ConvertToPrefab(true);
 
 			ObjectCreationExtensions.CreateImage( // Image for the swallow canvas
-				canvasPre, 
+				canvasPre,
 				AssetLoader.SpriteFromTexture2D(
 					TextureExtensions.CreateSolidTexture(
-						480, 
-						360, 
-						new(15f/256f, 84f/256f, 17f/256f, 0.45f)
-						), 
-					1f), 
+						480,
+						360,
+						new(15f / 256f, 84f / 256f, 17f / 256f, 0.45f)
+						),
+					1f),
 				true);
 		}
 
@@ -111,24 +111,21 @@ namespace BBTimes.CustomContent.CustomItems
 			if (!activated || !other.isTrigger || other.gameObject == owner) return;
 
 			var entity = other.GetComponent<Entity>();
-			if (entity && !stuckEntities.ContainsKey(entity))
+			if (entity && !stuckEntities.Exists(x => x.Key == entity))
 			{
-				EntityOverrider overrider = new();
-				
-				if (entity.Override(overrider))
+				MovementModifier moveMod = new(Vector3.zero, 0.65f);
+				entity.ExternalActivity.moveMods.Add(moveMod);
+
+				if (!canvasesMade.Exists(x => x.Key == entity) && other.CompareTag("Player"))
 				{
-					overrider.SetFrozen(true);
-
-					if (!canvasesMade.ContainsKey(entity) && other.CompareTag("Player"))
-					{
-						var player = other.GetComponent<PlayerManager>();
-						var canvas = Instantiate(canvasPre, transform);
-						canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(player.playerNumber).canvasCam;
-						canvasesMade.Add(entity, canvas);
-					}
-
-					stuckEntities.Add(entity, overrider);
+					var player = other.GetComponent<PlayerManager>();
+					var canvas = Instantiate(canvasPre, transform);
+					canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(player.playerNumber).canvasCam;
+					canvasesMade.Add(new(entity, canvas));
 				}
+
+				stuckEntities.Add(new(entity, moveMod));
+
 			}
 		}
 
@@ -140,15 +137,20 @@ namespace BBTimes.CustomContent.CustomItems
 				owner = null;
 
 			var entity = other.GetComponent<Entity>();
-			if (entity && stuckEntities.TryGetValue(entity, out var overrider))
+			if (entity)
 			{
-				if (canvasesMade.TryGetValue(entity, out var canvas))
+				int idx = stuckEntities.FindIndex(x => x.Key == entity);
+				if (idx == -1)
+					return;
+
+				int canvasIndex = canvasesMade.FindIndex(x => x.Key == entity);
+				if (canvasIndex != -1)
 				{
-					Destroy(canvas.gameObject);
-					canvasesMade.Remove(entity);
+					Destroy(canvasesMade[canvasIndex].Value.gameObject);
+					canvasesMade.RemoveAt(canvasIndex);
 				}
-				overrider.Release();
-				stuckEntities.Remove(entity);
+				stuckEntities[idx].Key.ExternalActivity.moveMods.Remove(stuckEntities[idx].Value);
+				stuckEntities.RemoveAt(idx);
 			}
 		}
 
@@ -167,20 +169,22 @@ namespace BBTimes.CustomContent.CustomItems
 
 		void OnDestroy()
 		{
-			foreach (var entry in stuckEntities)
-				entry.Value.Release();
+			for (int i = 0; i < stuckEntities.Count; i++)
+				stuckEntities[i].Key.ExternalActivity.moveMods.Remove(stuckEntities[i].Value);
 		}
 
 		void Update()
 		{
-			foreach (var entry in stuckEntities)
+			for (int i = 0; i < stuckEntities.Count; i++)
 			{
-				entry.Key?.Teleport(entry.Key.transform.position + (transform.position - entry.Key.transform.position) * swallowSpeed * Time.deltaTime);
+				var entry = stuckEntities[i];
+				if (entry.Key && entry.Key.transform)
+					entry.Value.movementAddend = (transform.position - entry.Key.transform.position) * swallowSpeed * Time.deltaTime;
 			}
 		}
 
-		readonly Dictionary<Entity, EntityOverrider> stuckEntities = [];
-		readonly Dictionary<Entity, Canvas> canvasesMade = [];
+		readonly List<KeyValuePair<Entity, MovementModifier>> stuckEntities = [];
+		readonly List<KeyValuePair<Entity, Canvas>> canvasesMade = [];
 
 		bool activated;
 		GameObject owner;

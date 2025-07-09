@@ -25,22 +25,22 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		{
 			base.TriggerExitNPC(npc);
 			if (target == npc.Navigator.Am)
-				DespawnEarlier();
+				Despawn(true);
 		}
 		protected override void TriggerExitPlayer(PlayerManager pm)
 		{
 			base.TriggerExitPlayer(pm);
 			if (target == pm.Am)
-				DespawnEarlier();
+				Despawn(true);
 
 		}
 
-		void DespawnEarlier()
+		protected override void OnDespawn()
 		{
 			if (catchCool != null)
 				StopCoroutine(catchCool);
-			target.moveMods.Remove(moveMod);
-			Despawn(true);
+			target?.moveMods.Remove(moveMod);
+			gauge?.Deactivate();
 		}
 
 		void Catch(ActivityModifier actMod)
@@ -49,22 +49,20 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 			catched = true;
 			target = actMod;
 			renderer.sprite = sprCatch;
-			catchCool = StartCoroutine(CatchCooldown(actMod));
+			catchCool = StartCoroutine(CatchCooldown());
 		}
 
-		IEnumerator CatchCooldown(ActivityModifier actMod)
+		IEnumerator CatchCooldown()
 		{
 			float time = timeTrapped;
-			actMod.moveMods.Add(moveMod);
+			target.moveMods.Add(moveMod);
 			while (time > 0f)
 			{
 				time -= ec.EnvironmentTimeScale * Time.deltaTime;
 				gauge?.SetValue(timeTrapped, time);
 				yield return null;
 			}
-			actMod?.moveMods.Remove(moveMod);
-			gauge?.Deactivate();
-			Despawn(true);
+			Despawn(true); // Should call OnDespawn to clean up effect
 		}
 
 		ActivityModifier target;

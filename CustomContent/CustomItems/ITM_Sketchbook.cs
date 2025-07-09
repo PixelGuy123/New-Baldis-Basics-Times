@@ -1,13 +1,13 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.CustomContent.Misc;
 using BBTimes.Extensions;
-using UnityEngine;
-using MTM101BaldAPI.ObjectCreation;
 using BBTimes.Manager;
-using PixelInternalAPI.Extensions;
-using PixelInternalAPI.Classes;
-using System.Collections;
+using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -35,7 +35,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 			sketchNpcPre.audDoingTrouble = this.GetSound("sketchFightNoises.wav", "Vfx_SketchBook_FightNoise", SoundType.Effect, Color.white);
 
-			var renders = ObjectCreationExtensions.CreateSpriteBillboard(null)
+			var sketchSprites = this.GetSpriteSheet(4, 3, 25f, "fightAnimation.png").ExcludeNumOfSpritesFromSheet(1); // add animation bruh
+			var renders = ObjectCreationExtensions.CreateSpriteBillboard(sketchSprites[0])
 				.AddSpriteHolder(out var renderer, 0f);
 			renderer.name = "Sprite";
 			renderer.transform.localPosition = Vector3.back * 0.5f;
@@ -46,11 +47,11 @@ namespace BBTimes.CustomContent.CustomItems
 
 			sketchNpcPre.animComp = renders.gameObject.AddComponent<AnimationComponent>();
 			sketchNpcPre.animComp.renderers = [renderer];
-			sketchNpcPre.animComp.animation = this.GetSpriteSheet(4, 3, 25f, "fightAnimation.png").ExcludeNumOfSpritesFromSheet(1); // add animation bruh
+			sketchNpcPre.animComp.animation = sketchSprites;
 			sketchNpcPre.animComp.speed = 12f;
 			sketchNpcPre.animComp.gameObject.SetActive(false); // Turned off by default
 		}
-		
+
 		public void SetupPrefabPost() { }
 
 		public string Name { get; set; }
@@ -83,7 +84,7 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		internal int minSketchEntities = 2, maxSketchEntities = 4;
 
-		[SerializeField] 
+		[SerializeField]
 		internal SoundObject audSketch;
 
 		[SerializeField]

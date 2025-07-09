@@ -65,6 +65,11 @@ internal class WeightedRoomAssetWithLevelType(RoomAsset selection, int weight, p
     public override WeightedRoomAsset GetWeightedSelection() => new() { selection = selection, weight = weight };
 }
 
+internal class WeightedStructureWithParametersWithLevelType(StructureWithParameters selection, int weight, params LevelType[] levelTypes) : WeightedSelectionWithLevelType<WeightedStructureWithParameters, StructureWithParameters>(selection, weight, levelTypes)
+{
+    public override WeightedStructureWithParameters GetWeightedSelection() => new() { selection = selection, weight = weight };
+}
+
 // ******************************************************
 // ************* Forced LevelType Types ******************
 // ******************************************************

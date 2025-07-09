@@ -793,7 +793,7 @@
         </member>
         <member name="M:MTM101BaldAPI.Extensions.ApplyDoorMaterials(StandardDoor,StandardDoorMats,UnityEngine.Material)">
             <summary>
-            Applies the StandardDoorMats materials to the specified StandardDoor, optionally changing the mask.
+            Applies the StandardDoorMats materials to both sides of the specified StandardDoor, optionally changing the mask.
             </summary>
             <param name="me"></param>
             <param name="materials"></param>
@@ -807,6 +807,29 @@
             <param name="materials"></param>
             <param name="mask"></param>
             <param name="side">The index into overlayShut and overlayOpen to use</param>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.SwapComponent``2(UnityEngine.GameObject,System.Boolean)">
+            <summary>
+            Replaces the specified component types.
+            An example of a use case is duplicating an already existing item prefab and making it use your version of the script.
+            </summary>
+            <typeparam name="SwapFrom"></typeparam>
+            <typeparam name="SwapTo"></typeparam>
+            <param name="me"></param>
+            <param name="swapReferencesOnSameObject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.Extensions.SwapComponent``2(UnityEngine.GameObject,``0,System.Boolean)">
+            <summary>
+            Replaces the specified component one with the SwapTo
+            An example of a use case is duplicating an already existing item prefab and making it use your version of the script.
+            </summary>
+            <typeparam name="SwapFrom">The type we are replacing</typeparam>
+            <typeparam name="SwapTo">The target type</typeparam>
+            <param name="me"></param>
+            <param name="component"></param>
+            <param name="swapReferencesOnSameObject">Whether fields referencing component will get swapped for our new component.</param>
+            <returns></returns>
         </member>
         <member name="M:MTM101BaldAPI.Registers.MetaExtensions.ToValues``1(System.Collections.Generic.List{MTM101BaldAPI.Registers.IMetadata{``0}})">
             <summary>
@@ -982,6 +1005,27 @@
             <param name="key"></param>
             <param name="act"></param>
         </member>
+        <member name="F:MTM101BaldAPI.Registers.LoadingEventOrder.Start">
+            <summary>
+            Occurs before LevelObjects get converted to CustomLevelObjects
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.LoadingEventOrder.Pre">
+            <summary>
+            Occurs before level generator changes are performed.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.LoadingEventOrder.Post">
+            <summary>
+            Occurs after level generator changes are performed.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.LoadingEventOrder.Final">
+            <summary>
+            Occurs after localization has been loaded and the API's highscore mode has been determined.
+            Use sparingly, in most cases you will want to use Post instead.
+            </summary>
+        </member>
         <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Collections.IEnumerator,System.Boolean)">
             <summary>
             Registers a loading IEnumerator that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
@@ -993,6 +1037,17 @@
             <param name="enumerator"></param>
             <param name="post">If true, this will be called after the initial call, this is useful if you need to replace all references to something.</param>
         </member>
+        <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Collections.IEnumerator,MTM101BaldAPI.Registers.LoadingEventOrder)">
+            <summary>
+            Registers a loading IEnumerator that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
+            The first yield return should be the amount of total amount of yield returns in the function as an int.
+            The second yield return should be the initial loading text.
+            Every yield afterwards should be a string that displays the next loading step.
+            </summary>
+            <param name="info"></param>
+            <param name="enumerator"></param>
+            <param name="order">The event in which assets will be loaded. Refer to LoadingEventOrder for more information on when each enum is invoked.</param>
+        </member>
         <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Action,System.Boolean)">
             <summary>
             Registers an action that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
@@ -1001,6 +1056,15 @@
             <param name="info"></param>
             <param name="toRegister"></param>
             <param name="post">If true, this will be called after the initial call, this is useful if you need to replace all references to something.</param>
+        </member>
+        <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Action,MTM101BaldAPI.Registers.LoadingEventOrder)">
+            <summary>
+            Registers an action that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
+            Internally, it just creates an IEnumerator that calls toRegister.
+            </summary>
+            <param name="info"></param>
+            <param name="toRegister"></param>
+            <param name="order">The event in which assets will be loaded. Refer to LoadingEventOrder for more information on when each enum is invoked.</param>
         </member>
         <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnLoadingScreenStart(BepInEx.PluginInfo,System.Collections.IEnumerator)">
             <summary>

@@ -5,6 +5,7 @@ using BBTimes.CustomComponents.NpcSpecificComponents.EverettTreewood;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.Plugin;
+using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void SetupPrefab()
 		{
 			audMan = GetComponent<PropagatedAudioManager>();
+
 			audMovingMan = gameObject.CreatePropagatedAudioManager(audMan.minDistance, audMan.maxDistance);
 			audMovingMan.overrideSubtitleColor = true;
 			audMovingMan.subtitleColor = audMan.subtitleColor;
@@ -27,7 +29,7 @@ namespace BBTimes.CustomContent.NPCs
 			idleAnim = [walkAnim[0]];
 			var angryAnimSprs = this.GetSpriteSheet(5, 3, pixsPerUnit, "AngryTree.png");
 			angryAnim = angryAnimSprs.TakeAPair(0, 5);
-			spitAnim = angryAnimSprs.ExcludeNumOfSpritesFromSheet(5, false).ExcludeNumOfSpritesFromSheet(1);
+			spitAnim = angryAnimSprs.ExcludeNumOfSpritesFromSheet(5, false).ExcludeNumOfSpritesFromSheet(2);
 			angryWalkAnim = this.GetSpriteSheet(4, 1, pixsPerUnit, "EverestMadWalk.png");
 
 			audWalking = this.GetSound("EverettTreewood_loop.wav", "Vfx_EverettTree_TreeNoises", SoundType.Effect, audMan.subtitleColor);
@@ -243,10 +245,30 @@ namespace BBTimes.CustomContent.NPCs
 			animComp.speed = alertedAnimSpeed;
 		}
 
+		public void EnableSuperVision(bool enable)
+		{
+			var cont = this.GetNPCContainer();
+			if (enable)
+			{
+				if (!cont.HasLookerMod(lookerMod))
+					cont.AddLookerMod(lookerMod);
+
+				return;
+			}
+
+			cont.RemoveLookerMod(lookerMod);
+		}
+
 		public void QueueDecor(ChristmasDecoration decor) => decorsToGo.Enqueue(decor);
 
 		public void LectureEntity(Entity e) =>
 			StartCoroutine(PunishEntity(e));
+
+		public void Shoot(Vector3 direction)
+		{
+			if (!isShooting)
+				StartCoroutine(ShootSequence(direction));
+		}
 
 
 		IEnumerator PunishEntity(Entity e)
@@ -257,11 +279,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			audMan.FlushQueue(true);
 			audMan.QueueAudio(audMad);
-
-			if (e.CompareTag("Player"))
-				ec.AddTimeScale(timeScale);
-
-			e.ExternalActivity.moveMods.Add(moveMod);
+			bool isPlayer = e.CompareTag("Player");
 
 			animComp.animation = angryAnim;
 			animComp.ResetFrame(true);
@@ -271,27 +289,40 @@ namespace BBTimes.CustomContent.NPCs
 			while (audMan.QueuedAudioIsPlaying || !animComp.Paused)
 				yield return null;
 
+			if (isPlayer)
+				behaviorStateMachine.ChangeState(new EverettTreewood_AngryTargetPlayer(this, e.GetComponent<PlayerManager>()));
+			else
+				behaviorStateMachine.ChangeState(new EverettTreewood_AngryTargetNPC(this, e.GetComponent<NPC>()));
+		}
+
+		IEnumerator ShootSequence(Vector3 direction)
+		{
+			isShooting = true;
+			Sprite[] previousAnimation = animComp.animation;
+			float previousAnimSpeed = animComp.speed;
+			float previousSpeed = navigator.maxSpeed;
+
+			navigator.maxSpeed = 0;
+			navigator.SetSpeed(0f);
 			animComp.animation = spitAnim;
 			animComp.speed = spitAnimationSpeed;
 
-			ec.RemoveTimeScale(timeScale);
-			if (e)
-			{
-				e.ExternalActivity.moveMods.Remove(moveMod);
-				for (int i = 0; i < shootPerTarget; i++)
-				{
-					animComp.ResetFrame(true);
-					animComp.StopLastFrameMode();
-					while (!animComp.Paused)
-						yield return null;
+			animComp.ResetFrame(true);
+			animComp.StopLastFrameMode();
+			while (!animComp.Paused)
+				yield return null;
 
-					audMan.PlaySingle(audSpit);
-					Instantiate(snowPre).Spawn(gameObject, transform.position, (e.transform.position - transform.position).normalized, shootForce, ec);
-				}
-			}
+			audMan.PlaySingle(audSpit);
+			Instantiate(snowPre).Spawn(gameObject, transform.position, direction, shootForce, ec);
 
+			animComp.animation = previousAnimation;
+			animComp.speed = previousAnimSpeed;
+			animComp.ResetFrame(true);
 
-			behaviorStateMachine.ChangeState(new EverettTreewood_AngryWander(this));
+			navigator.maxSpeed = previousSpeed;
+			navigator.SetSpeed(previousSpeed);
+
+			isShooting = false;
 		}
 
 
@@ -311,7 +342,7 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		[SerializeField]
-		internal PropagatedAudioManager audMan, audMovingMan;
+		internal PropagatedAudioManager audMan, audMovingMan; // angryAudMan ignores timeScale; perfect for the situation.
 
 		[SerializeField]
 		internal SoundObject[] audIdle;
@@ -332,7 +363,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] idleAnim, walkAnim, angryWalkAnim, spitAnim, angryAnim;
 
 		[SerializeField]
-		internal float shootDelay = 0.45f, shootForce = 65f, prepareDecorDelay = 6f, wannaBuildDecorCooldown = 20f, delayBeforeScanEveryone = 1.5f, angryWalkDelay = 20f,
+		internal float shootDelay = 0.45f, shootForce = 65f, prepareDecorDelay = 6f, wannaBuildDecorCooldown = 20f, delayBeforeScanEveryone = 1.5f,
 			angryAnimationSpeed = 16f, spitAnimationSpeed = 25f, normalWalkAnimSpeed = 14f, alertedAnimSpeed = 35f,
 			angrySpeedWalk = 25f, walkSpeed = 18f, alertedSpeed = 75f;
 
@@ -346,9 +377,7 @@ namespace BBTimes.CustomContent.NPCs
 		readonly Queue<ChristmasDecoration> decorsToGo = [];
 		readonly List<ChristmasDecoration> decorsSpawned = [];
 		readonly HashSet<Cell> occupiedCells = [];
-
-		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
-		readonly TimeScaleModifier timeScale = new(0f, 1f, 1f);
+		readonly ValueModifier lookerMod = new(100f);
 
 		public bool SuitableSpotToPrepareDecoration
 		{
@@ -358,6 +387,8 @@ namespace BBTimes.CustomContent.NPCs
 				return !cell.open && (cell.shape == TileShapeMask.Single || cell.shape == TileShapeMask.Corner) && !occupiedCells.Contains(cell);
 			}
 		}
+		public bool IsShooting => isShooting;
+		bool isShooting = false;
 	}
 
 	internal class EverettTreewood_StateBase(EverettTreewood ev) : NpcState(ev)
@@ -402,27 +433,122 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-	internal class EverettTreewood_AngryWander(EverettTreewood ev) : EverettTreewood_StateBase(ev)
+	internal class EverettTreewood_AngryTargetNPC(EverettTreewood ev, NPC target) : EverettTreewood_StateBase(ev)
 	{
-		float cooldown = ev.angryWalkDelay;
+		int shootsLeft = ev.shootPerTarget;
+		readonly NPC target = target;
+		NavigationState_TargetPosition targetPos;
 		public override void Enter()
 		{
 			base.Enter();
 			ev.Walk(true, true);
-			ChangeNavigationState(new NavigationState_WanderRandom(ev, 0));
+			targetPos = new(ev, 42, target.transform.position);
+			ChangeNavigationState(targetPos);
 		}
 
 		public override void Update()
 		{
 			base.Update();
-
-			if (cooldown > 0f)
+			if (!target)
 			{
-				cooldown -= ev.TimeScale * Time.deltaTime;
+				ev.behaviorStateMachine.ChangeState(new EverettTreewood_Wander(ev));
 				return;
 			}
+			if (!ev.IsShooting)
+			{
+				if (shootsLeft <= 0)
+				{
+					ev.behaviorStateMachine.ChangeState(new EverettTreewood_Wander(ev));
+					return;
+				}
 
-			ev.behaviorStateMachine.ChangeState(new EverettTreewood_Wander(ev));
+				if (ev.looker.RaycastNPC(target))
+				{
+					ev.Shoot((target.transform.position - ev.transform.position).normalized);
+					shootsLeft--;
+				}
+			}
+		}
+
+		public override void DestinationEmpty()
+		{
+			base.DestinationEmpty();
+			targetPos.UpdatePosition(target.transform.position);
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			targetPos.priority = 0;
+		}
+	}
+
+	internal class EverettTreewood_AngryTargetPlayer(EverettTreewood ev, PlayerManager target) : EverettTreewood_StateBase(ev)
+	{
+		int shootsLeft = ev.shootPerTarget;
+		readonly PlayerManager target = target;
+		NavigationState_TargetPlayer targetPos;
+		public override void Enter()
+		{
+			base.Enter();
+			ev.Walk(true, true);
+			targetPos = new(ev, 42, target.transform.position);
+			ChangeNavigationState(targetPos);
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			if (!target)
+			{
+				ev.behaviorStateMachine.ChangeState(new EverettTreewood_Wander(ev));
+				return;
+			}
+			if (!ev.IsShooting)
+			{
+				if (shootsLeft <= 0)
+				{
+					ev.behaviorStateMachine.ChangeState(new EverettTreewood_Wander(ev));
+					return;
+				}
+			}
+		}
+
+		public override void PlayerInSight(PlayerManager player)
+		{
+			base.PlayerInSight(player);
+			if (player == target)
+			{
+				ChangeNavigationState(targetPos);
+				targetPos.UpdatePosition(player.transform.position);
+				if (!ev.IsShooting)
+				{
+					ev.Shoot((target.transform.position - ev.transform.position).normalized);
+					shootsLeft--;
+				}
+			}
+		}
+
+		public override void DestinationEmpty()
+		{
+			base.DestinationEmpty();
+			ChangeNavigationState(new NavigationState_WanderRandom(ev, 0));
+		}
+
+		public override void Hear(GameObject source, Vector3 position, int value)
+		{
+			base.Hear(source, position, value);
+			if (!ev.looker.PlayerInSight())
+			{
+				ChangeNavigationState(targetPos);
+				targetPos.UpdatePosition(position);
+			}
+		}
+
+		public override void Exit()
+		{
+			base.Exit();
+			targetPos.priority = 0;
 		}
 	}
 
@@ -556,8 +682,8 @@ namespace BBTimes.CustomContent.NPCs
 					continue;
 
 				//Debug.Log($"Trying to raycast npc ({ev.ec.Npcs[i].transform.name}) with distance {Mathf.Min(ev.looker.distance, ev.ec.MaxRaycast)}");
-				ev.looker.Raycast(ev.ec.Npcs[i].transform, Mathf.Min((ev.transform.position - ev.ec.Npcs[i].transform.position).magnitude + ev.ec.Npcs[i].Navigator.Velocity.magnitude, ev.looker.distance, ev.ec.MaxRaycast), out bool flag);
-				if (!flag)
+
+				if (!ev.looker.RaycastNPC(ev.ec.Npcs[i]))
 					continue;
 
 				float distance = Vector3.Distance(decoration.transform.position, ev.ec.Npcs[i].transform.position);

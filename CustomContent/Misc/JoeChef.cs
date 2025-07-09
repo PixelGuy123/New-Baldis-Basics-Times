@@ -8,22 +8,22 @@ namespace BBTimes.CustomContent.Misc
 		public override void LoadingFinished()
 		{
 			base.LoadingFinished();
-			positions = [transform.position - (transform.forward * 2f), 
+			positions = [transform.position - (transform.forward * 2f),
 				transform.position + ((transform.right * 16f) - (transform.forward * 2f)),
 			transform.position + ((-transform.right * 16f) - (transform.forward * 2f))];
 			ogPosition = transform.position;
 			target = ogPosition;
+
+			Vector2 itemPosition = new(target.x, target.z);
+			itemPosition.x += transform.forward.x * 10f;
+			itemPosition.y += transform.forward.z * 10f;
+			backupPickup = ec.CreateItem(ec.CellFromPosition(transform.position).room, Singleton<CoreGameManager>.Instance.NoneItem, itemPosition);
+			ec.items.Remove(backupPickup); // Don't globalize this pickup
+			backupPickup.gameObject.SetActive(false);
 		}
 
 		public void Clicked(int player)
 		{
-			if (foodToGive != null && (transform.position - target).magnitude <= 3f)
-			{
-				Singleton<CoreGameManager>.Instance.GetPlayer(player).itm.AddItem(foodToGive);
-				foodToGive = null;
-				itemRenderer.sprite = null;
-				return;
-			}
 			if (workingOn) return;
 			if (Singleton<CoreGameManager>.Instance.GetPoints(player) < price)
 			{
@@ -55,7 +55,8 @@ namespace BBTimes.CustomContent.Misc
 					workingOn = false;
 					target = ogPosition;
 					foodToGive = WeightedItemObject.RandomSelection([.. foods]);
-					itemRenderer.sprite = foodToGive.itemSpriteLarge;
+					backupPickup.gameObject.SetActive(true);
+					backupPickup.AssignItem(foodToGive);
 				}
 				else if ((transform.position - target).magnitude <= 3f)
 					target = positions[Random.Range(0, positions.Length)];
@@ -79,12 +80,10 @@ namespace BBTimes.CustomContent.Misc
 		internal SoundObject audWelcome, audScream, audKitchen;
 
 		[SerializeField]
-		internal SpriteRenderer itemRenderer;
-
-		[SerializeField]
 		internal int price = 25;
 
 		readonly static List<WeightedItemObject> foods = [];
+		Pickup backupPickup;
 
 		public static void AddFood(ItemObject obj, int weight) =>
 			foods.Add(new() { selection = obj, weight = weight });

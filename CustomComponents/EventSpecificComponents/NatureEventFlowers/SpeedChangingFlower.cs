@@ -21,13 +21,14 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		{
 			audMan.PlaySingle(audAffect);
 			Despawn(true, false);
-			StartCoroutine(SpeedUp(am));
+			target = am;
+			StartCoroutine(SpeedUp());
 		}
 
-		IEnumerator SpeedUp(ActivityModifier actMod)
+		IEnumerator SpeedUp()
 		{
 			moveMod.movementMultiplier = moveMultiplier;
-			actMod.moveMods.Add(moveMod);
+			target.moveMods.Add(moveMod);
 			float timer = speedTime;
 			while (timer > 0f)
 			{
@@ -35,9 +36,14 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 				gauge?.SetValue(speedTime, timer);
 				yield return null;
 			}
+
+			Despawn(false, true);
+		}
+
+		protected override void OnDespawn()
+		{
 			gauge?.Deactivate();
-			actMod?.moveMods.Remove(moveMod);
-			Destroy(gameObject);
+			target?.moveMods.Remove(moveMod);
 		}
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 1);
@@ -53,7 +59,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		[SerializeField]
 		internal Sprite gaugeSprite;
-
+		ActivityModifier target;
 		HudGauge gauge;
 	}
 }

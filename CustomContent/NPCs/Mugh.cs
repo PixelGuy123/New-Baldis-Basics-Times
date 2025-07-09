@@ -298,7 +298,7 @@ namespace BBTimes.CustomContent.NPCs
 			var dist = mu.transform.position - pm.transform.position;
 			hugMod.movementAddend = dist * 212f * Time.deltaTime * mu.TimeScale;
 
-			if (dist.magnitude >= hugTolerance)
+			if (dist.magnitude >= hugTolerance || pm.Hidden || !pm.InBounds || !pm.Visible || mu.Blinded)
 				mu.EndHug(false);
 
 			hugTolerance -= mu.TimeScale * Time.deltaTime * dist.magnitude * 0.5f;

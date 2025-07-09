@@ -216,6 +216,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (stunCor != null)
 				StopCoroutine(stunCor);
 			stunlyCanvas.gameObject.SetActive(false);
+			gauge?.Deactivate();
 			cancelledEffect = true;
 		}
 

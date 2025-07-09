@@ -33,6 +33,9 @@ namespace BBTimes.CustomContent.CustomItems
 			nav.accel = 9f;
 			nav.height = 0.5f;
 
+			nav.autoRotate = false;
+			nav.useAcceleration = true;
+
 			gaugeSprite = ItmObj.itemSpriteSmall;
 		}
 
@@ -54,10 +57,14 @@ namespace BBTimes.CustomContent.CustomItems
 
 			overrider.SetFrozen(true);
 			overrider.SetInteractionState(false);
-			height = overrider.entity.BaseHeight;
-			overrider.SetHeight(height - 2f);
+			overrider.SetHeight(nav.height + 1.5f);
+
 			this.pm = pm;
-			transform.position = pm.transform.position;
+
+			Vector3 positionToBe = pm.transform.position;
+			positionToBe.y = nav.height;
+			transform.position = positionToBe;
+
 			ec = pm.ec;
 			rotation = renderer.eulerAngles;
 
@@ -142,7 +149,7 @@ namespace BBTimes.CustomContent.CustomItems
 					).FloorWorldPosition);
 			}
 
-			rotation.y += 35f * nav.Acceleration * ec.EnvironmentTimeScale * Time.deltaTime;
+			rotation.y += 35f * nav.Speed * ec.EnvironmentTimeScale * Time.deltaTime;
 			rotation.y %= 360f;
 			renderer.eulerAngles = rotation;
 
@@ -153,9 +160,6 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			if (overrider.entity)
 			{
-				overrider.SetFrozen(false);
-				overrider.SetInteractionState(true);
-				overrider.SetHeight(height);
 				overrider.Release();
 			}
 		}
@@ -163,7 +167,6 @@ namespace BBTimes.CustomContent.CustomItems
 		Ray ray = new();
 		Vector3 rotation = default;
 		EnvironmentController ec;
-		float height = 5f;
 		readonly List<RoomController> rooms = [];
 		float maxLifeTimeReference;
 

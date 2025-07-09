@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 {
+	// Note: no need for OnDespawn because the canvas is already a child of SunFlower itself
 	public class SunFlower : Plant
 	{
 		protected override void TriggerEnterNPC(NPC npc)

@@ -34,12 +34,17 @@ namespace BBTimes.Helpers
 			return actualItem;
 		}
 
-		public static void SetupItemData(this IItemPrefab data, string name, ItemObject itemObj)
+		public static void SetupItemObjectSprites(this ItemObject itemObj, string name)
 		{
 			var sprites = GetAllItemSpritesFrom(name); // Get all sprites from its folder (0 is small icon, 1 is big icon)
 
 			itemObj.itemSpriteLarge = sprites[1];
 			itemObj.itemSpriteSmall = sprites[0];
+		}
+
+		public static void SetupItemData(this IItemPrefab data, string name, ItemObject itemObj)
+		{
+			itemObj.SetupItemObjectSprites(name);
 
 			if (data != null)
 			{
@@ -104,25 +109,33 @@ namespace BBTimes.Helpers
 			}
 
 			string[] files = Directory.GetFiles(path);
-			var sprs = new Sprite[files.Length];
+			var sprs = new Sprite[2]; // Only two icons: small and big
+			bool foundSmall = false, foundBig = false;
 
-			// Pre found ones
-			var text = files.First(x => Path.GetFileName(x).StartsWith(BBTimesManager.TimesAssetPrefix + itemBigIconPrefix));
-#if CHEAT
-			Debug.Log("Item: " + name);
-			Debug.Log("Path used for the item sprite selection: " + path);
-			Debug.Log("Files found in path: " + files.Length);
-			Debug.Log("current file: " + Path.GetFileNameWithoutExtension(text));
-#endif
-			var tex = AssetLoader.TextureFromFile(text);
-			sprs[1] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one * 0.5f, 50f);
+			// Get first the small icon; it's ALWAYS required
+			var text = files.FirstOrDefault(x => Path.GetFileName(x).StartsWith(BBTimesManager.TimesAssetPrefix + itemSmallIconPrefix));
 
-			text = files.First(x => Path.GetFileName(x).StartsWith(BBTimesManager.TimesAssetPrefix + itemSmallIconPrefix));
-#if CHEAT
-			Debug.Log("current file: " + Path.GetFileNameWithoutExtension(text));
-#endif
-			tex = AssetLoader.TextureFromFile(text);
-			sprs[0] = AssetLoader.SpriteFromTexture2D(tex, Vector2.one * 0.5f, 1f);
+			if (!string.IsNullOrEmpty(text))
+			{
+				sprs[0] = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(text), Vector2.one * 0.5f, 50f);
+				foundSmall = true;
+			}
+
+			// Then, get big icon
+			text = files.FirstOrDefault(x => Path.GetFileName(x).StartsWith(BBTimesManager.TimesAssetPrefix + itemBigIconPrefix));
+
+			if (!string.IsNullOrEmpty(text))
+			{
+				sprs[1] = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(text), Vector2.one * 0.5f, 50f);
+				foundBig = true;
+			}
+
+			if (!foundSmall && foundBig)
+				sprs[0] = sprs[1]; // Equalize both as big
+			else if (foundSmall && !foundBig)
+				sprs[1] = sprs[0]; // Equalize both as small
+			else if (!foundSmall && !foundBig) // if both are false
+				throw new System.InvalidOperationException("No big or small icon has been found for item: " + name);
 
 			return sprs;
 		}

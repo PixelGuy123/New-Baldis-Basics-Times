@@ -139,28 +139,29 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void GoToRandomSpot()
 		{
-			List<Cell> cells = [];
+			_randomSpots.Clear();
 			for (int i = 0; i < ec.levelSize.x; i++)
 			{
 				for (int j = 0; j < ec.levelSize.z; j++)
 				{
 					if (!ec.cells[i, j].Null && ec.cells[i, j].room.type == RoomType.Hall && (ec.cells[i, j].shape == TileShapeMask.Corner || ec.cells[i, j].shape == TileShapeMask.End || ec.cells[i, j].shape == TileShapeMask.Single) && !ec.cells[i, j].HardCoverageFits(CellCoverage.Down | CellCoverage.Center))
-						cells.Add(ec.cells[i, j]);
+						_randomSpots.Add(ec.cells[i, j]);
 				}
 			}
 
-			navigator.Entity.Teleport(cells[Random.Range(0, cells.Count)].CenterWorldPosition);
+			navigator.Entity.Teleport(_randomSpots[Random.Range(0, _randomSpots.Count)].CenterWorldPosition);
 			StartCoroutine(SpawnDelay());
 		}
 
 		public void TeleportPlayer(PlayerManager pm)
 		{
 			pm.GetCustomCam().ReverseSlideFOVAnimation(new ValueModifier(), 115f, 4f);
-			List<NPC> npcs = [.. ec.Npcs];
-			npcs.RemoveAll(x => x == this || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.Entity || ec.CellFromPosition(x.transform.position).Null);
+			_npcs.Clear();
+			_npcs.AddRange(ec.Npcs);
+			_npcs.RemoveAll(x => x == this || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.Entity || ec.CellFromPosition(x.transform.position).Null);
 
-			if (npcs.Count != 0)
-				StartCoroutine(TeleportDelay(pm, npcs[Random.Range(0, npcs.Count)]));
+			if (_npcs.Count != 0)
+				StartCoroutine(TeleportDelay(pm, _npcs[Random.Range(0, _npcs.Count)]));
 
 			var waitBelowState = new Watcher_WaitBelow(this, true);
 			behaviorStateMachine.ChangeState(waitBelowState);
@@ -247,6 +248,9 @@ namespace BBTimes.CustomContent.NPCs
 		readonly List<Hallucinations> hallucinations = [];
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0f);
+
+		readonly List<NPC> _npcs = [];
+		readonly List<Cell> _randomSpots = [];
 	}
 
 	internal class Watcher_StateBase(Watcher w) : NpcState(w)
@@ -352,6 +356,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerSighted(PlayerManager player)
 		{
 			base.PlayerSighted(player);
+			if (moveMods.ContainsKey(player))
+				return;
 
 			var moveMod = new MovementModifier(Vector3.zero, 1f);
 			player.Am.moveMods.Add(moveMod);

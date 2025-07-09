@@ -17,7 +17,7 @@ namespace BBTimes.Manager
 
 			// Vent Builder
 			StructureWithParameters vent = CreatorExtensions.CreateObjectBuilder<Structure_Duct>("DuctBuilder", out _, "Duct");
-			floorDatas[F3].ForcedObjectBuilders.Add(new(vent));
+			floorDatas[F3].WeightedObjectBuilders.Add(new(vent, 35, LevelType.Schoolhouse));
 
 			// Wall Bell Builder
 			vent = CreatorExtensions.CreateObjectBuilder<RandomForcedPostersBuilder>("ForcedPosterBuilder", out var forcedPosterBuilder);
@@ -32,13 +32,13 @@ namespace BBTimes.Manager
 			// Trapdoor Builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_Trapdoor>("Structure_Trapdoor", out _, "Trapdoor");
 
-			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
+			floorDatas[F2].WeightedObjectBuilders.Add(new(vent, 50, LevelType.Schoolhouse, LevelType.Maintenance));
 
 			vent = CloneParameter(vent);
 			vent.parameters.minMax[0] = new(4, 5);
 			vent.parameters.chance[0] = 0.35f;
 
-			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
+			floorDatas[F3].WeightedObjectBuilders.Add(new(vent, 25, LevelType.Schoolhouse, LevelType.Maintenance));
 
 
 			// Camera Builder
@@ -47,16 +47,11 @@ namespace BBTimes.Manager
 
 			//floorDatas[F1].ForcedObjectBuilders.Add(vent);
 
-			floorDatas[F2].ForcedObjectBuilders.Add(new(vent));
-			floorDatas[END].ForcedObjectBuilders.Add(new(vent));
+			floorDatas[F2].WeightedObjectBuilders.Add(new(vent, 65));
+			floorDatas[END].WeightedObjectBuilders.Add(new(vent, 35));
 			vent = CloneParameter(vent);
 			vent.parameters.minMax[0] = new(5, 7);
 			vent.parameters.minMax[1] = new(12, 15);
-
-			floorDatas[F3].ForcedObjectBuilders.Add(new(vent));
-			vent = CloneParameter(vent);
-			vent.parameters.minMax[0] = new(3, 4);
-			vent.parameters.minMax[1] = new(9, 13);
 
 			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
 			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
@@ -65,17 +60,9 @@ namespace BBTimes.Manager
 			// Squisher builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_Squisher>("Structure_Squisher", out _, "Squisher");
 
-			vent.parameters.minMax[0].z = 3;
+			vent.parameters.minMax[0].z = 6;
 			vent.parameters.chance[0] = 0.15f;
-			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
-
-			vent = CloneParameter(vent);
-			vent.parameters.minMax[0] = new(2, 5);
-			vent.parameters.minMax[1] = new(12, 16);
-			vent.parameters.minMax[2] = new(4, 6);
-			vent.parameters.chance[0] = 0.6f;
-
-			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Laboratory));
+			floorDatas[F3].WeightedObjectBuilders.Add(new(vent, 95, LevelType.Schoolhouse));
 
 
 			// Small Door builder
@@ -96,8 +83,8 @@ namespace BBTimes.Manager
 			// Notebook Machine Builder
 			vent = CreatorExtensions.CreateObjectBuilder<Structure_NotebookMachine>("Structure_NotebookMachine", out _, "NotebookMachine");
 
-			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
-			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance));
+			foreach (var floor in floorDatas)
+				floor.Value.ForcedObjectBuilders.Add(new(vent, LevelType.Maintenance)); // Every floor that has maintenance must have this
 
 
 			// SecretButton Builder

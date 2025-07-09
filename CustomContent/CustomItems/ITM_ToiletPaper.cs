@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using BBTimes.CustomComponents;
 using BBTimes.Extensions;
-using BBTimes.CustomComponents;
+using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using BBTimes.Manager;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -38,7 +38,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public string Name { get; set; }
 		public string Category => "items";
-		
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -81,7 +81,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public void EntityTriggerStay(Collider other)
 		{
-			
+
 		}
 
 		public void EntityTriggerExit(Collider other)
@@ -95,7 +95,7 @@ namespace BBTimes.CustomContent.CustomItems
 			entity.UpdateInternalMovement(dir * ec.EnvironmentTimeScale * speed);
 			velocityY -= heightDecreaseFactor * ec.EnvironmentTimeScale * Time.deltaTime;
 			height += velocityY * 0.1f * Time.timeScale;
-			
+
 			if (height > 4f)
 			{
 				height = 4f;
@@ -105,12 +105,19 @@ namespace BBTimes.CustomContent.CustomItems
 			renderer.transform.localPosition = Vector3.up * height;
 			if (height <= -4.9f)
 				Destroy(gameObject);
+
+			if (rotationSpeed != 0f)
+			{
+				rotationDegrees += Time.deltaTime * rotationSpeed * ec.EnvironmentTimeScale;
+				rotationDegrees %= 360f;
+				animComp.renderers[0].SetSpriteRotation(rotationDegrees);
+			}
 		}
 
 		GameObject owner;
 		EnvironmentController ec;
 		Vector3 dir;
-		float speed = 35f;
+		float speed = 35f, rotationDegrees = 0f;
 		float height = 0f, heightDecreaseFactor = 1.015f, heightIncreaseFactor = 0.92f, velocityY = 0.03f;
 
 		[SerializeField]
@@ -127,5 +134,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal Entity entity;
+
+		[SerializeField]
+		internal float rotationSpeed = 0f;
 	}
 }

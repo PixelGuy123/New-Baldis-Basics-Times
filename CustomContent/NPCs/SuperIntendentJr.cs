@@ -149,6 +149,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Initialize()
 		{
 			base.Initialize();
+			stepDelay = stepMax;
 			timeInSight = new float[Singleton<CoreGameManager>.Instance.TotalPlayers];
 			navigator.Entity.OnTeleport += Teleport;
 			behaviorStateMachine.ChangeState(new SuperIntendentJr_Wander(this));
@@ -198,7 +199,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Hear(GameObject source, Vector3 position, int value)
 		{
 			base.Hear(source, position, value);
-			if (value >= 78 && value <= 120)
+			if (value >= minNoiseValue && value <= maxNoiseValue)
 				behaviorStateMachine.ChangeState(new SuperIntendentJr_RunForNoise(this, position, behaviorStateMachine.CurrentState));
 		}
 
@@ -269,7 +270,7 @@ namespace BBTimes.CustomContent.NPCs
 		float[] timeInSight;
 		private float noticeCooldown = 0f;
 		private float wanderCool = 15f;
-		private readonly float longAssInstructionChance = 0.01f;
+
 		[SerializeField]
 		internal PropagatedAudioManager audMan, stepMan;
 
@@ -281,11 +282,16 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal Sprite[] anim;
+		[SerializeField]
+		internal int minNoiseValue = 78, maxNoiseValue = 120;
+		[SerializeField]
+		internal float stepMax = 6f, brokenRuleTimer = 5f;
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float longAssInstructionChance = 0.01f;
 
 		bool callingOut = false, step = false, wonder = true, stopStep = false;
 
-		float stepDelay = stepMax;
-
-		const float stepMax = 6f, brokenRuleTimer = 5f;
+		float stepDelay;
 	}
 }

@@ -45,12 +45,14 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 			}
 
 			if (catches > maxCatches)
-			{
-				actMods.ForEach(x => x?.moveMods.Remove(moveMod));
 				Despawn(true);
-			}
 		}
-			
+
+		protected override void OnDespawn()
+		{
+			actMods.ForEach(x => x?.moveMods.Remove(moveMod));
+		}
+
 
 		readonly List<ActivityModifier> actMods = [];
 

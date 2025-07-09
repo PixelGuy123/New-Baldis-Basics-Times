@@ -133,9 +133,12 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			audMan.PlaySingle(audSplash);
 
+			if (ent == null)
+				return;
+
 			var att = Instantiate(attPre);
 			att.AttachTo(ent.transform, true);
-			att.SetOwnerRefToSelfDestruct(gameObject);
+			att.SetOwnerRefToSelfDestruct(gameObject); // InkArtist itself, since its despawn removes the effect entirely
 
 			att.StartCoroutine(InkNPC(att.gameObject, ent));
 		}
@@ -146,6 +149,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (uiInkCooldown != null)
 				StopCoroutine(uiInkCooldown);
 			affectedPlayers.RemoveAll(x => x.Value == this);
+			gauge?.Deactivate();
 		}
 
 		public override void Despawn()
@@ -299,6 +303,8 @@ namespace BBTimes.CustomContent.NPCs
 		IEnumerator InkNPC(GameObject selfDestruct, NPC e)
 		{
 			var cont = e.GetNPCContainer();
+			if (!cont) yield break;
+
 			var valMod = new ValueModifier(0f);
 
 			cont.AddLookerMod(valMod);
@@ -312,7 +318,7 @@ namespace BBTimes.CustomContent.NPCs
 			}
 
 			cont?.RemoveLookerMod(valMod);
-			affectedNpcs.RemoveAll(x => x.Key == cont || !x.Key);
+			affectedNpcs.RemoveAll(x => x.Key == cont); // If container is null, it also rmemoves null containers from the list
 
 			if (selfDestruct)
 				Destroy(selfDestruct);

@@ -23,16 +23,22 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 			if (!initialized)
 				return;
 
-			initialized = false;
+			natEv.RemoveFlower(this);
+			if (actualDestroy)
+			{
+				OnDespawn();
+			}
+
+			StartCoroutine(DespawnAnimation(actualDestroy));
 			despawned = true;
 
-			natEv.RemoveFlower(this);
-			StartCoroutine(DespawnAnimation(actualDestroy));
-			if (!replaceWithOther) return;
-			natEv.SpawnRandomFlower(spawn);
+			if (replaceWithOther)
+				natEv.SpawnRandomFlower(spawn);
 		}
 
 		public virtual void PrefabSetup(NatureEvent setup) { }
+
+		protected virtual void OnDespawn() { } // For plants to clean up stuff when despawning from here (IT SHOULDN'T DO ANYTHING TO INTERRUPT THE ANIMATION, but to clean up any effect left over)
 
 		void OnTriggerEnter(Collider other)
 		{
@@ -91,8 +97,16 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		IEnumerator DespawnAnimation(bool actuallyDestroy)
 		{
+			if (despawned)
+			{
+				if (actuallyDestroy)
+					Destroy(gameObject);
+				yield break;
+			}
+
 			Vector3 curPos = renderer.transform.position;
 			Vector3 expectedPos = curPos + Vector3.down * 10f;
+
 			float t = 0f;
 			while (true)
 			{

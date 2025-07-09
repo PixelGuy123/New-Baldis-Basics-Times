@@ -30,7 +30,7 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		internal TextMeshProUGUI pageDisplay, missingCharacterText;
 
-		internal static Dictionary<System.Type, Sprite> npcBookRepresentations = [];
+		internal static Dictionary<Character, Sprite> npcBookRepresentations = [];
 
 		public void SetupPrefab()
 		{
@@ -134,12 +134,11 @@ namespace BBTimes.CustomContent.CustomItems
 			foreach (var npcMeta in NPCMetaStorage.Instance.All())
 			{
 				var npc = npcMeta.value;
-				var npcType = npc.GetType();
-				if (!npc.Poster || !npc.Poster.baseTexture || npcBookRepresentations.ContainsKey(npcType))
+				if (!npc.Poster || !npc.Poster.baseTexture || npcBookRepresentations.ContainsKey(npc.Character))
 					continue;
 
 
-				npcBookRepresentations.Add(npcType,
+				npcBookRepresentations.Add(npc.Character,
 					AssetLoader.SpriteFromTexture2D(
 						generatorRef.GenerateTextTexture(npc.Poster)
 					.ConvertToGrayscale(), 1f
@@ -214,7 +213,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		Sprite TryGetNPCPoster(NPC npc)
 		{
-			if (npcBookRepresentations.TryGetValue(npc.GetType(), out var sprite))
+			if (npcBookRepresentations.TryGetValue(npc.Character, out var sprite))
 			{
 				npcPosterVisual.gameObject.SetActive(true);
 				missingCharacterText.gameObject.SetActive(false);

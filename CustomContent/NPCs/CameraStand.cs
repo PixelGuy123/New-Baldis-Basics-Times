@@ -50,6 +50,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Initialize();
 			navigator.SetSpeed(0);
 			navigator.maxSpeed = 0;
+			Disappear(false);
 			behaviorStateMachine.ChangeState(new CameraStand_WaitToRespawn(this));
 		}
 
@@ -69,7 +70,6 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void TakePicture(Entity e) =>
 			StartCoroutine(NormalPictureStun(e));
-
 
 		IEnumerator NormalPictureStun(Entity e)
 		{
@@ -92,10 +92,12 @@ namespace BBTimes.CustomContent.NPCs
 			pm.Am.moveMods.Add(moveMod);
 
 			float totalDuration = playerStunDelay; // Total duration of the flash effect
-			float fadeInDuration = Singleton<PlayerFileManager>.Instance.reduceFlashing ? totalDuration * 0.25f : 0f; // Duration of the fade-in effect (25% of total duration if reduceFlashing is enabled)
-			float fadeOutDuration = totalDuration - fadeInDuration; // Duration of the fade-out effect
+			float fadeInDuration = Singleton<PlayerFileManager>.Instance.reduceFlashing ? totalDuration * 0.065f : 0f; // Duration of the fade-in effect (25% of total duration if reduceFlashing is enabled)
+			float stayInDuration = (totalDuration - fadeInDuration) * 0.65f; // Takes most of the total duration
+			float fadeOutDuration = totalDuration - fadeInDuration - stayInDuration; // Duration of the fade-out effect
 
 			float timer = 0f;
+			float totalDurationDecrement = totalDuration;
 
 			if (Singleton<PlayerFileManager>.Instance.reduceFlashing)
 			{
@@ -105,6 +107,8 @@ namespace BBTimes.CustomContent.NPCs
 				while (timer < fadeInDuration)
 				{
 					timer += TimeScale * Time.deltaTime;
+					totalDurationDecrement -= TimeScale * Time.deltaTime;
+					gauge.SetValue(totalDuration, totalDurationDecrement);
 					color.a = Mathf.Clamp01(timer / fadeInDuration); // Gradually increase alpha
 					image.color = color;
 					yield return null;
@@ -114,15 +118,29 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				color.a = 1f;
 				image.color = color;
+				yield return null;
 			}
 
+			Disappear(true);
+
 			timer = 0f; // Reset timer for fade-out
+			while (timer < stayInDuration)
+			{
+				timer += TimeScale * Time.deltaTime;
+				totalDurationDecrement -= TimeScale * Time.deltaTime;
+				gauge.SetValue(totalDuration, totalDurationDecrement);
+				yield return null;
+			}
+
+			timer = 0f;
 
 			while (timer < fadeOutDuration)
 			{
 				timer += TimeScale * Time.deltaTime;
+				totalDurationDecrement -= TimeScale * Time.deltaTime;
+
 				color.a = Mathf.Clamp01(1f - (timer / fadeOutDuration)); // Gradually decrease alpha
-				gauge.SetValue(fadeOutDuration, fadeOutDuration - timer);
+				gauge.SetValue(totalDuration, totalDurationDecrement);
 				image.color = color;
 				yield return null;
 			}
@@ -141,6 +159,20 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Despawn();
 			DisableLatestTimer();
+		}
+
+		public void Disappear(bool spawnPicture)
+		{
+			Navigator.Entity.Enable(false);
+			navigator.Entity.SetHeight(-15);
+			if (spawnPicture)
+			{
+				ec.CreateItem( // Create funny pickup
+					ec.CellFromPosition(transform.position).room,
+					paperItem,
+					new(transform.position.x, transform.position.z)
+					);
+			}
 		}
 
 		public void DisableLatestTimer()
@@ -178,7 +210,10 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite gaugeSprite;
 
 		[SerializeField]
-		internal float entityStunTime = 20f, playerStunDelay = 2.5f;
+		internal ItemObject paperItem;
+
+		[SerializeField]
+		internal float entityStunTime = 20f, playerStunDelay = 10f;
 
 		Coroutine picTimer;
 		PlayerManager lastPlayer;
@@ -201,10 +236,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			ChangeNavigationState(new NavigationState_DoNothing(cs, 0));
-			cs.Navigator.Entity.Enable(false);
-
 			prevHeight = cs.Navigator.Entity.InternalHeight;
-			cs.Navigator.Entity.SetHeight(-15);
 		}
 
 		public override void Update()
@@ -291,11 +323,13 @@ namespace BBTimes.CustomContent.NPCs
 				if (!player.plm.Entity.Blinded)
 					cs.TakePictureOfPlayer(player);
 
-				if (!cs.Blinded)
+				if (!cs.Blinded) // I guess?
 				{
-					foreach (var npc in cs.ec.Npcs)
+					foreach (var npc in cs.ec.Npcs) // Blind everyone around as well
+					{
 						if (npc != cs && !npc.Blinded && npc.Navigator.isActiveAndEnabled && cs.looker.RaycastNPC(npc))
 							cs.TakePicture(npc.Navigator.Entity);
+					}
 				}
 
 				cs.behaviorStateMachine.ChangeState(new CameraStand_WaitToRespawn(cs));

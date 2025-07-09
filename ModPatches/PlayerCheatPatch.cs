@@ -8,16 +8,23 @@ using UnityEngine;
 
 namespace BBTimes.ModPatches
 {
-	[HarmonyPatch(typeof(StructureBuilder), "Finished")]
-	internal class LogFinishedStructures
-	{
-		static void Prefix(StructureBuilder __instance) =>
-			Debug.LogWarning($"The builder {__instance.GetType().Name} is finished.");
-	}
+
+
+	// [HarmonyPatch(typeof(StructureBuilder), "Finished")]
+	// internal class LogFinishedStructures
+	// {
+	// 	static void Prefix(StructureBuilder __instance) =>
+	// 		Debug.LogWarning($"The builder {__instance.GetType().Name} is finished.");
+	// }
 #pragma warning disable Harmony003 // Harmony non-ref patch parameters modified
 	[HarmonyPatch(typeof(PlayerMovement), "PlayerMove")]
 	internal class PlayerCheatPatch
 	{
+
+		// [HarmonyPatch(typeof(EnvironmentController), "SetTileInstantiation")]
+		// [HarmonyPostfix]
+		// static void ChangeThisToTrue(EnvironmentController __instance) =>
+		// 	__instance.instantiateTiles = true;
 
 		//public static List<string> GetLayerNamesFromMask(LayerMask layerMask)
 		//{
@@ -39,38 +46,11 @@ namespace BBTimes.ModPatches
 
 		//	return layerNames;
 		//}
-
-		//static void Prefix(PlayerMovement __instance)
-		//{
-		//	if (Input.GetKeyDown(KeyCode.T))
-		//	{
-		//		PullOutAnEvent();
-		//	}
-		//}
-		static void PullOutAnEvent() // In case I wanna trigger it through Unity Explorer
-		{
-			var ec = Singleton<BaseGameManager>.Instance.Ec;
-
-			var dat = ec.GetComponent<EnvironmentControllerData>();
-			foreach (var ev in dat.OngoingEvents)
-				if (ev != null)
-					ec.StopCoroutine(ev);
-
-			dat.OngoingEvents.Clear();
-			if (ec.events.Count == 0 || ec.events[0].Active)
-			{
-				Debug.LogWarning("No event detected!");
-				return;
-			}
-			ec.StartCoroutine(ec.EventTimer(ec.events[0], 5f));
-			ec.events.RemoveAt(0);
-		}
 	}
 
 	/*
-
 	[HarmonyPatch]
-	internal class CrashDebugging
+	internal static class CrashDebugging
 	{
 		[HarmonyTargetMethods]
 		static List<MethodInfo> AllTheBuildCalls()
@@ -170,7 +150,43 @@ namespace BBTimes.ModPatches
 			return null;
 		}
 	}
-	
+
 #pragma warning restore Harmony003 // Harmony non-ref patch parameters modified
 */
+
+	// [HarmonyPatch]
+	// internal static class EasyTraceBack
+	// {
+	// 	[HarmonyTargetMethods]
+	// 	static IEnumerable<MethodInfo> AllTheBuildCalls()
+	// 	{
+	// 		System.Type[] allowedTypes = [typeof(RoomFunctionContainer), typeof(StructureBuilder), typeof(LevelBuilder), typeof(RoomController)];
+	// 		HashSet<string> prohibitedMethods = ["FrameShouldEnd", "ProximityCheck", "RoomFits", "get_Ec", "AddTile", "RemoveTile", "GetNewTileList", "WeightFromPos", "Update"];
+
+	// 		foreach (var type in allowedTypes)
+	// 		{
+	// 			foreach (var method in AccessTools.GetDeclaredMethods(type))
+	// 			{
+	// 				if (!prohibitedMethods.Contains(method.Name))
+	// 					yield return method;
+	// 			}
+	// 		}
+	// 	}
+
+	// 	[HarmonyPrefix]
+	// 	static void LogExistence(MethodBase __originalMethod, object __instance)
+	// 	{
+	// 		Debug.Log($"Called method: {__originalMethod.DeclaringType.FullName}.{__originalMethod.Name} on Instance: {__instance}");
+	// 	}
+
+	// 	[HarmonyFinalizer]
+	// 	static System.Exception DebugLogFinalizer(System.Exception __exception)
+	// 	{
+	// 		if (__exception != null)
+	// 			Debug.LogException(__exception);
+
+	// 		return null;
+	// 	}
+	// }
+
 }

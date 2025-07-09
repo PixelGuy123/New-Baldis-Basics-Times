@@ -142,7 +142,7 @@ public class SlipperEffector : MonoBehaviour, IEntityTrigger
 		{
 			if (hit.transform != targetEntity.transform)
 			{
-				slipDirection = Vector3.Reflect(slipDirection, hit.normal);
+				DestroyEffector();
 				audMan.PlaySingle(audHitWall);
 			}
 		};

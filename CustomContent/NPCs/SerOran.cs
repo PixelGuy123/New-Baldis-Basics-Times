@@ -377,7 +377,7 @@ namespace BBTimes.CustomContent.NPCs
 	internal class Oran_AskForItem(SerOran or, PlayerManager pm) : Oran_StateBase(or)
 	{
 		readonly PlayerManager pm = pm;
-		int chosenSlot = 0;
+		int chosenSlot = -1;
 		Items wantedItem = Items.None;
 
 		public override void Enter()
@@ -408,7 +408,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			if (pm.itm.items[chosenSlot].itemType != wantedItem || Vector3.Distance(or.transform.position, pm.transform.position) >= 22f)
+			if (chosenSlot != -1 && (pm.itm.items[chosenSlot].itemType != wantedItem || Vector3.Distance(or.transform.position, pm.transform.position) >= 22f))
 				or.behaviorStateMachine.ChangeState(new Oran_Angry(or, pm));
 		}
 	}
@@ -452,9 +452,11 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Hear(GameObject source, Vector3 position, int value)
 		{
 			base.Hear(source, position, value);
-			tar.priority = 63;
-			ChangeNavigationState(tar);
-			tar.UpdatePosition(position);
+			if (!or.looker.PlayerInSight())
+			{
+				ChangeNavigationState(tar);
+				tar.UpdatePosition(position);
+			}
 		}
 
 		public override void OnStateTriggerEnter(Collider other)

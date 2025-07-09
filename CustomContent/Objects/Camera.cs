@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HarmonyLib;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
 {
@@ -36,7 +36,7 @@ namespace BBTimes.CustomContent.Objects
 		{
 			if (!isCameraOn)
 				return;
-			
+
 			if (alarmTime > 0f)
 			{
 				alarmTime -= ec.EnvironmentTimeScale * Time.deltaTime;
@@ -67,7 +67,7 @@ namespace BBTimes.CustomContent.Objects
 				SetIndicatorsToColor(Color.blue);
 				wasAlarming = false;
 			}
-			
+
 
 			cooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 			if (cooldown < 0f)
@@ -77,7 +77,7 @@ namespace BBTimes.CustomContent.Objects
 				UpdateVision();
 			}
 
-			
+
 		}
 
 		void UpdateVision()
@@ -106,7 +106,7 @@ namespace BBTimes.CustomContent.Objects
 
 				size++;
 
-				if (cell.HasWallInDirection(nextDirections[dirIndex]) || 
+				if (cell.HasWallInDirection(nextDirections[dirIndex]) ||
 					!ec.CellFromPosition(pos + nextDirections[dirIndex].ToIntVector2()).TileMatches(myRoom))
 					break;
 			}
@@ -123,13 +123,13 @@ namespace BBTimes.CustomContent.Objects
 			if (other.isTrigger && other.CompareTag("Player"))
 			{
 				var pm = other.GetComponent<PlayerManager>();
-				if (pm && !pm.Tagged &&! pm.Invisible)
+				if (pm && !pm.Tagged && !pm.Invisible)
 				{
 					SetIndicatorsToColor(Color.yellow);
 					sawPlayer = true;
 				}
 			}
-			
+
 		}
 
 		void OnTriggerStay(Collider other)
@@ -140,7 +140,7 @@ namespace BBTimes.CustomContent.Objects
 			if (other.isTrigger && other.CompareTag("Player"))
 			{
 				var pm = other.GetComponent<PlayerManager>();
-				if (pm && ( pm.Tagged || pm.Invisible))
+				if (pm && (pm.Tagged || pm.Invisible))
 				{
 					sawPlayer = false;
 					SetIndicatorsToColor(Color.blue);
@@ -158,7 +158,7 @@ namespace BBTimes.CustomContent.Objects
 				sawPlayer = false;
 				SetIndicatorsToColor(Color.blue);
 			}
-			
+
 		}
 
 		void SetIndicatorsToColor(Color color)

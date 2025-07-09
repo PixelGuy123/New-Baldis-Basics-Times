@@ -31,7 +31,7 @@ namespace BBTimes.CustomContent.Builders
 
 			camComp.visionIndicatorPre = visionIndicator;
 
-			camComp.audMan = cam.gameObject.CreatePropagatedAudioManager(55f, 90f);
+			camComp.audMan = cam.gameObject.CreatePropagatedAudioManager(25f, 110f);
 			camComp.audAlarm = this.GetSound("alarm.wav", "Vfx_Camera_Alarm", SoundType.Effect, Color.white);
 			camComp.audTurn = this.GetSound("camSwitch.wav", "Vfx_Camera_Switch", SoundType.Effect, Color.white);
 			camComp.audDetect = this.GetSound("spot.wav", "Vfx_Camera_Spot", SoundType.Effect, Color.white);

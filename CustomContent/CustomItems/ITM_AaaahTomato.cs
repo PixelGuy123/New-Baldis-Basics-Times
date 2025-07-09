@@ -1,9 +1,9 @@
-﻿using BBTimes.CustomComponents;
-using UnityEngine;
-using System.Collections;
-using PixelInternalAPI.Extensions;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -53,7 +53,7 @@ namespace BBTimes.CustomContent.CustomItems
 			if (triggered || owner == other.gameObject || !other.isTrigger) return;
 
 			var npc = other.GetComponent<NPC>();
-			if (npc != null && npc.IsAPrincipal())
+			if (npc != null && (npc.IsAPrincipal() || !npc.Navigator.Entity.Grounded))
 				return;
 
 			triggered = true;
@@ -99,7 +99,7 @@ namespace BBTimes.CustomContent.CustomItems
 		private SoundObject audScream;
 		[SerializeField]
 		private SpriteRenderer spriteRenderer;
-		[SerializeField] 
+		[SerializeField]
 		private PropagatedAudioManager audMan;
 		[SerializeField]
 		private float guiltTimer = 30f, litteringTimer = 2f;

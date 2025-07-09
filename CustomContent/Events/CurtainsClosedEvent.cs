@@ -53,37 +53,69 @@ namespace BBTimes.CustomContent.Events
 		public string Category => "events";
 
 		// ---------------------------------------------------
-
 		public override void AfterUpdateSetup(System.Random rng)
 		{
 			base.AfterUpdateSetup(rng);
 
-			int curtains = rng.Next(minCurtains, maxCurtains + 1);
-			List<List<Cell>> list = ec.FindHallways();
-			int num = 0;
-			while (num < curtains && list.Count > 0)
+			// Based on Structure_Hall thing; should fix the issue with curtains spawning over swinging doors
+			int targetCurtains = rng.Next(minCurtains, maxCurtains + 1);
+			List<List<Cell>> allHallways = ec.FindHallways();
+			int placedCurtains = 0;
+			int hallwayIndex = 0;
+
+			while (hallwayIndex < allHallways.Count && placedCurtains < targetCurtains)
 			{
-				int num2 = rng.Next(0, list.Count);
-				for (int i = 0; i < list[num2].Count; i++)
-					if (list[num2][i].HasAnyHardCoverage || !list[num2][i].shape.HasFlag(TileShapeMask.Straight))
-						list[num2].RemoveAt(i--);
-
-				if (list[num2].Count > 0)
+				List<Cell> currentHallway = allHallways[hallwayIndex];
+				List<Cell> straightCells = [];
+				foreach (Cell cell in currentHallway) // Get all straight cells to be used
 				{
-					int num3 = rng.Next(0, list[num2].Count);
-					Direction direction = Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin)[rng.Next(0, Directions.OpenDirectionsFromBin(list[num2][num3].ConstBin).Count)];
-					var curt = Instantiate(curtPre, list[num2][num3].TileTransform);
-					curt.transform.localPosition = direction.ToVector3() * 5f;
-					curt.transform.rotation = direction.ToRotation();
-					curt.AttachToCell(ec, list[num2][num3], direction);
-					list[num2][num3].AddRenderer(curt.renderer);
-					this.curtains.Add(curt);
-
-					list[num2][num3].HardCoverWall(direction, true);
-					ec.CellFromPosition(list[num2][num3].position + direction.ToIntVector2()).HardCoverWall(direction.GetOpposite(), true);
-					num++;
+					if (cell.shape.HasFlag(TileShapeMask.Straight))
+					{
+						straightCells.Add(cell);
+					}
 				}
-				list.RemoveAt(num2);
+
+				if (straightCells.Count == 0) // If no straight cells found, move to the next hallway
+				{
+					hallwayIndex++;
+					continue;
+				}
+
+
+				Cell selectedCell = straightCells[rng.Next(0, straightCells.Count)];
+				List<Direction> validDirections = Directions.OpenDirectionsFromBin(selectedCell.ConstBin);
+				selectedCell.FilterDirectionsThroughHardCoverage(validDirections, false);
+
+				for (int i = 0; i < validDirections.Count; i++)
+				{
+					Cell neighbor = ec.CellFromPosition(selectedCell.position + validDirections[i].ToIntVector2());
+					if (neighbor.WallHardCovered(validDirections[i].GetOpposite()))
+					{
+						validDirections.RemoveAt(i);
+						i--;
+					}
+				}
+
+				if (validDirections.Count != 0 && !selectedCell.HasAnyHardCoverage)
+				{
+					Direction placementDirection = validDirections[rng.Next(0, validDirections.Count)];
+
+					var curt = Instantiate(curtPre, selectedCell.TileTransform);
+					curt.transform.localPosition = placementDirection.ToVector3() * 5f;
+					curt.transform.rotation = placementDirection.ToRotation();
+					curt.AttachToCell(ec, selectedCell, placementDirection);
+
+					selectedCell.AddRenderer(curt.renderer);
+					curtains.Add(curt);
+
+					selectedCell.HardCoverWall(placementDirection, true);
+					ec.CellFromPosition(selectedCell.position + placementDirection.ToIntVector2()).HardCoverWall(placementDirection.GetOpposite(), true);
+
+					placedCurtains++;
+				}
+
+
+				hallwayIndex++;
 			}
 		}
 

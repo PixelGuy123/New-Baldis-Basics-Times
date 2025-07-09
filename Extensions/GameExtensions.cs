@@ -6,6 +6,7 @@ using BBTimes.CustomContent.NPCs;
 using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
+using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -196,11 +197,13 @@ namespace BBTimes.Extensions
 		readonly static Dictionary<int, string> cachedNumbers = new(capacity: 300); // naturally it'd never need to have the whole set of int.MaxValue/int.MinValue
 		static readonly StringBuilder bld = new();
 
-		public static bool RaycastNPC(this Looker looker, NPC npc)
+		public static bool RaycastNPC(this Looker looker, NPC npc) =>
+			looker.RaycastNPC(npc, looker.distance);
+		public static bool RaycastNPC(this Looker looker, NPC npc, float overridenDistance)
 		{
 			looker.Raycast(npc.transform,
 						Mathf.Min((looker.transform.position - npc.transform.position).magnitude + npc.Navigator.Velocity.magnitude,
-						looker.distance,
+						overridenDistance,
 						looker.npc.ec.MaxRaycast), out bool flag);
 			return flag;
 		}
@@ -508,17 +511,6 @@ namespace BBTimes.Extensions
 			Object.Destroy(target);
 
 			yield break;
-		}
-
-		public static Rigidbody AddStaticRigidBody(this GameObject obj)
-		{
-			var rigid = obj.AddComponent<Rigidbody>();
-
-			rigid.mass = 0f;
-			rigid.constraints = RigidbodyConstraints.FreezeAll;
-			rigid.angularDrag = 0f;
-
-			return rigid;
 		}
 
 		public static Vector3 ToVector3(this IntVector2 vec) =>

@@ -33,6 +33,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents
 		{
 			if (pos != transform.position)
 				entity.Teleport(pos); // To not spam the teleport on itself
+
 		}
 
 		void Update()

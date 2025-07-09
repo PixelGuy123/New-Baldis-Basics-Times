@@ -45,8 +45,7 @@ namespace BBTimes.ModPatches
 
 			var dataLvl = Singleton<BaseGameManager>.Instance.levelObject;
 
-			var cld = Singleton<CoreGameManager>.Instance.sceneObject.GetCurrentCustomLevelObject();
-			if (!cld)
+			if (dataLvl is not CustomLevelGenerationParameters cld)
 				return true;
 
 			var listObj = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_EnvConfig_ExtraWindowsToSpawn");
@@ -54,17 +53,27 @@ namespace BBTimes.ModPatches
 			if (listObj == null)
 				return true;
 
-			var objs = new List<WindowObjectHolder>(listObj as List<WindowObjectHolder>);
-
 			__instance.ec = ec;
 			__instance.position = pos;
 			__instance.direction = dir;
 
-			objs.RemoveAll(x => !x.SelectionLimiters.Contains(__instance.aTile.room.category) && !x.SelectionLimiters.Contains(__instance.bTile.room.category));
+			var list = listObj as List<WindowObjectHolder>;
 
-			if (objs.Count == 0) return true;
+			_copiedWindows.Clear();
+			for (int i = 0; i < list.Count; i++)
+			{
+				if (
+					list[i].SelectionLimiters.Contains(__instance.aTile.room.category) || // If the window has its correspondent category in front or back, it should be included
+					list[i].SelectionLimiters.Contains(__instance.bTile.room.category)
+					)
+				{
+					_copiedWindows.Add(list[i].Selection);
+				}
+			}
 
-			var selectedWindowObject = WeightedSelection<WindowObject>.ControlledRandomSelectionList(objs.ConvertAll(x => x.Selection), lg.controlledRNG);
+			if (_copiedWindows.Count == 0) return true;
+
+			var selectedWindowObject = WeightedSelection<WindowObject>.ControlledRandomSelectionList(_copiedWindows, lg.controlledRNG);
 			if (selectedWindowObject == null) // Null here means it is the default wood window
 				return true;
 
@@ -98,5 +107,6 @@ namespace BBTimes.ModPatches
 
 		// Temporary lazy workaround (When making the custom windows mod, I'll implement a better way of adding custom windows to the map)
 		static bool hasSpawnedWindow = false;
+		readonly static List<WeightedSelection<WindowObject>> _copiedWindows = [];
 	}
 }

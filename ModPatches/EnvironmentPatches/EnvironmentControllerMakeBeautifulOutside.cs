@@ -28,8 +28,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					return;
 
 				// Current way to deal with level objects I guess lol
-				var cld = Singleton<CoreGameManager>.Instance.sceneObject.GetCurrentCustomLevelObject();
-				if (cld)
+				var ld = Singleton<BaseGameManager>.Instance.levelObject;
+				if (ld is CustomLevelGenerationParameters cld)
 				{
 					var modVal = cld.GetCustomModValue(BBTimesManager.plug.Info, "Times_GenConfig_DisableOutside");
 					if (modVal == null || ((bool)modVal)) // If the mod val is null or it is actually true: disable outside

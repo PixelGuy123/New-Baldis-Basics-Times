@@ -352,7 +352,10 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.DestinationEmpty();
 			if (!bot.ec.CellFromPosition(bot.transform.position).TileMatches(office))
+			{
+				tarPos.UpdatePosition(office.RandomEntitySafeCellNoGarbage().FloorWorldPosition);
 				ChangeNavigationState(tarPos);
+			}
 			else
 			{
 				entity.Teleport(bot.transform.position);

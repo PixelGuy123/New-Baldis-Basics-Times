@@ -1,4 +1,4 @@
-﻿using BBPlusCustomMusics;
+﻿using BBPlusCustomMusics.Plugin.Public;
 
 namespace BBTimes.CompatibilityModule
 {
@@ -6,11 +6,11 @@ namespace BBTimes.CompatibilityModule
 	{
 		internal static void Loadup()
 		{
-			CustomMusicPlug.AddMidisFromDirectory(false, BasePlugin.ModPath, "misc", "Audios", "School");
-			CustomMusicPlug.AddMidisFromDirectory(true, BasePlugin.ModPath, "misc", "Audios", "Elevator");
-			CustomMusicPlug.AddAmbiencesFromDirectory(BasePlugin.ModPath, "misc", "Audios", "Ambiences");
-			CustomMusicPlug.AddPlaytimeMusicsFromDirectory(BasePlugin.ModPath, "misc", "Audios", "Playtime");
-			CustomMusicPlug.AddJhonnyMusicsFromDirectory(BasePlugin.ModPath, "misc", "Audios", "Store");
+			MusicRegister.AddMIDIsFromDirectory(MidiDestiny.Schoolhouse, BasePlugin.ModPath, "misc", "Audios", "School");
+			MusicRegister.AddMIDIsFromDirectory(MidiDestiny.Elevator, BasePlugin.ModPath, "misc", "Audios", "Elevator");
+			MusicRegister.AddMusicFilesFromDirectory(SoundDestiny.Ambience, BasePlugin.ModPath, "misc", "Audios", "Ambiences");
+			MusicRegister.AddMusicFilesFromDirectory(SoundDestiny.Playtime, BasePlugin.ModPath, "misc", "Audios", "Playtime");
+			MusicRegister.AddMusicFilesFromDirectory(SoundDestiny.JohnnyStore, BasePlugin.ModPath, "misc", "Audios", "Store");
 		}
 	}
 }

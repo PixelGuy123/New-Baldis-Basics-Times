@@ -1,5 +1,4 @@
 ﻿using BBTimes.CompatibilityModule.GrapplingHookTweaksCompats;
-using BBTimes.Manager;
 using BepInEx.Bootstrap;
 
 namespace BBTimes.CompatibilityModule
@@ -13,8 +12,6 @@ namespace BBTimes.CompatibilityModule
 		}
 		internal static void InitializePostOnLoadMods()
 		{
-			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.stackableitems"))
-				StackableItemsCompat.Loadup();
 			// if (BBTimesManager.plug.HasInfiniteFloors && !BBTimesManager.plug.disableArcadeRennovationsSupport.Value)
 			// 	ArcadeRenovationsCompat.Loadup();
 		}

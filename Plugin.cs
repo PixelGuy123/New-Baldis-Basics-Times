@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using BBTimes.CompatibilityModule;
 using BBTimes.CustomComponents;
-using BBTimes.CustomComponents.SecretEndingComponents;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
@@ -22,10 +21,6 @@ using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using MTM101BaldAPI.SaveSystem;
-using PixelInternalAPI.Classes;
-using PixelInternalAPI.Extensions;
-using PlusLevelFormat;
-using PlusLevelLoader;
 using UnityEngine;
 
 
@@ -46,7 +41,6 @@ namespace BBTimes
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.custommusics", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.grapplinghooktweaks", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mrsasha5.baldi.basics.plus.advanced", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.stackableitems", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.leveleditor", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.infinitefloors", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.endlessfloors", BepInDependency.DependencyFlags.SoftDependency)]
@@ -73,7 +67,16 @@ namespace BBTimes
 			ModdedFileManager.Instance.RegenerateTags();
 			yield return "Calling GC Collect...";
 
-			BBTimesManager.floorDatas.Clear(); // Clear all, then call GC Collect to free up memory from this useless data
+			// foreach (var floorData in BBTimesManager.floorDatas)
+			// {
+			// 	int idx = 0;
+			// 	Debug.Log("Checking Floor: " + floorData.Key);
+			// 	foreach (var classroom in floorData.Value.Classrooms)
+			// 	{
+			// 		Debug.Log($"{idx++}: Classroom {classroom.selection.name} contains activity: {classroom.selection.activity.prefab.name}");
+			// 	}
+			// }
+
 			GC.Collect(); // Get any garbage I guess
 
 			yield break;
@@ -92,7 +95,6 @@ namespace BBTimes
 
 		void SetupPostAssets()
 		{
-
 			try
 			{
 				CompatibilityInitializer.InitializePostOnLoadMods();
@@ -104,180 +106,15 @@ namespace BBTimes
 				MTM101BaldiDevAPI.CauseCrash(Info, e);
 			}
 
-			// --- Times Ending Manager Setup ---
-			var sceneObjectClone = Instantiate(GenericExtensions.FindResourceObjectByName<SceneObject>("EndlessPremadeMedium"));
-			sceneObjectClone.name = "TimesSecretEnding";
+			GameExtensions.TryRunMethod(BBTimesManager.SetupPostAssetsForSecretEnding);
 
-			sceneObjectClone.extraAsset = Instantiate(sceneObjectClone.extraAsset);
-			sceneObjectClone.extraAsset.name = "TimesSecretExtraAsset";
-			sceneObjectClone.extraAsset.npcSpawnPoints.Clear();
-			sceneObjectClone.extraAsset.npcsToSpawn.Clear();
-			sceneObjectClone.extraAsset.lightMode = LightMode.Additive;
-			sceneObjectClone.extraAsset.minLightColor = Color.white;
-
-			sceneObjectClone.levelContainer = null;
-			sceneObjectClone.levelNo = 99;
-			sceneObjectClone.nextLevel = null;
-			sceneObjectClone.levelTitle = "???";
-			sceneObjectClone.nameKey = "???";
-			sceneObjectClone.shopItems = [];
-			sceneObjectClone.skyboxColor = Color.black;
-			sceneObjectClone.usesMap = false;
-			sceneObjectClone.levelObject = null;
-
-
-			using (BinaryReader reader = new(File.OpenRead(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLevel.cbld"))))
-			{
-				// --- Setup secret ending level asset and textures ---
-				sceneObjectClone.levelAsset = CustomLevelLoader.LoadLevelAsset(LevelExtensions.ReadLevel(reader));
-				sceneObjectClone.levelAsset.name = "TimesSecretEndingAsset";
-				sceneObjectClone.levelAsset.rooms[0].ceilTex = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLabCeiling.png"));
-				sceneObjectClone.levelAsset.rooms[0].wallTex = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLabWall.png"));
-				sceneObjectClone.levelAsset.rooms[0].florTex = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretLabFloor.png"));
-
-				// --- Setup door materials and mask ---
-				sceneObjectClone.levelAsset.rooms[0].doorMats = ObjectCreators.CreateDoorDataObject("TimesSecretLabMetalDoor",
-					AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "smallMetalDoorOpen.png")),
-					AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "smallMetalDoorClosed.png")));
-
-				var doorTextureMask = AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "metalDoorMask.png"));
-				sceneObjectClone.levelAsset.rooms[0].doorMats.open.SetTexture("_Mask", doorTextureMask);
-				sceneObjectClone.levelAsset.rooms[0].doorMats.shut.SetTexture("_Mask", doorTextureMask);
-
-				// --- Add posters to the secret ending room ---
-				sceneObjectClone.levelAsset.posters.Add(new()
-				{
-					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "liveTubeMakeUp.png"))]),
-					position = new(16, 12),
-					direction = Direction.North
-				});
-				sceneObjectClone.levelAsset.posters.Add(new()
-				{
-					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "levelGenMakeUp.png"))]),
-					position = new(15, 10),
-					direction = Direction.South
-				});
-				sceneObjectClone.levelAsset.posters.Add(new()
-				{
-					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "chk_funFormula.png"))]),
-					position = new(15, 7),
-					direction = Direction.South
-				});
-				sceneObjectClone.levelAsset.posters.Add(new()
-				{
-					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "chk_theNoWinFormula.png"))]),
-					position = new(15, 9),
-					direction = Direction.North
-				});
-				sceneObjectClone.levelAsset.posters.Add(new()
-				{
-					poster = ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "chk_noRealWin.png"))]),
-					position = new(16, 8),
-					direction = Direction.East
-				});
-				sceneObjectClone.levelAsset.rooms[0].hasActivity = false;
-				sceneObjectClone.levelAsset.rooms[0].activity = null;
-				// --- Setup door clone ---
-				var newDoor = (StandardDoor)sceneObjectClone.levelAsset.doors[0].doorPre.SafeDuplicatePrefab(true);
-				newDoor.audDoorShut = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "metalDoorShut.wav")), "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
-				newDoor.audDoorOpen = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "metalDoorOpen.wav")), "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
-				newDoor.name = "SmallMetalDoor";
-
-				sceneObjectClone.levelAsset.doors.ForEach(d => d.doorPre = newDoor);
-			}
-
-			// --- Setup secret ending manager object ---
-			var newManager = new GameObject("TimesSecretEndingManager").SetAsPrefab(true).AddComponent<TimesSecretEndingManager>();
-
-
-			newManager.Mono_GetACopyFromFields(sceneObjectClone.manager);
-
-			newManager.canvas = ObjectCreationExtensions.CreateCanvas();
-			newManager.canvas.transform.SetParent(newManager.transform);
-			newManager.canvas.gameObject.SetActive(false);
-			newManager.canvas.name = newManager.name + "Canvas";
-
-			newManager.activeImage = ObjectCreationExtensions.CreateImage(newManager.canvas, TextureExtensions.CreateSolidTexture(480, 360, Color.black));
-			newManager.activeImage.name = "TimesEndScreen";
-			var baldiReference = GenericExtensions.FindResourceObject<Baldi>();
-
-			newManager.audSlap = baldiReference.slap;
-			newManager.audLoseSounds = baldiReference.loseSounds;
-
-			newManager.timesScreen = AssetLoader.SpriteFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.TextureFolder, "SecretEnding", "secretTimesEnd.jpg"), Vector2.one * 0.5f);
-			newManager.audSeeYaSoon = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "Secret_BAL_EndSequence_End.wav")), "Vfx_SecBAL_EndSequence_SeeYa", SoundType.Voice, Color.green);
-
-			newManager.levelNo = 99;
-			newManager.spawnNpcsOnInit = false;
-			newManager.managerNameKey = "???";
-
-			newManager.audMan = newManager.gameObject.CreateAudioManager(15f, 25f).MakeAudioManagerNonPositional();
-			newManager.audHummmmm = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "SecretBaldi", "spookyNoisesForEnding.mp3")), string.Empty, SoundType.Music, Color.white);
-			newManager.audHummmmm.subtitle = false;
-
-			sceneObjectClone.manager = newManager;
-			MainGameManagerPatches.secretEndingObj = sceneObjectClone;
-
-			// ********************************************************** Christmas Baldi Setup ***************************************************************************
+			// ********************************************************** Holiday Baldi Setup ***************************************************************************
 
 			if (Storage.IsChristmas)
 			{
-				// --- Setup Christmas Baldi prefab and audio ---
-				var baldiSPrites = TextureExtensions.LoadSpriteSheet(6, 1, 30f, BBTimesManager.MiscPath, BBTimesManager.TextureFolder, BBTimesManager.GetAssetName("christmasBaldi.png"));
-				var chBaldi = ObjectCreationExtensions.CreateSpriteBillboard(baldiSPrites[0])
-					.AddSpriteHolder(out var chBaldiRenderer, 4f, LayerStorage.iClickableLayer); // Baldo offset should be exactly 5f + hisDefaultoffset
-				chBaldi.gameObject.AddBoxCollider(Vector3.up * 5f, new(2.5f, 10f, 2.5f), true);
-				chBaldi.name = "Times_ChristmasBaldi";
-				chBaldiRenderer.name = "Times_ChristmasBaldi_Renderer";
-
-				chBaldi.gameObject.ConvertToPrefab(true); // He won't be in the editor, he's made specifically for christmas mode
-
-				var christmasBaldi = chBaldi.gameObject.AddComponent<ChristmasBaldi>();
-
-				// --- Assign audio and present references ---
-				christmasBaldi.audMan = christmasBaldi.gameObject.CreatePropagatedAudioManager(95f, 175f);
-				christmasBaldi.present = BBTimesManager.man.Get<ItemObject>("times_itemObject_Present");
-				christmasBaldi.audBell = BBTimesManager.man.Get<SoundObject>("audRing");
-				christmasBaldi.audIntro = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_PresentIntro.wav")), "Vfx_BAL_Pitstop_PresentIntro_1", SoundType.Voice, Color.green);
-				christmasBaldi.audIntro.additionalKeys = [
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_2", time = 2.417f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_3", time = 5.492f },
-					new() { key = "Vfx_BAL_Wow", time = 9.544f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_4", time = 11.029f },
-					new() { key = "Vfx_BAL_Pitstop_PresentIntro_5", time = 14.059f }
-					];
-
-				christmasBaldi.audBuyItem = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_buypresent.wav")), "Vfx_BAL_Pitstop_MerryChristmas", SoundType.Voice, Color.green);
-
-				christmasBaldi.audNoYtps = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_needYtpsForPresent.wav")), "Vfx_BAL_Pitstop_Nopresent_1", SoundType.Voice, Color.green);
-				christmasBaldi.audNoYtps.additionalKeys = [
-					new() { key = "Vfx_BAL_Pitstop_Nopresent_2", time = 0.818f }
-					];
-
-				christmasBaldi.audGenerous = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_Pitstop_Generous.wav")), "Vfx_BAL_Pitstop_Generous_1", SoundType.Voice, Color.green);
-				christmasBaldi.audGenerous.additionalKeys = [
-					new() { key = "Vfx_BAL_Pitstop_Generous_2", time = 2.597f }
-					];
-
-				christmasBaldi.audCollectingPresent = [
-					ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_Pitstop_Thanks1.wav")), "Vfx_BAL_Pitstop_Thanks1", SoundType.Voice, Color.green),
-					ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(BBTimesManager.MiscPath, BBTimesManager.AudioFolder, "BAL_Pitstop_Thanks2.wav")), "Vfx_BAL_Pitstop_Thanks2", SoundType.Voice, Color.green)
-					];
-
-				// --- Add sprite volume animator ---
-				var volumeAnimator = christmasBaldi.gameObject.AddComponent<SpriteVolumeAnimator>();
-				volumeAnimator.audMan = christmasBaldi.audMan;
-				volumeAnimator.renderer = chBaldiRenderer;
-				volumeAnimator.volumeMultipler = 1.2f;
-				volumeAnimator.sprites = baldiSPrites;
-
-				// --- Add Christmas Baldi to pitstop asset ---
-				var pitstopAsset = GenericExtensions.FindResourceObjectByName<LevelAsset>("Pitstop"); // Find shop pitstop here
-				pitstopAsset.tbos.Add(new() { direction = Direction.North, position = new(30, 11), prefab = christmasBaldi });
+				GameExtensions.TryRunMethod(BBTimesManager.SetupChristmasHoliday);
 			}
 		}
-
-
 
 
 		public static void PostSetup(AssetManager man) { } // This is gonna be used by other mods to patch after the BBTimesManager is done with the crap
@@ -322,9 +159,9 @@ namespace BBTimes
 			}
 
 
-			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), false);
+			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), LoadingEventOrder.Pre);
 
-			LoadingEvents.RegisterOnAssetsLoaded(Info, SetupPost(), true); // Post
+			LoadingEvents.RegisterOnAssetsLoaded(Info, SetupPost(), LoadingEventOrder.Post); // Post
 
 
 			PixelInternalAPI.ResourceManager.AddReloadLevelCallback((_, isNextlevel) => // Note: since it's always in the last level, there's no point to make a saving handler for this, since people cannot save in the middle of a level
@@ -387,13 +224,13 @@ namespace BBTimes
 						return;
 					}
 
-					if (floorName == BBTimesManager.END)
-					{
+					// if (floorName == BBTimesManager.END)
+					// {
 
-						// Custom datas
-						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 14));
-						return;
-					}
+					// 	// Custom datas
+					// 	ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 14));
+					// 	return;
+					// }
 				}
 
 			});
@@ -423,13 +260,13 @@ namespace BBTimes
 				KeyValuePair<string, FloorData>? floordatapair = BBTimesManager.floorDatas.FirstOrDefault(x => x.Key == floorName);
 				if (!floordatapair.HasValue)
 				{
-					//Debug.LogWarning("Failed to get floor data for level: " + ld.name);
+					Debug.LogWarning("Failed to get floor data for level: " + floorName);
 					return;
 				}
 
-				bool isChristmas = Storage.IsChristmas;
-
 				var floordata = floordatapair.Value.Value;
+
+				// Debug.Log($"Adding floorData ({floordatapair.Value.Key}) to floor ({floorName})");
 
 				// ******************* ELEMENTS THAT DEPENDS ON SCENEOBJECT SOLELY ***********************
 
@@ -467,6 +304,10 @@ namespace BBTimes
 
 					sco.shopItems = sco.shopItems.AddToArray(floordata.ShopItems[i]);
 				}
+
+				// ******* WORKAROUND: Since Endless reuses a lot of level objects, they will be skipped until the api releases a fix or method to prevent such problem *******
+				if (floorName == BBTimesManager.END)
+					return;
 
 
 				// *************** ELEMENTS THAT DEPENDS IN LEVEL OBJECTS ******************
@@ -539,19 +380,22 @@ namespace BBTimes
 							ld.forcedStructures = ld.forcedStructures.AddToArray(floordata.ForcedObjectBuilders[i].GetWeightedSelection());
 					}
 
-					/* Unused since Plus doesn't use this anymore (should be kept if weighted builders ever start existing again)
+					// ----- Weighted Object Builders -----
 					for (int i = 0; i < floordata.WeightedObjectBuilders.Count; i++)
 					{
+						// --- Filter disabled weighted object builders and add to potentialStructures ---
 						if (!Config.Bind("Structure Settings", $"Enable {floordata.WeightedObjectBuilders[i].selection.prefab.name}", true,
 							"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
 						{
 							if (!disabledBuilders.Contains(floordata.WeightedObjectBuilders[i].selection.prefab.name))
 								disabledBuilders.Add(floordata.WeightedObjectBuilders[i].selection.prefab.name);
 							floordata.WeightedObjectBuilders.RemoveAt(i--);
+							continue;
 						}
+						if (floordata.WeightedObjectBuilders[i].AcceptsLevelType(ld.type))
+							ld.potentialStructures = ld.potentialStructures.AddToArray(floordata.WeightedObjectBuilders[i].GetWeightedSelection());
 					}
-					ld.potentialStructures = ld.potentialStructures.AddRangeToArray([.. floordata.WeightedObjectBuilders]);
-					*/
+
 
 					// ----- Room Groups and Special Rooms -----
 					for (int i = 0; i < floordata.RoomAssets.Count; i++)
@@ -589,7 +433,7 @@ namespace BBTimes
 						var group = ld.roomGroup.FirstOrDefault(x => x.potentialRooms.Any(z => z.selection.category == holder.SelectionLimiters[0]));
 						if (group == null)
 						{
-							Debug.LogWarning("BBTimes: Failed to load texture for room category: " + name);
+							// Debug.LogWarning("BBTimes: Failed to load texture for room category: " + name);
 							continue;
 						}
 						// Debug.Log($"BBTimes: Adding texture {holder.Selection.selection.name} to room category: {name} in level: {ld.name}");
