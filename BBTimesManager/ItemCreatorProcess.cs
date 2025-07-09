@@ -887,7 +887,7 @@ namespace BBTimes.Manager
 			item.SetupItemObjectSprites("CrumpledPaper");
 			var toiletPaper = (ITM_ToiletPaper)item.item;
 			toiletPaper.animComp.animation = [item.itemSpriteLarge];
-			toiletPaper.rotationSpeed = 50f;
+			toiletPaper.rotationSpeed = 85f;
 
 			// Ugly Picture
 			var uglyPictureItem = new ItemBuilder(plug.Info)

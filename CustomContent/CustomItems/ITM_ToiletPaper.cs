@@ -54,6 +54,9 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan.PlaySingle(audThrow);
 			height = entity.BaseHeight;
 
+			if (rotationSpeed != 0f)
+				animComp.renderers[0].SetSpriteRotation(Random.Range(0f, 360f));
+
 			return true;
 		}
 
