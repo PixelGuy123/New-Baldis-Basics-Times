@@ -15,11 +15,11 @@ namespace BBTimes.CustomContent.CustomItems
             canvas.name = "UglyCanvas";
             canvas.transform.SetParent(transform);
 
-            var background = ObjectCreationExtensions.CreateImage(
+            image = ObjectCreationExtensions.CreateImage(
                 canvas,
                 this.GetSprite(1f, "RealUglyPicture.png"), // Tempo color
-                true);
-            background.name = "UglyImage";
+                true).gameObject;
+            image.name = "UglyImage";
 
             textMesh = ObjectCreationExtensions.CreateTextMeshProUGUI(Color.white);
             textMesh.transform.SetParent(canvas.transform);
@@ -50,7 +50,7 @@ namespace BBTimes.CustomContent.CustomItems
             yield return null;
             pm.itm.AddItem(crumpledPaper); // It is intentionally so fast the player might not even notice the item being added instantly
             yield return new WaitForSecondsRealtime(delayToLeave); // Wait to crumble
-            canvas.gameObject.SetActive(false);
+            image.SetActive(false);
             Singleton<CoreGameManager>.Instance.audMan.PlaySingle(audCrumple);
 
             textMesh.gameObject.SetActive(true);
@@ -72,13 +72,16 @@ namespace BBTimes.CustomContent.CustomItems
         }
 
         [SerializeField]
-        internal float delayToLeave = 0.035f, alphaDuration = 2.5f, textDuration = 3f;
+        internal float delayToLeave = 0.002f, alphaDuration = 2.5f, textDuration = 3f;
 
         [SerializeField]
         internal ItemObject crumpledPaper;
 
         [SerializeField]
         internal Canvas canvas;
+
+        [SerializeField]
+        internal GameObject image;
 
         [SerializeField]
         internal SoundObject audCrumple;
