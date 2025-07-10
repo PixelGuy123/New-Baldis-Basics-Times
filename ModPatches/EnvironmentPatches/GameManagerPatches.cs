@@ -66,36 +66,69 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		[HarmonyPrefix]
 		static bool PlayCutscene(MainGameManager __instance, bool ___allNotebooksFound)
 		{
-			// if (Singleton<CoreGameManager>.Instance.currentMode == Mode.Free || !__instance.levelObject.finalLevel || !___allNotebooksFound) return true;
+			// Only comment this to make it play everywhere for testing!
+			// if (!__instance.levelObject.finalLevel || !___allNotebooksFound) return true;
+
+			bool explorerMode = Singleton<CoreGameManager>.Instance.currentMode == Mode.Free;
 
 			var elevator = __instance.Ec.elevators.FirstOrDefault(x => x.IsOpen);
 			if (!elevator) // failsafe
 				return true;
 			var cam = new GameObject("CameraView").AddComponent<Camera>();
 			var player = Singleton<CoreGameManager>.Instance.GetPlayer(0); // Specifically for Player 0
+
 			while (!player.plm.Entity.InteractionDisabled || !player.plm.Entity.Frozen)
 			{
 				player.plm.Entity.SetInteractionState(false);
 				player.plm.Entity.SetFrozen(true);
 			}
-			PlayerVisual.GetPlayerVisual(0).SetEmotion(1); // emotion 1 = sad
 
-			player.Teleport(__instance.Ec.CellFromPosition(player.transform.position).CenterWorldPosition);
+			// SETUP CAMERA AND BALDI
 
-			cam.transform.position = player.transform.position;
-			cam.transform.rotation = elevator.Door.direction.ToRotation();
+			PlayerVisual.GetPlayerVisual(0).gameObject.SetActive(false); // emotion 1 = sad
 
 			Singleton<CoreGameManager>.Instance.GetCamera(0).SetControllable(false);
 			Singleton<CoreGameManager>.Instance.disablePause = true;
 
+
+			SoundObject slapSound = null;
+			Sprite baldiSlap = null, normalBaldiSprite = null;
+
 			var schoolBaldi = __instance.Ec.GetBaldi();
-			schoolBaldi?.Navigator.Entity.SetActive(false); // We won't be using original Baldi anymore, but a copy of it
-			Vector3 elvPos = __instance.Ec.CellFromPosition(__instance.Ec.CellFromPosition(player.transform.position).position + (elevator.Door.direction.GetOpposite().ToIntVector2() * 2)).CenterWorldPosition;
+			if (schoolBaldi)
+			{
+				// Update volume to avoid slap noise
+				schoolBaldi.AudMan.volumeMultiplier = 0f;
+				schoolBaldi.AudMan.UpdateAudioDeviceVolume();
+
+				normalBaldiSprite = baldiSlap = schoolBaldi.spriteRenderer[0].sprite;
+
+				// Get slap sound
+				slapSound = schoolBaldi.slap;
+
+				// Get slap variant
+				schoolBaldi.SlapNormal();
+				baldiSlap = schoolBaldi.spriteRenderer[0].sprite;
+
+				schoolBaldi.Navigator.Entity.SetActive(false); // We won't be using original Baldi anymore, but a copy of it
+			}
+			else
+				explorerMode = true; // Enable the cardboard Baldi cutscene
+
+			// SET UP VARIABLES
+			Direction elevatorDir = elevator.Door.direction.GetOpposite(), elevatorFacingDir = elevator.Door.direction;
+			Vector3 elvCenterPos = elevator.Door.bTile.CenterWorldPosition;
+			Vector3 elvFrontPos = elevator.Door.aTile.CenterWorldPosition;
+			Vector3 frontOfElevatorPos = __instance.Ec.CellFromPosition(elevator.Door.aTile.position + elevatorDir.ToIntVector2()).CenterWorldPosition; // That front of the elevator
+			frontOfElevatorPos.y = explorerMode ?
+			3.9f : // To fit Cardboard Baldi height
+			schoolBaldi.Navigator.Entity.InternalHeight;
 
 			var baldi = Object.Instantiate(placeholderBaldi);
-			baldi.transform.position = elvPos;
-
-			var cell = __instance.Ec.CellFromPosition(elvPos);
+			if (explorerMode)
+				baldi.sprite = cardboardBaldi;
+			else
+				baldi.sprite = normalBaldiSprite;
 
 			__instance.StartCoroutine(Animation(cam, __instance, elevator));
 
@@ -104,229 +137,636 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				// ---------------------------------------------------------------------
 				// PHASE 1: SETUP - Prepare for the cutscene
 				// ---------------------------------------------------------------------
-				Debug.Log("Starting BBT Elevator Chase Cutscene...");
+
+				// Position player correctly
+				player.Teleport(elvCenterPos);
 
 				// Temporarily disable subtitles
 				bool subs = Singleton<PlayerFileManager>.Instance.subtitles;
 				Singleton<PlayerFileManager>.Instance.subtitles = false;
 
-				// Store camera's original state to restore it later
-				Transform originalCamParent = cam.transform.parent;
-				Vector3 originalCamLocalPos = cam.transform.localPosition;
-				Quaternion originalCamLocalRot = cam.transform.localRotation;
+				Vector3 startPos, endPos;
+				Quaternion rotStart, rotEnd;
+				int maxIndex = 2;
+				const float
+					ENTRANCE_TO_ELEVATOR_POSITION = 1.75f,
+					ENTRANCE_TO_ELEVATOR_ROTATION = 1.25f,
+					ENTRANCE_TO_ELEVATOR_NOTICE_DELAY = 0.15f,
 
-				// --- Cinematic Timings (Adjust these to change the pacing!) ---
-				float walkIntoElevatorTime = 2.0f;
-				float lookAroundTime = 3.0f;
-				float snapTurnTime = 0.25f;
-				float standoffTime = 3.0f;
-				float baldiChargeTime = 0.7f;
-				float doorCloseDelay = 0.15f; // How long after Baldi starts charging the door begins to close
+					BALDI_ENCOUNTER_NOTICE_DELAY = 0.65f,
+					BALDI_ENCOUNTER_NOTICE_ROTATION = 0.28f,
 
-				// Unparent the camera from the player for cinematic control
-				cam.transform.SetParent(null);
-				Vector3 playerStartPos = cam.transform.position;
+					BALDI_ENCOUNTER_CONFRONT_DELAY = 1.25f,
+					BALDI_ENCOUNTER_CONFRONT_PLAYERSCARE_ROTATION = 0.45f,
+					BALDI_ENCOUNTER_CONFRONT_PLAYERSCARE_POSITION = 0.55f,
+					BALDI_ENCOUNTER_CONFRONT_BALDI_POSITION = 0.45f,
+
+					POST_ENCOUNTER_DELAY = 0.95f,
+					POST_ENCOUNTER_ROTATION = 2.15f,
+
+					EXPLOSION_ROTATION = 0.55f;
+
+				float[] times = new float[maxIndex], deltas = new float[maxIndex], maxTs = new float[maxIndex]; // 0 = position; 1 = rotation
+				int finishedTimes = 0;
+
+				// Headbob settings
+				float bobFrequency = 0f;
+				float bobMagnitude = 0f;
+				Vector3 bobOffset = Vector3.zero;
 
 				// ---------------------------------------------------------------------
-				// SHOT 1: THE ENTRANCE (Image 1 & 2)
-				// The player walks into the elevator and looks around.
+				// PHASE 2: START - Play cutscene
 				// ---------------------------------------------------------------------
 
-				// Define the path into the elevator
-				Vector3 walkTargetPos = el.transform.position - (el.Door.direction.ToVector3() * 5f) + Vector3.up * 1.5f; // 5 units in
-				Vector3 lookAroundTargetPos = el.transform.position - (el.Door.direction.ToVector3() * 1.5f) + Vector3.up * 1.5f; // Final position, near center
+				// Position camera at the right spot
+				cam.transform.position = elvFrontPos + elevatorDir.ToVector3() * 1.75f;
+				cam.transform.rotation = elevatorFacingDir.ToRotation(); // quick note: negative x axis is downwards, positive is upwards
 
-				// Player walks in normally
-				yield return man.StartCoroutine(MoveWithHeadbob(cam.transform, playerStartPos, walkTargetPos, walkIntoElevatorTime, 0.1f, 4f));
+				// ------- FIRST LOOK -------
+				bobFrequency = 4f; // Agitated bob for movement
+				bobMagnitude = 0.04f;
 
-				// Player slows down and looks around while moving to the center
-				Quaternion lookLeft = Quaternion.LookRotation(cam.transform.forward - cam.transform.right * 0.4f);
-				Quaternion lookRight = Quaternion.LookRotation(cam.transform.forward + cam.transform.right * 0.4f);
+				startPos = cam.transform.position;
+				endPos = elvFrontPos + elevatorDir.ToVector3();
 
-				float lookTimer = 0f;
-				Vector3 lookStartPos = cam.transform.position; // Start from current pos
-				while (lookTimer < lookAroundTime)
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(-15f, elevatorFacingDir.ToDegrees() + 12f, 0f); // Leans a bit to the right
+
+				maxTs[0] = ENTRANCE_TO_ELEVATOR_POSITION;
+				maxTs[1] = ENTRANCE_TO_ELEVATOR_ROTATION;
+
+				// The player get a little closer to the elevator, curiously to enter it (first, facing to the right upward)
+				// ANIMATION: A slight smoothness with a bounce-out for the rotation;
+				while (finishedTimes < maxIndex)
 				{
-					lookTimer += Time.deltaTime;
-					float p = lookTimer / lookAroundTime;
+					finishedTimes = 0;
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
+						}
+						else
+							finishedTimes++;
+					}
 
-					// Move to final position
-					cam.transform.position = Vector3.Lerp(lookStartPos, lookAroundTargetPos, p);
+					float posDelta = Easing.EaseInCubic(deltas[0]);
+					float rotDelta = Easing.EaseOutBack(deltas[1]); // Apply bounce-out easing
 
-					// Look from left to right
-					cam.transform.rotation = Quaternion.Slerp(lookLeft, lookRight, p);
+					cam.transform.position = Vector3.Lerp(startPos, endPos, posDelta);
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, rotDelta);
 
-					// Add a slower headbob
-					float headbobOffset = Mathf.Sin(Time.time * 2f) * 0.05f;
-					cam.transform.position += new Vector3(0, headbobOffset, 0);
+					// Apply Headbob
+					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
+					cam.transform.position += bobOffset;
 
 					yield return null;
 				}
 
+				// ------- SECOND LOOK -------
+				startPos = cam.transform.position;
+				endPos = elvFrontPos - elevatorDir.ToVector3() * 1.25f;
+
+				rotStart = cam.transform.rotation;
+				// Create an intermediate rotation for the curve
+				Quaternion rotMid_look2 = Quaternion.Euler(10f, rotStart.eulerAngles.y, 0f); // Looks down slightly
+				rotEnd = Quaternion.Euler(-15f, elevatorFacingDir.ToDegrees() - 15f, 0f); // Leans a bit to the left this time
+
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				finishedTimes = 0;
+
+				// The player get even more closer to the elevator, curiously to enter it (facing to the left upward, this time)
+				// ANIMATION: A slight smoothness with easing-in and bounce-out for the rotation, with a small curve. Position Slerps.
+				while (finishedTimes < maxIndex)
+				{
+					finishedTimes = 0;
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
+						}
+						else
+							finishedTimes++;
+					}
+
+					float posDelta = Easing.EaseOutCubic(deltas[0]); // Smooth position movement
+					float rotDelta = Easing.EaseOutBackWeak(deltas[1]); // Custom curve for rotation
+
+					// Slerp for a more curved positional path.
+					cam.transform.position = Vector3.Slerp(startPos, endPos, posDelta);
+
+					// Slerp through the intermediate rotation to create the requested curve.
+					Quaternion midPath = Quaternion.Slerp(rotStart, rotMid_look2, rotDelta);
+					Quaternion endPath = Quaternion.Slerp(rotMid_look2, rotEnd, rotDelta);
+					cam.transform.rotation = Quaternion.Slerp(midPath, endPath, rotDelta);
+
+					// Apply Headbob
+					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
+					cam.transform.position += bobOffset;
+
+					yield return null;
+				}
+
+				// ------- Walk to the ELEVATOR ------
+				bobFrequency = 5f; // Faster bob for walking
+				bobMagnitude = 0.06f;
+
+				startPos = cam.transform.position;
+				endPos = elvCenterPos + elevatorDir.ToVector3() * 3.5f;
+
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(25f, elevatorFacingDir.ToDegrees(), 0f); // Faces down while walking to the elevator
+
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				finishedTimes = 0;
+
+				maxTs[0] = ENTRANCE_TO_ELEVATOR_POSITION * 1.25f;
+				maxTs[1] = ENTRANCE_TO_ELEVATOR_ROTATION * 1.55f;
+
+				// The player gets even closer to the elevator (almost getting fully in). Then, Baldi should appear next
+				// ANIMATION: Easing-out for rotation; position moves slightly faster (easing-in).
+				while (finishedTimes < maxIndex)
+				{
+					finishedTimes = 0;
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
+						}
+						else
+							finishedTimes++;
+					}
+
+					float posDelta = Easing.EaseInOutCubic(deltas[0]); // Starts slow, ends fast
+					float rotDelta = Easing.EaseOutCubic(deltas[1]); // Starts fast, ends slow
+
+					cam.transform.position = Vector3.Lerp(startPos, endPos, posDelta);
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, rotDelta);
+
+					// Apply Headbob
+					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
+					cam.transform.position += bobOffset;
+
+					yield return null;
+				}
+
+				if (!explorerMode && slapSound)
+					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(slapSound);
+
+				yield return new WaitForSecondsRealtime(ENTRANCE_TO_ELEVATOR_NOTICE_DELAY);
+
+				bobFrequency = 1.5f; // Calm bob for standing still
+				bobMagnitude = 0.015f;
+
+				Cell[] cellsToSpawnFire = [
+					__instance.Ec.CellFromPosition(__instance.Ec.CellFromPosition(frontOfElevatorPos).position + elevatorDir.PerpendicularList()[0].ToIntVector2()),
+					__instance.Ec.CellFromPosition(__instance.Ec.CellFromPosition(frontOfElevatorPos).position + elevatorDir.PerpendicularList()[1].ToIntVector2()),
+
+					__instance.Ec.CellFromPosition(el.Door.aTile.position + elevatorDir.PerpendicularList()[0].ToIntVector2()),
+					__instance.Ec.CellFromPosition(el.Door.aTile.position + elevatorDir.PerpendicularList()[1].ToIntVector2()),
+				];
+
+				for (int amount = 0; amount < 4; amount++)
+				{
+					for (int i = 0; i < cellsToSpawnFire.Length; i++)
+					{
+						AddFire(cellsToSpawnFire[i], __instance.Ec, 7f); // Instantly spawn fire all around for extra drama or smth
+					}
+				}
+
+				// ------- NOTICE SOMETHING ------
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(0f, elevatorFacingDir.ToDegrees(), 0f); // Faces normal x
+
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				finishedTimes = 0;
+				maxTs[0] = 0f;
+				maxTs[1] = BALDI_ENCOUNTER_NOTICE_ROTATION;
+
+				// The player notices something
+				// ANIMATION: A very weak bounce-out for the rotation;
+				while (finishedTimes < maxIndex)
+				{
+					finishedTimes = 0;
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
+						}
+						else
+							finishedTimes++;
+					}
+
+					float rotDelta = Easing.EaseOutBack(deltas[1]);
+					float weakBounceDelta = Mathf.Lerp(deltas[1], rotDelta, 0.4f); // Blend with linear for a "weak" effect
+
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, weakBounceDelta);
+
+					// Apply Headbob
+					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
+					cam.transform.position += bobOffset;
+
+					yield return null;
+				}
+
+				yield return new WaitForSecondsRealtime(BALDI_ENCOUNTER_NOTICE_DELAY * 1.15f);
+
+				// ------- Slight turn to the left ------
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(2.5f, elevatorFacingDir.ToDegrees() - 16f, 0f); // Faces a little to the left
+
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				finishedTimes = 0;
+				maxTs[0] = 0f;
+				maxTs[1] = BALDI_ENCOUNTER_NOTICE_ROTATION * 0.85f;
+
+				// The player slightly turns left
+				// ANIMATION: A normal easing-in very weak bounce-out for the rotation;
+				while (finishedTimes < maxIndex)
+				{
+					finishedTimes = 0;
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
+						}
+						else
+							finishedTimes++;
+					}
+
+					float rotDelta = Easing.EaseOutBackWeak(deltas[1]); // Custom blend
+
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, rotDelta);
+
+					// Apply Headbob
+					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
+					cam.transform.position += bobOffset;
+
+					yield return null;
+				}
+
+				yield return new WaitForSecondsRealtime(BALDI_ENCOUNTER_NOTICE_DELAY * 0.56f);
+
+				// Spawn Baldi here
+				baldi.transform.position = frontOfElevatorPos;
+
+				// ------- Full Turn to Baldi ------
+				startPos = cam.transform.position; // Position doesn't change here
+
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(0f, elevatorDir.ToDegrees(), 0f); // Dynamically look at Baldi
+
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				finishedTimes = 0;
+				maxTs[0] = 0f;
+				maxTs[1] = BALDI_ENCOUNTER_NOTICE_ROTATION * 1.25f;
+
+				// The player fully turns back and see Baldi!
+				// ANIMATION: A normal easing-in very weak bounce-out for the rotation;
+				while (finishedTimes < maxIndex)
+				{
+					finishedTimes = 0;
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
+						}
+						else
+							finishedTimes++;
+					}
+
+					float rotDelta = Easing.EaseOutBackWeak(deltas[1]); // Reuse custom blend
+
+					cam.transform.position = startPos;
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, rotDelta);
+
+					yield return null;
+				}
+
+				yield return new WaitForSecondsRealtime(BALDI_ENCOUNTER_CONFRONT_DELAY);
+
+				// ------- Backing off by a bit ------
+				bobFrequency = 6f; // Scared, agitated bob
+				bobMagnitude = 0.08f;
+
+				if (explorerMode)
+					goto explorerModeSkip;
+
+				baldi.sprite = baldiSlap;
+				if (slapSound)
+					Singleton<CoreGameManager>.Instance.audMan.PlaySingle(slapSound);
+
+				Vector3 baldi_startPos = baldi.transform.position;
+				Vector3 baldi_endPos = elvFrontPos;
+				baldi_endPos.y = baldi_startPos.y;
+
+				maxIndex = 3;
+				times = new float[maxIndex]; deltas = new float[maxIndex]; maxTs = new float[maxIndex];
+
+				startPos = cam.transform.position;
+				endPos = elvCenterPos - elevatorDir.ToVector3() * 2.25f;
+
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(25f, elevatorDir.ToDegrees() + 80f, 0f);
+
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				finishedTimes = 0;
+
+				maxTs[0] = BALDI_ENCOUNTER_CONFRONT_PLAYERSCARE_POSITION;
+				maxTs[1] = BALDI_ENCOUNTER_CONFRONT_PLAYERSCARE_ROTATION;
+				maxTs[2] = BALDI_ENCOUNTER_CONFRONT_BALDI_POSITION;
+
+				// The player looks away scared as Baldi, then, tries to get inside
+				// ANIMATION: Cam position is linear. Rotation is smooth ease-in weak bounce-out. Baldi is linear.
+				while (finishedTimes < maxIndex)
+				{
+					finishedTimes = 0;
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
+						}
+						else
+							finishedTimes++;
+					}
+
+					if (deltas[1] >= 0.85f && el.Door.IsOpen)
+						el.OpenDoor(false);
+
+
+					float rotDelta = Easing.EaseOutBackWeak(deltas[1]); // Apply smooth curve to rotation
+
+					cam.transform.position = Vector3.Lerp(startPos, endPos, deltas[0]);
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, rotDelta);
+					baldi.transform.position = Vector3.Lerp(baldi_startPos, baldi_endPos, deltas[2]);
+
+					// Apply Headbob
+					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
+					cam.transform.position += bobOffset;
+
+					yield return null;
+				}
+
+				yield return new WaitForSecondsRealtime(POST_ENCOUNTER_DELAY);
+
+				// ------- Slightly lean a bit ------
+				int bangs = 0;
+				float bangDelay = 0f;
+				const float minBangAdd = 0.25f, maxBangAdd = 0.45f, bangMaxDelay = 0.35f;
+
+				bobFrequency = 1.0f; // Calming down
+				bobMagnitude = 0.02f;
+
+				maxIndex = 1;
+				bangs = 0;
+				bangDelay = 0f;
+
+				times = new float[maxIndex]; deltas = new float[maxIndex]; maxTs = new float[maxIndex];
+
+				startPos = cam.transform.position;
+				startPos.y = 5f;
+
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(9.5f, elevatorDir.ToDegrees() + 65f, 0f);
+
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				finishedTimes = 0;
+				maxTs[0] = POST_ENCOUNTER_ROTATION * 0.25f;
+
+				// The player slowly leans a bit up to realize he's still alive
+				// ANIMATION: A normal easing-in-out for the rotation.
+				while (finishedTimes < maxIndex || bangs < 4)
+				{
+					finishedTimes = 0;
+					if (times[0] < maxTs[0])
+					{
+						times[0] += Time.deltaTime;
+						deltas[0] = Mathf.Clamp01(times[0] / maxTs[0]);
+					}
+					else
+						finishedTimes++;
+
+					float rotDelta = Easing.EaseInOutCubic(deltas[0]); // Smooth in and out
+
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, rotDelta);
+
+					bangDelay += Time.deltaTime;
+					if (bangDelay > bangMaxDelay)
+					{
+						el.audMan.PlaySingle(bal_bangDoor);
+						bangDelay -= Random.Range(minBangAdd, maxBangAdd);
+						bangs++;
+					}
+
+					// Apply Headbob
+					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
+					cam.transform.position = startPos + bobOffset;
+
+					yield return null;
+				}
+
+				yield return new WaitForSecondsRealtime(POST_ENCOUNTER_DELAY * 0.65f);
+
+				// ------- Turn back completely ------
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(0f, elevatorDir.ToDegrees(), 0f);
+
+				// Create an intermediate point for the parabolic curve
+				Vector3 midEuler = Vector3.Lerp(rotStart.eulerAngles, rotEnd.eulerAngles, 0.5f);
+				midEuler.x = Mathf.Max(rotStart.eulerAngles.x, rotEnd.eulerAngles.x) + 20f; // Dip down
+				Quaternion rotMid = Quaternion.Euler(midEuler);
+
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				bangs = 0;
+				bangDelay = 0f;
+				finishedTimes = 0;
+				maxTs[0] = POST_ENCOUNTER_ROTATION * 0.85f;
+
+				// The player slowly looks at the elevator door
+				// ANIMATION: Parabolic curve for rotation, easing in and out.
+				while (finishedTimes < maxIndex || bangs < 10)
+				{
+					finishedTimes = 0;
+					if (times[0] < maxTs[0])
+					{
+						times[0] += Time.deltaTime;
+						deltas[0] = Mathf.Clamp01(times[0] / maxTs[0]);
+
+						// Apply Headbob in here, so the position of the camera can be properly resetted
+						bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
+						cam.transform.position = startPos + bobOffset;
+					}
+					else
+					{
+						finishedTimes++;
+						cam.transform.position = startPos;
+					}
+
+					float rotDelta = Easing.EaseInOutCubic(deltas[0]);
+
+					// Quadratic Bezier curve using Slerp for a smooth parabolic path
+					Quaternion part1 = Quaternion.Slerp(rotStart, rotMid, rotDelta);
+					Quaternion part2 = Quaternion.Slerp(rotMid, rotEnd, rotDelta);
+					cam.transform.rotation = Quaternion.Slerp(part1, part2, rotDelta);
+
+					bangDelay += Time.deltaTime;
+					if (bangDelay > bangMaxDelay)
+					{
+						el.audMan.PlaySingle(bal_bangDoor);
+						bangDelay -= Random.Range(minBangAdd, maxBangAdd);
+						bangs++;
+					}
+
+					yield return null;
+				}
+
+				cam.transform.position = startPos;
+
+				// ---- All subsequent loops will use EaseInOutCubic for a smooth, standard feel ----
+				// No more head bob :()
+				el.audMan.PlaySingle(bal_explosionOutside);
+				__instance.StartCoroutine(TriggerExplosions());
+
+			explorerModeSkip:
+
+				yield return new WaitForSecondsRealtime(POST_ENCOUNTER_DELAY * (explorerMode ? 2.25f : 0.25f));
+
+				//  -------Turn a bit to the right while hearing the explosion -------
+
+
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(-7f, elevatorDir.ToDegrees() + 15f, 0f);
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				maxTs[0] = EXPLOSION_ROTATION * 0.35f;
+
+				finishedTimes = 0;
+
+				while (finishedTimes < maxIndex)
+				{
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
+						}
+						else
+							finishedTimes++;
+					}
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, Easing.EaseInOutCubic(deltas[0]));
+					yield return null;
+				}
+
+				yield return new WaitForSecondsRealtime(POST_ENCOUNTER_DELAY * 0.75f);
+
+				// ------- Turn a bit to the left while hearing the explosion -------
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(-7f, elevatorDir.ToDegrees() - 15f, 0f);
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				maxTs[0] = EXPLOSION_ROTATION;
+
+				finishedTimes = 0;
+
+				while (finishedTimes < maxIndex)
+				{
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
+						}
+						else
+							finishedTimes++;
+					}
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, Easing.EaseInOutCubic(deltas[0]));
+					yield return null;
+				}
+
+				yield return new WaitForSecondsRealtime(POST_ENCOUNTER_DELAY * 2.5f);
+
+				// ----- Reset camera rotation once again -----
+				rotStart = cam.transform.rotation;
+				rotEnd = Quaternion.Euler(0f, elevatorDir.ToDegrees(), 0f);
+				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
+				maxTs[0] = 2.75f;
+
+				finishedTimes = 0;
+
+				while (finishedTimes < maxIndex)
+				{
+					for (int i = 0; i < maxIndex; i++)
+					{
+						if (times[i] < maxTs[i])
+						{
+							times[i] += Time.deltaTime;
+							deltas[i] = times[i] / maxTs[i];
+						}
+						else
+							finishedTimes++;
+					}
+					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, Easing.EaseInOutCubic(deltas[0]));
+					yield return null;
+				}
+
+				while (el.audMan.AnyAudioIsPlaying)
+					yield return null;
+
+
+				// yield return new WaitForSecondsRealtime(9999f); // Intentional debug yield to freeze the cutscene for long enough
+
 				// ---------------------------------------------------------------------
-				// SHOT 2: THE REVEAL (Image 3)
-				// A noise is heard, the player snaps around to see Baldi.
+				// PHASE 3: CLEANUP & TRANSITION
 				// ---------------------------------------------------------------------
 
-				// NOTE: Play the single ruler slap sound here!
-				// el.audioDevice.PlayOneShot(yourSlapSound);
-
-				// Lean head up slightly
-				yield return man.StartCoroutine(RotateCamera(cam.transform, cam.transform.rotation * Quaternion.Euler(-10, 0, 0), 0.2f));
-				yield return new WaitForSeconds(0.3f);
-
-				// Teleport Baldi to the entrance while the player isn't looking
-				Vector3 baldiSpawnPos = el.transform.position + (el.Door.direction.ToVector3() * 4f);
-				baldi.transform.position = baldiSpawnPos;
-
-				// Snap turn to look at Baldi
-				Quaternion lookAtBaldiRotation = Quaternion.LookRotation(baldi.transform.position - cam.transform.position);
-				yield return man.StartCoroutine(RotateCamera(cam.transform, lookAtBaldiRotation, snapTurnTime));
-
-				// Make Baldi look at the player
-				baldi.transform.LookAt(new Vector3(cam.transform.position.x, baldi.transform.position.y, cam.transform.position.z));
-
-				// ---------------------------------------------------------------------
-				// SHOT 3: THE STANDOFF & ESCAPE (Image 4 & After)
-				// Baldi charges, the doors close, chaos ensues.
-				// ---------------------------------------------------------------------
-
-				// Start a "spooked" camera shake
-				Coroutine shakeRoutine = man.StartCoroutine(SpookedCameraShake(cam.transform, 0.03f, 5f));
-
-				// Wait for the standoff period
-				yield return new WaitForSeconds(standoffTime);
-
-				// Baldi slides forward slightly, then charges
-				Vector3 baldiSlidePos = baldi.transform.position - baldi.transform.forward * 1f;
-				Vector3 baldiChargeTargetPos = el.transform.position + el.Door.direction.ToVector3(); // Target is the door threshold
-
-				// Animate Baldi's movement (as a coroutine so it doesn't block)
-				man.StartCoroutine(AnimateBaldiCharge(man, baldi.transform, baldiSlidePos, baldiChargeTargetPos, baldiChargeTime));
-
-				// Wait a brief moment, then close the doors!
-				yield return new WaitForSeconds(doorCloseDelay);
-
-				// Player panics and looks away (upwards)
-				man.StopCoroutine(shakeRoutine); // Stop the shake
-				cam.transform.localRotation = lookAtBaldiRotation; // Reset from shake
-				yield return man.StartCoroutine(RotateCamera(cam.transform, cam.transform.rotation * Quaternion.Euler(-45, 0, 0), 0.3f));
-
-				el.Close(); // Close the doors! This should play the door close sound.
-
-				// Wait for the doors to fully close
-				yield return new WaitForSeconds(1.5f);
-
-				// NOTE: Play a few rapid "banging" sounds on the door
-				// for (int i = 0; i < 3; i++) {
-				//     el.audioDevice.PlayOneShot(yourBangSound);
-				//     yield return new WaitForSeconds(Random.Range(0.2f, 0.4f));
-				// }
-
-				// Player realizes they are safe and slowly looks back at the door
-				Quaternion lookAtDoorRotation = Quaternion.LookRotation(el.Door.direction.ToVector3());
-				yield return man.StartCoroutine(RotateCamera(cam.transform, lookAtDoorRotation, 2.0f));
-
-				// Deactivate Baldi now that he's off-screen and his role is done
-				baldi.gameObject.SetActive(false);
-
-				// NOTE: Play distant explosion sounds
-				// el.audioDevice.PlayOneShot(yourExplosionSound);
-				yield return new WaitForSeconds(2f);
-
-				// ---------------------------------------------------------------------
-				// PHASE 4: CLEANUP & TRANSITION
-				// ---------------------------------------------------------------------
-				Debug.Log("BBT Cutscene Finished. Starting elevator travel.");
-
-				Shader.SetGlobalColor("_SkyboxColor", Color.black);
-
-				cam.transform.position = Vector3.down * 20f;
-				cam.transform.forward = Vector3.down;
-				Singleton<CoreGameManager>.Instance.GetCamera(0).UpdateTargets(cam.transform, 24);
+				var ogCam = Singleton<CoreGameManager>.Instance.GetCamera(0);
+				ogCam.transform.position = cam.transform.position;
+				ogCam.transform.rotation = cam.transform.rotation;
+				player.transform.position = ogCam.transform.position;
+				player.transform.rotation = ogCam.transform.rotation;
 				Singleton<MusicManager>.Instance.StopMidi();
 				Singleton<MusicManager>.Instance.StopFile();
 
 				Singleton<PlayerFileManager>.Instance.subtitles = subs;
 				Object.Destroy(cam); // Only the camera lol
 
+				PlayerVisual.GetPlayerVisual(0).gameObject.SetActive(true);
 				PlayerVisual.GetPlayerVisual(0).SetEmotion(0);
 
 				LoadNextLevel(man);
-			}
 
-
-			// ---------------------------------------------------------------------
-			// HELPER COROUTINES - Place these in the same class
-			// ---------------------------------------------------------------------
-
-			IEnumerator MoveWithHeadbob(Transform target, Vector3 startPos, Vector3 endPos, float duration, float bobMagnitude, float bobFrequency)
-			{
-				float timer = 0f;
-				while (timer < duration)
+				// IENUMERATOR HELPERS
+				IEnumerator TriggerExplosions()
 				{
-					timer += Time.deltaTime;
-					float p = timer / duration;
-					p = Mathf.Sin(p * Mathf.PI * 0.5f); // Ease-out effect
-
-					Vector3 newPos = Vector3.Lerp(startPos, endPos, p);
-
-					// Add headbob
-					float headbobOffset = Mathf.Sin(Time.time * bobFrequency) * bobMagnitude;
-					newPos.y += headbobOffset;
-
-					target.position = newPos;
-					yield return null;
+					// Re-utilize bangs variable here to trigger many explosion sounds at random intervals
+					bangs = 0;
+					bangDelay = 0f;
+					int max = Random.Range(3, 5);
+					while (bangs <= max)
+					{
+						bangDelay += Time.deltaTime;
+						if (bangDelay > 0.65f)
+						{
+							bangDelay -= 0.65f + Random.Range(-0.25f, 0.95f);
+							el.audMan.PlaySingle(bal_explosionOutside);
+							bangs++;
+						}
+						yield return null;
+					}
 				}
-				target.position = endPos; // Snap to final position
-			}
-
-			IEnumerator RotateCamera(Transform target, Quaternion targetRotation, float duration)
-			{
-				float timer = 0f;
-				Quaternion startRotation = target.rotation;
-				while (timer < duration)
-				{
-					timer += Time.deltaTime;
-					float p = Mathf.SmoothStep(0, 1, timer / duration);
-					target.rotation = Quaternion.Slerp(startRotation, targetRotation, p);
-					yield return null;
-				}
-				target.rotation = targetRotation;
-			}
-
-			IEnumerator SpookedCameraShake(Transform camTransform, float magnitude, float frequency)
-			{
-				Vector3 originalPos = camTransform.localPosition;
-				while (true)
-				{
-					float x = (Mathf.PerlinNoise(Time.time * frequency, 0) * 2 - 1) * magnitude;
-					float y = (Mathf.PerlinNoise(0, Time.time * frequency) * 2 - 1) * magnitude;
-					camTransform.localPosition = originalPos + new Vector3(x, y, 0);
-					yield return null;
-				}
-			}
-
-			IEnumerator AnimateBaldiCharge(MainGameManager man, Transform baldi, Vector3 slidePos, Vector3 chargePos, float chargeTime)
-			{
-				// Brief hesitation slide
-				float slideDuration = 0.5f;
-				yield return man.StartCoroutine(MoveTransform(baldi, baldi.position, slidePos, slideDuration));
-
-				// Full charge
-				yield return man.StartCoroutine(MoveTransform(baldi, slidePos, chargePos, chargeTime));
-			}
-
-			IEnumerator MoveTransform(Transform target, Vector3 start, Vector3 end, float duration)
-			{
-				float timer = 0f;
-				while (timer < duration)
-				{
-					timer += Time.deltaTime;
-					target.position = Vector3.Lerp(start, end, timer / duration);
-					yield return null;
-				}
-				target.position = end;
 			}
 
 			return false;
@@ -350,6 +790,17 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			if (___elevatorsClosed == 1)
 			{
 				Shader.SetGlobalColor("_SkyboxColor", Color.red);
+				// Workaround for factory
+				var levelbox = Object.FindObjectOfType<Structure_LevelBox>();
+				if (levelbox)
+				{
+					foreach (var meshRenderer in levelbox.GetComponentsInChildren<MeshRenderer>())
+					{
+						if (meshRenderer.material.shader.name == "Shader Graphs/Standard")
+							meshRenderer.material.SetColor("_TextureColor", Color.red);
+					}
+				}
+
 				Singleton<MusicManager>.Instance.SetSpeed(0.1f);
 				__instance.StartCoroutine(___ec.LightChanger(___ec.AllExistentCells(), 0.2f));
 				if (__instance.levelObject.finalLevel)
@@ -358,6 +809,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			}
 			if (___elevatorsClosed == 2)
 			{
+				___ec.SetTimeLimit(9999f);
+
 				Singleton<MusicManager>.Instance.StopFile(); // Stop quiet noise
 				Singleton<MusicManager>.Instance.QueueFile(chaos1, true);
 
@@ -439,8 +892,6 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						Debug.LogException(e);
 					}
 				}
-
-				___ec.SetTimeLimit(9999f);
 				___ec.StartCoroutine(SpawnFires());
 				if (baldiToFollow)
 					___ec.StartCoroutine(DangerousAngryBaldiAnimation(___ec, baldiToFollow));
@@ -455,6 +906,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				float cooldown = fireCooldown;
 				float maxCooldown = fireCooldown;
 				var cs = ___ec.AllTilesNoGarbage(false, true);
+
+				foreach (var elevator in ___ec.elevators) // Fire shouldn't spawn in the elevators' entrances
+				{
+					cs.Remove(elevator.Door.aTile);
+					cs.Remove(___ec.CellFromPosition(elevator.Door.aTile.position + elevator.Door.direction.PerpendicularList()[0].ToIntVector2()));
+					cs.Remove(___ec.CellFromPosition(elevator.Door.aTile.position + elevator.Door.direction.PerpendicularList()[1].ToIntVector2()));
+				}
+
 				while (cs.Count != 0)
 				{
 					cooldown -= Time.deltaTime * ___ec.EnvironmentTimeScale;
@@ -621,7 +1080,54 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		internal static SoundObject angryBal;
 		internal static GameObject fire;
 		internal static Texture2D[] gateTextures = new Texture2D[3];
-		internal static GameObject placeholderBaldi;
+		internal static SpriteRenderer placeholderBaldi;
+		internal static Sprite cardboardBaldi;
+		internal static SoundObject bal_bangDoor, bal_explosionOutside;
 		internal static Sprite[] angryBaldiAnimation;
+	}
+
+	static class Easing
+	{
+		// I don't know where to put this, so I'll put right below the main patch class.
+		// This has a BUNCH of ease methods for bouncing and stuff
+
+		private const float s = 1.70158f; // Standard overshoot value for ease back
+
+		public static float EaseInBack(float t)
+		{
+			return t * t * ((s + 1) * t - s);
+		}
+
+		public static float EaseOutBack(float t)
+		{
+			return 1 + ((--t) * t * ((s + 1) * t + s));
+		}
+
+		public static float EaseInOutQuad(float t)
+		{
+			return t < 0.5f ? 2 * t * t : -1 + (4 - 2 * t) * t;
+		}
+
+		public static float EaseOutCubic(float t)
+		{
+			return (--t) * t * t + 1;
+		}
+
+		public static float EaseInCubic(float t)
+		{
+			return t * t * t;
+		}
+
+		public static float EaseInOutCubic(float t)
+		{
+			return t < 0.5f ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+		}
+
+		// Custom blend for a soft start and a weak bounce at the end
+		public static float EaseOutBackWeak(float t)
+		{
+			// Lerp between a smooth ease-in and a bounce-out based on progress
+			return Mathf.Lerp(EaseInCubic(t), EaseOutBack(t), t);
+		}
 	}
 }

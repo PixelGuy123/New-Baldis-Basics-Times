@@ -23,9 +23,10 @@ namespace BBTimes.CustomContent.CustomItems
 
             textMesh = ObjectCreationExtensions.CreateTextMeshProUGUI(Color.white);
             textMesh.transform.SetParent(canvas.transform);
-            textMesh.transform.localPosition = new(0f, 90f);
-            textMesh.rectTransform.sizeDelta = new(400f, 50f);
+            textMesh.transform.localPosition = new(0f, 65f);
+            textMesh.rectTransform.sizeDelta = new(500f, 50f);
             textMesh.alignment = TextAlignmentOptions.Center;
+            textMesh.gameObject.SetActive(false);
 
             var localizer = textMesh.gameObject.AddComponent<TextLocalizer>();
             localizer.key = "UglyPicture_reaction";

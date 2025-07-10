@@ -176,12 +176,6 @@ namespace BBTimes
 				if (lds.Length == 0)
 					return;
 
-#if CHEAT
-				Debug.Log($"Level Object loaded as: {floorName} with num: {floorNum}. LevelObj name: {ld.name}");
-				Debug.Log("------- ITEM DATA -------");
-				Debug.Log("Floor " + floorName);
-				ld.shopItems.Do(x => Debug.Log($"{x.selection.itemType} >> {x.selection.price} || weight: {x.weight} || cost: {x.selection.value}"));
-#endif
 				foreach (var ld in lds)
 				{
 					bool shouldDisableOutside = ld.type == LevelType.Factory; // Factory has ceiling, so...
@@ -193,44 +187,43 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 9));
-						return;
+						continue;
 					}
 
 					if (floorName == BBTimesManager.F2)
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 12));
-						return;
+						continue;
 					}
 
 					if (floorName == BBTimesManager.F3)
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(10, 13));
-						return;
+						continue;
 					}
 
 					if (floorName == BBTimesManager.F4)
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(10, 15));
-						return;
+						continue;
 					}
 
 					if (floorName == BBTimesManager.F5)
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(12, BBTimesManager.MaximumNumballs));
-						return;
+						continue;
 					}
 
-					// if (floorName == BBTimesManager.END)
-					// {
-
-					// 	// Custom datas
-					// 	ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 14));
-					// 	return;
-					// }
+					if (floorName == BBTimesManager.END)
+					{
+						// Custom datas
+						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 14));
+						continue;
+					}
 				}
 
 			});
@@ -305,9 +298,9 @@ namespace BBTimes
 					sco.shopItems = sco.shopItems.AddToArray(floordata.ShopItems[i]);
 				}
 
-				// ******* WORKAROUND: Since Endless reuses a lot of level objects, they will be skipped until the api releases a fix or method to prevent such problem *******
-				if (floorName == BBTimesManager.END)
-					return;
+				// Old workaround for api 8.1.x
+				// if (floorName == BBTimesManager.END)
+				//	return;
 
 
 				// *************** ELEMENTS THAT DEPENDS IN LEVEL OBJECTS ******************

@@ -66,8 +66,8 @@ namespace BBTimes.CustomContent.Objects
         {
             if (!linkedNotebook.collected)
             {
-                linkedNotebook.sphereCollider.enabled = reveal; // Easiest way to disable Notebook click
-                linkedNotebook.sprite.enabled = reveal;
+                linkedNotebook.sprite.gameObject.SetActive(reveal);
+                linkedNotebook.sphereCollider.enabled = reveal;
             }
         }
 

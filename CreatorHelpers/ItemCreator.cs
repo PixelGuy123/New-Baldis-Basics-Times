@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -66,7 +67,7 @@ namespace BBTimes.Helpers
 				.Split(' ') // Remove any spaces
 				.Join(delimiter: string.Empty); // Put all together into a single string
 
-			var duplicate = item.item.DuplicatePrefab();
+			Item duplicate = item.item.SafeDuplicatePrefab(true);
 			it.item = duplicate;
 			it.item.name = it.name;
 

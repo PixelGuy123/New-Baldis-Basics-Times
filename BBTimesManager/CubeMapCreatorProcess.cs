@@ -11,6 +11,7 @@ namespace BBTimes.Manager
 		static void CreateCubeMaps()
 		{
 			var F3Map = AssetLoader.CubemapFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("cubemap_night.png")));
+			var twilight = GenericExtensions.FindResourceObjectByName<Cubemap>("Cubemap_Twilight");
 
 			// Add lightings outside for GameManagers
 			foreach (var man in GenericExtensions.FindResourceObjects<SceneObject>())
@@ -22,13 +23,13 @@ namespace BBTimes.Manager
 				//	comp.mapForToday = ObjectCreationExtension.defaultCubemap;
 				//	continue;
 				//}
-				if (man.levelTitle == F2)
+				if (man.levelTitle == F2 || man.levelTitle == F5)
 				{
 					comp.outsideLighting = new Color(0.7f, 0.7f, 0.7f, 1f);
-					man.skybox = GenericExtensions.FindResourceObjectByName<Cubemap>("Cubemap_Twilight");
+					man.skybox = twilight;
 					continue;
 				}
-				if (man.levelTitle == F3)
+				if (man.levelTitle == F3 || man.levelTitle == F4)
 				{
 					man.skybox = F3Map;
 					comp.outsideLighting = new Color(0.45f, 0.45f, 0.45f, 1f);

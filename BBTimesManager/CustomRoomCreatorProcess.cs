@@ -12,6 +12,7 @@ using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager.InternalClasses.LevelTypeWeights;
+using BBTimes.ModPatches.NpcPatches;
 using BBTimes.Plugin;
 using EditorCustomRooms;
 using HarmonyLib;
@@ -967,10 +968,13 @@ namespace BBTimes.Manager
 			// Sweep's Closet
 			var sweepCloset = GenericExtensions.FindResourceObject<GottaSweep>().potentialRoomAssets[0].selection;
 
-			room = GetAllAssets(GetRoomAsset("Closet"), sweepCloset.maxItemValue, 100, sweepCloset.roomFunctionContainer, autoSizeLimitControl: 5.75f);
+			room = GetAllAssets(GetRoomAsset("Closet"), sweepCloset.maxItemValue, 100, sweepCloset.roomFunctionContainer, autoSizeLimitControl: 5.75f, throwIfNoRoomFound: false);
 
-			room[0].selection.AddRoomFunctionToContainer<HighCeilingRoomFunction>().ceilingHeight = 1;
-			room[0].selection.AddRoomFunctionToContainer<RandomPosterFunction>().posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Closet", "sweepSad.png"))])];
+			if (room.Count != 0)
+			{
+				room[0].selection.AddRoomFunctionToContainer<HighCeilingRoomFunction>().ceilingHeight = 1;
+				room[0].selection.AddRoomFunctionToContainer<RandomPosterFunction>().posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Closet", "sweepSad.png"))])];
+			}
 
 			room.ForEach(x =>
 			{
@@ -1109,7 +1113,7 @@ namespace BBTimes.Manager
 			// GYM
 			sets = RegisterSpecialRoom("BasketballArea", Color.cyan);
 
-			room = GetAllAssets(GetRoomAsset("BasketballArea"), 2, 55, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "mapIcon_basket.png")) : null, squaredShape: true, keepTextures: true);
+			room = GetAllAssets(GetRoomAsset("BasketballArea"), 2, 55, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "mapIcon_basket.png")) : null, squaredShape: true, keepTextures: true, autoSizeLimitControl: -1);
 			swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = baldiBall.transform, weight = 100 }], prefabToSwap = basketballPile.transform };
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("BasketballArea", "dirtyGrayFloor.png"));
 			AddTextureToEditor("dirtyGrayFloor", floorTex);
@@ -1144,7 +1148,7 @@ namespace BBTimes.Manager
 			// Forest Area
 			sets = RegisterSpecialRoom("Forest", Color.cyan);
 
-			room = GetAllAssets(GetRoomAsset("Forest"), 75, 1, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("Forest", "mapIcon_trees.png")) : null, squaredShape: true, keepTextures: true);
+			room = GetAllAssets(GetRoomAsset("Forest"), 75, 1, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("Forest", "mapIcon_trees.png")) : null, squaredShape: true, keepTextures: true, autoSizeLimitControl: -1);
 			//Swap for 99 trees
 			swap = new BasicObjectSwapData() { chance = 0.01f, potentialReplacements = [new() { selection = treeEasterEgg.transform, weight = 100 }], prefabToSwap = tree.transform };
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("Forest", "treeWall.png"));
@@ -1228,7 +1232,7 @@ namespace BBTimes.Manager
 
 			commonRoomWeight = Storage.IsChristmas ? 165 : 75;
 
-			room = GetAllAssets(GetRoomAsset("SnowyPlayground"), commonRoomWeight, 1, cont: playgroundClonedRoomContainer, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snow.png")) : null, squaredShape: true, keepTextures: true);
+			room = GetAllAssets(GetRoomAsset("SnowyPlayground"), commonRoomWeight, 1, cont: playgroundClonedRoomContainer, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "mapIcon_snow.png")) : null, squaredShape: true, keepTextures: true, autoSizeLimitControl: -1);
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowyPlaygroundFloor.png"));
 			AddTextureToEditor("snowyPlaygroundFloor", floorTex);
 
@@ -1275,7 +1279,7 @@ namespace BBTimes.Manager
 
 
 			// TODO: Add variants of this special room, so it doesn't crash
-			//room = GetAllAssets(GetRoomAsset("IceRink"), commonRoomWeight, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "mapIcon_iceRink.png")) : null, squaredShape: true, keepTextures: true);
+			//room = GetAllAssets(GetRoomAsset("IceRink"), commonRoomWeight, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "mapIcon_iceRink.png")) : null, squaredShape: true, keepTextures: true, autoSizeLimitControl: -1);
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "IceRinkFloor.png"));
 			AddTextureToEditor("IceRinkFloor", floorTex);
 
@@ -1336,8 +1340,9 @@ namespace BBTimes.Manager
 
 			Superintendent.AddAllowedRoom(sets.category);
 			CameraStand.allowedRoomsToSpawn.Add(sets.category);
+			ChalkfacePatch.allowedClassroomCategories.Add(sets.category);
 
-			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: -1f);
+			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: 8f);
 			// Workaround to not have to edit every focus room layout lol
 			var redCouchprefab = Resources.FindObjectsOfTypeAll<RendererContainer>().First(x => x.name == "RedCouch");
 			room.ForEach(foc => foc.selection.basicObjects.ForEach(basO => { if (basO.prefab.name == "Couch") basO.prefab = redCouchprefab.transform; }));
@@ -1353,8 +1358,9 @@ namespace BBTimes.Manager
 
 			Superintendent.AddAllowedRoom(sets.category);
 			CameraStand.allowedRoomsToSpawn.Add(sets.category);
+			ChalkfacePatch.allowedClassroomCategories.Add(sets.category);
 
-			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: -1f);
+			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: 8f);
 
 			RegisterFalseClass();
 			addAsPowerReceiver(sets.category);
@@ -1497,7 +1503,7 @@ namespace BBTimes.Manager
 				if (classWeightPre == null)
 					throw new System.ArgumentException("Could not find a special room instance with " + name);
 
-				var room = GetAllAssets(GetRoomAsset(name), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: classWeightPre.selection.keepTextures, squaredShape: true);
+				var room = GetAllAssets(GetRoomAsset(name), classWeightPre.selection.maxItemValue, classWeightPre.weight, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: classWeightPre.selection.keepTextures, squaredShape: true, autoSizeLimitControl: -1f);
 
 				room.ForEach(x =>
 				{
@@ -1621,7 +1627,7 @@ namespace BBTimes.Manager
 		{
 			for (int i = 0; i < assets.Count; i++)
 			{
-				if (assets[i].selection.category != RoomCategory.Special && assets[i].selection.GetRoomSize().Magnitude() >= averageGiven)
+				if (assets[i].selection.GetRoomSize().Magnitude() >= averageGiven)
 				{
 					Object.Destroy(assets[i].selection); // Remove the asset since it's never going to be used anyways (free up memory)
 					assets.RemoveAt(i--);
@@ -1673,7 +1679,7 @@ namespace BBTimes.Manager
 			return settings;
 		}
 
-		static List<WeightedRoomAsset> GetAllAssets(string path, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null, bool keepTextures = false, bool squaredShape = false, float autoSizeLimitControl = 12f)
+		static List<WeightedRoomAsset> GetAllAssets(string path, int maxValue, int assetWeight, bool isOffLimits = false, RoomFunctionContainer cont = null, bool isAHallway = false, bool secretRoom = false, Texture2D mapBg = null, bool keepTextures = false, bool squaredShape = false, float autoSizeLimitControl = 12f, bool throwIfNoRoomFound = true)
 		{
 			List<WeightedRoomAsset> assets = [];
 			RoomFunctionContainer container = cont;
@@ -1713,7 +1719,7 @@ namespace BBTimes.Manager
 			if (autoSizeLimitControl > 0f && !plug.enableBigRooms.Value)
 				RemoveBigRooms(assets, autoSizeLimitControl);
 
-			if (assets.Count == 0)
+			if (throwIfNoRoomFound && assets.Count == 0)
 				throw new System.ArgumentOutOfRangeException($"RoomAssets loaded from path: {path} resulted in 0 rooms loaded in.");
 
 			return assets;

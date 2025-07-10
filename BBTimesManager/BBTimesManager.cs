@@ -233,12 +233,6 @@ namespace BBTimes.Manager
 			// Fence texture
 			man.Add("Tex_Fence", GenericExtensions.FindResourceObjectByName<Texture2D>("fence"));
 
-			// Baldi Super Duper Rare Placeholder
-			var originalBaldi = GenericExtensions.FindResourceObject<Baldi>();
-			MainGameManagerPatches.placeholderBaldi = ObjectCreationExtensions.CreateSpriteBillboard(originalBaldi.spriteRenderer[0].sprite).gameObject;
-			MainGameManagerPatches.placeholderBaldi.ConvertToPrefab(true);
-			MainGameManagerPatches.placeholderBaldi.name = "PlaceholderBaldi";
-
 			// Baldi Super Angry Animation
 			MainGameManagerPatches.angryBaldiAnimation = TextureExtensions.LoadSpriteSheet(9, 8, 30f, MiscPath, TextureFolder, GetAssetName("baldiSuperAngry.png"));
 
@@ -413,6 +407,15 @@ namespace BBTimes.Manager
 			slipMatPre.audSlip = man.Get<SoundObject>("slipAud");
 			slipMatPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(9.9f, 10f, 9.9f), true);
 			man.Add("SlipperyMatPrefab", slipMatPre);
+
+			// Baldi Super Duper Rare Placeholder
+			MainGameManagerPatches.placeholderBaldi = ObjectCreationExtensions.CreateSpriteBillboard(null);
+			MainGameManagerPatches.placeholderBaldi.gameObject.ConvertToPrefab(true);
+			MainGameManagerPatches.placeholderBaldi.name = "PlaceholderBaldi";
+
+			MainGameManagerPatches.bal_bangDoor = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_NormalEndingCutscene_Bang.wav")), string.Empty, SoundType.Effect, Color.white);
+			MainGameManagerPatches.bal_explosionOutside = man.Get<SoundObject>("audExplosion");
+			MainGameManagerPatches.cardboardBaldi = AssetLoader.SpriteFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("baldiCutOut.png")), Vector2.one * 0.5f, 20f);
 
 
 			static void AddRule(string name, string audioName, string vfx) =>

@@ -28,7 +28,7 @@ namespace BBTimes.CustomContent.CustomItems
 		internal Transform renderer;
 
 		[SerializeField]
-		internal float throwSpeed = 35f, throwAcceleration = -15f, lifeTime = 10f, fallLimit = 6.3f, swallowSpeed = 21f, fallGravity = 38f, startHeightSpeed = 11f;
+		internal float throwSpeed = 35f, throwAcceleration = -15f, lifeTime = 10f, fallLimit = 6.3f, swallowSpeed = 500f, fallGravity = 38f, startHeightSpeed = 11f, distanceTolerance = 25f;
 
 		public void SetupPrefab()
 		{
@@ -142,15 +142,7 @@ namespace BBTimes.CustomContent.CustomItems
 				int idx = stuckEntities.FindIndex(x => x.Key == entity);
 				if (idx == -1)
 					return;
-
-				int canvasIndex = canvasesMade.FindIndex(x => x.Key == entity);
-				if (canvasIndex != -1)
-				{
-					Destroy(canvasesMade[canvasIndex].Value.gameObject);
-					canvasesMade.RemoveAt(canvasIndex);
-				}
-				stuckEntities[idx].Key.ExternalActivity.moveMods.Remove(stuckEntities[idx].Value);
-				stuckEntities.RemoveAt(idx);
+				RemoveEntity(idx);
 			}
 		}
 
@@ -179,8 +171,27 @@ namespace BBTimes.CustomContent.CustomItems
 			{
 				var entry = stuckEntities[i];
 				if (entry.Key && entry.Key.transform)
-					entry.Value.movementAddend = (transform.position - entry.Key.transform.position) * swallowSpeed * Time.deltaTime;
+				{
+					Vector3 distance = transform.position - entry.Key.transform.position;
+					if (distance.magnitude <= distanceTolerance)
+						entry.Value.movementAddend = distance * swallowSpeed * Time.deltaTime * ec.EnvironmentTimeScale;
+					else
+						RemoveEntity(i--);
+				}
 			}
+		}
+
+		void RemoveEntity(int index)
+		{
+			Entity entity = stuckEntities[index].Key;
+			int canvasIndex = canvasesMade.FindIndex(x => x.Key == entity);
+			if (canvasIndex != -1)
+			{
+				Destroy(canvasesMade[canvasIndex].Value.gameObject);
+				canvasesMade.RemoveAt(canvasIndex);
+			}
+			stuckEntities[index].Key.ExternalActivity.moveMods.Remove(stuckEntities[index].Value);
+			stuckEntities.RemoveAt(index);
 		}
 
 		readonly List<KeyValuePair<Entity, MovementModifier>> stuckEntities = [];
