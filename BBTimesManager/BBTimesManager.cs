@@ -415,7 +415,7 @@ namespace BBTimes.Manager
 
 			MainGameManagerPatches.bal_bangDoor = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_NormalEndingCutscene_Bang.wav")), string.Empty, SoundType.Effect, Color.white);
 			MainGameManagerPatches.bal_explosionOutside = man.Get<SoundObject>("audExplosion");
-			MainGameManagerPatches.cardboardBaldi = AssetLoader.SpriteFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("baldiCutOut.png")), Vector2.one * 0.5f, 20f);
+			MainGameManagerPatches.cardboardBaldi = AssetLoader.SpriteFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("baldiCutOut.png")), Vector2.one * 0.5f, 34f);
 
 
 			static void AddRule(string name, string audioName, string vfx) =>

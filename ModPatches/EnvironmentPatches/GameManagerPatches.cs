@@ -67,9 +67,10 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 		static bool PlayCutscene(MainGameManager __instance, bool ___allNotebooksFound)
 		{
 			// Only comment this to make it play everywhere for testing!
-			// if (!__instance.levelObject.finalLevel || !___allNotebooksFound) return true;
+			if (!__instance.levelObject.finalLevel || !___allNotebooksFound || BBTimesManager.plug.disableRedEndingCutscene.Value) return true;
 
 			bool explorerMode = Singleton<CoreGameManager>.Instance.currentMode == Mode.Free;
+			__instance.Ec.AddTimeScale(new(0f, 1f, 0f)); // make sure to... well, pause the environment smh
 
 			var elevator = __instance.Ec.elevators.FirstOrDefault(x => x.IsOpen);
 			if (!elevator) // failsafe
@@ -122,7 +123,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			Vector3 frontOfElevatorPos = __instance.Ec.CellFromPosition(elevator.Door.aTile.position + elevatorDir.ToIntVector2()).CenterWorldPosition; // That front of the elevator
 			frontOfElevatorPos.y = explorerMode ?
 			3.9f : // To fit Cardboard Baldi height
-			schoolBaldi.Navigator.Entity.InternalHeight;
+			schoolBaldi.spriteRenderer[0].transform.position.y;
 
 			var baldi = Object.Instantiate(placeholderBaldi);
 			if (explorerMode)
@@ -157,8 +158,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					BALDI_ENCOUNTER_NOTICE_ROTATION = 0.28f,
 
 					BALDI_ENCOUNTER_CONFRONT_DELAY = 1.25f,
-					BALDI_ENCOUNTER_CONFRONT_PLAYERSCARE_ROTATION = 0.45f,
-					BALDI_ENCOUNTER_CONFRONT_PLAYERSCARE_POSITION = 0.55f,
+					BALDI_ENCOUNTER_CONFRONT_PLAYERSCARE_ROTATION = 0.55f,
+					BALDI_ENCOUNTER_CONFRONT_PLAYERSCARE_POSITION = 0.45f,
 					BALDI_ENCOUNTER_CONFRONT_BALDI_POSITION = 0.45f,
 
 					POST_ENCOUNTER_DELAY = 0.95f,
@@ -202,13 +203,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					finishedTimes = 0;
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 
 					float posDelta = Easing.EaseInCubic(deltas[0]);
@@ -243,13 +243,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					finishedTimes = 0;
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 
 					float posDelta = Easing.EaseOutCubic(deltas[0]); // Smooth position movement
@@ -275,7 +274,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				bobMagnitude = 0.06f;
 
 				startPos = cam.transform.position;
-				endPos = elvCenterPos + elevatorDir.ToVector3() * 3.5f;
+				endPos = elvCenterPos + (elevatorDir.ToVector3() * (explorerMode ? -2.25f : 3.5f));
 
 				rotStart = cam.transform.rotation;
 				rotEnd = Quaternion.Euler(25f, elevatorFacingDir.ToDegrees(), 0f); // Faces down while walking to the elevator
@@ -293,16 +292,15 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					finishedTimes = 0;
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 
-					float posDelta = Easing.EaseInOutCubic(deltas[0]); // Starts slow, ends fast
+					float posDelta = Easing.EaseInOutCubic(deltas[0]); // Starts slow, ends... slow lol
 					float rotDelta = Easing.EaseOutCubic(deltas[1]); // Starts fast, ends slow
 
 					cam.transform.position = Vector3.Lerp(startPos, endPos, posDelta);
@@ -335,7 +333,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				{
 					for (int i = 0; i < cellsToSpawnFire.Length; i++)
 					{
-						AddFire(cellsToSpawnFire[i], __instance.Ec, 7f); // Instantly spawn fire all around for extra drama or smth
+						AddFire(cellsToSpawnFire[i], __instance.Ec, 1f); // Instantly spawn fire all around for extra drama or smth
 					}
 				}
 
@@ -345,7 +343,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
 				finishedTimes = 0;
-				maxTs[0] = 0f;
+				maxTs[0] = 1f;
 				maxTs[1] = BALDI_ENCOUNTER_NOTICE_ROTATION;
 
 				// The player notices something
@@ -355,23 +353,18 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					finishedTimes = 0;
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 
 					float rotDelta = Easing.EaseOutBack(deltas[1]);
 					float weakBounceDelta = Mathf.Lerp(deltas[1], rotDelta, 0.4f); // Blend with linear for a "weak" effect
 
 					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, weakBounceDelta);
-
-					// Apply Headbob
-					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
-					cam.transform.position += bobOffset;
 
 					yield return null;
 				}
@@ -384,7 +377,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
 				finishedTimes = 0;
-				maxTs[0] = 0f;
+				maxTs[0] = 1f;
 				maxTs[1] = BALDI_ENCOUNTER_NOTICE_ROTATION * 0.85f;
 
 				// The player slightly turns left
@@ -394,22 +387,17 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					finishedTimes = 0;
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 
 					float rotDelta = Easing.EaseOutBackWeak(deltas[1]); // Custom blend
 
 					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, rotDelta);
-
-					// Apply Headbob
-					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
-					cam.transform.position += bobOffset;
 
 					yield return null;
 				}
@@ -427,7 +415,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
 				finishedTimes = 0;
-				maxTs[0] = 0f;
+				maxTs[0] = 1f;
 				maxTs[1] = BALDI_ENCOUNTER_NOTICE_ROTATION * 1.25f;
 
 				// The player fully turns back and see Baldi!
@@ -437,13 +425,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					finishedTimes = 0;
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 
 					float rotDelta = Easing.EaseOutBackWeak(deltas[1]); // Reuse custom blend
@@ -494,13 +481,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					finishedTimes = 0;
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 
 					if (deltas[1] >= 0.85f && el.Door.IsOpen)
@@ -512,10 +498,6 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 					cam.transform.position = Vector3.Lerp(startPos, endPos, deltas[0]);
 					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, rotDelta);
 					baldi.transform.position = Vector3.Lerp(baldi_startPos, baldi_endPos, deltas[2]);
-
-					// Apply Headbob
-					bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
-					cam.transform.position += bobOffset;
 
 					yield return null;
 				}
@@ -551,14 +533,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				while (finishedTimes < maxIndex || bangs < 4)
 				{
 					finishedTimes = 0;
-					if (times[0] < maxTs[0])
-					{
-						times[0] += Time.deltaTime;
-						deltas[0] = Mathf.Clamp01(times[0] / maxTs[0]);
-					}
-					else
+					times[0] += Time.deltaTime;
+
+					if (times[0] >= maxTs[0])
 						finishedTimes++;
 
+					deltas[0] = Mathf.Clamp01(times[0] / maxTs[0]);
 					float rotDelta = Easing.EaseInOutCubic(deltas[0]); // Smooth in and out
 
 					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, rotDelta);
@@ -600,11 +580,10 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				while (finishedTimes < maxIndex || bangs < 10)
 				{
 					finishedTimes = 0;
+
+					times[0] += Time.deltaTime;
 					if (times[0] < maxTs[0])
 					{
-						times[0] += Time.deltaTime;
-						deltas[0] = Mathf.Clamp01(times[0] / maxTs[0]);
-
 						// Apply Headbob in here, so the position of the camera can be properly resetted
 						bobOffset = new Vector3(0, Mathf.Sin(Time.time * bobFrequency) * bobMagnitude, 0);
 						cam.transform.position = startPos + bobOffset;
@@ -614,6 +593,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 						finishedTimes++;
 						cam.transform.position = startPos;
 					}
+					deltas[0] = Mathf.Clamp01(times[0] / maxTs[0]);
 
 					float rotDelta = Easing.EaseInOutCubic(deltas[0]);
 
@@ -645,7 +625,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				yield return new WaitForSecondsRealtime(POST_ENCOUNTER_DELAY * (explorerMode ? 2.25f : 0.25f));
 
 				//  -------Turn a bit to the right while hearing the explosion -------
-
+				if (explorerMode) // Close the door here
+				{
+					maxIndex = 1;
+					startPos = cam.transform.position;
+					startPos.y = 5f;
+					if (el.Door.IsOpen)
+						el.OpenDoor(false);
+				}
 
 				rotStart = cam.transform.rotation;
 				rotEnd = Quaternion.Euler(-7f, elevatorDir.ToDegrees() + 15f, 0f);
@@ -658,13 +645,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				{
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, Easing.EaseInOutCubic(deltas[0]));
 					yield return null;
@@ -684,13 +670,12 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				{
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, Easing.EaseInOutCubic(deltas[0]));
 					yield return null;
@@ -702,7 +687,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				rotStart = cam.transform.rotation;
 				rotEnd = Quaternion.Euler(0f, elevatorDir.ToDegrees(), 0f);
 				for (int i = 0; i < maxIndex; i++) { times[i] = 0f; deltas[i] = 0f; }
-				maxTs[0] = 2.75f;
+				maxTs[0] = explorerMode ? 0.85f : 2.75f;
 
 				finishedTimes = 0;
 
@@ -710,17 +695,19 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				{
 					for (int i = 0; i < maxIndex; i++)
 					{
-						if (times[i] < maxTs[i])
-						{
-							times[i] += Time.deltaTime;
-							deltas[i] = times[i] / maxTs[i];
-						}
-						else
+						times[i] += Time.deltaTime;
+
+						if (times[i] >= maxTs[i])
 							finishedTimes++;
+
+						deltas[i] = Mathf.Clamp01(times[i] / maxTs[i]);
 					}
 					cam.transform.rotation = Quaternion.Slerp(rotStart, rotEnd, Easing.EaseInOutCubic(deltas[0]));
 					yield return null;
 				}
+
+				if (explorerMode)
+					yield return new WaitForSecondsRealtime(0.75f);
 
 				while (el.audMan.AnyAudioIsPlaying)
 					yield return null;
