@@ -42,7 +42,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		void OnTriggerEnter(Collider other)
 		{
-			if (!initialized) return;
+			if (isHidden) return;
 
 			if (other.CompareTag("Player"))
 			{
@@ -57,7 +57,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		}
 		void OnTriggerExit(Collider other)
 		{
-			if (!initialized) return;
+			if (isHidden) return;
 
 			if (other.CompareTag("Player"))
 			{
@@ -78,6 +78,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		IEnumerator SpawnAnimation(Vector3 expectedPos)
 		{
+			isHidden = false;
 			Vector3 curPos = renderer.transform.position;
 			float t = 0f;
 			while (true)
@@ -107,6 +108,8 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 			Vector3 curPos = renderer.transform.position;
 			Vector3 expectedPos = curPos + Vector3.down * 10f;
 
+			isHidden = true;
+
 			float t = 0f;
 			while (true)
 			{
@@ -131,7 +134,10 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		public void InsertItem(PlayerManager pm, EnvironmentController ec)
 		{
+			if (!initialized || despawned)
+				return;
 
+			Despawn(false);
 		}
 
 		public bool ItemFits(Items item) =>
@@ -146,7 +152,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		[SerializeField]
 		internal SpriteRenderer renderer;
 
-		bool initialized = false, despawned = false;
+		bool initialized = false, despawned = false, isHidden = true;
 
 		public bool Initialized => initialized;
 

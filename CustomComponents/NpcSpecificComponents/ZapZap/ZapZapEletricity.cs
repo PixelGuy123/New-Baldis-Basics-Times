@@ -15,6 +15,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		{
 			if (AffectedEntities.Contains(actMod))
 				return;
+			actMod.entity.AddForce(new((actMod.transform.position - transform.position).normalized, repulsionForce, -repulsionForce));
 
 			var ele = Instantiate(compPre);
 			ele.name = compPre.name;
@@ -27,8 +28,10 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		{
 			base.Despawn();
 			for (int i = 0; i < eles.Count; i++)
+			{
 				if (eles[i])
 					eles[i--].Despawn();
+			}
 		}
 
 		[SerializeField]
@@ -36,6 +39,9 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 
 		public Door AffectedDoor { get; set; }
 		public HashSet<ActivityModifier> AffectedEntities { get; } = [];
+
+		[SerializeField]
+		internal float repulsionForce = 15f;
 
 		readonly List<ZapZapEletrecutationComponent> eles = [];
 		public List<ZapZapEletrecutationComponent> EletrecutationComponents => eles;

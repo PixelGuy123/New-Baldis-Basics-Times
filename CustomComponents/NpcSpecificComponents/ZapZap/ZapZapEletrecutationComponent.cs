@@ -34,12 +34,10 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
 			{
 				var e = other.GetComponent<Entity>();
-				if (e)
+				if (e && PhysicsManager.RaycastEntity(e, transform.position, raycastLayer, QueryTriggerInteraction.Ignore, rayCastRadius, false))
 				{
-					ray.origin = transform.position;
-					ray.direction = (other.transform.position - transform.position).normalized;
-					if (Physics.Raycast(ray, out hit, rayCastRadius, raycastLayer, QueryTriggerInteraction.Ignore) && hit.transform == other.transform)
-						eletricity.CreateEletricity(e.ExternalActivity);
+					eletricity.CreateEletricity(e.ExternalActivity);
+					e.AddForce(new((e.transform.position - transform.position).normalized, repulsionForce, -repulsionForce));
 				}
 			}
 		}
@@ -82,11 +80,11 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		internal SoundObject audEletrecute;
 
 		[SerializeField]
-		internal float timer = 15f, eletricityForce = 16f, rayCastRadius = 50f;
+		internal float timer = 15f, eletricityForce = 0.5f, rayCastRadius = 25f, repulsionForce = 0.85f;
 
 		[SerializeField]
 		[Range(0f, 1f)]
-		internal float slowFactor = 0.65f;
+		internal float slowFactor = 0.95f;
 
 		[SerializeField]
 		internal LayerMask raycastLayer = LayerStorage.principalLookerMask;
@@ -105,8 +103,6 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ZapZap
 		public ActivityModifier Overrider => target;
 
 		EnvironmentController ec;
-		Ray ray = new();
-		RaycastHit hit;
 		float lifeTime;
 	}
 }

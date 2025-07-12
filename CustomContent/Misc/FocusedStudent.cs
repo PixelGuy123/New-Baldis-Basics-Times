@@ -1,6 +1,4 @@
-﻿using BBTimes.CustomComponents;
-using BBTimes.CustomContent.NPCs;
-using BBTimes.CustomContent.RoomFunctions;
+﻿using BBTimes.CustomContent.RoomFunctions;
 using BBTimes.Extensions;
 using UnityEngine;
 
@@ -22,6 +20,10 @@ namespace BBTimes.CustomContent.Misc
 			fun.Setup(this);
 			pos = transform.position;
 			initialized = true;
+
+			activeAppearance = appearanceSet[Random.Range(0, appearanceSet.Length)];
+			renderer.sprite = activeAppearance.Reading;
+			audMan.subtitleColor = activeAppearance.subtitleColor;
 		}
 
 		public bool Disturbed(PlayerManager player)
@@ -31,15 +33,15 @@ namespace BBTimes.CustomContent.Misc
 			if (++disturbedCount >= 3)
 			{
 				shaking = true;
-				renderer.sprite = sprScreaming;
+				renderer.sprite = activeAppearance.Screaming;
 				FullyRelax();
 				player.RuleBreak("Running", 5f, 0.2f);
-				audMan.QueueAudio(audDisturbed);
+				audMan.QueueAudio(activeAppearance.audDisturbed);
 				ec.CallOutPrincipals(transform.position);
 				return true;
 			}
-			audMan.QueueAudio(disturbedCount == 1 ? audAskSilence : audAskSilence2);
-			renderer.sprite = sprSpeaking;
+			audMan.QueueAudio(disturbedCount == 1 ? activeAppearance.audAskSilence : activeAppearance.audAskSilence2);
+			renderer.sprite = activeAppearance.Speaking;
 			return false;
 		}
 
@@ -55,13 +57,13 @@ namespace BBTimes.CustomContent.Misc
 
 			if (!audMan.QueuedAudioIsPlaying)
 			{
-				renderer.sprite = sprNormal;
+				renderer.sprite = activeAppearance.Reading;
 				shaking = false;
 				speaking = false;
 				transform.position = pos;
 			}
 
-			if (shaking)
+			if (shaking && Time.timeScale != 0)
 				transform.position = pos + new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
 		}
 
@@ -70,17 +72,30 @@ namespace BBTimes.CustomContent.Misc
 		bool shaking = false, speaking = false, initialized = false;
 		public bool IsSpeaking => speaking;
 		int disturbedCount = 0;
+		Appearances activeAppearance;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan;
 
 		[SerializeField]
-		internal SoundObject audAskSilence, audAskSilence2, audDisturbed;
-
-		[SerializeField]
 		internal SpriteRenderer renderer;
 
-		[SerializeField]
-		internal Sprite sprNormal, sprSpeaking, sprScreaming;
+
+		internal static Appearances[] appearanceSet; // Sadly this can't be serialized as instance; I have no idea how to do that
+
+		[System.Serializable]
+		public class Appearances
+		{
+			public Sprite Reading;
+			public Sprite Speaking;
+			public Sprite Screaming;
+
+			public SoundObject audAskSilence;
+			public SoundObject audAskSilence2;
+			public SoundObject audDisturbed;
+
+			public Color subtitleColor;
+		}
 	}
+
 }

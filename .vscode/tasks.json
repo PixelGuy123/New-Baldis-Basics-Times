@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "dotnet build release",
+            "type": "shell",
+            "command": "dotnet build -c release",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+         {
+            "label": "[KOFI] dotnet build release",
+            "type": "shell",
+            "command": "dotnet build -c release -p:DefineConstants=\"KOFI\"",
+            "group": {
+                "kind": "build",
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

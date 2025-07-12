@@ -1,17 +1,17 @@
-﻿using BaldiLevelEditor;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using BaldiLevelEditor;
 using BBTimes.CustomContent.NPCs;
+using BBTimes.Extensions;
 using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using MTM101BaldAPI.Registers;
 using PlusLevelFormat;
-using System.Collections.Generic;
-using System.IO;
-using BBTimes.Extensions;
-using System.Linq;
-using UnityEngine;
 using PlusLevelLoader;
+using UnityEngine;
 
 namespace BBTimes.CompatibilityModule.EditorCompat
 {
@@ -207,7 +207,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			{
 				markersToAdd.Add(new(obj.name, new(true, null)));
 				BaldiLevelEditorPlugin.editorObjects.Add(EditorObjectType.CreateFromGameObject<EditorPrefab, PrefabLocation>(obj.name, obj, offset, false));
-				
+
 			}
 
 			static void MarkObjectRow(string prebuiltToolName, params ObjectData[] objs) =>
@@ -284,7 +284,7 @@ namespace BBTimes.CompatibilityModule.EditorCompat
 			__instance.defaultTextures.Add("SuperMystery", new TextureContainer("redCeil", "redWall", "redFloor"));
 			__instance.defaultTextures.Add("ExibitionRoom", new TextureContainer("BlueCarpet", "Wall", "Ceiling"));
 			__instance.defaultTextures.Add("SnowyPlayground", new TextureContainer("snowyPlaygroundFloor", "Fence", "None"));
-			__instance.defaultTextures.Add("IceRink", new TextureContainer("IceRinkFloor", "Fence", "None"));
+			__instance.defaultTextures.Add("IceRink", new TextureContainer("IceRinkFloor", "IceRinkWall", "None"));
 		}
 
 		[HarmonyPatch(typeof(PlusLevelEditor), "Initialize")]

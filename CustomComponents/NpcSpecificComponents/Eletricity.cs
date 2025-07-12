@@ -20,6 +20,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 				frameDelay = 0;
 			}
 		}
+
 		[SerializeField]
 		internal AnimationComponent ani;
 

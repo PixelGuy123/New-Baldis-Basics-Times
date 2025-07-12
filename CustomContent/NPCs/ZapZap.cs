@@ -56,7 +56,7 @@ namespace BBTimes.CustomContent.NPCs
 			eletricityPre.ignoreBootsAttribute = elePre.ignoreBootsAttribute;
 
 			Destroy(elePre); // Destroy this component now
-			eletricityPre.collider.size = new(eletricityPre.collider.size.x, 1.5f, eletricityPre.collider.size.z);
+			eletricityPre.collider.size = new(eletricityPre.collider.size.x, 18f, eletricityPre.collider.size.z);
 
 			var eleRenderer = ObjectCreationExtensions.CreateSpriteBillboard(elePre.ani.animation[0], false);
 			eleRenderer.transform.SetParent(eletricityPre.transform);
@@ -81,7 +81,7 @@ namespace BBTimes.CustomContent.NPCs
 			zapCol.height = 10f;
 
 			var system = GameExtensions.GetNewParticleSystem();
-			system.transform.SetParent(eletricityPre.transform);
+			system.transform.SetParent(eletricityPre.compPre.transform);
 			system.transform.localPosition = Vector3.zero;
 			system.GetComponent<ParticleSystemRenderer>().material = new Material(ObjectCreationExtension.defaultDustMaterial) { mainTexture = this.GetTexture("zapParticles.png") };
 

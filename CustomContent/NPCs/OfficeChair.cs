@@ -12,6 +12,7 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		public void SetupPrefab()
 		{
+			audMan = GetComponent<PropagatedAudioManager>();
 			audRoll = this.GetSound("ChairRolling.wav", "Vfx_OFC_Walk", SoundType.Effect, new(0.74609375f, 0.74609375f, 0.74609375f));
 
 			var normalSprs = this.GetSpriteSheet(3, 3, 25f, "OfficeChair.png").ExcludeNumOfSpritesFromSheet(1);
@@ -44,9 +45,8 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.maxSpeed = normSpeed;
 			navigator.SetSpeed(normSpeed);
 
-			var man = GetComponent<PropagatedAudioManager>();
-			man.maintainLoop = true;
-			man.FlushQueue(true);
+			audMan.maintainLoop = true;
+			audMan.FlushQueue(true);
 		}
 
 		public void CarryEntityAround(Entity en) =>
@@ -91,6 +91,9 @@ namespace BBTimes.CustomContent.NPCs
 		internal AnimatedSpriteRotator rotator;
 
 		[SerializeField]
+		internal AudioManager audMan;
+
+		[SerializeField]
 		internal float pickupThreshold = 11.5f;
 
 		[SerializeField]
@@ -105,8 +108,6 @@ namespace BBTimes.CustomContent.NPCs
 	internal class OfficeChair_StateBase(OfficeChair office) : NpcState(office) // A default npc state
 	{
 		protected OfficeChair chair = office;
-
-		protected PropagatedAudioManager man = office.GetComponent<PropagatedAudioManager>();
 
 		public override void DoorHit(StandardDoor door)
 		{
@@ -160,8 +161,8 @@ namespace BBTimes.CustomContent.NPCs
 			targetCell = cells[Random.Range(0, cells.Count)];
 
 			ChangeNavigationState(new NavigationState_TargetPosition(chair, 64, targetCell.FloorWorldPosition));
-			man.QueueAudio(chair.audRoll, true);
-			man.SetLoop(true);
+			chair.audMan.QueueAudio(chair.audRoll, true);
+			chair.audMan.SetLoop(true);
 			chair.bringingState = this;
 
 
@@ -178,7 +179,7 @@ namespace BBTimes.CustomContent.NPCs
 				return;
 			}
 
-			man.FlushQueue(true);
+			chair.audMan.FlushQueue(true);
 			if (target)
 			{
 				// target.SetHeight(entityBaseHeight);

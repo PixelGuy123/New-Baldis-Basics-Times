@@ -20,12 +20,8 @@ namespace BBTimes.CustomContent.NPCs
 			audMan = GetComponent<PropagatedAudioManager>();
 			stepAudMan = gameObject.CreatePropagatedAudioManager(115, 145);
 
-			var myCol = (CapsuleCollider)baseTrigger[0];
-			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
-			col.isTrigger = true;
-			col.height = myCol.height;
-			col.direction = myCol.direction;
-			col.radius = myCol.radius; // Adds a clickable to penny
+			this.CreateClickableLink()
+				.CopyColliderAttributes((CapsuleCollider)baseTrigger[0]);
 
 			var sprites = this.GetSpriteSheet(4, 3, 34f, "penny.png").ExcludeNumOfSpritesFromSheet(1);
 			talkHappySprs = sprites.TakeAPair(0, 2);

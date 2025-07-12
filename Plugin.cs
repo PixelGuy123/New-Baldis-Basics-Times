@@ -50,15 +50,19 @@ namespace BBTimes
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 	public class BasePlugin : BaseUnityPlugin
 	{
-		IEnumerator SetupPost()
+		IEnumerator SetupFinal()
 		{
-			yield return 3;
+			yield return 2;
 			yield return "Calling custom data setup prefab post...";
 			_cstData.ForEach(x => x.SetupPrefabPost());
 			// Other stuff to setup
 			yield return "Setup the rest of the assets...";
 			SnowPile.SetupItemRandomization();
 			Tresent.GatherShopItems();
+		}
+		IEnumerator SetupPost()
+		{
+			yield return 3;
 			yield return "Creating post assets...";
 			GameExtensions.TryRunMethod(SetupPostAssets);
 			yield return "Forcing API to regenerate tags for Times...";
@@ -152,6 +156,13 @@ namespace BBTimes
 
 			AssetLoader.LoadLocalizationFolder(Path.Combine(ModPath, "Language", "English"), Language.English);
 
+#if KOFI
+			MTM101BaldiDevAPI.AddWarningScreen(
+				"<color=#c900d4>Ko-fi Exclusive Build!</color>\nKo-fi members helped make this possible. Baldi\'s Basics Times was made exclusively for supporters. Please, don't share it publicly. If you'd like to support future content, visit my Ko-fi page!",
+				false
+			);
+#endif
+
 			try
 			{
 				CompatibilityInitializer.InitializeOnAwake();
@@ -164,8 +175,8 @@ namespace BBTimes
 
 
 			LoadingEvents.RegisterOnAssetsLoaded(Info, BBTimesManager.InitializeContentCreation(), LoadingEventOrder.Pre);
-
 			LoadingEvents.RegisterOnAssetsLoaded(Info, SetupPost(), LoadingEventOrder.Post); // Post
+			LoadingEvents.RegisterOnAssetsLoaded(Info, SetupFinal(), LoadingEventOrder.Final); // Final
 
 
 			PixelInternalAPI.ResourceManager.AddReloadLevelCallback((_, isNextlevel) => // Note: since it's always in the last level, there's no point to make a saving handler for this, since people cannot save in the middle of a level

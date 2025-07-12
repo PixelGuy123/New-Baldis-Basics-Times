@@ -21,15 +21,16 @@ namespace BBTimes.CustomContent.Builders
 			ntbMachinePre.boxRenderer = renderer.transform.Find("NtbkMachine_Base").GetComponent<MeshRenderer>();
 
 			// Get the "Power On" indicator
-			ntbMachinePre.offMat = [ntbMachinePre.boxRenderer.materials[0], ntbMachinePre.boxRenderer.materials[1]];
+			ntbMachinePre.offMat = [ntbMachinePre.boxRenderer.materials[0], ntbMachinePre.boxRenderer.materials[1]]; // Light off mat
 
-			ntbMachinePre.onMat = [
-			ntbMachinePre.offMat[0],
+			ntbMachinePre.onMat = [ // On material assignment
+			ntbMachinePre.offMat[0], // Same texture to the sides
 			new(ntbMachinePre.offMat[1])
 			{
 				name = "NotebookMachine_OnPower",
-				mainTexture = this.GetTexture("NtbMachine_On.png")
+				mainTexture = this.GetTexture("NtbMachine_On.png"),
 			}];
+			ntbMachinePre.onMat[1].SetTexture("_LightGuide", this.GetTexture("NtbMachine_LightMap.png")); // Light guide for the on texture of the machine
 
 			// Map Icon for Notebook
 			ntbMachinePre.spriteMapIcon = this.GetSprite(ObjectCreationExtension.defaultMapIconPixelsPerUnit, "NtbkMachine_MapIcon.png");

@@ -135,7 +135,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 
 		bool initialized = false, hidden = false;
-		float speed = 2f;
+		public float speed = 2f;
 		Vector3 dir;
 		GameObject owner;
 		ActivityModifier targettedMod;

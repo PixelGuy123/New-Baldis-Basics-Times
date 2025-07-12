@@ -1,10 +1,10 @@
-﻿using BBTimes.Extensions;
+﻿using System.Collections.Generic;
+using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
 using NewPlusDecorations.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -46,7 +46,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public override void OnGenerationFinished()
 		{
 			base.OnGenerationFinished();
-			
+
 			if (!BBTimesManager.plug.disableHighCeilings.Value && (!proof || proof is LevelLoader))
 				AddAllWalls(true); // If proof isn't assigned, it means this must be LevelLoader
 
@@ -82,8 +82,6 @@ namespace BBTimes.CustomContent.RoomFunctions
 			{
 				if (i > ceilingHeight - customWallProximityToCeil.Length)
 					fullTex = TextureExtensions.GenerateTextureAtlas(ObjectCreationExtension.transparentTex, customWallProximityToCeil[offset++], ObjectCreationExtension.transparentTex);
-
-
 
 				foreach (var cell in ogCellBins)
 					AddWalls(cell.Key, cell.Value);

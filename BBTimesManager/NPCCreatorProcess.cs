@@ -609,7 +609,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetMaxSightDistance(20f)
 				.Build()
-				.SetupNPCData("Mimicry", "PST_Mimi_Name", "PST_Mimi_Desc", -2f);
+				.SetupNPCData("Mimicry", "PST_Mimi_Name", "PST_Mimi_Desc", -3.3f);
 
 			npc.looker.layerMask = LayerStorage.principalLookerMask;
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BBTimes.CustomComponents.NpcSpecificComponents
 {
-	public class SnowBall : EnvironmentObject, IEntityTrigger
+	public class SnowBall : EnvironmentObject, IEntityTrigger, IClickable<int>
 	{
 		public void Spawn(GameObject owner, Vector3 pos, Vector3 dir, float speed, float ySpeed, EnvironmentController ec, float startingHeight = 5f)
 		{
@@ -115,6 +115,33 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		void OnDestroy() =>
 			targettedMod?.moveMods.Remove(moveMod);
 
+		public void Clicked(int player)
+		{
+			var pm = Singleton<CoreGameManager>.Instance.GetPlayer(player);
+			if (deflectedOnce || !IsHeightInRange(pm.plm.Entity.OverriddenHeight)) return;
+
+			deflectedOnce = true;
+
+			dir = pm.transform.forward;
+			speed *= deflectionSpeedFactor; // Reverses the direction and increases speed
+			yVelocity = deflectionYVelocity; // Resets y velocity
+
+			audMan.PlaySingle(audHit);
+		}
+
+		public void ClickableSighted(int player) { }
+
+		public void ClickableUnsighted(int player) { }
+
+		public bool ClickableHidden() => deflectedOnce || !IsHeightInRange(Singleton<CoreGameManager>.Instance.GetPlayer(0).plm.Entity.OverriddenHeight);
+
+		public bool ClickableRequiresNormalHeight() => false;
+
+		bool IsHeightInRange(float height)
+		{
+			float myHeight = this.height;
+			return height >= myHeight - minRangeForHit && height <= myHeight + minRangeForHit;
+		}
 
 		[SerializeField]
 		internal Entity entity;
@@ -132,7 +159,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		internal Sprite gaugeSprite;
 
 		[SerializeField]
-		internal float freezeCooldown = 5f, hitForce = 25.5f;
+		internal float freezeCooldown = 5f, hitForce = 25.5f, deflectionSpeedFactor = 1.95f, deflectionYVelocity = 5f, minRangeForHit = 2.5f;
 
 		[SerializeField]
 		[Range(0f, 1f)]
@@ -143,5 +170,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		HudGauge gauge;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.12f);
+
+		bool deflectedOnce = false;
 	}
 }

@@ -1,7 +1,7 @@
-﻿using BBTimes.CustomContent.CustomItems;
-using BBTimes.Extensions;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using BBTimes.CustomContent.CustomItems;
+using BBTimes.Extensions;
 using TMPro;
 using UnityEngine;
 
@@ -35,7 +35,7 @@ namespace BBTimes.CustomContent.Objects
 	}
 
 	public class Tresent : MonoBehaviour
-		// ** The effects of the tresent will be hardcoded into one big class for now, because I'm lcaking time to make multiple classes for Tresents **
+	// ** The effects of the tresent will be hardcoded into one big class for now, because I'm lcaking time to make multiple classes for Tresents **
 	{
 		public void Throw(EnvironmentController ec, PlayerManager pm, Vector3 position, Vector3 direction)
 		{
@@ -99,7 +99,7 @@ namespace BBTimes.CustomContent.Objects
 			text.gameObject.SetActive(true);
 
 			text.text = RandomEffect();
-			
+
 
 			float scale, t = 0f;
 			while (t < 1f)
@@ -236,7 +236,9 @@ namespace BBTimes.CustomContent.Objects
 			npc?.Navigator.Am.moveMods.Remove(moveMod);
 		}
 
-		protected List<NPC> GetValidListOfNPCs { get
+		protected List<NPC> GetValidListOfNPCs
+		{
+			get
 			{
 				List<NPC> npcs = new(ec.Npcs);
 				for (int i = 0; i < npcs.Count; i++)
@@ -258,7 +260,7 @@ namespace BBTimes.CustomContent.Objects
 		internal Entity entity;
 
 		[SerializeField]
-		internal float minThrowSpeed = 5f, maxThrowSpeed = 14f, minDelayForExplosion = 2.5f, maxDelayForExplosion = 5f, explosionSpeed = 8f, effectDelay = 10f; // effectDelay must be removed once polymorphism is added
+		internal float minThrowSpeed = 5f, maxThrowSpeed = 14f, minDelayForExplosion = 2.5f, maxDelayForExplosion = 5f, explosionSpeed = 10f, effectDelay = 10f; // effectDelay must be removed once polymorphism is added
 
 		[SerializeField]
 		internal int minConfettiParticles = 35, maxConfettiParticles = 50;

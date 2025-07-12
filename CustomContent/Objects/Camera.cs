@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using HarmonyLib;
+using BBTimes.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.Objects
@@ -17,7 +17,7 @@ namespace BBTimes.CustomContent.Objects
 				SetIndicatorsToColor(Color.clear);
 			}
 			else
-				SetIndicatorsToColor(Color.blue);
+				SetIndicatorsToColor(idleColor);
 
 			collider.enabled = on;
 			isCameraOn = on;
@@ -27,6 +27,9 @@ namespace BBTimes.CustomContent.Objects
 			nextDirections = dirs;
 			maxDistance = maximumDistance;
 			basePos = ec.CellFromPosition(transform.position).position;
+
+			cooldown = Random.Range(minTurnCool, maxTurnCool);
+			spotCooldown = defaultSpotCool;
 		}
 
 		void Start() =>
@@ -42,21 +45,40 @@ namespace BBTimes.CustomContent.Objects
 				alarmTime -= ec.EnvironmentTimeScale * Time.deltaTime;
 				return;
 			}
-			else if (sawPlayer)
+			else if (SawRuleBreaker)
 			{
 				spotCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
-				SetIndicatorsToColor(spotCooldown < 2f ? Color.red : Color.yellow);
+				SetIndicatorsToColor(spotCooldown < minimumRedSpotThreshold ? detectedColor : suspiciousColor);
 				if (spotCooldown < 0f)
 				{
+					// Set an alarm timer and trigger it
 					alarmTime = 15f;
+					wasAlarming = true;
+
+					// Alarm
 					audMan.FlushQueue(true);
 					audMan.QueueAudio(audAlarm);
 					audMan.SetLoop(true);
-					ec.MakeNoise(transform.position, 112);
-					sawPlayer = false;
+
+					// Reset rule breaker thing
+					foreach (var ruleBreaker in caughtRuleBreakers) // Penalize everyone's guilt in the camera's sight
+					{
+						if (ruleBreaker.CompareTag("NPC") && ruleBreaker.TryGetComponent<NPC>(out var npc))
+							npc.SetGuilt(npc.guiltTime + additionalGuiltTimePenalty, npc.BrokenRule);
+						if (ruleBreaker.CompareTag("Player") && ruleBreaker.TryGetComponent<PlayerManager>(out var player))
+							player.RuleBreak(player.ruleBreak, player.guiltTime + additionalGuiltTimePenalty, player.GuiltySensitivity);
+					}
+					caughtRuleBreakers.Clear();
 					spotCooldown = defaultSpotCool;
-					wasAlarming = true;
-					Singleton<BaseGameManager>.Instance.AngerBaldi(2f);
+
+					// Make noise
+					if (SawPlayerBreakingRules)
+					{
+						ec.MakeNoise(transform.position, noiseValue);
+						Singleton<BaseGameManager>.Instance.AngerBaldi(angerValue);
+					}
+
+					ec.CallOutPrincipals(transform.position);
 				}
 				return;
 			}
@@ -120,31 +142,63 @@ namespace BBTimes.CustomContent.Objects
 			if (alarmTime > 0f)
 				return;
 
-			if (other.isTrigger && other.CompareTag("Player"))
+			if (other.isTrigger)
 			{
-				var pm = other.GetComponent<PlayerManager>();
-				if (pm && !pm.Tagged && !pm.Invisible)
+				if (other.CompareTag("Player"))
 				{
-					SetIndicatorsToColor(Color.yellow);
-					sawPlayer = true;
+					var pm = other.GetComponent<PlayerManager>();
+					if (pm && !caughtRuleBreakers.Contains(pm.plm.Entity) && // Is not registered already
+					!pm.Tagged && !pm.Invisible && // Is visible and normal
+					pm.Disobeying) // IS breaking rules
+					{
+						caughtRuleBreakers.Add(pm.plm.Entity);
+						spottedPlayersBreakingRules++;
+					}
 				}
+
+				if (other.CompareTag("NPC"))
+				{
+					var npc = other.GetComponent<NPC>();
+					if (npc && !caughtRuleBreakers.Contains(npc.Navigator.Entity) && npc.Disobeying) // Checks whether they are still set as "caughtable"
+					{
+						caughtRuleBreakers.Add(npc.Navigator.Entity);
+					}
+				}
+
+				if (!SawRuleBreaker) // In the end, to make sure it resets properly
+					SetIndicatorsToColor(suspiciousColor);
 			}
 
 		}
 
 		void OnTriggerStay(Collider other)
 		{
-			if (wasAlarming || !sawPlayer)
+			if (wasAlarming || !SawRuleBreaker)
 				return;
 
-			if (other.isTrigger && other.CompareTag("Player"))
+			if (other.isTrigger)
 			{
-				var pm = other.GetComponent<PlayerManager>();
-				if (pm && (pm.Tagged || pm.Invisible))
+				if (other.CompareTag("Player"))
 				{
-					sawPlayer = false;
-					SetIndicatorsToColor(Color.blue);
+					var pm = other.GetComponent<PlayerManager>();
+					if (pm && caughtRuleBreakers.Contains(pm.plm.Entity) && (pm.Tagged || pm.Invisible || !pm.Disobeying)) // Checks whether they are still set as "caughtable"
+					{
+						if (--spottedPlayersBreakingRules < 0)
+							spottedPlayersBreakingRules = 0;
+						caughtRuleBreakers.Remove(pm.plm.Entity);
+					}
 				}
+
+				if (other.CompareTag("NPC"))
+				{
+					var npc = other.GetComponent<NPC>();
+					if (npc && caughtRuleBreakers.Contains(npc.Navigator.Entity) && !npc.Disobeying) // Checks whether they are still set as "caughtable"
+						caughtRuleBreakers.Remove(npc.Navigator.Entity);
+
+				}
+
+				if (!SawRuleBreaker) // In the end, to make sure it resets properly
+					SetIndicatorsToColor(idleColor);
 			}
 		}
 
@@ -152,13 +206,21 @@ namespace BBTimes.CustomContent.Objects
 		{
 			if (wasAlarming) return;
 
-			if (other.isTrigger && other.CompareTag("Player"))
+			if (other.isTrigger && other.TryGetComponent<Entity>(out var e))
 			{
-				spotCooldown = defaultSpotCool;
-				sawPlayer = false;
-				SetIndicatorsToColor(Color.blue);
+				caughtRuleBreakers.Remove(e);
+				if (other.CompareTag("Player"))
+				{
+					if (--spottedPlayersBreakingRules < 0)
+						spottedPlayersBreakingRules = 0;
+				}
 			}
 
+			if (!SawRuleBreaker) // In the end, to make sure it resets properly
+			{
+				SetIndicatorsToColor(idleColor);
+				spotCooldown = defaultSpotCool;
+			}
 		}
 
 		void SetIndicatorsToColor(Color color)
@@ -166,7 +228,7 @@ namespace BBTimes.CustomContent.Objects
 			if (color != currentColor)
 			{
 				currentColor = color;
-				indicators.Do(x => x.color = color);
+				indicators.ForEach(x => x.color = color);
 				audMan.PlaySingle(audDetect);
 			}
 		}
@@ -177,13 +239,18 @@ namespace BBTimes.CustomContent.Objects
 
 		IntVector2 basePos;
 
-		float cooldown = Random.Range(minTurnCool, maxTurnCool), spotCooldown = defaultSpotCool, alarmTime = 0f;
-
-		bool sawPlayer = false, wasAlarming = false, isCameraOn = true;
+		float cooldown, spotCooldown, alarmTime = 0f;
+		int spottedPlayersBreakingRules = 0;
+		bool wasAlarming = false, isCameraOn = true;
 
 		Color currentColor = Color.blue;
 
-		const float maxTurnCool = 30f, minTurnCool = 15f, defaultSpotCool = 4f;
+		[SerializeField]
+		internal float maxTurnCool = 30f, minTurnCool = 15f, defaultSpotCool = 2.5f, minimumRedSpotThreshold = 1.25f,
+		angerValue = 2f, additionalGuiltTimePenalty = 7f;
+
+		[SerializeField]
+		internal int noiseValue = 81;
 
 		[SerializeField]
 		internal SpriteRenderer visionIndicatorPre;
@@ -197,6 +264,13 @@ namespace BBTimes.CustomContent.Objects
 		[SerializeField]
 		internal SoundObject audTurn, audDetect, audAlarm;
 
+		[SerializeField]
+		internal Color idleColor = Color.blue, suspiciousColor = Color.yellow, detectedColor = Color.red;
+
+		public bool SawRuleBreaker => caughtRuleBreakers.Count != 0;
+		public bool SawPlayerBreakingRules => spottedPlayersBreakingRules != 0;
+
 		readonly List<SpriteRenderer> indicators = [];
+		readonly HashSet<Entity> caughtRuleBreakers = [];
 	}
 }

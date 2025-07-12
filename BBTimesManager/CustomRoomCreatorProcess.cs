@@ -583,13 +583,13 @@ namespace BBTimes.Manager
 			mtm.audMan = mtm101.gameObject.CreatePropagatedAudioManager(66f, 100f);
 			mtm.audInsert = GenericExtensions.FindResourceObject<MathMachine>().audWin;
 
-			var treSprites = TextureExtensions.LoadSpriteSheet(4, 3, 17f, GetRoomAsset("SnowyPlayground", "tresentSheet.png"));
+			var treSprites = TextureExtensions.LoadSpriteSheet(4, 3, 24f, GetRoomAsset("SnowyPlayground", "tresentSheet.png"));
 
 			mtm.tresentPre = ObjectCreationExtensions.CreateSpriteBillboard(treSprites[0]).AddSpriteHolder(out var tresentRender, 1.5f, LayerStorage.standardEntities)
 				.gameObject.SetAsPrefab(true).AddComponent<Tresent>();
 			mtm.tresentPre.name = "Tresent";
 			tresentRender.name = "TresentRenderer";
-			var tresentRenderbase = tresentRender.AddSpriteHolder(out _, 1.9f).transform;
+			var tresentRenderbase = tresentRender.AddSpriteHolder(out _, 2.7f).transform;
 			tresentRenderbase.SetParent(mtm.tresentPre.transform);
 			tresentRenderbase.localPosition = Vector3.down * 5f;
 
@@ -678,28 +678,73 @@ namespace BBTimes.Manager
 			iceWaterRenderer.name = "Sprite";
 			iceWaterRenderer.gameObject.layer = 0;
 			iceWaterRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			iceWaterRenderer.transform.localScale = Vector3.one * 1.56f;
 			iceWater.gameObject.ConvertToPrefab(true);
 
 			// ------------------------------------------------------------------------------------------
 			// -------------------------- FOCUS ROOM STRUCTURES -----------------------------------------
 			// ------------------------------------------------------------------------------------------
 
-			var studentSprs = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", "focusStd.png"));
-			var student = ObjectCreationExtensions.CreateSpriteBillboard(studentSprs[0]);
+			// Get the voicelines for Female and Male
+
+			SoundObject[] maleVoices = [
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "FocusedStudent_M_Please.wav")), "Vfx_FocusStd_Disturbed1", SoundType.Voice, Color.white),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "FocusedStudent_M_Please2.wav")), "Vfx_FocusStd_Disturbed2", SoundType.Voice, Color.white),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "FocusedStudent_M_Scream.wav")), "Vfx_FocusStd_Scream1", SoundType.Voice, Color.white)
+			];
+
+			SoundObject[] femaleVoices = [
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "FocusedStudent_F_Please.wav")), "Vfx_FocusStd_Disturbed1", SoundType.Voice, Color.white),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "FocusedStudent_F_Please2.wav")), "Vfx_FocusStd_Disturbed2", SoundType.Voice, Color.white),
+				ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "FocusedStudent_F_Scream.wav")), "Vfx_FocusStd_Scream1", SoundType.Voice, Color.white)
+			];
+
+			var student = ObjectCreationExtensions.CreateSpriteBillboard(null);
 			student.name = "FocusedStudent";
 			student.gameObject.AddObjectToEditor();
 
 			var focusedStudent = student.gameObject.AddComponent<FocusedStudent>();
-			focusedStudent.audMan = student.gameObject.CreatePropagatedAudioManager(20f, 60f);
-			focusedStudent.audAskSilence = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please.wav")), "Vfx_FocusStd_Disturbed1", SoundType.Voice, new(0f, 0.65f, 0f));
-			focusedStudent.audAskSilence2 = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_Please2.wav")), "Vfx_FocusStd_Disturbed2", SoundType.Voice, new(0f, 0.65f, 0f));
-			focusedStudent.audDisturbed = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("FocusRoom", "Student_scream.wav")), "Vfx_FocusStd_Scream1", SoundType.Voice, new(0f, 0.65f, 0f));
-			focusedStudent.audDisturbed.additionalKeys = [new() { key = "Vfx_FocusStd_Scream2", time = 1.209f }];
 
+			focusedStudent.audMan = student.gameObject.CreatePropagatedAudioManager(20f, 60f);
+			focusedStudent.audMan.overrideSubtitleColor = true;
 			focusedStudent.renderer = student;
-			focusedStudent.sprSpeaking = studentSprs[1];
-			focusedStudent.sprScreaming = studentSprs[2];
-			focusedStudent.sprNormal = student.sprite;
+
+			FocusedStudent.appearanceSet = [
+				GetNewAppearance(1, true, new(0f, 0.65f, 0f)), // The OG
+				GetNewAppearance(2, true, new Color32(198, 196, 9, byte.MaxValue)),
+				GetNewAppearance(3, true, new Color32(189, 16, 16, byte.MaxValue)),
+				GetNewAppearance(4, true, new Color32(16, 142, 164, byte.MaxValue)),
+				GetNewAppearance(5, true, new Color32(179, 46, 173, byte.MaxValue)),
+				GetNewAppearance(6, true, new Color32(53, 91, 215, byte.MaxValue)),
+
+				GetNewAppearance(1, false, new(0f, 0.65f, 0f)), // The Female OG lol
+				GetNewAppearance(2, false, new Color32(198, 196, 9, byte.MaxValue)),
+				GetNewAppearance(3, false, new Color32(189, 16, 16, byte.MaxValue)),
+				GetNewAppearance(4, false, new Color32(16, 142, 164, byte.MaxValue)),
+				GetNewAppearance(5, false, new Color32(179, 46, 173, byte.MaxValue)),
+				GetNewAppearance(6, false, new Color32(53, 91, 215, byte.MaxValue)),
+			];
+
+			student.sprite = FocusedStudent.appearanceSet[0].Reading;
+
+			FocusedStudent.Appearances GetNewAppearance(int variant, bool isMale, Color subtitleColor)
+			{
+				char genderLetter = isMale ? 'M' : 'F';
+				var sprites = TextureExtensions.LoadSpriteSheet(3, 1, 25f, GetRoomAsset("FocusRoom", $"FocusStd_{genderLetter}{variant}.png"));
+				SoundObject[] soundSet = isMale ? maleVoices : femaleVoices;
+
+				var appearance = new FocusedStudent.Appearances
+				{
+					Reading = sprites[0],
+					Speaking = sprites[1],
+					Screaming = sprites[2],
+					audAskSilence = soundSet[0],
+					audAskSilence2 = soundSet[1],
+					audDisturbed = soundSet[2],
+					subtitleColor = subtitleColor
+				};
+				return appearance;
+			}
 
 			// ------------------------------------------------------------------------------------------
 			// -------------------------- ART ROOM STRUCTURES -------------------------------------------
@@ -1278,25 +1323,29 @@ namespace BBTimes.Manager
 
 
 
-			// TODO: Add variants of this special room, so it doesn't crash
-			//room = GetAllAssets(GetRoomAsset("IceRink"), commonRoomWeight, 1, cont: playgroundClonedRoomContainer, mapBg: BooleanStorage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "mapIcon_iceRink.png")) : null, squaredShape: true, keepTextures: true, autoSizeLimitControl: -1);
+			room = GetAllAssets(GetRoomAsset("IceRink"), commonRoomWeight, 1, cont: playgroundClonedRoomContainer, mapBg: Storage.HasCrispyPlus ? AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "mapIcon_iceRink.png")) : null, squaredShape: true, keepTextures: true, autoSizeLimitControl: -1);
 			floorTex = AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "IceRinkFloor.png"));
 			AddTextureToEditor("IceRinkFloor", floorTex);
 
-			// room.ForEach(x =>
-			// {
-			// 	x.selection.keepTextures = true;
-			// 	x.selection.florTex = floorTex;
-			// 	x.selection.wallTex = playgroundRoomRef.wallTex;
-			// 	x.selection.ceilTex = playgroundRoomRef.ceilTex;
-			// });
+			var iceRinkWall = AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "IceRinkWall.png"));
+			AddTextureToEditor("IceRinkWall", iceRinkWall);
+
+			room.ForEach(x =>
+			{
+				x.selection.keepTextures = true;
+				x.selection.florTex = floorTex;
+				x.selection.wallTex = iceRinkWall;
+				x.selection.ceilTex = playgroundRoomRef.ceilTex;
+			});
 
 			sets.container = playgroundClonedRoomContainer;
 
-			//floorDatas[F1].SpecialRooms.AddRange(room);
-			//floorDatas[F2].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.85f)));
-			//floorDatas[END].SpecialRooms.AddRange(room);
-			//floorDatas[F3].SpecialRooms.AddRange(room.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.65f)));
+			typedRoom = ConvertRoomsToLevelTypeOnes(room, LevelType.Schoolhouse);
+
+			floorDatas[F1].SpecialRooms.AddRange(typedRoom);
+			floorDatas[F2].SpecialRooms.AddRange(typedRoom.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.85f)));
+			floorDatas[END].SpecialRooms.AddRange(typedRoom);
+			floorDatas[F3].SpecialRooms.AddRange(typedRoom.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.65f)));
 
 
 			// ================================================ Base Game Room Variants ====================================================

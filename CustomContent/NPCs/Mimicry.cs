@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
+using BBTimes.Plugin;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,6 @@ using UnityEngine.UI;
 
 namespace BBTimes.CustomContent.NPCs
 {
-	// TODO: Find the new mechanic somewhere in dc gc and apply here
 	public class Mimicry : NPC, INPCPrefab, IClickable<int> // Npc here
 	{
 		public void SetupPrefab()
@@ -20,14 +20,14 @@ namespace BBTimes.CustomContent.NPCs
 			audLaughter = this.GetSound("mimi_laughAway.wav", "Vfx_Mimi_Laughter", SoundType.Voice, audMan.subtitleColor);
 			renderer = spriteRenderer[0];
 
-			var sprs = this.GetSpriteSheet(3, 1, 25f, "mimiCry.png");
+			var sprs = this.GetSpriteSheet(4, 1, 25f, "mimiCry.png");
 			renderer.sprite = sprs[0];
 			animComp = gameObject.AddComponent<AnimationComponent>();
 			animComp.renderers = [renderer];
 			animComp.speed = 6f;
 
 			sprWalking = [sprs[0], sprs[1]];
-			sprLaughing = [sprs[2]];
+			sprLaughing = [sprs[2], sprs[3]];
 
 			jumpscareSprs = this.GetSpriteSheet(4, 3, 1f, "mimiCryCanvas.png");
 
@@ -45,7 +45,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			itemRenderer.transform.SetParent(transform);
 			itemRenderer.transform.localScale = new(0.95f, 0.95f, 0.95f); // To make it a little more obvious
-			itemRenderer.gameObject.AddComponent<PickupBob>(); // Simulate exactly like a random item
+			itemRenderer.gameObject.AddComponent<CustomPickupBob>().speed = 4.5f; // Simulate exactly like a random item
 
 			spriteRenderer = [renderer, itemRenderer];
 
@@ -55,8 +55,12 @@ namespace BBTimes.CustomContent.NPCs
 			col.height = myCol.height;
 			col.direction = myCol.direction;
 			col.radius = myCol.radius;
+
+			gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "mimiCryGauge.png");
 		}
-		public void SetupPrefabPost() { }
+		public void SetupPrefabPost() =>
+			itemsToDisguiseAs = GameExtensions.GetAllShoppingItems();
+
 		public string Name { get; set; }
 		public string Category => "npcs";
 
@@ -69,7 +73,6 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Initialize();
 			moveMod = new MovementModifier(Vector3.zero, slownessFactor);
-			itemsToDisguiseAs = Resources.FindObjectsOfTypeAll<ItemObject>();
 			animComp.Initialize(ec);
 			childReference = new GameObject("Mimicry_PositionReference").transform;
 
@@ -82,28 +85,127 @@ namespace BBTimes.CustomContent.NPCs
 			base.Despawn();
 			for (int i = 0; i < affectedEntities.Count; i++)
 				affectedEntities[i]?.ExternalActivity.moveMods.Remove(moveMod);
+
+			gauge?.Deactivate();
+		}
+
+		public override void VirtualUpdate()
+		{
+			base.VirtualUpdate();
+			if (disguised && preventivePickup && preventivePickup.gameObject.activeSelf)
+			{
+				autoDisabledPickup = true;
+				preventivePickup.Hide(true); // No pickup in spot until mimicry is done
+			}
 		}
 
 		public void SetWalking(bool walking) =>
 			animComp.animation = walking ? sprWalking : sprLaughing;
+		public void RushToRoom()
+		{
+			navigator.maxSpeed = speedToReachRoom;
+			navigator.SetSpeed(speedToReachRoom);
+		}
+		public void WalkNormally()
+		{
+			navigator.maxSpeed = normalSpeed;
+			navigator.SetSpeed(normalSpeed);
+		}
 
 		public Vector3 GetItemSpawnPoint()
 		{
-			var rooms = new List<RoomController>(ec.rooms);
-			rooms.RemoveAll(r => r.type != RoomType.Room || r.itemSpawnPoints.Count == 0);
+			// Will be useful to know how far rooms are from the camera (that is, the player)
+			var dijsMap = GameCamera.dijkstraMap;
+			bool hasActivityRoom = false;
 
-			if (rooms.Count == 0)
-				return transform.position;
+			// Get all suitable rooms
+			_rooms.Clear();
+			for (int i = 0; i < ec.rooms.Count; i++)
+			{
+				var r = ec.rooms[i];
+				if (r.type == RoomType.Room && (r.itemSpawnPoints.Count != 0 || r.AvailableItemRespawnPoints != 0))
+				{
+					_rooms.Add(ec.rooms[i]);
+					if (ec.rooms[i].HasIncompleteActivity)
+						hasActivityRoom = true;
+				}
+			}
+
+			if (hasActivityRoom)
+				_rooms.RemoveAll(room => !room.HasIncompleteActivity); // Remove every room that is not a classroom, basically lol
+
+			if (_rooms.Count == 0)
+				return transform.position; // let's just hide into itself lol
+
+			// Find max distance for normalization
+			int maxDist = 1;
+			int[] dists = new int[_rooms.Count];
+			if (dijsMap != null) // Well, just for safety. The GameCamera does this check as well lol
+			{
+				for (int i = 0; i < _rooms.Count; i++)
+				{
+					var room = _rooms[i];
+					var gridPos = IntVector2.GetGridPosition(ec.RealRoomMid(room));
+
+					int dist = dijsMap.Value(gridPos);
+					dists[i] = dist;
+
+					maxDist = Mathf.Max(maxDist, dist);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < dists.Length; i++)
+					dists[i] = 0;
+			}
+
+			// Calculate weights (get the one that's mostly likely the player will want to go to)
+			WeightedRoomController[] weights = new WeightedRoomController[_rooms.Count];
+			for (int i = 0; i < _rooms.Count; i++)
+			{
+				var room = _rooms[i];
+				int weight = 10;
+
+				if (dijsMap != null)
+				{
+					// Closer rooms get more weight. Add (maxDist - dist) to weight.
+					weight += System.Math.Max(0, maxDist - dists[i]);
+				}
+
+				weights[i] = new() { selection = room, weight = weight };
+			}
+
+			// Weighted random selection
+			var selectedRoom = WeightedRoomController.RandomSelection(weights);
 
 			// Workaround to work with objects to actually give the exact position that Mimicry should go
 			if (!childReference)
 				childReference = new GameObject("Mimicry_PositionReference").transform;
 
+			_spotsToDisguise.Clear();
+			// Get respawn points
+			for (int i = 0; i < selectedRoom.pickups.Count; i++)
+			{
+				if (!selectedRoom.pickups[i].gameObject.activeSelf)
+				{
+					_spotsToDisguise.Add(new(selectedRoom.pickups[i], selectedRoom.pickups[i].transform.position.ZeroOutY()));
+				}
+			}
 
-			var selectedRoom = rooms[Random.Range(0, rooms.Count)];
-			Vector2 pos = selectedRoom.itemSpawnPoints[Random.Range(0, selectedRoom.itemSpawnPoints.Count)].position;
+			// Get item spawn points
+			for (int i = 0; i < selectedRoom.itemSpawnPoints.Count; i++)
+			{
+				Vector2 pos = selectedRoom.itemSpawnPoints[i].position;
+				Vector3 worldPos = selectedRoom.objectObject.transform.TransformVector(pos.x, 0, pos.y); // Get local position v
+				_spotsToDisguise.Add(new(null, worldPos));
+			}
+
 			childReference.SetParent(selectedRoom.objectObject.transform);
-			childReference.localPosition = new(pos.x, 0, pos.y); // It should go to the exact position, since it'll be relative to how the objectObject is placed in world
+			var spot = _spotsToDisguise[Random.Range(0, _spotsToDisguise.Count)];
+			childReference.position = spot.Value; // It should go to the exact position, since it'll be relative to how the objectObject is placed in world
+			preventivePickup = spot.Key; // In case the position Mimicry goes has a Pickup active, it'll automatically disable it until Mimicry is done
+
+			autoDisabledPickup = false;
 
 			return childReference.position;
 		}
@@ -111,12 +213,12 @@ namespace BBTimes.CustomContent.NPCs
 		public void DisguiseAsRandomItem()
 		{
 			renderer.enabled = false;
-
 			// Do operation to get a random item to disguise as
-			itemRenderer.sprite = itemsToDisguiseAs[Random.Range(0, itemsToDisguiseAs.Length)].itemSpriteLarge;
+			itemRenderer.sprite = itemsToDisguiseAs[Random.Range(0, itemsToDisguiseAs.Count)].itemSpriteLarge;
 
 			navigator.maxSpeed = 0f;
 			navigator.SetSpeed(0f);
+			navigator.Entity.SetGrounded(false);
 			itemRenderer.enabled = true;
 			disguised = true;
 		}
@@ -125,9 +227,18 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			renderer.enabled = true;
 			itemRenderer.enabled = false;
-			navigator.maxSpeed = 15f;
-			navigator.SetSpeed(15f);
+			navigator.Entity.SetGrounded(true);
+			WalkNormally();
 			disguised = false;
+
+			if (preventivePickup)
+			{
+				if (autoDisabledPickup)
+					preventivePickup.Hide(false);
+				preventivePickup = null;
+			}
+			autoDisabledPickup = false;
+
 			behaviorStateMachine.ChangeState(new Mimicry_Wander(this));
 			if (laugh)
 			{
@@ -144,37 +255,45 @@ namespace BBTimes.CustomContent.NPCs
 
 			Undisguise(true);
 
-			StartCoroutine(AffectSomeone(Singleton<CoreGameManager>.Instance.GetPlayer(player).plm.Entity));
-			StartCoroutine(Jumpscare(Singleton<CoreGameManager>.Instance.GetPlayer(player)));
+			var pm = Singleton<CoreGameManager>.Instance.GetPlayer(player);
+			StartCoroutine(AffectSomeone(pm.plm.Entity, pm));
+			StartCoroutine(Jumpscare(pm));
 		}
 		public void ClickableSighted(int player) { }
 		public void ClickableUnsighted(int player) { }
 		public void JumpscareNPC(NPC npc)
 		{
 			Undisguise(true);
-			StartCoroutine(AffectSomeone(npc.Navigator.Entity));
+			StartCoroutine(AffectSomeone(npc.Navigator.Entity, null));
 		}
 		IEnumerator LaughterDelay()
 		{
 			audMan.PlaySingle(audLaughter);
 			animComp.animation = sprLaughing;
+
 			while (audMan.AnyAudioIsPlaying)
 				yield return null;
+
 			animComp.animation = sprWalking;
 		}
 
-		IEnumerator AffectSomeone(Entity entity)
+		IEnumerator AffectSomeone(Entity entity, PlayerManager player)
 		{
 			entity?.ExternalActivity.moveMods.Add(moveMod);
 			affectedEntities.Add(entity);
+
+			if (player)
+				gauge = Singleton<CoreGameManager>.Instance.GetHud(player.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, entitySlownessCooldown);
 
 			float delay = entitySlownessCooldown;
 			while (delay > 0f)
 			{
 				delay -= TimeScale * Time.deltaTime;
+				gauge?.SetValue(entitySlownessCooldown, delay);
 				yield return null;
 			}
 
+			gauge?.Deactivate();
 			entity?.ExternalActivity.moveMods.Remove(moveMod);
 			affectedEntities.Remove(entity);
 		}
@@ -219,18 +338,26 @@ namespace BBTimes.CustomContent.NPCs
 		internal Image jumpscareImg;
 
 		[SerializeField]
-		internal float wanderingCooldown = 30f, waitingDisguisedCooldown = 60f, entitySlownessCooldown = 15f;
+		internal float wanderingCooldown = 30f, waitingDisguisedCooldown = 60f, entitySlownessCooldown = 15f, speedToReachRoom = 35f, normalSpeed = 15f;
 
 		[SerializeField]
 		[Range(0f, 1f)]
 		internal float slownessFactor = 0.12f;
 
-		ItemObject[] itemsToDisguiseAs;
+		[SerializeField]
+		internal Sprite gaugeSprite;
+
+		[SerializeField]
+		internal List<ItemObject> itemsToDisguiseAs;
 		readonly List<Entity> affectedEntities = [];
+		readonly List<RoomController> _rooms = [];
+		readonly List<KeyValuePair<Pickup, Vector3>> _spotsToDisguise = [];
 		MovementModifier moveMod;
 		Transform childReference;
+		HudGauge gauge;
+		Pickup preventivePickup;
 
-		bool disguised = false;
+		bool disguised = false, autoDisabledPickup = false;
 
 
 	}
@@ -246,6 +373,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
+			mimi.WalkNormally();
 			ChangeNavigationState(new NavigationState_WanderRandom(mimi, 0));
 		}
 		public override void Update()
@@ -265,6 +393,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
+			mimi.RushToRoom();
 			tarPos = new(mimi, 64, spotToGo);
 			ChangeNavigationState(tarPos);
 		}

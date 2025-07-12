@@ -13,7 +13,7 @@ namespace BBTimes.CustomComponents
 
 			if (other.isTrigger)
 			{
-				if (SlipObject(other.gameObject, force, -force * antiForceReduceFactor ) && audSlip)
+				if (SlipObject(other.gameObject, force, -force * antiForceReduceFactor) && audSlip)
 					audMan.PlaySingle(audSlip);
 			}
 		}
@@ -31,7 +31,7 @@ namespace BBTimes.CustomComponents
 		public static bool SlipEntity(Entity e, float force, float acceleration)
 		{
 			var pm = e.GetComponent<PlayerManager>();
-			if (e.Grounded && !float.IsNaN(e.Velocity.x) && (!pm || !pm.GetAttribute().HasAttribute("boots")))
+			if (e.Grounded && !float.IsNaN(e.Velocity.x) && (!pm || (!pm.GetAttribute()?.HasAttribute("boots") ?? false)))
 			{
 				float maxMagnitude = Mathf.Min(100f, Mathf.Abs(e.Velocity.magnitude));
 				e.AddForce(new(e.Velocity.normalized, Mathf.Abs(force + maxMagnitude), -(maxMagnitude + Mathf.Abs(acceleration))));

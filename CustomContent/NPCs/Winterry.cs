@@ -2,6 +2,7 @@
 using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
+using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
 using BBTimes.Plugin;
 using PixelInternalAPI.Classes;
@@ -42,10 +43,9 @@ namespace BBTimes.CustomContent.NPCs
 			snowPre.entity.SetGrounded(false);
 			snowPre.audMan = snowPre.gameObject.CreatePropagatedAudioManager(35f, 55f);
 			snowPre.audHit = BBTimesManager.man.Get<SoundObject>("audGenericSnowHit");
-
 			snowPre.renderer = snowBallRenderer.transform;
-
 			snowPre.gaugeSprite = this.GetSprite(Storage.GaugeSprite_PixelsPerUnit, "gaugeIcon.png");
+			snowPre.CreateClickableLink().CopyColliderAttributes((CapsuleCollider)snowPre.entity.Trigger);
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
@@ -123,7 +123,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] walkAnim, spitAnim, blowAnim;
 
 		[SerializeField]
-		internal float minShootForce = 25f, maxShootForce = 35f, shootYVelocity = 6f, waitNextSpitCooldown = 10f;
+		internal float minShootForce = 25f, maxShootForce = 35f, shootYVelocity = 1.5f, waitNextSpitCooldown = 3.5f;
 
 		Coroutine shootAwaitCor;
 	}

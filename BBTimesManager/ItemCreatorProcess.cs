@@ -1050,7 +1050,7 @@ namespace BBTimes.Manager
 			item = new ItemBuilder(plug.Info)
 				.SetItemComponent<ITM_Acceptable>()
 				.SetGeneratorCost(99)
-				.SetShopPrice(99999999)
+				.SetShopPrice(65)
 				.SetNameAndDescription("SmallTimesKey_Name", "SmallTimesKey_Desc")
 				.SetMeta(ItemFlags.Persists, [CRIMINALPACK_CONTRABAND])
 				.Build("SmallTimesKey");

@@ -1,5 +1,5 @@
-﻿using BBTimes.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BBTimes.Extensions;
 using UnityEngine;
 
 
@@ -20,7 +20,7 @@ namespace BBTimes.CustomComponents
 					if (player)
 					{
 						var pm = e.GetComponent<PlayerManager>().GetAttribute();
-						if (!ignoreBootsAttribute && pm.HasAttribute("boots"))
+						if (pm && !ignoreBootsAttribute && pm.HasAttribute("boots"))
 							return;
 						pms.Add(new(e.ExternalActivity, pm));
 					}

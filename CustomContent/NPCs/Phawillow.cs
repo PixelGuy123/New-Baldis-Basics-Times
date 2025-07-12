@@ -1,9 +1,9 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Extensions.ObjectCreationExtensions;
 using PixelInternalAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
@@ -31,17 +31,13 @@ namespace BBTimes.CustomContent.NPCs
 			sprSplashed = storedSprites[1];
 			sprActive = storedSprites[2];
 
-			var myCol = (CapsuleCollider)baseTrigger[0];
-			var col = this.CreateClickableLink().gameObject.AddComponent<CapsuleCollider>();
-			col.isTrigger = true;
-			col.height = myCol.height;
-			col.direction = myCol.direction;
-			col.radius = myCol.radius;
+			this.CreateClickableLink()
+				.CopyColliderAttributes((CapsuleCollider)baseTrigger[0]);
 		}
 		public void SetupPrefabPost() { }
 		public string Name { get; set; }
 		public string Category => "npcs";
-		
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }

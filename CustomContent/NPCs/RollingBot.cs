@@ -1,22 +1,24 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.NpcSpecificComponents;
 using BBTimes.Extensions;
-using PixelInternalAPI.Extensions;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using BBTimes.Extensions.ObjectCreationExtensions;
 using BBTimes.Manager;
+using MTM101BaldAPI.Registers;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class RollingBot : NPC, INPCPrefab, IItemAcceptor
+	public class RollingBot : NPC, INPCPrefab, IItemAcceptor, IClickable<int>
 	{
 		public void SetupPrefab()
 		{
 			Color capColor = new(0.7f, 0.7f, 0.7f);
-			
+
 			Sprite[] storedSprites = this.GetSpriteSheet(4, 4, 25f, "rollBotSheet.png");
 
 			// npc setup
@@ -31,10 +33,11 @@ namespace BBTimes.CustomContent.NPCs
 				this.GetSound("roll_idle1.wav", "Vfx_Rollbot_Idle1", SoundType.Voice, capColor),
 				this.GetSound("roll_idle2.wav", "Vfx_Rollbot_Idle2", SoundType.Voice, capColor)
 				];
+			audRechargeItem = this.GetSoundNoSub("roll_RechargeItem.wav", SoundType.Effect);
 			audMan = GetComponent<PropagatedAudioManager>();
 
 			gameObject.CreatePropagatedAudioManager(10f, 115f)
-				.AddStartingAudiosToAudioManager(true, 
+				.AddStartingAudiosToAudioManager(true,
 				this.GetSound("motor.wav", "Sfx_1PR_Motor", SoundType.Effect, capColor));
 
 			spriteRenderer[0].CreateAnimatedSpriteRotator(
@@ -43,10 +46,14 @@ namespace BBTimes.CustomContent.NPCs
 			spriteRenderer[0].sprite = storedSprites[0];
 
 			eletricityPre = BBTimesManager.man.Get<Eletricity>("EletricityPrefab");
+
+			this.CreateClickableLink()
+				.CopyColliderAttributes((CapsuleCollider)baseTrigger[0]);
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -70,7 +77,6 @@ namespace BBTimes.CustomContent.NPCs
 			base.Despawn();
 			while (eletricities.Count != 0)
 				DestroyLastEletricity();
-			
 		}
 
 		internal void AnnounceWarning()
@@ -95,17 +101,17 @@ namespace BBTimes.CustomContent.NPCs
 		internal void SpawnEletricity(Cell cell)
 		{
 			var eletricity = Instantiate(eletricityPre);
-			eletricity.Initialize(gameObject, cell.FloorWorldPosition, 0.5f, ec);
-			eletricities.Add(eletricity.transform);
+			eletricity.Initialize(gameObject, cell.FloorWorldPosition, 1.25f, ec);
+			eletricity.eletricityForce = electricityShakingForce;
+			eletricities.Add(eletricity);
 		}
 
 		internal void DestroyEletricity() =>
 			StartCoroutine(EletricityDestroy());
-		
+
 
 		IEnumerator EletricityDestroy()
 		{
-			
 			while (eletricities.Count > 0)
 			{
 				DestroyLastEletricity();
@@ -127,9 +133,12 @@ namespace BBTimes.CustomContent.NPCs
 			Destroy(eletricities[0].gameObject);
 			eletricities.RemoveAt(0);
 		}
+
+		// Item fits feature: accept items to fix bot
+
 		public bool ItemFits(Items itm)
 		{
-			if (behaviorStateMachine.CurrentState is RollingBot_Error col && col.cooldown > 0f && itemsThatFixMe.Contains(itm))
+			if (IsMalfunctioning && itemsThatFixMe.Contains(itm))
 				return true;
 			return false;
 		}
@@ -143,8 +152,39 @@ namespace BBTimes.CustomContent.NPCs
 			}
 		}
 
+		// IClickable feature: recharge items
+		public void Clicked(int player)
+		{
+			if (IsItemRechargeable(Singleton<CoreGameManager>.Instance.GetPlayer(player).itm, true))
+			{
+				audMan.PlaySingle(audRechargeItem);
+			}
+		}
+
+		public void ClickableSighted(int player) { }
+		public void ClickableUnsighted(int player) { }
+
+		public bool ClickableHidden() => !IsItemRechargeable(Singleton<CoreGameManager>.Instance.GetPlayer(0).itm, false);
+
+		public bool ClickableRequiresNormalHeight() => false;
+
+		bool IsItemRechargeable(ItemManager itm, bool rechargeIfTrue)
+		{
+			var item = itm.items[itm.selectedItem];
+			if (item.itemType == Items.None)
+				return false;
+			var meta = item.GetMeta();
+			// If Item has 0 meta registered, OR simply isn't multiple use, it cannot be recharged in any way
+			if (meta == null || !meta.flags.HasFlag(ItemFlags.MultipleUse) || meta.value == item) // If the max value is the item itself, it can't be recharged
+				return false;
+
+			if (rechargeIfTrue)
+				itm.SetItem(meta.value, itm.selectedItem); // meta.value will always store the "max value" of the item, which means it is a recharge
+			return true;
+		}
+
 		[SerializeField]
-		internal SoundObject audThanks, audError;
+		internal SoundObject audThanks, audError, audRechargeItem;
 
 		[SerializeField]
 		internal SoundObject[] audWarning, audIdle;
@@ -161,11 +201,12 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal float minErrorCooldown = 25f, maxErrorCooldown = 40f, errorThreshold = 10f,
-			errorMinActiveCooldown = 15f, errorMaxActiveCooldown = 30f;
+			errorMinActiveCooldown = 15f, errorMaxActiveCooldown = 30f, electricityShakingForce = 1.25f;
 
-		readonly List<Transform> eletricities = [];
+		readonly List<Eletricity> eletricities = [];
 
 		internal int EletricitiesCreated => eletricities.Count;
+		public bool IsMalfunctioning => behaviorStateMachine.CurrentState is RollingBot_Error col && col.cooldown > 0f;
 
 		readonly static HashSet<Items> itemsThatFixMe = [];
 
@@ -242,7 +283,7 @@ namespace BBTimes.CustomContent.NPCs
 			cooldown -= bot.TimeScale * Time.deltaTime;
 			if (cooldown <= 0f)
 				bot.behaviorStateMachine.ChangeState(new RollingBot_Wandering(bot));
-			
+
 		}
 
 		public override void Exit()
