@@ -28,7 +28,7 @@ namespace BBTimes.CustomContent.Builders
 
 			squishBase.blockCollider = collider;
 
-			squishBase.audMan = squishBase.gameObject.CreatePropagatedAudioManager(100f, 105f);
+			squishBase.audMan = squishBase.gameObject.CreatePropagatedAudioManager(25f, 85f);
 			squishBase.audHit = this.GetSound("squishHit.wav", "Sfx_Doors_StandardShut", SoundType.Effect, Color.white);
 			squishBase.audRun = this.GetSound("squishSquishing.wav", "Vfx_Squish_Running", SoundType.Effect, Color.white);
 			squishBase.audPrepare = this.GetSound("squisherPrepare.wav", "Vfx_Squish_Running", SoundType.Effect, Color.white);
@@ -60,7 +60,7 @@ namespace BBTimes.CustomContent.Builders
 		public void SetupPrefab() { }
 		public void SetupPrefabPost() { }
 
-		const float headSize = 6f, bodyHeight = 9f;
+		const float headSize = 6f, bodyHeight = 20f;
 
 		public string Name { get; set; }
 		public string Category => "objects";

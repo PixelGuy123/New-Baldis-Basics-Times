@@ -1180,7 +1180,7 @@ namespace BBTimes.Manager
 
 			sets.container = room[0].selection.roomFunctionContainer;
 
-			var typedRoom = ConvertRoomsToLevelTypeOnes(room, LevelType.Schoolhouse);
+			var typedRoom = ConvertRoomsToLevelTypeOnes(room, "BasketballArea", LevelType.Schoolhouse);
 
 
 			floorDatas[F2].SpecialRooms.AddRange(typedRoom);
@@ -1237,7 +1237,7 @@ namespace BBTimes.Manager
 
 			sets.container = room[0].selection.roomFunctionContainer;
 
-			typedRoom = ConvertRoomsToLevelTypeOnes(room, LevelType.Schoolhouse);
+			typedRoom = ConvertRoomsToLevelTypeOnes(room, "Forest", LevelType.Schoolhouse);
 
 			floorDatas[F3].SpecialRooms.AddRange(typedRoom.ConvertAssetWeights(60));
 
@@ -1291,7 +1291,7 @@ namespace BBTimes.Manager
 
 			sets.container = playgroundClonedRoomContainer;
 
-			typedRoom = ConvertRoomsToLevelTypeOnes(room, LevelType.Schoolhouse);
+			typedRoom = ConvertRoomsToLevelTypeOnes(room, "Snowy Playground", LevelType.Schoolhouse);
 
 			floorDatas[F1].SpecialRooms.AddRange(typedRoom);
 			floorDatas[F2].SpecialRooms.AddRange(typedRoom.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.85f)));
@@ -1340,7 +1340,7 @@ namespace BBTimes.Manager
 
 			sets.container = playgroundClonedRoomContainer;
 
-			typedRoom = ConvertRoomsToLevelTypeOnes(room, LevelType.Schoolhouse);
+			typedRoom = ConvertRoomsToLevelTypeOnes(room, "Ice Rink Room", LevelType.Schoolhouse);
 
 			floorDatas[F1].SpecialRooms.AddRange(typedRoom);
 			floorDatas[F2].SpecialRooms.AddRange(typedRoom.ConvertAssetWeights(Mathf.FloorToInt(commonRoomWeight * 0.85f)));
@@ -1382,6 +1382,8 @@ namespace BBTimes.Manager
 
 
 			// ****** Focus Room (A classroom variant, but with a new npc) ******
+			PosterObject[] wallClock = [man.Get<PosterObject>("WallClock")];
+
 			sets = RegisterRoom("FocusRoom", new(0f, 1f, 0.5f),
 				ObjectCreators.CreateDoorDataObject("FocusRoomDoor",
 				AssetLoader.TextureFromFile(GetRoomAsset("FocusRoom", "Focus_Room_Door_Opened.png")),
@@ -1391,7 +1393,7 @@ namespace BBTimes.Manager
 			CameraStand.allowedRoomsToSpawn.Add(sets.category);
 			ChalkfacePatch.allowedClassroomCategories.Add(sets.category);
 
-			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: 8f);
+			room = GetAllAssets(GetRoomAsset("FocusRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 			// Workaround to not have to edit every focus room layout lol
 			var redCouchprefab = Resources.FindObjectsOfTypeAll<RendererContainer>().First(x => x.name == "RedCouch");
 			room.ForEach(foc => foc.selection.basicObjects.ForEach(basO => { if (basO.prefab.name == "Couch") basO.prefab = redCouchprefab.transform; }));
@@ -1409,7 +1411,7 @@ namespace BBTimes.Manager
 			CameraStand.allowedRoomsToSpawn.Add(sets.category);
 			ChalkfacePatch.allowedClassroomCategories.Add(sets.category);
 
-			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false, autoSizeLimitControl: 8f);
+			room = GetAllAssets(GetRoomAsset("ExibitionRoom"), classWeightPre.selection.maxItemValue, classWeightPre.weight / 2, classWeightPre.selection.offLimits, classWeightPre.selection.roomFunctionContainer, keepTextures: false);
 
 			RegisterFalseClass();
 			addAsPowerReceiver(sets.category);
@@ -1417,7 +1419,10 @@ namespace BBTimes.Manager
 			void RegisterFalseClass()
 			{
 				if (!plug.enableBigRooms.Value)
-					RemoveBigRooms(room, 6.655f);
+					RemoveBigRooms(room, 7.85f);
+
+				if (room.Count != 0)
+					room[0].selection.AddRoomFunctionToContainer<RandomPosterFunction>().posters = wallClock;
 
 				room.ForEach(x =>
 				{
@@ -1706,11 +1711,21 @@ namespace BBTimes.Manager
 			return settings;
 		}
 
-		static List<WeightedRoomAssetWithLevelType> ConvertRoomsToLevelTypeOnes(List<WeightedRoomAsset> assets, params LevelType[] acceptedTypes)
+		static List<WeightedRoomAssetWithLevelType> ConvertRoomsToLevelTypeOnes(List<WeightedRoomAsset> assets, params LevelType[] acceptedTypes) =>
+			ConvertRoomsToLevelTypeOnes(assets, null, acceptedTypes);
+
+		static List<WeightedRoomAssetWithLevelType> ConvertRoomsToLevelTypeOnes(List<WeightedRoomAsset> assets, string roomName, params LevelType[] acceptedTypes)
 		{
+			bool useRoomName = !string.IsNullOrEmpty(roomName);
 			List<WeightedRoomAssetWithLevelType> newAssets = [];
+
 			for (int i = 0; i < assets.Count; i++)
-				newAssets.Add(new(assets[i].selection, assets[i].weight, acceptedTypes));
+			{
+				newAssets.Add(useRoomName ?
+				new(roomName, assets[i].selection, assets[i].weight, acceptedTypes) :
+				new(assets[i].selection, assets[i].weight, acceptedTypes)
+				);
+			}
 			return newAssets;
 		}
 
@@ -1843,7 +1858,7 @@ namespace BBTimes.Manager
 		static List<WeightedRoomAssetWithLevelType> ConvertAssetWeights(this List<WeightedRoomAssetWithLevelType> assets, int newWeight)
 		{
 			for (int i = 0; i < assets.Count; i++)
-				assets[i] = new(assets[i].selection, newWeight);
+				assets[i] = new(assets[i].HasRoomName ? assets[i].RoomName : null, assets[i].selection, newWeight);
 			return assets;
 		}
 

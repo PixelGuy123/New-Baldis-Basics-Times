@@ -414,6 +414,11 @@ namespace BBTimes
 
 					for (int i = 0; i < floordata.SpecialRooms.Count; i++)
 					{
+						// --- Filter disabled special rooms and add to special rooms (since removing their cblds are not a good idea) ---
+						if (floordata.SpecialRooms[i].HasRoomName && !Config.Bind("Special Room Settings", $"Enable {floordata.SpecialRooms[i].RoomName}", true,
+							"If set to true, this structure will be included in the maps made by the Level Generator (eg. Hide and Seek).").Value)
+							continue;
+
 						if (floordata.SpecialRooms[i].AcceptsLevelType(ld.type))
 							ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddToArray(floordata.SpecialRooms[i].GetWeightedSelection());
 					}

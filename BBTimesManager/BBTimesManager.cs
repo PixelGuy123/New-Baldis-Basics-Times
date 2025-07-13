@@ -192,8 +192,8 @@ namespace BBTimes.Manager
 				if (lds.Length == 0) continue;
 
 				KeyValuePair<string, FloorData>? data = floorDatas.FirstOrDefault(x => x.Key == obj.levelTitle);
-				if (!data.HasValue) // Why didn't I add this earlier, bruh
-					continue;
+				if (!data.HasValue || data.Value.Value == null) // Why didn't I add this earlier, bruh
+					continue;                                   // In case FloorData is null?? When does that happen?
 
 				data.Value.Value.levelObjects = lds;
 
@@ -237,8 +237,10 @@ namespace BBTimes.Manager
 			MainGameManagerPatches.angryBaldiAnimation = TextureExtensions.LoadSpriteSheet(9, 8, 30f, MiscPath, TextureFolder, GetAssetName("baldiSuperAngry.png"));
 
 			// Setup Window hit audio
-
 			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Effect, Color.white);
+
+			// Setup wall clock poster
+			man.Add("WallClock", ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("wall_clock.png")))]));
 
 			// Principal's extra dialogues
 			AddRule("breakingproperty", "principal_nopropertybreak.wav", "Vfx_PRI_NoPropertyBreak");

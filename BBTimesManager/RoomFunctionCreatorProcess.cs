@@ -25,52 +25,89 @@ namespace BBTimes.Manager
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("ClassicWindow_Broken.png"))),
 				AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("ClassicWindow_Mask.png"))));
 			// Random Window Function for cafe
-			AddFunctionToEveryRoom<RandomWindowFunction>(CafeteriaPrefix).window = classicWindow; // Yeah, it creates a window here too. But the WindowCreationprocess is for those that are supposed to spawn naturally;
-			AddFunctionToEveryRoom<RandomWindowFunction>(PlaygroundPrefix).window = classicWindow;
+			RandomWindowFunction windowFunc;
+			if (TryAddFunctionToEveryRoom(CafeteriaPrefix, out windowFunc))
+			{
+				windowFunc.window = classicWindow;
+			}
+			if (TryAddFunctionToEveryRoom(PlaygroundPrefix, out windowFunc))
+			{
+				windowFunc.window = classicWindow;
+			}
 
 			// Random poster functon for class and office
-			PosterObject[] poster = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("wall_clock.png")))])];
+			PosterObject[] poster = [man.Get<PosterObject>("WallClock")];
+			var posterFuncAssignment = new System.Action<RandomPosterFunction>((posterFunc) => posterFunc.posters = poster);
 
-			AddFunctionToEveryRoom<RandomPosterFunction>(ClassPrefix).posters = poster;
-			AddFunctionToEveryRoom<RandomPosterFunction>(OfficePrefix).posters = poster;
-			AddFunctionToEveryRoom<RandomPosterFunction>(CafeteriaPrefix).posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "CafeteriaRules.png"))]),
-				ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "food_allergy_.png"))])];
+			if (TryAddFunctionToEveryRoom(RoomCategory.Class, out List<RandomPosterFunction> posterFuncs))
+				posterFuncs.ForEach(posterFuncAssignment);
 
-			AddFunctionToEveryRoom<RandomItemSpawnFunction>(OfficePrefix).itemToSpawn = ItemMetaStorage.Instance.FindByEnum(EnumExtensions.GetFromExtendedName<Items>("BaldiYearbook")).value;
+			if (TryAddFunctionToEveryRoom(RoomCategory.Office, out posterFuncs))
+				posterFuncs.ForEach(posterFuncAssignment);
+
+			if (TryAddFunctionToEveryRoom(CafeteriaPrefix, out RandomPosterFunction posterFunc))
+			{
+				posterFunc.posters = [ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "CafeteriaRules.png"))]),
+					ObjectCreators.CreatePosterObject([AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "food_allergy_.png"))])];
+			}
+
+			if (TryAddFunctionToEveryRoom<RandomItemSpawnFunction>(RoomCategory.Office, out var officeItemFuncs))
+			{
+				var yearBook = ItemMetaStorage.Instance.FindByEnum(EnumExtensions.GetFromExtendedName<Items>("BaldiYearbook"));
+				if (yearBook != null)
+					officeItemFuncs.ForEach(func => func.itemToSpawn = yearBook.value);
+			}
 
 			// High ceiling function
-			var highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(CafeteriaPrefix);
-			highCeil.ceilingHeight = 5;
-			highCeil.customCeiling = ObjectCreationExtension.blackTex;
-			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "wallFadeInBlack.png"))];
-			highCeil.chanceToHappen = 0.8f;
-			highCeil.customLight = man.Get<GameObject>("prefab_cafeHangingLight").transform;
+			if (TryAddFunctionToEveryRoom(CafeteriaPrefix, out HighCeilingRoomFunction highCeil))
+			{
+				highCeil.ceilingHeight = 5;
+				highCeil.customCeiling = ObjectCreationExtension.blackTex;
+				highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(GetRoomAsset("Cafeteria", "wallFadeInBlack.png"))];
+				highCeil.chanceToHappen = 0.8f;
+				highCeil.customLight = man.Get<GameObject>("prefab_cafeHangingLight").transform;
+			}
 
-			highCeil = AddFunctionToEveryRoom<HighCeilingRoomFunction>(LibraryPrefix);
-			highCeil.targetTransformNamePrefix = "Bookshelf";
-			highCeil.targetTransformOffset = 9f;
-			highCeil.customLight = man.Get<GameObject>("prefab_libraryHangingLight").transform;
-			highCeil.usesSingleCustomWall = true;
-			highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(GetRoomAsset("Library", GetAssetName("libraryWallSheet.png")))];
+			if (TryAddFunctionToEveryRoom(LibraryPrefix, out highCeil))
+			{
+				highCeil.targetTransformNamePrefix = "Bookshelf";
+				highCeil.targetTransformOffset = 9f;
+				highCeil.customLight = man.Get<GameObject>("prefab_libraryHangingLight").transform;
+				highCeil.usesSingleCustomWall = true;
+				highCeil.customWallProximityToCeil = [AssetLoader.TextureFromFile(GetRoomAsset("Library", GetAssetName("libraryWallSheet.png")))];
+			}
 
 			// -------------------- DUST SHROOM CREATION ----------------------------
 
 			WeightedTransform[] transforms = [.. man.Get<List<WeightedTransform>>("prefabs_cornerLamps")];
 
-			var cos = AddFunctionToEveryRoom<CornerObjectSpawner>(FacultyPrefix);
-			cos.lightPower = 0;
-			cos.minAmount = 2;
-			cos.maxAmount = 3;
-			cos.randomObjs = transforms;
-			cos.randomChance = 0.6f;
-			cos.nonSafeEntityCell = true;
 
-			cos = AddFunctionToEveryRoom<CornerObjectSpawner>(OfficePrefix);
-			cos.lightPower = 0;
-			cos.minAmount = 1;
-			cos.maxAmount = 3;
-			cos.randomObjs = transforms;
-			cos.nonSafeEntityCell = true;
+			if (TryAddFunctionToEveryRoom<CornerObjectSpawner>(RoomCategory.Faculty, out var cos))
+			{
+				cos.ForEach(func =>
+				{
+					func.lightPower = 0;
+					func.minAmount = 2;
+					func.maxAmount = 3;
+					func.randomObjs = transforms;
+					func.randomChance = 0.6f;
+					func.nonSafeEntityCell = true;
+				});
+			}
+
+			if (TryAddFunctionToEveryRoom<CornerObjectSpawner>(RoomCategory.Office, out cos))
+			{
+				cos.ForEach(func =>
+				{
+					func.lightPower = 0;
+					func.minAmount = 1;
+					func.maxAmount = 3;
+					func.randomObjs = transforms;
+					func.nonSafeEntityCell = true;
+				});
+			}
+
+			// ******* Dust Shroom Creation ********
 
 			var sprites = TextureExtensions.LoadSpriteSheet(2, 1, 33f, BasePlugin.ModPath, "objects", "DustShroom", GetAssetName("shroom.png"));
 			var shroomObject = ObjectCreationExtensions.CreateSpriteBillboard(sprites[0]).AddSpriteHolder(out var shroomRenderer, 1.25f, LayerStorage.ignoreRaycast);
@@ -148,26 +185,60 @@ namespace BBTimes.Manager
 			var rendCont = shroom.GetComponent<RendererContainer>();
 			rendCont.renderers = rendCont.renderers.AddToArray(partsRenderer);
 
-			var rngSpawner = AddFunctionToEveryRoom<RandomObjectSpawner>(PlaygroundPrefix);
-			rngSpawner.objectPlacer = new ObjectPlacer()
+			// Actual implementation of dust shroom
+			if (TryAddFunctionToEveryRoom<RandomObjectSpawner>(PlaygroundPrefix, out var rngSpawner))
 			{
-				prefab = shroomObject.gameObject,
-				coverage = CellCoverage.Down,
-				eligibleShapes = TileShapeMask.Open | TileShapeMask.Corner | TileShapeMask.Straight | TileShapeMask.Single,
-				min = 4,
-				max = 8,
-				useOpenDir = true,
-				useWallDir = false,
-				includeOpen = true
-			};
-
-			static R AddFunctionToEveryRoom<R>(string prefix) where R : RoomFunction
-			{
-				var r = Resources.FindObjectsOfTypeAll<RoomAsset>().First(x => x.name.StartsWith(prefix));
-				var comp = r.roomFunctionContainer.gameObject.AddComponent<R>();
-				r.roomFunctionContainer.AddFunction(comp);
-				return comp;
+				rngSpawner.objectPlacer = new ObjectPlacer()
+				{
+					prefab = shroomObject.gameObject,
+					coverage = CellCoverage.Down,
+					eligibleShapes = TileShapeMask.Open | TileShapeMask.Corner | TileShapeMask.Straight | TileShapeMask.Single,
+					min = 4,
+					max = 8,
+					useOpenDir = true,
+					useWallDir = false,
+					includeOpen = true
+				};
 			}
+		}
+
+		static bool TryAddFunctionToEveryRoom<R>(string prefix, out R roomFunction) where R : RoomFunction
+		{
+			var r = Resources.FindObjectsOfTypeAll<RoomAsset>().FirstOrDefault(x => x.name.StartsWith(prefix));
+			if (!r)
+			{
+				roomFunction = null;
+				return false;
+			}
+			roomFunction = r.roomFunctionContainer.gameObject.AddComponent<R>();
+			r.roomFunctionContainer.AddFunction(roomFunction);
+			return true;
+		}
+
+		static bool TryAddFunctionToEveryRoom<R>(RoomCategory category, out List<R> roomFunctions) where R : RoomFunction
+		{
+			_usedContainers.Clear();
+			List<R> functions = [];
+
+			foreach (var room in Resources.FindObjectsOfTypeAll<RoomAsset>())
+			{
+				if (room.category != category || _usedContainers.Contains(room.roomFunctionContainer))
+					continue;
+
+				_usedContainers.Add(room.roomFunctionContainer);
+				var roomFunction = room.roomFunctionContainer.gameObject.AddComponent<R>();
+
+				functions.Add(roomFunction);
+			}
+
+			if (functions.Count == 0)
+			{
+				roomFunctions = null;
+				return false;
+			}
+
+			roomFunctions = functions;
+			return true;
 		}
 
 		internal static List<R> AddFunctionToEverythingExcept<R>(params RoomCategory[] exceptions) where R : RoomFunction =>
@@ -187,6 +258,8 @@ namespace BBTimes.Manager
 			return l;
 		}
 
-		const string CafeteriaPrefix = "Cafeteria", OfficePrefix = "Office", ClassPrefix = "Class", LibraryPrefix = "Library", PlaygroundPrefix = "Playground", FacultyPrefix = "Faculty";
+		const string CafeteriaPrefix = "Cafeteria", LibraryPrefix = "Library", PlaygroundPrefix = "Playground";
+
+		static readonly HashSet<RoomFunctionContainer> _usedContainers = [];
 	}
 }

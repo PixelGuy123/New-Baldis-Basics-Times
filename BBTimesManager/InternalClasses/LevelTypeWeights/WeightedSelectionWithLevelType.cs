@@ -22,7 +22,6 @@ internal abstract class WeightedSelectionWithLevelType<T, C> where T : class whe
     public bool AcceptsLevelType(LevelType type) =>
         usesAllLevelType ? WeightedSelectionWithLevelType_AllStorage.All.Contains(type) : acceptedLevelTypes.Contains(type);
 
-
     public C selection;
     public int weight = 100;
 
@@ -43,26 +42,44 @@ internal static class WeightedSelectionWithLevelType_AllStorage // Workaround to
 internal class WeightedNPCWithLevelType(NPC selection, int weight, params LevelType[] levelTypes) : WeightedSelectionWithLevelType<WeightedNPC, NPC>(selection, weight, levelTypes)
 {
     public override WeightedNPC GetWeightedSelection() => new() { selection = selection, weight = weight };
+
+    public override string ToString() =>
+        $"{selection.name} => {weight}";
 }
 
 internal class WeightedItemObjectWithLevelType(ItemObject selection, int weight, params LevelType[] levelTypes) : WeightedSelectionWithLevelType<WeightedItemObject, ItemObject>(selection, weight, levelTypes)
 {
     public override WeightedItemObject GetWeightedSelection() => new() { selection = selection, weight = weight };
+    public override string ToString() =>
+        $"{selection.name} => {weight}";
 }
 
 internal class WeightedTexture2DWithLevelType(UnityEngine.Texture2D selection, int weight, params LevelType[] levelTypes) : WeightedSelectionWithLevelType<WeightedTexture2D, UnityEngine.Texture2D>(selection, weight, levelTypes)
 {
     public override WeightedTexture2D GetWeightedSelection() => new() { selection = selection, weight = weight };
+    public override string ToString() =>
+        $"{selection.name} => {weight}";
 }
 
 internal class WeightedRandomEventWithLevelType(RandomEvent selection, int weight, params LevelType[] levelTypes) : WeightedSelectionWithLevelType<WeightedRandomEvent, RandomEvent>(selection, weight, levelTypes)
 {
     public override WeightedRandomEvent GetWeightedSelection() => new() { selection = selection, weight = weight };
+    public override string ToString() =>
+        $"{selection.name} => {weight}";
 }
 
 internal class WeightedRoomAssetWithLevelType(RoomAsset selection, int weight, params LevelType[] levelTypes) : WeightedSelectionWithLevelType<WeightedRoomAsset, RoomAsset>(selection, weight, levelTypes)
 {
+    internal WeightedRoomAssetWithLevelType(string roomName, RoomAsset selection, int weight, params LevelType[] levelTypes) : this(selection, weight, levelTypes)
+    {
+        RoomName = roomName;
+        HasRoomName = !string.IsNullOrEmpty(roomName);
+    }
+    public readonly string RoomName = null;
+    public readonly bool HasRoomName = false;
     public override WeightedRoomAsset GetWeightedSelection() => new() { selection = selection, weight = weight };
+    public override string ToString() =>
+        $"{selection.name} => {weight}";
 }
 
 internal class WeightedStructureWithParametersWithLevelType(StructureWithParameters selection, int weight, params LevelType[] levelTypes) : WeightedSelectionWithLevelType<WeightedStructureWithParameters, StructureWithParameters>(selection, weight, levelTypes)
@@ -82,9 +99,13 @@ internal class StructureWithParametersWithLevelType(StructureWithParameters sele
 internal class RoomGroupWithLevelType(RoomGroup selection, params LevelType[] levelTypes) : WeightedSelectionWithLevelType<RoomGroup, RoomGroup>(selection, 100, levelTypes)
 {
     public override RoomGroup GetWeightedSelection() => selection;
+    public override string ToString() =>
+        $"{selection.name} => {weight}";
 }
 
 internal class ItemObjectWithLevelType(ItemObject selection, params LevelType[] levelTypes) : WeightedSelectionWithLevelType<ItemObject, ItemObject>(selection, 100, levelTypes)
 {
     public override ItemObject GetWeightedSelection() => selection;
+    public override string ToString() =>
+        $"{selection.name} => {weight}";
 }

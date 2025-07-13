@@ -62,7 +62,9 @@ namespace BBTimes.Manager
 
 			vent.parameters.minMax[0].z = 6;
 			vent.parameters.chance[0] = 0.15f;
-			floorDatas[F3].WeightedObjectBuilders.Add(new(vent, 95, LevelType.Schoolhouse));
+			floorDatas[F3].WeightedObjectBuilders.Add(new(vent, 95, LevelType.Schoolhouse, LevelType.Factory));
+			floorDatas[F4].ForcedObjectBuilders.Add(new(vent, LevelType.Factory));
+			floorDatas[F5].ForcedObjectBuilders.Add(new(vent, LevelType.Factory));
 
 
 			// Small Door builder
