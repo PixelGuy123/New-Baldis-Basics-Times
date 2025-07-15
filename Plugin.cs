@@ -11,6 +11,7 @@ using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.Manager.InternalClasses;
 using BBTimes.Manager.InternalClasses.LevelTypeWeights;
+using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches.EnvironmentPatches;
 using BBTimes.Plugin;
 using BepInEx;
@@ -35,8 +36,8 @@ namespace BBTimes
 
 	// Soft dependencies / has exclusive compatibility with
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.newanimations", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("rost.moment.baldiplus.extramod", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("io.github.luisrandomness.bbp_custom_posters", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency("rost.moment.baldiplus.funsettings", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("io.github.uncertainluei.baldiplus.customposters", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.customvendingmachines", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.custommusics", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.grapplinghooktweaks", BepInDependency.DependencyFlags.SoftDependency)]

@@ -1,26 +1,17 @@
 ﻿using BBTimes.CustomContent.NPCs;
 using HarmonyLib;
 using MTM101BaldAPI;
-using BBE;
-using BBE.CustomClasses;
-using BBE.NPCs;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using UnityEngine;
-using BBTimes.CustomComponents;
-using System;
 using System.Reflection;
 
 namespace BBTimes.CompatibilityModule
 {
 	[HarmonyPatch]
-	[ConditionalPatchMod("rost.moment.baldiplus.extramod")]
-	internal static class BBExtraCompat
+	[ConditionalPatchMod("rost.moment.baldiplus.funsettings")]
+	internal static class FunSettingsCompat
 	{
-
 		[HarmonyTargetMethod]
 		static MethodInfo GiveMeQuantumSetting() =>
-			AccessTools.Method("BBE.CustomClasses.QuantumSweepFunSetting:OnNPCSpawn");
+			AccessTools.Method("FunSettings.QuantumSweepFunSetting:OnNPCSpawn");
 
 		[HarmonyPostfix]
 		static void QuantumNpcSpawnPatch(NPC npc)
@@ -56,7 +47,7 @@ namespace BBTimes.CompatibilityModule
 
 		[HarmonyTargetMethod]
 		static MethodInfo GiveMeHardSetting() =>
-			AccessTools.Method("BBE.CustomClasses.HardModeFunSetting:OnNPCSpawn");
+			AccessTools.Method("FunSettings.HardModeFunSetting:OnNPCSpawn");
 
 		[HarmonyPostfix]
 		static void HardNpcSpawnPatch(NPC npc)
