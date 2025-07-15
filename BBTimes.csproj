@@ -31,8 +31,8 @@
     <Reference Include="BaldisBasicsPlusAdvanced">
       <HintPath>References\BaldisBasicsPlusAdvanced.dll</HintPath>
     </Reference>
-    <Reference Include="BBE">
-      <HintPath>References\BBE.dll</HintPath>
+    <Reference Include="FunSettings">
+      <HintPath>References\FunSettings.dll</HintPath>
     </Reference>
     <Reference Include="BBPlusAnimations">
       <HintPath>References\BBPlusAnimations.dll</HintPath>
