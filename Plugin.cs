@@ -11,6 +11,7 @@ using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.Manager.InternalClasses;
 using BBTimes.Manager.InternalClasses.LevelTypeWeights;
+using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches.EnvironmentPatches;
 using BBTimes.Plugin;
 using BepInEx;

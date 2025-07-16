@@ -15,7 +15,6 @@ namespace BBTimes.CompatibilityModule
 	[ConditionalPatchMod("rost.moment.baldiplus.funsettings")]
 	internal static class FunSettingsCompat
 	{
-
 		[HarmonyTargetMethod]
 		static MethodInfo GiveMeQuantumSetting() =>
 			AccessTools.Method("FunSettings.QuantumSweepFunSetting:OnNPCSpawn");
