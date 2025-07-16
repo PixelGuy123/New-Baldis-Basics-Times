@@ -1,6 +1,6 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.Plugin;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.RoomFunctions
@@ -71,7 +71,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		}
 
 		readonly List<ActivityModifier> actMods = [];
-		readonly MovementModifier moveMod = new(Vector3.zero, 0.25f);
+		readonly MovementModifier moveMod = new(Vector3.zero, 0.75f);
 		readonly List<SlippingMaterial> slippers = [];
 
 		[SerializeField]

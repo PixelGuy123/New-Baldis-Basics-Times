@@ -81,7 +81,7 @@ namespace BBTimes.Manager
 					flDat.NPCs.Do(x => x.weight = 9999);
 					flDat.Offices.ForEach(x => x.weight = 9999);
 					flDat.ShopItems.ForEach(x => x.weight = 9999);
-					//flDat.WeightedObjectBuilders.ForEach(x => x.weight = 9999);
+					flDat.WeightedObjectBuilders.ForEach(x => x.weight = 9999);
 				}
 			}
 			else

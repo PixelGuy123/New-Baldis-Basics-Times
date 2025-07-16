@@ -58,6 +58,8 @@ namespace BBTimes.Manager
 			var normWall = new WeightedTexture2D() { selection = GenericExtensions.FindResourceObjectByName<Texture2D>("Wall"), weight = 100 };
 			var blackTexture = TextureExtensions.CreateSolidTexture(1, 1, Color.black); // It'll be stretched anyways lol
 			var grass = man.Get<Texture2D>("Tex_Grass");
+			var chalkBoard = GenericExtensions.FindResourceObjectByName<Texture2D>("chk_blank");
+			var chalkboardFont = GenericExtensions.FindResourceObjectByName<TMP_FontAsset>("COMIC_24_Smooth_Pro");
 
 			// --- Misc References that involves Categories ---
 			var powerLeverRoomRef = GenericExtensions.FindResourceObject<Structure_PowerLever>();
@@ -271,14 +273,17 @@ namespace BBTimes.Manager
 			// -------------------------- DRIBBLE'S ROOM STRUCTURES -------------------------------------
 			// ------------------------------------------------------------------------------------------
 			var runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineStraight.png")), 12.5f), false).AddSpriteHolder(out var runLineRenderer, 0.1f, 0);
-			//runLine.gameObject.layer = 0; // default layer
+			runLine.gameObject.layer = 0; // default layer
 			runLineRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			runLine.gameObject.AddComponent<RunLineMarker>();
 			runLine.name = "StraightRunLine";
+
 			runLine.gameObject.AddObjectToEditor();
 
 			runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineCurve.png")), 12.5f), false).AddSpriteHolder(out runLineRenderer, 0.1f, 0);
-			//runLine.gameObject.layer = 0; // default layer
+			runLine.gameObject.layer = 0; // default layer
 			runLineRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+			runLine.gameObject.AddComponent<RunLineMarker>();
 			runLine.name = "CurvedRunLine";
 			runLine.gameObject.AddObjectToEditor();
 
@@ -994,7 +999,24 @@ namespace BBTimes.Manager
 
 			room = GetAllAssets(GetRoomAsset("DribbleRoom"), 75, 50, autoSizeLimitControl: 7.5f);
 			room[0].selection.AddRoomFunctionToContainer<RuleFreeZone>();
-			room[0].selection.AddRoomFunctionToContainer<PlayerRunCornerFunction>();
+			var dribbleGymFunc = room[0].selection.AddRoomFunctionToContainer<DribbleGymFunction>();
+			dribbleGymFunc.audGoal = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("DribbleRoom", "basketballHitHoop.wav")), string.Empty, SoundType.Effect, Color.white);
+			dribbleGymFunc.chalkboardPre = ObjectCreators.CreatePosterObject(chalkBoard, [
+				new() {
+					font = chalkboardFont,
+					fontSize = 28,
+					textKey = "PST_CHK_DRI_LABEL",
+					position = new(12, 50),
+					size = new(230, 250)
+				},
+				new() {
+					font = chalkboardFont,
+					fontSize = 24,
+					textKey = "99",
+					position = new(-50, 0),
+					size = new(364, 250)
+				}
+			]);
 
 			sets.container = room[0].selection.roomFunctionContainer;
 

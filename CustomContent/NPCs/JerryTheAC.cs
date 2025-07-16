@@ -161,7 +161,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (!cell.shape.HasFlag(TileShapeMask.Corner)) return;
 
 			Vector3 fwd = new();
-			cell.AllWallDirections.ForEach(x => fwd += x.GetOpposite().ToVector3()); // (A + B).normalized gives the diagonal between two points (thanks to ChatGPT, probably some general knowledge, I haven't reached study in Vectors yet lol)
+			cell.AllWallDirections.ForEach(x => fwd += x.GetOpposite().ToVector3());
 
 			nextPos = transform.position + fwd.normalized;
 		}

@@ -16,6 +16,12 @@ namespace BBTimes.Manager
 			// 1 - F2
 			// 2 - F3
 			// 3 - END
+			const string
+			STUDENT_TAG = "student",
+			FACULTY_TAG = "faculty",
+			NEITHER_TAG = "neither"
+			;
+
 			NPC npc;
 
 			// Office Chair
@@ -28,7 +34,7 @@ namespace BBTimes.Manager
 				.SetName("Office Chair")
 				.SetMetaName("PST_OFC_Name")
 				.AddTrigger()
-				.SetMetaTags(["neither"])
+				.SetMetaTags([NEITHER_TAG])
 				.Build()
 				.SetupNPCData("OfficeChair", "PST_OFC_Name", "PST_OFC_Desc", -0.75f);
 
@@ -44,7 +50,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_HapH_Name")
 				.AddTrigger()
 				.AddLooker()
-				.SetMetaTags(["neither", Storage.ChristmasSpecial_TimesTag])
+				.SetMetaTags([NEITHER_TAG, Storage.ChristmasSpecial_TimesTag])
 				.SetMaxSightDistance(125)
 				.Build()
 				.SetupNPCData("HappyHolidays", "PST_HapH_Name", "PST_HapH_Desc", -2f);
@@ -68,7 +74,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.AddTrigger()
 				.AddHeatmap()
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.Build()
 				.SetupNPCData("Superintendent", "PST_SI_Name", "PST_SI_Desc", -0.5f);
 			//CreatorExtensions.CreateNPC<Superintendent, SuperintendentCustomData>("Superintendent", 110f, 140f, [RoomCategory.Office, RoomCategory.Class, RoomCategory.Faculty], [], "PST_SI_Name", "PST_SI_Desc", usesHeatMap:true, lookerDistance: 90f, avoidRooms:false, spriteYOffset: -0.5f).AddMeta(plug, NPCFlags.Standard).value;
@@ -87,7 +93,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.AddLooker()
 				.SetMaxSightDistance(60)
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.Build()
 				.SetupNPCData("Stunly", "PST_Stunly_Name", "PST_Stunly_Desc", -1.5f);
 			//CreatorExtensions.CreateNPC<Stunly, StunlyCustomData>("Stunly", 75f, 100f, [RoomCategory.Hall, RoomCategory.Special], [], "PST_Stunly_Name", "PST_Stunly_Desc", lookerDistance: 60f, spriteYOffset: -1.5f).AddMeta(plug , NPCFlags.Standard).value;
@@ -103,7 +109,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_Pix_Name")
 				.AddTrigger()
 				.AddLooker()
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.SetMaxSightDistance(90)
 				.SetFOV(100f)
 				.Build()
@@ -123,7 +129,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_0TH_Name")
 				.IgnorePlayerOnSpawn()
 				.AddTrigger()
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.Build()
 				.SetupNPCData("0thPrize", "PST_0TH_Name", "PST_0TH_Desc", -0.4f)
 				.MarkAsReplacement(75, Character.Sweep); // 25
@@ -138,7 +144,7 @@ namespace BBTimes.Manager
 				.SetName("Pencil Boy")
 				.SetMetaName("PST_PB_Name")
 				.AddLooker()
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.SetMaxSightDistance(45f)
 				.AddTrigger()
 				.Build()
@@ -156,7 +162,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_Rollbot_Name")
 				.AddTrigger()
 				.DisableAutoRotation()
-				.SetMetaTags(["neither"])
+				.SetMetaTags([NEITHER_TAG])
 				.Build()
 				.SetupNPCData("RollingBot", "PST_Rollbot_Name", "PST_Rollbot_Desc", -1.88f);
 
@@ -172,7 +178,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_Wch_Name")
 				.AddTrigger()
 				.AddLooker()
-				.SetMetaTags(["neither"])
+				.SetMetaTags([NEITHER_TAG])
 				.EnableAcceleration()
 				.Build()
 				.SetupNPCData("Watcher", "PST_Wch_Name", "PST_Wch_Desc", 0f);
@@ -189,7 +195,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.AddLooker()
 				.AddHeatmap()
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.Build()
 				.SetupNPCData("MagicalStudent", "PST_MGS_Name", "PST_MGS_Desc", -1.91f)
 				.MarkAsReplacement(35, Character.Principal); //35
@@ -207,7 +213,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_Spj_Name")
 				.AddTrigger()
 				.AddLooker()
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.SetMaxSightDistance(155)
 				.Build()
 				.SetupNPCData("SuperintendentJr", "PST_Spj_Name", "PST_Spj_Desc", -1f);
@@ -223,7 +229,7 @@ namespace BBTimes.Manager
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Leapy")
 				.SetName("Leapy")
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.SetMetaName("PST_Leapy_Name")
 				.AddTrigger()
 				.Build()
@@ -240,7 +246,7 @@ namespace BBTimes.Manager
 				.SetName("Glubotrony")
 				.SetMetaName("PST_Gboy_Name")
 				.AddLooker()
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.SetMaxSightDistance(45)
 				.SetFOV(110f)
 				.AddTrigger()
@@ -259,7 +265,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_Dribble_Name")
 				.AddSpawnableRoomCategories(RoomCategory.Special)
 				.AddLooker()
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("Dribble", "PST_Dribble_Name", "PST_Dribble_Desc", 0.3f)
@@ -267,7 +273,7 @@ namespace BBTimes.Manager
 
 			npc.Navigator.SetRoomAvoidance(false);
 
-			floorDatas[F2].NPCs.Add(new(npc, 50));
+			floorDatas[F2].NPCs.Add(new(npc, 65));
 			floorDatas[END].NPCs.Add(new(npc, 33));
 
 			// Bubbly
@@ -277,7 +283,7 @@ namespace BBTimes.Manager
 				.SetEnum("Bubbly")
 				.SetName("Bubbly")
 				.SetMetaName("PST_Bubbly_Name")
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("Bubbly", "PST_Bubbly_Name", "PST_Bubbly_Desc", -1.03f)
@@ -296,7 +302,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.AddTrigger()
 				.SetAirborne()
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.Build()
 				.SetupNPCData("Phawillow", "PST_Phawillow_Name", "PST_Phawillow_Desc", 0f);
 
@@ -312,7 +318,7 @@ namespace BBTimes.Manager
 				.SetName("Faker")
 				.AddLooker()
 				.AddTrigger()
-				.SetMetaTags(["neither"])
+				.SetMetaTags([NEITHER_TAG])
 				.Build()
 				.SetupNPCData("Faker", "PST_Faker_Name", "PST_Faker_Desc", -1.36f)
 				.MarkAsReplacement(45, Character.LookAt); // 45
@@ -328,7 +334,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_CamSt_Name")
 				.SetName("CameraStand")
 				.AddLooker()
-				.SetMetaTags(["neither"])
+				.SetMetaTags([NEITHER_TAG])
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("CameraStand", "PST_CamSt_Name", "PST_CamSt_Desc", -0.75f);
@@ -341,7 +347,7 @@ namespace BBTimes.Manager
 			npc = new NPCBuilder<Mugh>(plug.Info)
 				.SetMinMaxAudioDistance(30f, 100f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.SetEnum("Mugh")
 				.SetMetaName("PST_Mugh_Name")
 				.SetName("Mugh")
@@ -359,7 +365,7 @@ namespace BBTimes.Manager
 				.SetEnum("Penny")
 				.SetMetaName("PST_PEN_Name")
 				.SetName("Penny")
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.AddLooker()
 				.AddTrigger()
 				.Build()
@@ -377,7 +383,7 @@ namespace BBTimes.Manager
 				.SetEnum("SerOran")
 				.SetMetaName("PST_Oran_Name")
 				.SetName("SerOran")
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.AddLooker()
 				.SetMaxSightDistance(90)
 				.AddTrigger()
@@ -394,7 +400,7 @@ namespace BBTimes.Manager
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetMetaName("PST_MOP_Name")
 				.SetName("CoolMop")
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.IgnorePlayerOnSpawn()
 				.AddTrigger()
 				.Build()
@@ -410,7 +416,7 @@ namespace BBTimes.Manager
 				.SetEnum("InkArtist")
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetMetaName("PST_InkArt_Name")
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.SetName("InkArtist")
 				.AddTrigger()
 				.Build()
@@ -423,7 +429,7 @@ namespace BBTimes.Manager
 				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("TickTock")
 				.AddSpawnableRoomCategories(RoomCategory.Faculty, RoomCategory.Office)
-				.SetMetaTags(["neither"])
+				.SetMetaTags([NEITHER_TAG])
 				.SetMetaName("PST_TickTock_Name")
 				.SetName("TickTock")
 				.AddTrigger()
@@ -438,7 +444,7 @@ namespace BBTimes.Manager
 				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("Quiker")
 				.SetMetaName("PST_Quiker_Name")
-				.SetMetaTags(["neither"])
+				.SetMetaTags([NEITHER_TAG])
 				.SetName("Quiker")
 				.SetAirborne()
 				.AddTrigger()
@@ -454,7 +460,7 @@ namespace BBTimes.Manager
 				.SetEnum("JerryTheAC")
 				.SetMetaName("PST_JerryAc_Name")
 				.SetName("JerryTheAirConditioner")
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.AddTrigger()
 				.Build()
 				.SetupNPCData("JerryTheAirConditioner", "PST_JerryAc_Name", "PST_JerryAc_Desc", 0)
@@ -468,7 +474,7 @@ namespace BBTimes.Manager
 				.SetMinMaxAudioDistance(30f, 100f)
 				.AddSpawnableRoomCategories(RoomCategory.Office, RoomCategory.Faculty)
 				.SetEnum("ZapZap")
-				.SetMetaTags(["neither"])
+				.SetMetaTags([NEITHER_TAG])
 				.SetMetaName("PST_ZapZap_Name")
 				.SetName("ZapZap")
 				.AddTrigger()
@@ -485,7 +491,7 @@ namespace BBTimes.Manager
 			npc = new NPCBuilder<CheeseMan>(plug.Info)
 				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("CheeseMan")
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.SetMetaName("PST_CheeseMan_Name")
 				.SetName("CheeseMan")
 				.AddTrigger()
@@ -503,7 +509,7 @@ namespace BBTimes.Manager
 				.AddLooker()
 				.SetEnum("DetentionBot")
 				.SetMetaName("PST_DetentionBot_Name")
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.SetName("DetentionBot")
 				.AddTrigger()
 				.Build()
@@ -520,7 +526,7 @@ namespace BBTimes.Manager
 				.SetMinMaxAudioDistance(30f, 100f)
 				.SetEnum("ScienceTeacher")
 				.SetMetaName("PST_SciTeacher_Name")
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.SetName("ScienceTeacher")
 				.AddTrigger()
 				.AddLooker()
@@ -537,7 +543,7 @@ namespace BBTimes.Manager
 				.SetEnum("Adverto")
 				.SetMetaName("PST_Adverto_Name")
 				.SetName("Adverto")
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.AddTrigger()
 				.AddLooker()
 				.SetMaxSightDistance(110f)
@@ -553,7 +559,7 @@ namespace BBTimes.Manager
 				.SetEnum("VacuumCleaner")
 				.SetMetaName("PST_VacClean_Name")
 				.SetName("VacuumCleaner")
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.AddTrigger()
 				.AddLooker()
 				.SetMaxSightDistance(55f)
@@ -572,7 +578,7 @@ namespace BBTimes.Manager
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetMetaName("PST_MOPLISS_Name")
 				.SetName("Mopliss")
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.IgnorePlayerOnSpawn()
 				.AddTrigger()
 				.Build()
@@ -588,7 +594,7 @@ namespace BBTimes.Manager
 				.SetEnum("NoseMan")
 				.SetMetaName("PST_NOSE_Name")
 				.SetName("NoseMan")
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.AddTrigger()
 				.AddLooker()
 				.SetMaxSightDistance(135f)
@@ -603,7 +609,7 @@ namespace BBTimes.Manager
 				.SetEnum("Mimicry")
 				.SetMetaName("PST_Mimi_Name")
 				.SetName("Mimicry")
-				.SetMetaTags(["student"])
+				.SetMetaTags([STUDENT_TAG])
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0.546875f, 0.1015625f, 0.99609375f))
 				.AddLooker()
@@ -621,7 +627,7 @@ namespace BBTimes.Manager
 				.SetMinMaxAudioDistance(30f, 100f)
 				.AddSpawnableRoomCategories(RoomCategory.Hall)
 				.SetEnum("Pran")
-				.SetMetaTags(["neither"])
+				.SetMetaTags([NEITHER_TAG])
 				.SetMetaName("PST_Pran_Name")
 				.SetName("Pran")
 				.AddTrigger()
@@ -636,7 +642,7 @@ namespace BBTimes.Manager
 				.SetEnum("Winterry")
 				.SetMetaName("PST_Winterry_Name")
 				.SetName("Winterry")
-				.SetMetaTags(["student", Storage.ChristmasSpecial_TimesTag])
+				.SetMetaTags([STUDENT_TAG, Storage.ChristmasSpecial_TimesTag])
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0.3984375f, 0.59765625f, 0.99609375f))
 				.AddLooker()
@@ -657,7 +663,7 @@ namespace BBTimes.Manager
 				.SetMetaName("PST_Snowfolke_Name")
 				.SetAirborne()
 				.SetName("Snowfolke")
-				.SetMetaTags(["student", Storage.ChristmasSpecial_TimesTag])
+				.SetMetaTags([STUDENT_TAG, Storage.ChristmasSpecial_TimesTag])
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0.69921875f, 0.796875f, 0.99609375f))
 				.Build()
@@ -672,7 +678,7 @@ namespace BBTimes.Manager
 				.SetEnum("EverettTreewood")
 				.SetMetaName("PST_EverettTree_Name")
 				.SetName("EverettTreewood")
-				.SetMetaTags(["neither", Storage.ChristmasSpecial_TimesTag])
+				.SetMetaTags([NEITHER_TAG, Storage.ChristmasSpecial_TimesTag])
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0f, 0.5f, 0.16796875f))
 				.AddLooker()
@@ -691,7 +697,7 @@ namespace BBTimes.Manager
 				.SetEnum("MrKreye")
 				.SetMetaName("PST_Kreye_Name")
 				.SetName("MrKreye")
-				.SetMetaTags(["faculty"])
+				.SetMetaTags([FACULTY_TAG])
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0.44140625f, 0.078125f, 0.0234375f))
 				.AddLooker()

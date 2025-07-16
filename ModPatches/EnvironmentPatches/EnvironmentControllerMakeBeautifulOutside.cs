@@ -99,7 +99,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				{
 					mats = [ // to not create a new material each generation
 						new(renderer.material) { mainTexture =  BBTimesManager.man.Get<Texture2D>("Tex_Grass") },
-					new(BBTimesManager.man.Get<GameObject>("TransparentPlaneTemplate").GetComponent<MeshRenderer>().material) { mainTexture = BBTimesManager.man.Get<Texture2D>("Tex_Fence") }
+						new(BBTimesManager.man.Get<GameObject>("TransparentPlaneTemplate").GetComponent<MeshRenderer>().material) { mainTexture = BBTimesManager.man.Get<Texture2D>("Tex_Fence") }
 					];
 				}
 
@@ -110,7 +110,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				plane.transform.SetParent(planeCover.transform);
 
 				bool isFirstFloor = BBTimesManager.CurrentFloor == "F1" || BBTimesManager.CurrentFloor == "END";
-				bool lastFloor = BBTimesManager.CurrentFloor == "F3";
+				bool lastFloor = Singleton<BaseGameManager>.Instance.levelObject.finalLevel;
 
 				foreach (var t in __instance.AllExistentCells())
 				{
@@ -128,8 +128,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 					if (dirs.Count == 0) continue;
 
-					int max = lastFloor ? 6 : 12;
-					int start = isFirstFloor ? 0 : -8;
+					int max = lastFloor ? 6 : 14;
+					int start = isFirstFloor ? 0 : -14;
 					Singleton<CoreGameManager>.Instance.UpdateLighting(Color.white, t.position);
 
 					foreach (var dir in dirs)

@@ -28,6 +28,12 @@ namespace BBTimes.CustomComponents
 			}
 		}
 
+		void Start()
+		{
+			if (autoStart)
+				Initialize(Singleton<BaseGameManager>.Instance.Ec);
+		}
+
 		public void Initialize(EnvironmentController ec) =>
 			this.ec = ec;
 
@@ -95,6 +101,9 @@ namespace BBTimes.CustomComponents
 
 		[SerializeField]
 		internal AnimatedSpriteRotator[] rotators;
+
+		[SerializeField]
+		internal bool autoStart = false; // This means: when enabled, it'll get EC immediately
 
 		int pause = 0;
 
