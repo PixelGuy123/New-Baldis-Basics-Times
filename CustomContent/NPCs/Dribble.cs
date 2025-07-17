@@ -183,22 +183,32 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal void NoticeNoise(bool sightEarly)
 		{
+			audMan.FlushQueue(true);
 			if (sightEarly)
 			{
-				audMan.PlaySingle(audHey);
+				audMan.QueueAudio(audHey);
 				return;
 			}
-			audMan.PlayRandomAudio(audNotice);
+			audMan.QueueRandomAudio(audNotice);
 		}
 
-		internal void ComingNoise() =>
-			audMan.PlayRandomAudio(audCaught);
-		internal void Disappointed() =>
-			audMan.PlayRandomAudio(audDisappointed);
+		internal void ComingNoise()
+		{
+			audMan.FlushQueue(true);
+			audMan.QueueRandomAudio(audCaught);
+		}
+		internal void Disappointed()
+		{
+			audMan.FlushQueue(true);
+			audMan.QueueRandomAudio(audDisappointed);
+		}
 		internal void AngryNoise(bool chasing) =>
 			audMan.PlayRandomAudio(chasing ? audChaseAngry : audAngry);
-		internal void PrepToLeaveNoise() => // Awaiting audio of Dribble saying that
+		internal void PrepToLeaveNoise() // Awaiting audio of Dribble saying that
+		{
+			audMan.FlushQueue(true);
 			audMan.QueueAudio(audTakeBack);
+		}
 		internal void OkThen()
 		{
 			audMan.QueueAudio(audOkayThen);
@@ -442,7 +452,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal float normSpeed = 14f, chaseSpeed = 21f, angryChaseSpeed = 22.5f;
 		[SerializeField]
 		[Range(0f, 1f)]
-		internal float basketBallBounce_minSlowDownFactor = 0.85f, basketBallBounce_maxSlowDownFactor = 0.95f, secretChance = 1f, // 1/9 = 0.11f
+		internal float basketBallBounce_minSlowDownFactor = 0.35f, basketBallBounce_maxSlowDownFactor = 0.8f, secretChance = 1f, // 1/9 = 0.11f
 			punishment_staminaFactorPerStreak = 0.65f;
 		[SerializeField]
 		internal ItemObject basketballItem;
@@ -572,11 +582,13 @@ namespace BBTimes.CustomContent.NPCs
 		readonly PlayerManager player = player;
 		NavigationState_TargetPlayer state;
 		readonly bool sightedEarlier = sightedEarlier;
+		bool removedMoveMod = false;
 		public override void Enter()
 		{
 			base.Enter();
-			dr.Navigator.Am.moveMods.Remove(dr.dribbleMoveMod);
 			dr.NoticeNoise(sightedEarlier);
+			if (!sightedEarlier)
+				dr.Navigator.Am.moveMods.Remove(dr.dribbleMoveMod);
 			state = new NavigationState_TargetPlayer(dr, 63, player.transform.position, true);
 			ChangeNavigationState(state);
 		}
@@ -600,6 +612,16 @@ namespace BBTimes.CustomContent.NPCs
 			base.DestinationEmpty();
 			state.priority = 0;
 			dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr));
+		}
+
+		public override void Update()
+		{
+			base.Update();
+			if (sightedEarlier && !removedMoveMod && dr.audMan.QueuedAudioIsPlaying)
+			{
+				removedMoveMod = true;
+				dr.Navigator.Am.moveMods.Remove(dr.dribbleMoveMod);
+			}
 		}
 
 		public override void Exit()
