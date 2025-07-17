@@ -51,9 +51,13 @@ namespace BBTimes.CustomContent.NPCs
 			audAngryCaught = [(this.GetSound("DRI_AngryCaught1.wav", "Vfx_Dribble_CaughtAngry1", SoundType.Voice, angryDribbleColor)), (this.GetSound("DRI_AngryCaught2.wav", "Vfx_Dribble_CaughtAngry2", SoundType.Voice, angryDribbleColor))];
 			audPunchResponse = [(this.GetSound("DRI_AngryPush1.wav", "Vfx_Dribble_Punch1", SoundType.Voice, angryDribbleColor)), (this.GetSound("DRI_AngryPush2.wav", "Vfx_Dribble_Punch2", SoundType.Voice, angryDribbleColor))];
 			audPunch = hit;
+			audHey = this.GetSound("DRI_OutOfSight.wav", "Vfx_Dribble_OutOfSight", SoundType.Voice, normalDribbleColor);
+			audOkayThen = this.GetSound("DRI_TakeBackChaseFail.wav", "Vfx_Dribble_TakeBackChaseFail", SoundType.Voice, normalDribbleColor);
+			audTakeBack = this.GetSound("DRI_TakeBackChase.wav", "Vfx_Dribble_TakeBackChase", SoundType.Voice, normalDribbleColor);
 
 			renderer = spriteRenderer[0];
 
+			// Normal
 			var storedSprites = this.GetSpriteSheet(13, 1, pixelsPerUnit, "dribbleSpriteSheet.png");
 			spriteRenderer[0].sprite = storedSprites[0];
 			idleSprs = [storedSprites[0], storedSprites[1]];
@@ -63,6 +67,7 @@ namespace BBTimes.CustomContent.NPCs
 			crazySprs = [storedSprites[9], storedSprites[10]];
 			chasingSprs = [storedSprites[11], storedSprites[12]];
 
+			// Talking
 			storedSprites = this.GetSpriteSheet(13, 1, pixelsPerUnit, "dribbleSpriteSheet_2.png");
 			idleSprsTalking = [storedSprites[0], storedSprites[1]];
 			clapSprsTalking = [storedSprites[5], storedSprites[6]];
@@ -70,6 +75,11 @@ namespace BBTimes.CustomContent.NPCs
 			disappointedSprsTalking = [storedSprites[7], storedSprites[8]];
 			crazySprsTalking = [storedSprites[9], storedSprites[10]];
 			chasingSprsTalking = [storedSprites[11], storedSprites[12]];
+
+			// Secret
+			storedSprites = this.GetSpriteSheet(3, 1, pixelsPerUnit, "DribbleSecret.png");
+			secretHappySprs = [storedSprites[0]];
+			secretAngrySwingingSprs = [storedSprites[1], storedSprites[2]];
 
 			var basket = new GameObject("DribbleBasketBall");
 
@@ -129,8 +139,11 @@ namespace BBTimes.CustomContent.NPCs
 			navigator.SetSpeed(normSpeed);
 			behaviorStateMachine.ChangeState(new Dribble_Idle(this));
 
+			RoomController altRoom = null;
+
 			// Home Setup
 			bool foundCat = false;
+			bool foundOtherClassroomCategory = false;
 			for (int i = 0; i < ec.rooms.Count; i++)
 			{
 				if (ec.rooms[i].category == expectedCategory)
@@ -139,35 +152,44 @@ namespace BBTimes.CustomContent.NPCs
 					Home = ec.rooms[i];
 					break;
 				}
+
+				if (ec.rooms[i].category == RoomCategory.Class)
+				{
+					foundOtherClassroomCategory = true;
+					altRoom = ec.rooms[i];
+				}
 			}
 
-			if (!foundCat) // Uses the spawned position as default
-				Home = ec.CellFromPosition(transform.position).room;
-
-			// Spawn Dribble's pickup
-			basketballPickup = ec.CreateItem(Home, basketballItem, new(transform.position.x, transform.position.z));
-			ec.items.Remove(basketballPickup); // It's a standalone pickup for Dribble
-			basketballPickup.Hide(true);
+			if (!foundCat) // Fail safe
+				Home = foundOtherClassroomCategory ? altRoom : Home = ec.CellFromPosition(transform.position).room;
 
 			// Initializes Basketball Instance
 			basketball = Instantiate(basketPre);
 			basketball.Initialize(this, Home.objectObject.GetComponentsInChildren<BasketballHoopMarker>());
 		}
 		public void ResetMinigameRecord() => minigameRecord = 0;
-		public void FinishPunishment(PlayerManager pm, int streakCount)
-		{
-			if (!tiredPlayer)
-				StartCoroutine(TirePlayer(pm, streakCount));
-		}
+		public void FinishPunishment(int streakCount) =>
+			StartCoroutine(TirePlayer(streakCount));
 
-		internal void Bounce() =>
+
+		internal void Bounce(float speed)
+		{
 			bounceAudMan.PlaySingle(audBounceBall);
+			navigator.SetSpeed(speed * Random.Range(basketBallBounce_minSlowDownFactor, basketBallBounce_maxSlowDownFactor));
+		}
 
 		internal void IdleNoise() =>
 			audMan.PlayRandomAudio(audIdle);
 
-		internal void NoticeNoise() =>
+		internal void NoticeNoise(bool sightEarly)
+		{
+			if (sightEarly)
+			{
+				audMan.PlaySingle(audHey);
+				return;
+			}
 			audMan.PlayRandomAudio(audNotice);
+		}
 
 		internal void ComingNoise() =>
 			audMan.PlayRandomAudio(audCaught);
@@ -175,13 +197,13 @@ namespace BBTimes.CustomContent.NPCs
 			audMan.PlayRandomAudio(audDisappointed);
 		internal void AngryNoise(bool chasing) =>
 			audMan.PlayRandomAudio(chasing ? audChaseAngry : audAngry);
-		// internal void PrepToLeaveNoise() => // Awaiting audio of Dribble saying that
-		// 	audMan.QueueAudio();
-		// internal void OkThen()
-		// {
-		// 	audMan.QueueAudio();
-		// 	audMan.QueueAudio(audDismissed);
-		// }
+		internal void PrepToLeaveNoise() => // Awaiting audio of Dribble saying that
+			audMan.QueueAudio(audTakeBack);
+		internal void OkThen()
+		{
+			audMan.QueueAudio(audOkayThen);
+			audMan.QueueAudio(audDismissed);
+		}
 
 		internal void Clap()
 		{
@@ -191,8 +213,15 @@ namespace BBTimes.CustomContent.NPCs
 
 		public void TeleportToClass(PlayerManager pm)
 		{
+			activePlayer = pm;
 			selfPreviousSpot = transform.position;
-			navigator.Entity.Teleport(ec.RealRoomMid(Home));
+			var middle = ec.CellFromPosition(ec.RealRoomMid(Home));
+
+			navigator.Entity.Teleport(
+				middle.Null ? // Failsafe, if the room has no middle
+			Home.RandomEntitySafeCellNoGarbage().CenterWorldPosition :
+			middle.CenterWorldPosition);
+
 			pm.Teleport(Home.RandomEntitySafeCellNoGarbage().CenterWorldPosition);
 			pm.transform.LookAt(transform);
 		}
@@ -208,17 +237,22 @@ namespace BBTimes.CustomContent.NPCs
 		internal void KickEveryoneOutOfRoom() => Home.functionObject.GetComponent<DribbleGymFunction>()?.KickOutEveryoneFromRoom(this);
 		internal void UpdateMinigameCounter() => Home.functionObject.GetComponent<DribbleGymFunction>()?.UpdatePoster(succeededMinigames);
 		internal void UnlockEverything() => Home.functionObject.GetComponent<DribbleGymFunction>()?.UnlockEverything();
-		internal void PunishPlayerToRun(PlayerManager pm) =>
-			Home.functionObject.GetComponent<DribbleGymFunction>()?.MakePlayerRunAround(
-				pm,
-				Mathf.Max(0f, pm.plm.stamina - ((minigameRecord * staminaStreakBonus) + baseStaminaLoss))
-			);
+		internal void PunishPlayerToRun() => StartCoroutine(MakePlayerRun());
 
 		internal void ThrowBasketball(PlayerManager pm)
 		{
+			int streak = Mathf.Max(1, succeededMinigames + 1); // + 1 because this is called before the addition
+			float speedFactor = 1f + (streak * 0.75f);
+			float slowDownFactor = 0.7f / streak;
+
 			Vector3 rot = (pm.transform.position - transform.position).normalized;
-			basketball.Throw(rot, transform.position + (rot.ZeroOutY() * 1.5f), pm, Mathf.Max(0.125f, 0.7f / (succeededMinigames + 1)),
-				Random.Range(Mathf.Max(25f, 25f * ((succeededMinigames + 1) * 0.15f)), Mathf.Max(45f, 45f * ((succeededMinigames + 1) * 0.6f))));
+			basketball.Throw(
+				rot, // Rotation
+				transform.position + (rot.ZeroOutY() * 1.5f), // Position
+				pm, // Player
+				Mathf.Max(0.125f, slowDownFactor), // The slowdown effect [0 - 1]
+				Random.Range(Mathf.Max(25f, 25f * speedFactor), Mathf.Max(45f, 45f * speedFactor)) // Speed
+				);
 		}
 
 		internal void MinigameEnd(bool failed, PlayerManager player)
@@ -229,16 +263,16 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				succeededMinigames++;
 
+				for (int i = 0; i < succeededMinigames; i++)
+				{
+					Vector3 position = transform.position + (Random.insideUnitSphere * Random.Range(1f, 2.75f));
 
-				Vector3 position = transform.position + (Random.insideUnitSphere * Random.Range(1f, 2.75f));
-
-				if (ec.CellFromPosition(position).Null) // Failsafe
-					position = transform.position;
-				position.y = 5f;
-				// Actually drop the pickup
-				basketballPickup.transform.position = position;
-				basketballPickup.AssignItem(basketballItem);
-				basketballPickup.gameObject.SetActive(true);
+					if (ec.CellFromPosition(position).Null) // Failsafe
+						position = transform.position;
+					position.y = 5f;
+					// Actually drop the pickup
+					SpawnBasketballItem(new(position.x, position.z));
+				}
 
 				behaviorStateMachine.ChangeState(new Dribble_MinigameSucceed(this, player));
 				return;
@@ -270,25 +304,17 @@ namespace BBTimes.CustomContent.NPCs
 			entity.StartCoroutine(Punched(entity));
 		}
 
-		IEnumerator Punched(Entity entity)
-		{
-			var mod = new MovementModifier(Vector3.zero, 0.35f / (1 + minigameRecord));
-			entity.ExternalActivity.moveMods.Add(mod);
-			float cool = punchCooldown;
-			while (cool > 0f)
-			{
-				cool -= Time.deltaTime * ec.EnvironmentTimeScale;
-				yield return null;
-			}
-			entity.ExternalActivity.moveMods.Remove(mod);
-			yield break;
-		}
-
 		public override void Despawn()
 		{
 			base.Despawn();
 			gauge?.Deactivate();
-			tiredPlayer?.plm.GetModifier().RemoveModifier(staminaMod);
+			if (activePlayer)
+			{
+				activePlayer.plm.GetModifier().RemoveModifier(staminaMod);
+				activePlayer.Am.moveMods.Remove(playerMoveMod);
+				activePlayer.Am.moveMods.Remove(playerRunMoveMod);
+				activePlayer.GetAttribute().RemoveAttribute(Storage.DRIBBLE_ATTR_PREVENT_RUNNING_TAG);
+			}
 			Destroy(basketball);
 		}
 
@@ -311,6 +337,13 @@ namespace BBTimes.CustomContent.NPCs
 
 		void ChangeToTalkingVariantOrNot(Sprite[] talkingArray) =>
 			renderer.sprite = audMan.AnyAudioIsPlaying ? talkingArray[idxInCurrentArray] : currentArrayInUsage[idxInCurrentArray];
+		Pickup SpawnBasketballItem(Vector3 position)
+		{
+			var basketballPickup = ec.CreateItem(Home, basketballItem, new(position.x, position.z));
+			ec.items.Remove(basketballPickup); // It's a standalone pickup for Dribble
+			basketballPickup.AssignItem(basketballItem);
+			return basketballPickup;
+		}
 
 
 		internal void ApplyArray(Sprite[] arrayToUse, int idx)
@@ -320,13 +353,14 @@ namespace BBTimes.CustomContent.NPCs
 			idxInCurrentArray = idx;
 		}
 
-		IEnumerator TirePlayer(PlayerManager player, int minigameRecord)
+		internal void ResetDribbleActivePlayer() => activePlayer = null;
+
+		IEnumerator TirePlayer(int minigameRecord)
 		{
-			tiredPlayer = player;
-			tiredPlayer.plm.GetModifier().AddModifier("StaminaRise", staminaMod);
+			activePlayer.plm.GetModifier().AddModifier("StaminaRise", staminaMod);
 			float totalTime = baseTirednessTime + (bonusTirednessEffect * minigameRecord);
 			float cooldown = totalTime;
-			gauge = Singleton<CoreGameManager>.Instance.GetHud(player.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, totalTime);
+			gauge = Singleton<CoreGameManager>.Instance.GetHud(activePlayer.playerNumber).gaugeManager.ActivateNewGauge(gaugeSprite, totalTime);
 			while (cooldown > 0f)
 			{
 				cooldown -= Time.deltaTime * ec.EnvironmentTimeScale;
@@ -334,8 +368,45 @@ namespace BBTimes.CustomContent.NPCs
 				yield return null;
 			}
 			gauge.Deactivate();
-			tiredPlayer.plm.GetModifier().RemoveModifier(staminaMod);
-			tiredPlayer = null;
+			activePlayer.plm.GetModifier().RemoveModifier(staminaMod);
+		}
+
+		IEnumerator MakePlayerRun()
+		{
+			activePlayer.Am.moveMods.Add(playerRunMoveMod);
+			activePlayer.GetAttribute().AddAttribute(Storage.DRIBBLE_ATTR_PREVENT_RUNNING_TAG);
+			float modifiedStaminaDrop = activePlayer.plm.staminaDrop / (1 + (punishment_staminaFactorPerStreak * Streaks));
+			while (activePlayer && activePlayer.plm.stamina > 0f)
+			{
+				playerRunMoveMod.movementAddend = activePlayer.transform.forward * activePlayer.plm.runSpeed;
+				if (activePlayer.plm.Entity.InternalMovement != Vector3.zero)
+				{
+					activePlayer.plm.stamina = Mathf.Max(
+							activePlayer.plm.stamina - modifiedStaminaDrop * Time.deltaTime * activePlayer.PlayerTimeScale,
+							0f
+						);
+				}
+				yield return null;
+			}
+			if (activePlayer)
+			{
+				activePlayer.GetAttribute().RemoveAttribute(Storage.DRIBBLE_ATTR_PREVENT_RUNNING_TAG);
+				activePlayer.Am.moveMods.Remove(playerRunMoveMod);
+			}
+		}
+
+		IEnumerator Punched(Entity entity)
+		{
+			var mod = new MovementModifier(Vector3.zero, 0.35f / (1 + minigameRecord));
+			entity.ExternalActivity.moveMods.Add(mod);
+			float cool = punchCooldown;
+			while (cool > 0f)
+			{
+				cool -= Time.deltaTime * ec.EnvironmentTimeScale;
+				yield return null;
+			}
+			entity.ExternalActivity.moveMods.Remove(mod);
+			yield break;
 		}
 
 
@@ -344,12 +415,14 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal Sprite[] idleSprsTalking, clapSprsTalking, classSprsTalking, disappointedSprsTalking, crazySprsTalking, chasingSprsTalking;
+		[SerializeField]
+		internal Sprite[] secretHappySprs, secretAngrySwingingSprs;
 
 		[SerializeField]
 		internal SoundObject[] audIdle, audClaps, audNotice, audPraise, audDisappointed, audAngry, audChaseAngry, audCaught, audStep, audAngryCaught, audPunchResponse;
 
 		[SerializeField]
-		internal SoundObject audCatch, audDismissed, audInstructions, audReady, audBounceBall, audThrow, audPunch;
+		internal SoundObject audCatch, audDismissed, audInstructions, audReady, audBounceBall, audThrow, audPunch, audTakeBack, audOkayThen, audHey;
 
 		[SerializeField]
 		internal PropagatedAudioManager audMan, bounceAudMan, clapAudMan;
@@ -366,6 +439,12 @@ namespace BBTimes.CustomContent.NPCs
 		[SerializeField]
 		internal int baseStaminaLoss = 50, staminaStreakBonus = 10;
 		[SerializeField]
+		internal float normSpeed = 14f, chaseSpeed = 21f, angryChaseSpeed = 22.5f;
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float basketBallBounce_minSlowDownFactor = 0.85f, basketBallBounce_maxSlowDownFactor = 0.95f, secretChance = 1f, // 1/9 = 0.11f
+			punishment_staminaFactorPerStreak = 0.65f;
+		[SerializeField]
 		internal ItemObject basketballItem;
 
 		[SerializeField]
@@ -379,14 +458,11 @@ namespace BBTimes.CustomContent.NPCs
 		int idxInCurrentArray, clapIndex = 0;
 
 		Vector3 selfPreviousSpot;
-		readonly internal MovementModifier playerMoveMod = new(Vector3.zero, 0.85f), dribbleMoveMod = new(Vector3.zero, 0f);
-
-		internal float normSpeed = 14f, chaseSpeed = 21f, angryChaseSpeed = 22.5f;
+		readonly internal MovementModifier playerMoveMod = new(Vector3.zero, 0.85f), playerRunMoveMod = new(Vector3.zero, 0f), dribbleMoveMod = new(Vector3.zero, 0f);
 
 		int succeededMinigames = 0;
 		int minigameRecord = 0;
-		Pickup basketballPickup;
-		PlayerManager tiredPlayer;
+		PlayerManager activePlayer;
 		readonly ValueModifier staminaMod = new(0f);
 
 		public RoomController Home { get; private set; }
@@ -411,11 +487,15 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-	internal class DribbleWanderStateBase(Dribble dr) : DribbleStateBase(dr)
+	internal class DribbleWanderStateBase(Dribble dr, float currentSpeedSet) : DribbleStateBase(dr)
 	{
+		readonly protected float currentSpeed = currentSpeedSet;
 		public override void Enter()
 		{
 			base.Enter();
+			dr.ApplyArray(dr.idleSprs, 0);
+			dr.Navigator.maxSpeed = currentSpeed;
+			dr.Navigator.SetSpeed(currentSpeed);
 			dr.Navigator.Entity.OnTeleport += Teleport;
 		}
 		public override void Exit()
@@ -435,7 +515,7 @@ namespace BBTimes.CustomContent.NPCs
 					stepDelay += 5f;
 					step = !step;
 					if (step)
-						dr.Bounce();
+						dr.Bounce(currentSpeed);
 					dr.ApplyArray(dr.idleSprs, step ? 1 : 0);
 				}
 			}
@@ -450,15 +530,14 @@ namespace BBTimes.CustomContent.NPCs
 		bool skipStep = false;
 	}
 
-	internal class Dribble_Idle(Dribble dr, float cooldown = 0f) : DribbleWanderStateBase(dr)
+	internal class Dribble_Idle(Dribble dr, float cooldown = 0f) : DribbleWanderStateBase(dr, dr.normSpeed)
 	{
 		float cooldown = cooldown;
 
 		public override void Enter()
 		{
 			base.Enter();
-			dr.Navigator.maxSpeed = dr.normSpeed;
-			dr.Navigator.SetSpeed(dr.normSpeed);
+			dr.ResetDribbleActivePlayer();
 			dr.Navigator.Am.moveMods.Remove(dr.dribbleMoveMod);
 			ChangeNavigationState(new NavigationState_WanderRandom(dr, 0));
 		}
@@ -482,22 +561,22 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.PlayerInSight(player);
 			if (!player.Tagged && cooldown <= 0f)
-				dr.behaviorStateMachine.ChangeState(new Dribble_NoticeChase(dr, player));
+				dr.behaviorStateMachine.ChangeState(new Dribble_NoticeChase(dr, player, false));
 		}
 
 		float sayCooldown = Random.Range(15f, 30f);
 	}
 
-	internal class Dribble_NoticeChase(Dribble dr, PlayerManager player) : DribbleWanderStateBase(dr)
+	internal class Dribble_NoticeChase(Dribble dr, PlayerManager player, bool sightedEarlier) : DribbleWanderStateBase(dr, dr.chaseSpeed)
 	{
 		readonly PlayerManager player = player;
 		NavigationState_TargetPlayer state;
+		readonly bool sightedEarlier = sightedEarlier;
 		public override void Enter()
 		{
 			base.Enter();
-			dr.NoticeNoise();
-			dr.Navigator.maxSpeed = dr.chaseSpeed;
-			dr.Navigator.SetSpeed(dr.chaseSpeed);
+			dr.Navigator.Am.moveMods.Remove(dr.dribbleMoveMod);
+			dr.NoticeNoise(sightedEarlier);
 			state = new NavigationState_TargetPlayer(dr, 63, player.transform.position, true);
 			ChangeNavigationState(state);
 		}
@@ -549,9 +628,17 @@ namespace BBTimes.CustomContent.NPCs
 			while (dr.audMan.QueuedAudioIsPlaying)
 			{
 				player.transform.RotateSmoothlyToNextPoint(dr.transform.position, 0.8f);
-				if (!player || player.plm.Entity.overridden) // If it is overridden, it isn't available
+				if (!player ||
+				player.plm.Entity.overridden)// If it is overridden, it isn't available
 				{
 					dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr));
+					yield break;
+				}
+
+				if (!dr.looker.PlayerInSight(player)) // If player is not in sight, he needs to get him again
+				{
+					player.Am.moveMods.Remove(dr.playerMoveMod);
+					dr.behaviorStateMachine.ChangeState(new Dribble_NoticeChase(dr, player, true));
 					yield break;
 				}
 				yield return null;
@@ -651,6 +738,7 @@ namespace BBTimes.CustomContent.NPCs
 		readonly PlayerManager player = pm;
 		float frame = 0f;
 		bool clapped = false;
+		readonly bool secretHappySprite = Random.value <= dr.secretChance;
 		float cooldown = 5f;
 		public override void Enter()
 		{
@@ -662,20 +750,27 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			frame += Time.deltaTime * dr.TimeScale * 11f;
-			frame %= dr.clapSprs.Length;
-			if (!clapped)
+			if (!secretHappySprite)
 			{
-				if (frame > 1f)
+				frame += Time.deltaTime * dr.TimeScale * 11f;
+				frame %= dr.clapSprs.Length;
+				if (!clapped)
 				{
-					dr.Clap();
-					clapped = true;
+					if (frame > 1f)
+					{
+						dr.Clap();
+						clapped = true;
+					}
 				}
-			}
-			else if (frame < 1f)
-				clapped = false;
+				else if (frame < 1f)
+					clapped = false;
 
-			dr.ApplyArray(dr.clapSprs, Mathf.FloorToInt(frame));
+				dr.ApplyArray(dr.clapSprs, Mathf.FloorToInt(frame));
+			}
+			else
+			{
+				dr.ApplyArray(dr.secretHappySprs, 0); // single frame lol
+			}
 
 			cooldown -= Time.deltaTime * dr.TimeScale;
 			if (cooldown < 0f)
@@ -729,13 +824,23 @@ namespace BBTimes.CustomContent.NPCs
 	internal class Dribble_AngrySwingingBase(Dribble dr) : DribbleStateBase(dr)
 	{
 		float frame = 0f;
+		readonly bool secretAngrySprite = Random.value <= dr.secretChance;
+		Sprite[] activeSpriteSet = null;
+
+		public override void Enter()
+		{
+			base.Enter();
+			activeSpriteSet = secretAngrySprite ? dr.secretAngrySwingingSprs : dr.crazySprs;
+		}
 		public override void Update()
 		{
 			base.Update();
-			frame += Time.deltaTime * dr.TimeScale * 11f;
-			frame %= dr.crazySprs.Length;
+			if (activeSpriteSet == null) return;
 
-			dr.ApplyArray(dr.crazySprs, Mathf.FloorToInt(frame));
+			frame += Time.deltaTime * dr.TimeScale * 11f;
+			frame %= activeSpriteSet.Length;
+
+			dr.ApplyArray(activeSpriteSet, Mathf.FloorToInt(frame));
 		}
 	}
 
@@ -871,7 +976,6 @@ namespace BBTimes.CustomContent.NPCs
 	internal class Dribble_ForceRun(Dribble dr, PlayerManager pm) : Dribble_AngrySwingingBase(dr)
 	{
 		readonly private PlayerManager pm = pm;
-		private DribbleGymFunction func;
 		private readonly int minigameRecord = dr.Streaks;
 
 		public override void Enter()
@@ -882,9 +986,7 @@ namespace BBTimes.CustomContent.NPCs
 			dr.Navigator.Am.moveMods.Add(dr.dribbleMoveMod);
 
 			dr.Navigator.Entity.Teleport(dr.ec.RealRoomMid(dr.Home));
-			dr.PunishPlayerToRun(pm);
-
-			func = dr.GymFunction;
+			dr.PunishPlayerToRun();
 
 			dr.audMan.FlushQueue(true);
 			dr.audMan.QueueRandomAudio(dr.audAngryCaught);
@@ -897,7 +999,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 
-			if (!func || !func.IsActive)
+			if (!pm || pm.plm.stamina <= 0f)
 			{
 				dr.audMan.FlushQueue(true);
 				dr.audMan.PlaySingle(dr.audDismissed);
@@ -909,11 +1011,11 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Exit()
 		{
 			base.Exit();
-			dr.FinishPunishment(pm, minigameRecord);
+			dr.FinishPunishment(minigameRecord);
 		}
 	}
 
-	internal class Dribble_GetPlayerToTeleportBack(Dribble dr, PlayerManager pm) : DribbleWanderStateBase(dr)
+	internal class Dribble_GetPlayerToTeleportBack(Dribble dr, PlayerManager pm) : DribbleWanderStateBase(dr, dr.chaseSpeed)
 	{
 		NavigationState_TargetPlayer state;
 		readonly PlayerManager pm = pm;
@@ -921,7 +1023,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			// dr.PrepToLeaveNoise();
+			dr.PrepToLeaveNoise();
 			state = new NavigationState_TargetPlayer(dr, 63, pm.transform.position);
 			ChangeNavigationState(state);
 		}
@@ -952,7 +1054,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Update();
 			if (!dr.ec.CellFromPosition(pm.transform.position).TileMatches(dr.Home))
 			{
-				// dr.OkThen();
+				dr.OkThen();
 				dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, dr.WaitTime));
 			}
 		}

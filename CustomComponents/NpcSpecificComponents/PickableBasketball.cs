@@ -200,6 +200,10 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 
 		}
 
+		internal void Throw(Vector3 rot, object value1, PlayerManager pm, object value2, object value3)
+		{
+			throw new System.NotImplementedException();
+		}
 
 		Dribble dr;
 		EnvironmentController ec;

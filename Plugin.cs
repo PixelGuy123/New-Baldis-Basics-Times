@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using BBTimes.CompatibilityModule;
 using BBTimes.CustomComponents;
+using BBTimes.CustomContent.CustomItems;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.CustomContent.Objects;
 using BBTimes.Extensions;
@@ -182,8 +183,13 @@ namespace BBTimes
 
 			PixelInternalAPI.ResourceManager.AddReloadLevelCallback((_, isNextlevel) => // Note: since it's always in the last level, there's no point to make a saving handler for this, since people cannot save in the middle of a level
 			{
-				if (!isNextlevel)
-					MainGameManagerPatches.allowEndingToBePlayed = false;
+				MainGameManagerPatches.allowEndingToBePlayed = false;
+			});
+
+			// Literally just for this
+			PixelInternalAPI.ResourceManager.AddGenStartCallback((_, _2, _3, _4) =>
+			{
+				ITM_BaldiYearbook.SetupYearbookPages();
 			});
 
 			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, sco) =>

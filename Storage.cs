@@ -31,6 +31,7 @@ namespace BBTimes.Plugin
 		public const string
 		HOTCHOCOLATE_ATTR_TAG = "hotchocolateactive",
 		HARDHAT_ATTR_TAG = "protectedhead",
+		DRIBBLE_ATTR_PREVENT_RUNNING_TAG = "disableStaminaUpdate",
 		FOOD_TAG = "food",
 		DRINK_TAG = "drink";
 		public const string ChristmasSpecial_TimesTag = "Times_SpecialTags_ChristmasSpecial";

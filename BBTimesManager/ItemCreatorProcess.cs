@@ -29,6 +29,7 @@ namespace BBTimes.Manager
 			PIRATE_CANN_HATE = "cann_hate",
 			CRIMINALPACK_CONTRABAND = "crmp_contraband",
 			NONSTACKABLE_TAG = "StackableItems_NotAllowStacking",
+			RCC_THROWABLE_TAG = "recchars_daycare_throwable",
 			FOODTAG = Storage.FOOD_TAG,
 			DRINKTAG = Storage.DRINK_TAG;
 
@@ -323,7 +324,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(65)
 				.SetShopPrice(550)
 				.SetNameAndDescription("POGST_Name3", "POGST_Desc")
-				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists | ItemFlags.MultipleUse, [CRIMINALPACK_CONTRABAND])
+				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists | ItemFlags.MultipleUse, [])
 				.Build("Pogostick");
 			//CreatorExtensions.CreateItem<ITM_Pogostick, PogostickCustomData>("Pogostick", "POGST_Name3", "POGST_Desc", 475, 25);
 			meta = item.GetMeta();
@@ -372,7 +373,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(35)
 				.SetShopPrice(350)
 				.SetNameAndDescription("BB_Name", "BB_Desc")
-				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [])
+				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [RCC_THROWABLE_TAG])
 				.Build("Basketball");
 			//CreatorExtensions.CreateItem<ITM_Basketball, BasketballCustomData>("Basketball", "BB_Name", "BB_Desc", 365, 29).AddMeta(plug, ItemFlags.CreatesEntity | ItemFlags.Persists).value;
 			floorDatas[F1].Items.Add(new(item, 45));
@@ -557,7 +558,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(42)
 				.SetShopPrice(400)
 				.SetNameAndDescription("Soap_Name", "Soap_Desc")
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [RCC_THROWABLE_TAG])
 				.Build("Soap");
 
 			floorDatas[F2].Items.Add(new(item, 55));
@@ -646,7 +647,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(35)
 				.SetShopPrice(650)
 				.SetNameAndDescription("StrMag_Name", "StrMag_Desc")
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [RCC_THROWABLE_TAG])
 				.Build("Magnet");
 
 			floorDatas[F1].Items.Add(new(item, 4));
@@ -670,7 +671,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(30)
 				.SetShopPrice(250)
 				.SetNameAndDescription("ThrTelep_Name", "ThrTelep_Desc")
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [RCC_THROWABLE_TAG])
 				.Build("ThrowableTeleporter");
 
 			floorDatas[F1].Items.Add(new(item, 10));
@@ -866,7 +867,7 @@ namespace BBTimes.Manager
 				.SetGeneratorCost(45)
 				.SetShopPrice(150)
 				.SetNameAndDescription("Toiletpaper_Name", "Toiletpaper_Desc")
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [])
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity, [RCC_THROWABLE_TAG])
 				.Build("ToiletPaper");
 
 			// You should get toiler paper from a bathroom
@@ -1148,7 +1149,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_ComicallyLargeJello>()
 				.SetGeneratorCost(38)
 				.SetShopPrice(450)
-				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [FOODTAG, PIRATE_CANN_HATE])
+				.SetMeta(ItemFlags.CreatesEntity | ItemFlags.Persists, [FOODTAG, PIRATE_CANN_HATE, RCC_THROWABLE_TAG])
 				.SetNameAndDescription("ComicallyLargeJello_Name", "ComicallyLargeJello_Desc")
 				.Build("ComicallyLargeJello");
 
@@ -1190,7 +1191,7 @@ namespace BBTimes.Manager
 			.SetItemComponent<ITM_FireworkRocket>()
 			.SetGeneratorCost(39)
 			.SetShopPrice(700)
-			.SetMeta(ItemFlags.Persists, [CRIMINALPACK_CONTRABAND])
+			.SetMeta(ItemFlags.Persists, [])
 			.SetNameAndDescription("FireworkRocket_Name", "FireworkRocket_Desc")
 			.Build("FireworkRocket");
 			floorDatas[F2].Items.Add(new(item, 15));
@@ -1207,7 +1208,7 @@ namespace BBTimes.Manager
 				.SetItemComponent<ITM_Slingshot>()
 				.SetGeneratorCost(40)
 				.SetShopPrice(700)
-				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity | ItemFlags.MultipleUse, [CRIMINALPACK_CONTRABAND])
+				.SetMeta(ItemFlags.Persists | ItemFlags.CreatesEntity | ItemFlags.MultipleUse, [RCC_THROWABLE_TAG])
 				.SetNameAndDescription("Slingshot_Name3", "Slingshot_Desc")
 				.Build("Slingshot");
 

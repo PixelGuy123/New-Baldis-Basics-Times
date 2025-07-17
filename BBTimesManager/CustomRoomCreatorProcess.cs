@@ -275,7 +275,6 @@ namespace BBTimes.Manager
 			var runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineStraight.png")), 12.5f), false).AddSpriteHolder(out var runLineRenderer, 0.1f, 0);
 			runLine.gameObject.layer = 0; // default layer
 			runLineRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			runLine.gameObject.AddComponent<RunLineMarker>();
 			runLine.name = "StraightRunLine";
 
 			runLine.gameObject.AddObjectToEditor();
@@ -283,7 +282,6 @@ namespace BBTimes.Manager
 			runLine = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("DribbleRoom", "lineCurve.png")), 12.5f), false).AddSpriteHolder(out runLineRenderer, 0.1f, 0);
 			runLine.gameObject.layer = 0; // default layer
 			runLineRenderer.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-			runLine.gameObject.AddComponent<RunLineMarker>();
 			runLine.name = "CurvedRunLine";
 			runLine.gameObject.AddObjectToEditor();
 

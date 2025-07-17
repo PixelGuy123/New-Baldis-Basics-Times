@@ -128,8 +128,13 @@ namespace BBTimes.CustomContent.CustomItems
 			stub.transform.SetAsLastSibling();
 		}
 
-		public void SetupPrefabPost()
+		public void SetupPrefabPost() { }
+
+		public static void SetupYearbookPages()
 		{
+			if (initializedYearbookSearch) return;
+
+			initializedYearbookSearch = true;
 			var generatorRef = Instantiate(GenericExtensions.FindResourceObject<TextTextureGenerator>()); // Must exist in the world to render text properly
 			foreach (var npcMeta in NPCMetaStorage.Instance.All())
 			{
@@ -146,6 +151,8 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 			Destroy(generatorRef.gameObject);
 		}
+
+		static bool initializedYearbookSearch = false;
 
 		public string Name { get; set; }
 		public string Category => "items";
