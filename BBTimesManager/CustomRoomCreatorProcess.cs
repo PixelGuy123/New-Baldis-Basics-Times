@@ -232,6 +232,13 @@ namespace BBTimes.Manager
 
 			teleporter.gameObject.AddObjectToEditor();
 			teleporter.gameObject.AddBoxCollider(Vector3.up * 5f, new(5f, 10f, 5f), true);
+
+			teleporter.animComp = teleporter.gameObject.AddComponent<AnimationComponent>();
+			teleporter.animComp.renderers = [machine];
+			teleporter.animComp.animation = [.. sprs.Take(5)];
+			teleporter.animComp.speed = 11.5f;
+
+			teleporter.sprEnabled = teleporter.animComp.animation;
 			teleporter.sprDisabled = machine.sprite;
 
 			teleporter.audMan = teleporter.gameObject.CreatePropagatedAudioManager(15f, 50f);
@@ -239,10 +246,7 @@ namespace BBTimes.Manager
 			teleporter.audTeleport = man.Get<SoundObject>("teleportAud");
 			teleporter.audLoop = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(GetRoomAsset("ComputerRoom", GetAssetName("teleportationNoises.wav"))), "Vfx_CompTel_Working", SoundType.Voice, Color.white);
 
-			teleporter.animComp = teleporter.gameObject.AddComponent<AnimationComponent>();
-			teleporter.animComp.renderers = [machine];
-			teleporter.animComp.animation = [.. sprs.Take(5)];
-			teleporter.animComp.speed = 11.5f;
+
 
 			// Item Descriptor
 			var descriptorObj = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("ComputerRoom", GetAssetName("item_descriptor.png"))), 13f))
@@ -667,9 +671,10 @@ namespace BBTimes.Manager
 				.AddSpriteHolder(out var metalFenceRenderer, Vector3.forward * 5f + Vector3.up * 5f, LayerStorage.ignoreRaycast);
 			metalFence.name = "MetalFence";
 			metalFence.gameObject.AddBoxCollider(metalFenceRenderer.transform.localPosition, new(10f, 5f, 0.95f), false);
-			metalFence.gameObject.AddNavObstacle(metalFenceRenderer.transform.localPosition, new(10f, 5f, 1.75f));
+			metalFence.gameObject.AddNavObstacle(metalFenceRenderer.transform.localPosition + (Vector3.down * 3f), new(12f, 10f, 1.75f));
 			metalFenceRenderer.name = "Sprite";
 			metalFence.gameObject.AddObjectToEditor();
+			metalFence.transform.localScale = new(0.977f, 1f, 1f);
 
 			// ** Ice Water
 			var iceWater = ObjectCreationExtensions.CreateSpriteBillboard(AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(GetRoomAsset("IceRink", "IceRinkWater.png")), 20f), false) // make sure to load a sprite sheet

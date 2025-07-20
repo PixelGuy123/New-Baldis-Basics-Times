@@ -273,7 +273,7 @@ namespace BBTimes
 				InitializeLevelTypeEnumsForSelection();
 
 				KeyValuePair<string, FloorData>? floordatapair = BBTimesManager.floorDatas.FirstOrDefault(x => x.Key == floorName);
-				if (!floordatapair.HasValue)
+				if (!floordatapair.HasValue || floordatapair.Value.Value == null) // Fail safe by adding another null check
 				{
 					Debug.LogWarning("Failed to get floor data for level: " + floorName);
 					return;
@@ -281,7 +281,7 @@ namespace BBTimes
 
 				var floordata = floordatapair.Value.Value;
 
-				// Debug.Log($"Adding floorData ({floordatapair.Value.Key}) to floor ({floorName})");
+				Debug.Log($"Adding floorData ({floordatapair.Value.Key}) to floor ({floorName})");
 
 				// ******************* ELEMENTS THAT DEPENDS ON SCENEOBJECT SOLELY ***********************
 

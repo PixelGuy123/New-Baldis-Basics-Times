@@ -133,7 +133,7 @@ namespace BBTimes.Manager
 		{
 			GenericExtensions.FindResourceObjects<MainGameManager>().Do(x => x.gameObject.AddComponent<MainGameManagerExtraComponent>()); // Adds extra component for every MainGameManager
 			GenericExtensions.FindResourceObjects<EnvironmentController>().Do(x => x.gameObject.AddComponent<EnvironmentControllerData>());
-			GenericExtensions.FindResourceObjects<PlayerManager>().Do(x => x.gameObject.AddComponent<PlayerAttributesComponent>());
+			GenericExtensions.FindResourceObjects<PlayerManager>().Do(x => x.gameObject.AddComponent<PlayerAttributesComponent>()); // Basic setup
 			GenericExtensions.FindResourceObjects<CullingManager>().Do(x => x.gameObject.AddComponent<NullCullingManager>().cullMan = x);
 		}
 
@@ -232,9 +232,6 @@ namespace BBTimes.Manager
 
 			// Fence texture
 			man.Add("Tex_Fence", GenericExtensions.FindResourceObjectByName<Texture2D>("fence"));
-
-			// Baldi Super Angry Animation
-			MainGameManagerPatches.angryBaldiAnimation = TextureExtensions.LoadSpriteSheet(9, 8, 30f, MiscPath, TextureFolder, GetAssetName("baldiSuperAngry.png"));
 
 			// Setup Window hit audio
 			WindowPatch.windowHitAudio = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "windowHit.wav")), "Vfx_WindowHit", SoundType.Effect, Color.white);
@@ -337,6 +334,7 @@ namespace BBTimes.Manager
 			man.Add("Beartrap", TextureExtensions.LoadSpriteSheet(2, 1, 50f, GlobalAssetsPath, GetAssetName("trap.png")));
 			man.Add("BeartrapCatch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("trap_catch.wav"))), "Vfx_BT_catch", SoundType.Effect, Color.white));
 			man.Add("audGenericPunch", ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(GlobalAssetsPath, GetAssetName("punch.wav"))), "BB_Hit", SoundType.Effect, Color.white));
+			man.Add("audGenericPunch_NoSub", man.Get<SoundObject>("audGenericPunch").GetNoSubCopy());
 			man.Add("swingDoorPre", GenericExtensions.FindResourceObject<SwingDoorBuilder>().swingDoorPre);
 			man.Add("audPop", GenericExtensions.FindResourceObjectByName<SoundObject>("Gen_Pop"));
 			man.Add("audBuzz", GenericExtensions.FindResourceObjectByName<SoundObject>("Elv_Buzz"));
@@ -410,14 +408,17 @@ namespace BBTimes.Manager
 			slipMatPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(9.9f, 10f, 9.9f), true);
 			man.Add("SlipperyMatPrefab", slipMatPre);
 
-			// Baldi Super Duper Rare Placeholder
-			MainGameManagerPatches.placeholderBaldi = ObjectCreationExtensions.CreateSpriteBillboard(null);
-			MainGameManagerPatches.placeholderBaldi.gameObject.ConvertToPrefab(true);
-			MainGameManagerPatches.placeholderBaldi.name = "PlaceholderBaldi";
-
+			// Baldi Placeholder
 			MainGameManagerPatches.bal_bangDoor = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_NormalEndingCutscene_Bang.wav")), string.Empty, SoundType.Effect, Color.white);
 			MainGameManagerPatches.bal_explosionOutside = man.Get<SoundObject>("audExplosion");
 			MainGameManagerPatches.cardboardBaldi = AssetLoader.SpriteFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("baldiCutOut.png")), Vector2.one * 0.5f, 34f);
+
+			MainGameManagerPatches.placeholderBaldi = ObjectCreationExtensions.CreateSpriteBillboard(MainGameManagerPatches.cardboardBaldi); // As default
+			MainGameManagerPatches.placeholderBaldi.gameObject.ConvertToPrefab(true);
+			MainGameManagerPatches.placeholderBaldi.name = "PlaceholderBaldi";
+
+			// Angry Baldi Placeholder
+			MainGameManagerPatches.angryBaldiAnimation = TextureExtensions.LoadSpriteSheet(9, 8, 30f, MiscPath, TextureFolder, GetAssetName("baldiSuperAngry.png"));
 
 
 			static void AddRule(string name, string audioName, string vfx) =>

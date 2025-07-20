@@ -126,9 +126,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			schoolBaldi.spriteRenderer[0].transform.position.y;
 
 			var baldi = Object.Instantiate(placeholderBaldi);
-			if (explorerMode)
-				baldi.sprite = cardboardBaldi;
-			else
+			if (!explorerMode) // If it is explorer mode, placeholderBaldi already uses cardboard visual by default
 				baldi.sprite = normalBaldiSprite;
 
 			__instance.StartCoroutine(Animation(cam, __instance, elevator));
@@ -934,11 +932,14 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			const float fovInitialStart = 65f;
 			const float framerate = 24.85f;
 
-			baldi.enabled = false;
-			baldi.animator.enabled = false;
-			baldi.volumeAnimator.enabled = false;
+			var baldiEntity = baldi.Navigator.Entity;
+			baldiEntity.SetVisible(false);
 
-			TimeScaleModifier timeScaleMod = new(0f, 0f, 0f);
+			var animatedBaldi = Object.Instantiate(placeholderBaldi);
+			animatedBaldi.sprite = angryBaldiAnimation[0];
+			animatedBaldi.transform.position = baldiEntity.transform.position;
+
+			TimeScaleModifier timeScaleMod = new(0f, 0f, 0f); // This should pause Baldi slap and literally anything
 			ec.AddTimeScale(timeScaleMod);
 
 			float elevatorDelay = 1.5f;
@@ -966,19 +967,19 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			cam.gameObject.AddComponent<CullAffector>();
 			float fovStart = cam.fieldOfView;
 
-			Vector3 basePosition = baldi.transform.position + (baldi.transform.forward * distanceFromBaldi);
-			Vector3 startCamPos = baldi.transform.position + (baldi.transform.forward * 0.5f);
+			Vector3 basePosition = animatedBaldi.transform.position + (animatedBaldi.transform.forward * distanceFromBaldi);
+			Vector3 startCamPos = animatedBaldi.transform.position + (animatedBaldi.transform.forward * 0.5f);
 			var cell = ec.CellFromPosition(basePosition);
-			if (cell.Null || cell.HasWallInDirection(Directions.DirFromVector3(baldi.transform.forward, 45f).GetOpposite()))
+			if (cell.Null || cell.HasWallInDirection(Directions.DirFromVector3(animatedBaldi.transform.forward, 45f).GetOpposite()))
 			{
-				basePosition = baldi.transform.position - (baldi.transform.forward * distanceFromBaldi);
-				startCamPos = baldi.transform.position - (baldi.transform.forward * 0.5f);
+				basePosition = animatedBaldi.transform.position - (animatedBaldi.transform.forward * distanceFromBaldi);
+				startCamPos = animatedBaldi.transform.position - (animatedBaldi.transform.forward * 0.5f);
 			}
 
 			Vector3 finalCamPos = basePosition;
 
 			cam.transform.position = startCamPos;
-			cam.transform.LookAt(baldi.transform);
+			cam.transform.LookAt(animatedBaldi.transform);
 
 			float frame = 0f;
 			float finalFrameIndex = angryBaldiAnimation.Length + 1.5f;
@@ -1005,7 +1006,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 
 				cam.fieldOfView = Mathf.Lerp(fovStart, fovEnd, progress * progress);
 
-				cam.transform.LookAt(baldi.transform);
+				cam.transform.LookAt(animatedBaldi.transform);
 				float roll = Mathf.Sin(Time.time * 40f) * maxRoll * intensityMultiplier;
 				cam.transform.Rotate(0, 0, roll, Space.Self);
 
@@ -1018,7 +1019,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				if (frame >= angryBaldiAnimation.Length)
 					break;
 
-				baldi.spriteRenderer[0].sprite = angryBaldiAnimation[Mathf.FloorToInt(frame)];
+				animatedBaldi.sprite = angryBaldiAnimation[Mathf.FloorToInt(frame)];
 				yield return null;
 			}
 
@@ -1032,8 +1033,8 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			}
 
 			ec.RemoveTimeScale(timeScaleMod);
-			baldi.enabled = true;
-			baldi.animator.enabled = true;
+			baldiEntity.SetVisible(true);
+
 			Object.Destroy(cam.gameObject);
 
 			for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++)

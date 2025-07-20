@@ -100,8 +100,10 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Initialize();
 			foreach (var room in ec.rooms)
+			{
 				if (room.type == RoomType.Room && room.category != RoomCategory.Special)
 					cells.AddRange(room.AllEntitySafeCellsNoGarbage().Where(x => x.open && !x.HasAnyHardCoverage && x.shape.HasFlag(TileShapeMask.Corner)));
+			}
 
 			if (cells.Count == 0)
 			{
@@ -153,6 +155,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			RemoveFuncIfExists();
 			lastCreatedFunction = room.functionObject.AddComponent<FreezingRoomFunction>();
+			lastCreatedFunction.AssignImmunityToEntity(navigator.Entity);
 			lastCreatedFunction.slipMatPre = slipMatPre;
 			room.functions.AddFunction(lastCreatedFunction);
 			lastCreatedFunction.Initialize(room);
@@ -197,18 +200,34 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			get
 			{
-				var cells = new List<Cell>(this.cells);
-				var currentCell = ec.CellFromPosition(transform.position);
+				tempCells.Clear();
+				tempCells.AddRange(cells);
 
-				cells.RemoveAll(x => x.TileMatches(currentCell.room));
+				return SafeGetRandomSpotToGo(tempCells, ec.CellFromPosition(transform.position));
 
-				return cells.Count == 0 ?
-					this.cells[Random.Range(0, this.cells.Count)] :
-					cells[Random.Range(0, cells.Count)];
+				Cell SafeGetRandomSpotToGo(List<Cell> availableCells, Cell myCell)
+				{
+					availableCells.RemoveAll(x => x.TileMatches(myCell.room));
+
+					if (availableCells.Count == 0)
+						return cells[Random.Range(0, cells.Count)];
+
+
+					var gotCell = availableCells[Random.Range(0, availableCells.Count)];
+
+					if (!ec.CheckPath(myCell, gotCell, PathType.Nav))
+					{
+						availableCells.RemoveAll(x => x.TileMatches(gotCell.room));
+						return SafeGetRandomSpotToGo(availableCells, myCell); // Recursive call until an actual cell is found
+					}
+
+					return gotCell;
+				}
 			}
 		}
+
 		public float ActiveCooldown => Random.Range(minActive, maxActive);
-		readonly List<Cell> cells = [];
+		readonly List<Cell> cells = [], tempCells = [];
 
 		readonly static HashSet<Items> disablingItems = [Items.Scissors];
 		public static void AddDisablingItem(Items item) => disablingItems.Add(item);
@@ -223,7 +242,7 @@ namespace BBTimes.CustomContent.NPCs
 	internal class JerryTheAC_GoToRoom(JerryTheAC jr) : JerryTheAC_StateBase(jr)
 	{
 		NavigationState_TargetPosition spotGo;
-		readonly Cell spot = jr.GetRandomSpotToGo;
+		Cell spot = jr.GetRandomSpotToGo;
 		public override void Enter()
 		{
 			base.Enter();
@@ -235,8 +254,12 @@ namespace BBTimes.CustomContent.NPCs
 		public override void DestinationEmpty()
 		{
 			base.DestinationEmpty();
-			if (jr.ec.CellFromPosition(jr.transform.position) != spot)
-				ChangeNavigationState(spotGo);
+			if (jr.ec.CellFromPosition(jr.transform.position) != spot) // Could only happen if Jerry was interrupted or if the target cell isn't available anymore
+			{
+				spot = jr.GetRandomSpotToGo; // Change spots
+				spotGo.UpdatePosition(spot.FloorWorldPosition);
+				ChangeNavigationState(spotGo); // Get to a new path again
+			}
 			else
 				jr.behaviorStateMachine.ChangeState(new JerryTheAC_Activate(jr, spot.room));
 		}
@@ -250,11 +273,12 @@ namespace BBTimes.CustomContent.NPCs
 	internal class JerryTheAC_Activate(JerryTheAC jr, RoomController room) : JerryTheAC_StateBase(jr)
 	{
 		float activeCooldown = jr.ActiveCooldown;
-		readonly Vector3 pos = jr.transform.position;
+		Vector3 pos;
 		public override void Enter()
 		{
 			base.Enter();
 			jr.ActivateAirConditioner(room);
+			pos = jr.transform.position;
 		}
 		public override void Update()
 		{

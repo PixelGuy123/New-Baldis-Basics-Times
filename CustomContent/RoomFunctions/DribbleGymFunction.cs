@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BBTimes.CustomComponents;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -136,9 +135,6 @@ namespace BBTimes.CustomContent.RoomFunctions
 				{
 					if (!room.doors[i].locked)
 					{
-						if (room.doors[i].IsOpen)
-							room.doors[i].Shut();
-
 						room.doors[i].Block(true);
 						doorBlockers[i].EnableObstacle(true);
 					}

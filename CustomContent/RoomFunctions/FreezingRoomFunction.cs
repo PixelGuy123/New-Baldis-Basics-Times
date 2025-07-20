@@ -10,6 +10,9 @@ namespace BBTimes.CustomContent.RoomFunctions
 		public override void OnEntityStay(Entity entity)
 		{
 			base.OnEntityStay(entity);
+			if (immuneEntity == entity)
+				return; // Prevent jerry from being frozen as well
+
 			var pm = entity.GetComponent<PlayerAttributesComponent>();
 			int entIdx = actMods.IndexOf(entity.ExternalActivity);
 			if (entIdx == -1)
@@ -54,6 +57,10 @@ namespace BBTimes.CustomContent.RoomFunctions
 		{
 			base.Initialize(room);
 			var cells = room.AllEntitySafeCellsNoGarbage();
+
+			var immunityCell = immuneEntity ? room.ec.CellFromPosition(immuneEntity.transform.position) : null;
+			cells.RemoveAll(x => x == immunityCell);
+
 			int am = Random.Range(minSlippersPerRoom, maxSlippersPerRoom);
 			for (int i = 0; i <= am; i++)
 			{
@@ -70,9 +77,14 @@ namespace BBTimes.CustomContent.RoomFunctions
 			}
 		}
 
+		public void AssignImmunityToEntity(Entity e) =>
+			immuneEntity = e;
+
 		readonly List<ActivityModifier> actMods = [];
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.75f);
 		readonly List<SlippingMaterial> slippers = [];
+
+		Entity immuneEntity;
 
 		[SerializeField]
 		internal SlippingMaterial slipMatPre;

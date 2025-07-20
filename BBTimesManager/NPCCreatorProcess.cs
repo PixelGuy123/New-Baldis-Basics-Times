@@ -273,7 +273,6 @@ namespace BBTimes.Manager
 
 			npc.Navigator.SetRoomAvoidance(false);
 
-			floorDatas[F1].NPCs.Add(new(npc, 99999));
 			floorDatas[F2].NPCs.Add(new(npc, 65));
 			floorDatas[END].NPCs.Add(new(npc, 33));
 

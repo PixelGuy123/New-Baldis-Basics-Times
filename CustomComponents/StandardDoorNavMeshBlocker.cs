@@ -9,7 +9,7 @@ public class StandardDoorNavMeshBlocker : MonoBehaviour
     public static StandardDoorNavMeshBlocker AddBlockerToDoor(Door door)
     {
         var blocker = door.gameObject.AddComponent<StandardDoorNavMeshBlocker>();
-        blocker.obstacle = door.gameObject.AddNavObstacle(door.direction.ToVector3() * 5f + Vector3.up * 4.5f, new(10f, 10f, 1f));
+        blocker.obstacle = door.gameObject.AddNavObstacle(new(0f, 5f, 5f), new(10f, 10f, 1f));
         blocker.obstacle.enabled = false;
 
         blocker.door = door;

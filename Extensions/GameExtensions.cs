@@ -6,7 +6,6 @@ using BBTimes.CustomContent.NPCs;
 using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
-using MTM101BaldAPI.ObjectCreation;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -17,6 +16,15 @@ namespace BBTimes.Extensions
 {
 	public static partial class GameExtensions // A whole storage of extension methods thrown into a single class, how organized (irony intended).
 	{
+		public static SoundObject GetNoSubCopy(this SoundObject sound)
+		{
+			var sd = Object.Instantiate(sound);
+			sd.name = sound.name + "_NoSub";
+			sd.subtitle = false;
+			sd.color = Color.white;
+			sd.soundKey = string.Empty;
+			return sd;
+		}
 		public static ParticleSystem GetNewParticleSystem(bool visualOnly = true)
 		{
 			var cloud = Object.Instantiate(
@@ -391,8 +399,13 @@ namespace BBTimes.Extensions
 		public static WeightedTexture2D ToWeightedTexture(this WeightedSelection<Texture2D> t) =>
 			new() { selection = t.selection, weight = t.weight };
 
-		public static PlayerAttributesComponent GetAttribute(this PlayerManager pm) =>
-			pm.GetComponent<PlayerAttributesComponent>();
+		public static PlayerAttributesComponent GetAttribute(this PlayerManager pm)
+		{
+			if (pm.TryGetComponent<PlayerAttributesComponent>(out var comp))
+				return comp;
+			comp = pm.gameObject.AddComponent<PlayerAttributesComponent>();
+			return comp;
+		}
 
 		public static GameObject SetAsPrefab(this GameObject obj, bool active)
 		{
