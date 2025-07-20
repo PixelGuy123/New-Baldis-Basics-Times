@@ -384,9 +384,16 @@ namespace BBTimes.CustomContent.NPCs
 			while (cooldown > 0f)
 			{
 				if (activePlayer.plm.Entity.InternalMovement == Vector3.zero) // Only when player is NOT moving, rest
+				{
 					cooldown -= Time.deltaTime * ec.EnvironmentTimeScale;
-				else if (activePlayer.plm.running) // If player is running, then he should get tired by how long he ran in distance
+				}
+				else // If player is literally moving, tire it
+				{
 					cooldown += Time.deltaTime * ec.EnvironmentTimeScale * tirednessIncreaseSpeed * activePlayer.plm.Entity.InternalMovement.magnitude;
+					if (cooldown > totalTime)
+						cooldown = totalTime;
+				}
+
 				gauge.SetValue(totalTime, cooldown);
 				yield return null;
 			}
@@ -464,7 +471,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		[SerializeField]
 		internal float punchCooldown = 5f, baseTirednessTime = 5f, bonusTirednessEffect = 5f, minWaitTime = 35f, maxWaitTime = 50f, teleportpBackDelay = 1.25f,
-		minigame_randomBasketballRange = 5f, minigame_baseBasketballSpeed = 20f, tirednessIncreaseSpeed = 2f;
+		minigame_randomBasketballRange = 5f, minigame_baseBasketballSpeed = 20f, tirednessIncreaseSpeed = 0.05f;
 
 		[SerializeField]
 		internal int baseStaminaLoss = 50, staminaStreakBonus = 10;
@@ -936,18 +943,26 @@ namespace BBTimes.CustomContent.NPCs
 			base.OnStateTriggerEnter(other);
 			if (other.isTrigger)
 			{
-				if (other.CompareTag("Player"))
-				{
-					var pm = other.GetComponent<PlayerManager>();
-					if (pm && pm == this.pm)
-						dr.behaviorStateMachine.ChangeState(new Dribble_ForceRun(dr, pm));
-				}
-				else if (other.CompareTag("NPC"))
+				if (other.CompareTag("NPC"))
 				{
 					var e = other.GetComponent<Entity>();
 					if (e)
 						dr.PunchNPC(e);
 
+				}
+			}
+		}
+
+		public override void OnStateTriggerStay(Collider other)
+		{
+			base.OnStateTriggerStay(other);
+			if (other.isTrigger)
+			{
+				if (other.CompareTag("Player"))
+				{
+					var pm = other.GetComponent<PlayerManager>();
+					if (pm && pm == this.pm)
+						dr.behaviorStateMachine.ChangeState(new Dribble_ForceRun(dr, pm));
 				}
 			}
 		}
