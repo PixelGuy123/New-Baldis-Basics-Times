@@ -819,6 +819,14 @@
             <param name="swapReferencesOnSameObject"></param>
             <returns></returns>
         </member>
+        <member name="M:MTM101BaldAPI.Extensions.GetAllFieldsIncludingPrivateAndInherited(System.Type,System.Type)">
+            <summary>
+            Gets all the fields belonging to the specified type, stopping at typeToStopAt and excluding static fields.
+            </summary>
+            <param name="type"></param>
+            <param name="typeToStopAt"></param>
+            <returns></returns>
+        </member>
         <member name="M:MTM101BaldAPI.Extensions.SwapComponent``2(UnityEngine.GameObject,``0,System.Boolean)">
             <summary>
             Replaces the specified component one with the SwapTo
