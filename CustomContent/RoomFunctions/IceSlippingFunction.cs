@@ -103,7 +103,7 @@ public class IceSlippingFunction : RoomFunction
 					magnitude = 0f;
 				}
 
-				// Apply ice friction uaing deltaTime and ec timescale
+				// Apply ice friction using deltaTime and ec timescale
 				float friction = iceFriction * Time.deltaTime * room.ec.EnvironmentTimeScale;
 				mod.movementAddend *= Mathf.Clamp01(1f - friction);
 

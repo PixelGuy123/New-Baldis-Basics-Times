@@ -78,7 +78,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 
 		IEnumerator SpawnAnimation(Vector3 expectedPos)
 		{
-			isHidden = false;
+			isHidden = true;
 			Vector3 curPos = renderer.transform.position;
 			float t = 0f;
 			while (true)
@@ -88,6 +88,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 				{
 					renderer.transform.position = expectedPos;
 					initialized = true;
+					isHidden = false;
 					yield break;
 				}
 				renderer.transform.position = Vector3.Lerp(curPos, expectedPos, t);

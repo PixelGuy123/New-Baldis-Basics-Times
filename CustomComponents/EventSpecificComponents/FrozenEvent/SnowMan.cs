@@ -1,5 +1,5 @@
-﻿using BBTimes.Plugin;
-using System.Collections;
+﻿using System.Collections;
+using BBTimes.Plugin;
 using UnityEngine;
 
 namespace BBTimes.CustomComponents.EventSpecificComponents.FrozenEvent
@@ -29,7 +29,8 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.FrozenEvent
 		void HitEntity(Entity entity)
 		{
 			renderer.sprite = spritesForEachHit[++lifeCount];
-			entity.AddForce(new((entity.transform.position - transform.position).normalized, hitForce, hitAcceleration));
+			float factor = Mathf.Clamp01(1f - (lifeHitFactor * (lifeCount / (spritesForEachHit.Length - 1)))); // lifeCount: 0 = Full force, 1 = slightly strong force, 2 = mild force...
+			entity.AddForce(new((entity.transform.position - transform.position).normalized, hitForce * factor, hitAcceleration)); // The acceleration stays the same
 			audMan.PlaySingle(audHit);
 
 			if (Dead)
@@ -83,7 +84,11 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.FrozenEvent
 		internal SpriteRenderer renderer;
 
 		[SerializeField]
-		internal float delayBeforeDeath = 5f, hitForce = 45f, hitAcceleration = -12.2f;
+		internal float delayBeforeDeath = 5f, hitForce = 45f, hitAcceleration = -16.5f;
+
+		[SerializeField]
+		[Range(0f, 1f)]
+		internal float lifeHitFactor = 0.75f;
 
 		int lifeCount = 0;
 

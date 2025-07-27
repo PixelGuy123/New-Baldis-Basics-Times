@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using PixelInternalAPI.Classes;
+﻿using PixelInternalAPI.Classes;
+using UnityEngine;
 
 namespace BBTimes.Misc.SelectionHolders
 {
@@ -7,6 +7,9 @@ namespace BBTimes.Misc.SelectionHolders
 	{
 		readonly SchoolTexture _tex = texType;
 		public SchoolTexture TextureType => _tex;
+
+		public override string ToString() =>
+			$"{_tex} | {whereCanSpawn} | {Selection.weight} | {Selection.selection.name}";
 	}
-	
+
 }

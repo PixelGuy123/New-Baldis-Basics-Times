@@ -682,7 +682,7 @@ namespace BBTimes.Manager
 				.AddTrigger()
 				.SetForcedSubtitleColor(new(0f, 0.5f, 0.16796875f))
 				.AddLooker()
-				.SetMaxSightDistance(25f)
+				.SetMaxSightDistance(100f)
 				.Build()
 				.SetupNPCData("EverettTreewood", "PST_EverettTree_Name", "PST_EverettTree_Desc", -0.5f);
 

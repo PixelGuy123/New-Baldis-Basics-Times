@@ -231,7 +231,7 @@ namespace BBTimes.Manager
 			teleporter.name = "ComputerTeleporter";
 
 			teleporter.gameObject.AddObjectToEditor();
-			teleporter.gameObject.AddBoxCollider(Vector3.up * 5f, new(5f, 10f, 5f), true);
+			teleporter.gameObject.AddBoxCollider(Vector3.up * 5f, new(8.25f, 10f, 8.25f), true);
 
 			teleporter.animComp = teleporter.gameObject.AddComponent<AnimationComponent>();
 			teleporter.animComp.renderers = [machine];
@@ -239,7 +239,7 @@ namespace BBTimes.Manager
 			teleporter.animComp.speed = 11.5f;
 
 			teleporter.sprEnabled = teleporter.animComp.animation;
-			teleporter.sprDisabled = machine.sprite;
+			teleporter.sprDisabled = [machine.sprite];
 
 			teleporter.audMan = teleporter.gameObject.CreatePropagatedAudioManager(15f, 50f);
 			teleporter.loopingAudMan = teleporter.gameObject.CreatePropagatedAudioManager(15f, 50f);
@@ -1332,8 +1332,8 @@ namespace BBTimes.Manager
 			playgroundClonedRoomContainer.name = "IceRinkRoom_Container";
 			playgroundClonedRoomContainer.gameObject.ConvertToPrefab(true);
 
-			//snowFunc = playgroundClonedRoomContainer.gameObject.AddComponent<FallingParticlesFunction>();
-			//snowFunc.particleTexture = AssetLoader.TextureFromFile(GetRoomAsset("SnowyPlayground", "snowFlake.png"));
+			snowFunc = playgroundClonedRoomContainer.gameObject.AddComponent<FallingParticlesFunction>();
+			snowFunc.bounderiesOnly = true;
 
 			playgroundClonedRoomContainer.AddFunction(snowFunc);
 			playgroundClonedRoomContainer.AddFunction(playgroundClonedRoomContainer.gameObject.AddComponent<IceSlippingFunction>());

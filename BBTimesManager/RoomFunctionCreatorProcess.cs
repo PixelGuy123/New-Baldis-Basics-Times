@@ -226,9 +226,7 @@ namespace BBTimes.Manager
 					continue;
 
 				_usedContainers.Add(room.roomFunctionContainer);
-				var roomFunction = room.roomFunctionContainer.gameObject.AddComponent<R>();
-
-				functions.Add(roomFunction);
+				functions.Add(room.AddRoomFunctionToContainer<R>()); // This extension methods already does the setup for the container itself
 			}
 
 			if (functions.Count == 0)

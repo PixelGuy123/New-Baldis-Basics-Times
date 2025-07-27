@@ -1,10 +1,9 @@
-﻿using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace BBTimes.CustomContent.RoomFunctions
 {
-    public class RandomItemSpawnFunction : RoomFunction
-    {
+	public class RandomItemSpawnFunction : RoomFunction
+	{
 		[SerializeField]
 		internal bool excludeCenterTile = true;
 
@@ -18,15 +17,11 @@ namespace BBTimes.CustomContent.RoomFunctions
 			base.Build(builder, rng);
 			var cells = Room.AllEntitySafeCellsNoGarbage();
 			if (excludeCenterTile)
-			{
-				var middleCell = room.ec.CellFromPosition(room.ec.RealRoomMid(room));
-				cells.Remove(middleCell);
-			}
+				cells.Remove(room.ec.CellFromPosition(room.ec.RealRoomMid(room))); // Removes middle tile
+
 
 			if (cells.Count != 0)
 				positionToSpawnItem = cells[rng.Next(cells.Count)].FloorWorldPosition;
-			else
-				Debug.LogWarning("RandomItemSpawnFunction: Failed to find good spot to spawn item.");
 		}
 
 		public override void OnGenerationFinished()
@@ -38,7 +33,12 @@ namespace BBTimes.CustomContent.RoomFunctions
 
 				var pickup = room.ec.items[room.ec.items.Count - 1];
 				pickup.icon = room.ec.map.AddIcon(pickup.iconPre, pickup.transform, Color.white);
+				pickup.AssignItem(itemToSpawn); // Intentionally calls this 'cuz EnvironmentController doesn't seem to do that for some reason
+				pickup.Hide(false);
+				return;
 			}
+
+			Debug.LogWarning("RandomItemSpawnFunction: Position to spawn item was default (no position available found!)");
 		}
 	}
 }

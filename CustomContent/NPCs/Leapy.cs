@@ -1,15 +1,15 @@
-﻿using BBTimes.Extensions;
+﻿using System.Collections.Generic;
 using BBTimes.CustomComponents;
-using System.Collections.Generic;
+using BBTimes.Extensions;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Leapy : NPC, INPCPrefab
+	public class Leapy : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
-			
+
 			audMan = GetComponent<PropagatedAudioManager>();
 			audJump = this.GetSound("leapy_jump.wav", "Vfx_Leapy_Leap", SoundType.Effect, new Color(0f, 0.3984f, 0f));
 			audStomp = this.GetSound("leapy_stomp.wav", "Vfx_Leapy_Stomp", SoundType.Effect, new Color(0f, 0.3984f, 0f));
@@ -22,13 +22,14 @@ namespace BBTimes.CustomContent.NPCs
 			sprJump = sprs[2];
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
 		// --------------------------------------------------
-		
+
 		public override void Initialize()
 		{
 			base.Initialize();
@@ -72,7 +73,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		internal void Stomp(Entity e)
 		{
-			if (affectedEntities.Contains(e)) return;
+			if (affectedEntities.Contains(e) || e.Squished) return; // Won't affect already squished characters
 
 			audMan.PlaySingle(audStomp);
 			affectedEntities.Add(e);
@@ -152,7 +153,7 @@ namespace BBTimes.CustomContent.NPCs
 		}
 
 		float idleCool = Random.Range(le.minIdleTime, le.maxIdleTime);
-		
+
 	}
 
 	internal class Leapy_PrepareJump(Leapy le) : Leapy_StateBase(le)

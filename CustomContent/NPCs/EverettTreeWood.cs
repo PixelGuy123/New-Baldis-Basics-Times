@@ -5,7 +5,6 @@ using BBTimes.CustomComponents.NpcSpecificComponents.EverettTreewood;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.Plugin;
-using MTM101BaldAPI.Components;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
@@ -245,20 +244,6 @@ namespace BBTimes.CustomContent.NPCs
 			animComp.speed = alertedAnimSpeed;
 		}
 
-		public void EnableSuperVision(bool enable)
-		{
-			var cont = this.GetNPCContainer();
-			if (enable)
-			{
-				if (!cont.HasLookerMod(lookerMod))
-					cont.AddLookerMod(lookerMod);
-
-				return;
-			}
-
-			cont.RemoveLookerMod(lookerMod);
-		}
-
 		public void QueueDecor(ChristmasDecoration decor) => decorsToGo.Enqueue(decor);
 
 		public void LectureEntity(Entity e) =>
@@ -269,6 +254,9 @@ namespace BBTimes.CustomContent.NPCs
 			if (!isShooting)
 				StartCoroutine(ShootSequence(direction));
 		}
+
+		public bool IsInShootingRange(Vector3 position) =>
+			Vector3.Distance(position, transform.position) <= minDistanceToShoot;
 
 
 		IEnumerator PunishEntity(Entity e)
@@ -363,7 +351,7 @@ namespace BBTimes.CustomContent.NPCs
 		internal Sprite[] idleAnim, walkAnim, angryWalkAnim, spitAnim, angryAnim;
 
 		[SerializeField]
-		internal float shootDelay = 0.45f, shootForce = 65f, prepareDecorDelay = 6f, wannaBuildDecorCooldown = 20f, delayBeforeScanEveryone = 1.5f,
+		internal float shootDelay = 0.45f, shootForce = 65f, minDistanceToShoot = 30f, prepareDecorDelay = 6f, wannaBuildDecorCooldown = 20f, delayBeforeScanEveryone = 1.5f,
 			angryAnimationSpeed = 16f, spitAnimationSpeed = 25f, normalWalkAnimSpeed = 14f, alertedAnimSpeed = 35f,
 			angrySpeedWalk = 25f, walkSpeed = 18f, alertedSpeed = 75f;
 
@@ -377,7 +365,6 @@ namespace BBTimes.CustomContent.NPCs
 		readonly Queue<ChristmasDecoration> decorsToGo = [];
 		readonly List<ChristmasDecoration> decorsSpawned = [];
 		readonly HashSet<Cell> occupiedCells = [];
-		readonly ValueModifier lookerMod = new(100f);
 
 		public bool SuitableSpotToPrepareDecoration
 		{
@@ -462,7 +449,7 @@ namespace BBTimes.CustomContent.NPCs
 					return;
 				}
 
-				if (ev.looker.RaycastNPC(target))
+				if (!ev.Blinded && ev.looker.RaycastNPC(target) && ev.IsInShootingRange(target.transform.position))
 				{
 					ev.Shoot((target.transform.position - ev.transform.position).normalized);
 					shootsLeft--;
@@ -499,19 +486,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			if (!target)
-			{
+			if (!target || (!ev.IsShooting && shootsLeft <= 0))
 				ev.behaviorStateMachine.ChangeState(new EverettTreewood_Wander(ev));
-				return;
-			}
-			if (!ev.IsShooting)
-			{
-				if (shootsLeft <= 0)
-				{
-					ev.behaviorStateMachine.ChangeState(new EverettTreewood_Wander(ev));
-					return;
-				}
-			}
 		}
 
 		public override void PlayerInSight(PlayerManager player)
@@ -521,7 +497,7 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				ChangeNavigationState(targetPos);
 				targetPos.UpdatePosition(player.transform.position);
-				if (!ev.IsShooting)
+				if (ev.IsInShootingRange(player.transform.position) && !ev.IsShooting)
 				{
 					ev.Shoot((target.transform.position - ev.transform.position).normalized);
 					shootsLeft--;

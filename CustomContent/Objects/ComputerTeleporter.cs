@@ -10,6 +10,9 @@ namespace BBTimes.CustomContent.Objects
 		public void EnableMachine(bool enable)
 		{
 			alreadyTouchedEntities.Clear();
+			teleporting = false;
+			DisableTeleportSequence();
+
 			if (enable)
 			{
 				animComp.animation = sprEnabled;
@@ -18,15 +21,12 @@ namespace BBTimes.CustomContent.Objects
 				loopingAudMan.SetLoop(true);
 				loopingAudMan.QueueAudio(audLoop);
 
-				teleporting = false;
-				audMan.pitchModifier = 1f;
+				loopingAudMan.pitchModifier = 1f;
 				return;
 			}
 
-			if (teleportCor != null)
-				StopCoroutine(teleportCor);
-
-			animComp.ChangeRendererSpritesTo(sprDisabled);
+			animComp.animation = sprDisabled;
+			animComp.ResetFrame(true);
 			loopingAudMan.FlushQueue(true);
 		}
 		public override void LoadingFinished()
@@ -50,51 +50,73 @@ namespace BBTimes.CustomContent.Objects
 
 		void OnTriggerStay(Collider other)
 		{
-			if (!active || teleporting) return;
+			if (!other.isTrigger || !active || teleporting) return;
 			var e = other.GetComponent<Entity>();
 			if (e && !alreadyTouchedEntities.Contains(e))
 			{
 				alreadyTouchedEntities.Add(e);
 
-				if (teleportCor != null)
-					StopCoroutine(teleportCor);
+				DisableTeleportSequence();
 				teleportCor = StartCoroutine(TeleportToRandomTep(e));
+
+				if (other.CompareTag("NPC"))
+					e.ExternalActivity.moveMods.Add(moveMod); // To make sure they actually stay to be teleported
 			}
 		}
 
 		void OnTriggerExit(Collider other)
 		{
+			if (!other.isTrigger) return;
+
 			var e = other.GetComponent<Entity>();
 			if (e)
+			{
 				alreadyTouchedEntities.Remove(e);
+				if (other.CompareTag("NPC"))
+					e.ExternalActivity.moveMods.Remove(moveMod); // To make sure they actually stay to be teleported
+			}
 		}
 
-		public void AddEntityToAlreadyTouchedOnes(Entity e) =>
-			alreadyTouchedEntities.Add(e);
+		void DisableTeleportSequence()
+		{
+			if (activeEntity)
+			{
+				activeEntity.ExternalActivity.moveMods.Remove(moveMod);
+				alreadyTouchedEntities.Remove(activeEntity);
+				activeEntity = null;
+			}
+
+			if (teleportCor != null)
+				StopCoroutine(teleportCor);
+		}
 
 		IEnumerator TeleportToRandomTep(Entity e)
 		{
+			activeEntity = e;
 			teleporting = true;
 			float t = 0f;
+
+			yield return null;
 
 			while (t < timeToTeleport)
 			{
 				t += Time.deltaTime * ec.EnvironmentTimeScale;
-				audMan.pitchModifier = Mathf.Lerp(1f, maxPitchBeforeTeleporting, t / timeToTeleport);
+				loopingAudMan.pitchModifier = Mathf.Lerp(1f, maxPitchBeforeTeleporting, t / timeToTeleport);
 
 				if (!alreadyTouchedEntities.Contains(e))
 				{
-					audMan.pitchModifier = 1f;
+					loopingAudMan.pitchModifier = 1f;
+					DisableTeleportSequence();
 					yield break;
 				}
 
 				yield return null;
 			}
 
-			audMan.pitchModifier = 1f;
+			loopingAudMan.pitchModifier = 1f;
 
 			var tep = adjacentTeleporters[Random.Range(0, adjacentTeleporters.Count)];
-			tep.AddEntityToAlreadyTouchedOnes(e);
+			tep.alreadyTouchedEntities.Add(e); // Adds to the next teleporter to prevent teleporting back
 
 			yield return null; // Wait a frame to avoid teleporting twice
 
@@ -102,7 +124,17 @@ namespace BBTimes.CustomContent.Objects
 			audMan.PlaySingle(audTeleport);
 			tep.audMan.PlaySingle(tep.audTeleport);
 
+			alreadyTouchedEntities.Remove(e); // Removes this
+
+			yield return null;
+
 			teleporting = false;
+			activeEntity = null;
+		}
+
+		void OnDisable()
+		{
+			DisableTeleportSequence();
 		}
 
 		readonly HashSet<Entity> alreadyTouchedEntities = [];
@@ -120,12 +152,15 @@ namespace BBTimes.CustomContent.Objects
 		internal SoundObject audTeleport, audLoop;
 
 		[SerializeField]
-		internal Sprite sprDisabled;
+		internal Sprite[] sprDisabled;
 
 		[SerializeField]
 		internal Sprite[] sprEnabled;
 
 		[SerializeField]
 		internal float pitchSpeedPerTeleport = 1.25f, maxPitchBeforeTeleporting = 1.75f, timeToTeleport = 1f;
+
+		MovementModifier moveMod = new(Vector3.zero, 0.25f);
+		Entity activeEntity;
 	}
 }

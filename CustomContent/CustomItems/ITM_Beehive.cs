@@ -20,8 +20,8 @@ namespace BBTimes.CustomContent.CustomItems
 			entity = gameObject.CreateEntity(2f, 2f, rendererBase.transform);
 			entity.SetGrounded(false);
 
-			audMan = gameObject.CreatePropagatedAudioManager(75, 105);
-			stungAudMan = gameObject.CreatePropagatedAudioManager(95, 125);
+			audMan = gameObject.CreatePropagatedAudioManager(45, 165);
+			stungAudMan = gameObject.CreatePropagatedAudioManager(55, 125);
 			audBees = this.GetSound("bees.wav", "Beehive_bee", SoundType.Effect, Color.white);
 			audStung = this.GetSound("poke.wav", "Beehive_Sting", SoundType.Effect, Color.white);
 

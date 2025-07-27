@@ -470,8 +470,5 @@ namespace BBTimes.Manager
 
 		internal static IEnumerable<Character> GetReplacementNPCs(params Character[] npcsReplaced) =>
 			replacementNpcs.Where(x => npcsReplaced.Any(z => x.GetReplacementNPCs().Contains(z))).Select(x => x.Npc.Character);
-
-
-
 	}
 }

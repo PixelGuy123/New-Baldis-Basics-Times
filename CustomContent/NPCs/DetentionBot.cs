@@ -162,7 +162,7 @@ namespace BBTimes.CustomContent.NPCs
 		readonly List<NPC> potentialNPCs = [];
 		public RoomController PickRandomOffice => offices[Random.Range(0, offices.Count)];
 
-		readonly static HashSet<Items> disablingItems = [Items.Scissors];
+		readonly static HashSet<Items> disablingItems = [];
 		public static void AddDisablingItem(Items item) => disablingItems.Add(item);
 		public bool IsAngryAtSomeone { get; internal set; } = false;
 
@@ -346,12 +346,14 @@ namespace BBTimes.CustomContent.NPCs
 			{
 				bot.Navigator.Entity.Teleport(tarPos.destination);
 				entity.Teleport(tarPos.destination);
+				tarNpc.SentToDetention();
 			}
 		}
 		public override void DestinationEmpty()
 		{
 			base.DestinationEmpty();
-			if (!bot.ec.CellFromPosition(bot.transform.position).TileMatches(office))
+			var botCell = bot.ec.CellFromPosition(bot.transform.position);
+			if (!botCell.TileMatches(office) && bot.ec.CheckPath(botCell, bot.ec.CellFromPosition(tarPos.destination), PathType.Nav)) // If the path is unacessible, DetentionBot is forced to teleport you instead
 			{
 				tarPos.UpdatePosition(office.RandomEntitySafeCellNoGarbage().FloorWorldPosition);
 				ChangeNavigationState(tarPos);

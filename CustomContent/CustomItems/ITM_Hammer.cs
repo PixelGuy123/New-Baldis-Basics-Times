@@ -1,14 +1,14 @@
 ﻿using BBTimes.CustomComponents;
-using UnityEngine;
-using PixelInternalAPI.Classes;
 using BBTimes.Extensions;
-using PixelInternalAPI.Extensions;
 using BBTimes.Manager;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-    public class ITM_Hammer : Item, IItemPrefab, IEntityTrigger
-    {
+	public class ITM_Hammer : Item, IItemPrefab, IEntityTrigger
+	{
 		public void SetupPrefab()
 		{
 			gameObject.layer = LayerStorage.standardEntities;
@@ -39,20 +39,20 @@ namespace BBTimes.CustomContent.CustomItems
 			audHit = BBTimesManager.man.Get<SoundObject>("audGenericPunch");
 		}
 
-		public void SetupPrefabPost(){}
+		public void SetupPrefabPost() { }
 
 		public string Name { get; set; }
 		public string Category => "items";
-		
+
 		public ItemObject ItmObj { get; set; }
 		public override bool Use(PlayerManager pm)
-        {
-            if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var raycastHit, pm.pc.reach, LayerStorage.windowLayer, QueryTriggerInteraction.Collide) && raycastHit.transform.CompareTag("Window"))
-            {
+		{
+			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var raycastHit, pm.pc.reach, LayerStorage.windowLayer, QueryTriggerInteraction.Collide) && raycastHit.transform.CompareTag("Window"))
+			{
 				var w = raycastHit.transform.GetComponent<Window>();
 				bool broken = false;
 				if (w)
-				{ 
+				{
 					w.Break(true);
 					broken = !raycastHit.transform.GetComponent<CustomWindowComponent>()?.unbreakable ?? true;
 					if (broken)
@@ -60,9 +60,9 @@ namespace BBTimes.CustomContent.CustomItems
 				}
 				Destroy(gameObject);
 				return broken;
-            }
+			}
 
-			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.reach, 131072)) // Npc layer I guess? Not sure, it was from the scissors
+			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.reach, acceptorLayer)) // Npc layer I guess? Not sure, it was from the scissors
 			{
 				IItemAcceptor component = hit.transform.GetComponent<IItemAcceptor>();
 				if (component != null && component.ItemFits(item))
@@ -76,7 +76,7 @@ namespace BBTimes.CustomContent.CustomItems
 			ThrowHammer(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, pm.ec, 38f, 6f, pm.plm.Entity.InternalHeight, pm.gameObject);
 
 			return true;
-        }
+		}
 
 		public void ThrowHammer(Vector3 position, Vector3 direction, EnvironmentController ec, float throwSpeed, float throwUpperForce, float height = 5f, GameObject owner = null)
 		{
@@ -133,7 +133,7 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 		}
 
-		public void EntityTriggerStay(Collider other) {}
+		public void EntityTriggerStay(Collider other) { }
 
 		public void EntityTriggerExit(Collider other)
 		{
@@ -160,6 +160,9 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal SoundObject audThrow, audHit;
+
+		[SerializeField]
+		internal LayerMask acceptorLayer = 131072;
 
 		[SerializeField]
 		internal float gravityConstant = -4f, verticalSpeedGainOverHit = 5f, heightLimit = 9f;

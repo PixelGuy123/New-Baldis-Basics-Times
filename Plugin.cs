@@ -127,7 +127,7 @@ namespace BBTimes
 
 		internal ConfigEntry<bool>
 		disableOutside, disableHighCeilings, disableRedEndingCutscene,
-		enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, forceChristmasMode, disableArcadeRennovationsSupport, disableSchoolhouseEscape;
+		enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, forceChristmasMode, disableArcadeRennovationsSupport, disableSchoolhouseEscape, enableUnbalancedLegacyMode;
 		internal List<string> disabledCharacters = [], disabledItems = [], disabledEvents = [], disabledBuilders = [];
 		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") ||
 			Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
@@ -136,16 +136,23 @@ namespace BBTimes
 		{
 			BBTimesManager.plug = this;
 
-			disableOutside = Config.Bind("Environment Settings", "Disable the outside", false, "Setting this \"true\" will completely disable the outside seen in-game. This should increase performance BUT will also change the seed layouts in the game.");
-			disableHighCeilings = Config.Bind("Environment Settings", "Disable high ceilings", false, "Setting this \"true\" will completely disable the high ceilings from existing in pre-made levels (that includes the ones made with the Level Editor).");
-			enableBigRooms = Config.Bind("Environment Settings", "Enable big rooms", false, "Setting this \"true\" will add the rest of the layouts Times also comes with. WARNING: These layouts completely unbalance the game, making it a lot harder than the usual.");
-			enableReplacementNPCsAsNormalOnes = Config.Bind("NPC Settings", "Disable replacement feature", false, "Setting this \"true\" will allow replacement npcs to spawn as normal npcs instead, making the game considerably harder in some ways.");
-			enableYoutuberMode = Config.Bind("Misc Settings", "Enable youtuber mode", false, "Wanna get some exclusive content easily? Set this to \"true\" on and *everything* will have the weight of 9999.");
-			forceChristmasMode = Config.Bind("Specials Settings", "Force enable christmas special", false, "Setting this to \"true\" will force the christmas special to be enabled.");
+			const string
+				ENV_SETTINGS = "Environment Settings",
+				MISC_SETTINGS = "Miscellaneous Settings",
+				SPECIAL_SETTINGS = "Holidays Settings";
 
-			disableArcadeRennovationsSupport = Config.Bind("Misc Settings", "Disable arcade rennovations support", false, "Setting this to \"true\" disable any checks for arcade rennovations. This can be useful for RNG Floors, if you\'re having any issues.");
-			disableSchoolhouseEscape = Config.Bind("Environment Settings", "Disable schoolhouse escape", false, "Setting this to \"true\" will disable entirely the schoolhouse escape sequence (the only exception is for the red sequence).");
-			disableRedEndingCutscene = Config.Bind("Misc Settings", "Disable the final cutscene", false, "If True, the cutscene played in the red sequence will be totally disabled.");
+			disableOutside = Config.Bind(ENV_SETTINGS, "Disable the outside", false, "Setting this \"true\" will completely disable the outside seen in-game. This should increase performance BUT will also change the seed layouts in the game.");
+			disableHighCeilings = Config.Bind(ENV_SETTINGS, "Disable high ceilings", false, "Setting this \"true\" will completely disable the high ceilings from existing in pre-made levels (that includes the ones made with the Level Editor).");
+			enableBigRooms = Config.Bind(ENV_SETTINGS, "Enable big rooms", false, "Setting this \"true\" will add the rest of the layouts Times also comes with. WARNING: These layouts completely unbalance the game, making it a lot harder than the usual.");
+			disableSchoolhouseEscape = Config.Bind(ENV_SETTINGS, "Disable schoolhouse escape", false, "Setting this to \"true\" will disable entirely the schoolhouse escape sequence (the only exception is for the red sequence).");
+
+			forceChristmasMode = Config.Bind(SPECIAL_SETTINGS, "Force enable christmas special", false, "Setting this to \"true\" will force the christmas special to be enabled.");
+
+			enableYoutuberMode = Config.Bind(MISC_SETTINGS, "Enable youtuber mode", false, "Wanna get some exclusive content easily? Set this to \"true\" on and *everything* will have the weight of 9999.");
+			enableReplacementNPCsAsNormalOnes = Config.Bind(MISC_SETTINGS, "Disable replacement feature", false, "Setting this \"true\" will allow replacement npcs to spawn as normal npcs instead, making the game considerably harder in some ways.");
+			disableArcadeRennovationsSupport = Config.Bind(MISC_SETTINGS, "Disable arcade rennovations support", false, "Setting this to \"true\" disable any checks for arcade rennovations. This can be useful for RNG Floors, if you\'re having any issues.");
+			disableRedEndingCutscene = Config.Bind(MISC_SETTINGS, "Disable the final cutscene", false, "If True, the cutscene played in the red sequence will be totally disabled.");
+			enableUnbalancedLegacyMode = Config.Bind(MISC_SETTINGS, "Enable Unbalanced Legacy Mode", false, "If True, the old Times\' floor changes will be brought up back and make the game considerably unbalanced.");
 
 
 			Harmony harmony = new(ModInfo.PLUGIN_GUID);
@@ -204,11 +211,58 @@ namespace BBTimes
 					ld.SetCustomModValue(Info, "Times_GenConfig_DisableOutside", shouldDisableOutside);
 					ld.MarkAsNeverUnload(); // Maybe?
 
+					// Legacy stuff
+					var getGroup = new Func<string, RoomGroup>((name) =>
+					{
+						for (int i = 0; i < ld.roomGroup.Length; i++)
+						{
+							if (ld.roomGroup[i].name == name) return ld.roomGroup[i];
+						}
+						return null;
+					});
+
+					var classGroup = getGroup("Class");
+					var officeGroup = getGroup("Office");
+					var facultyGroup = getGroup("Faculty");
+
+					bool legacy = enableUnbalancedLegacyMode.Value;
 
 					if (floorName == BBTimesManager.F1)
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 9));
+
+						// Legacy mode
+						if (legacy)
+						{
+							try
+							{
+								ld.minSpecialRooms = 1;
+								ld.maxSpecialRooms = 1;
+								sco.additionalNPCs += 2;
+								ld.additionTurnChance += 5;
+								ld.bridgeTurnChance += 3;
+								ld.extraDoorChance = 0.5f;
+								classGroup.maxRooms = 5;
+								facultyGroup.minRooms += 2;
+								facultyGroup.maxRooms += 3;
+								ld.maxHallsToRemove++;
+								ld.maxPlots += 2;
+								ld.minPlots += 1;
+								ld.maxReplacementHalls += 2;
+								ld.maxSize += new IntVector2(6, 5);
+								ld.minSize += new IntVector2(5, 4);
+								ld.maxSpecialBuilders += 2;
+								ld.minHallsToRemove += 1;
+								ld.minSpecialBuilders += 1;
+								ld.outerEdgeBuffer += 5;
+								ld.timeBonusLimit *= 1.2f;
+							}
+							catch
+							{
+								Debug.LogWarning($"BBTimes: Failed to correctly modify the floor. The cause is mostly due to some unfair change in the RoomGroups!");
+							}
+						}
 						continue;
 					}
 
@@ -216,6 +270,38 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 12));
+
+						// Legacy mode
+						if (legacy)
+						{
+							try
+							{
+								ld.maxSpecialRooms += 1;
+								sco.additionalNPCs += 3;
+								ld.additionTurnChance += 7;
+								ld.bridgeTurnChance += 6;
+								ld.extraDoorChance = 0.65f;
+								classGroup.maxRooms += 1;
+								facultyGroup.minRooms += 3;
+								facultyGroup.maxRooms += 4;
+								officeGroup.maxRooms += 1;
+								ld.maxHallsToRemove++;
+								ld.maxPlots += 2;
+								ld.minPlots += 1;
+								ld.maxReplacementHalls += 4;
+								ld.maxSize += new IntVector2(7, 8);
+								ld.minSize += new IntVector2(6, 5);
+								ld.maxSpecialBuilders += 2;
+								ld.minHallsToRemove += 1;
+								ld.minSpecialBuilders += 1;
+								ld.outerEdgeBuffer += 5;
+								ld.timeBonusLimit *= 1.2f;
+							}
+							catch
+							{
+								Debug.LogWarning($"BBTimes: Failed to correctly modify the floor. The cause is mostly due to some unfair change in the RoomGroups!");
+							}
+						}
 						continue;
 					}
 
@@ -223,6 +309,39 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(10, 13));
+
+						// Legacy mode
+						if (legacy)
+						{
+							try
+							{
+								ld.minSpecialRooms += 1;
+								ld.maxSpecialRooms += 2;
+								sco.additionalNPCs += 5;
+								ld.additionTurnChance += 5;
+								ld.bridgeTurnChance += 6;
+								ld.extraDoorChance = 0.9f;
+								classGroup.maxRooms += 3;
+								facultyGroup.minRooms += 3;
+								facultyGroup.maxRooms += 4;
+								officeGroup.maxRooms += 2;
+								ld.maxHallsToRemove++;
+								ld.maxPlots += 3;
+								ld.minPlots += 2;
+								ld.maxReplacementHalls += 4;
+								ld.maxSize += new IntVector2(7, 9);
+								ld.minSize += new IntVector2(6, 5);
+								ld.maxSpecialBuilders += 2;
+								ld.minHallsToRemove += 1;
+								ld.minSpecialBuilders += 1;
+								ld.outerEdgeBuffer += 5;
+								ld.timeBonusLimit *= 1.65f;
+							}
+							catch
+							{
+								Debug.LogWarning($"BBTimes: Failed to correctly modify the floor. The cause is mostly due to some unfair change in the RoomGroups!");
+							}
+						}
 						continue;
 					}
 
@@ -230,6 +349,41 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(10, 15));
+
+						// Legacy mode
+						if (legacy)
+						{
+							try
+							{
+								ld.minSpecialRooms += 2;
+								ld.maxSpecialRooms += 3;
+								sco.additionalNPCs += 6;
+								ld.additionTurnChance += 4;
+								ld.bridgeTurnChance += 7;
+								ld.extraDoorChance = 0.95f;
+								classGroup.minRooms += 3;
+								classGroup.maxRooms += 5;
+								facultyGroup.minRooms += 6;
+								facultyGroup.maxRooms += 8;
+								officeGroup.minRooms += 2;
+								officeGroup.maxRooms += 3;
+								ld.maxHallsToRemove++;
+								ld.maxPlots += 4;
+								ld.minPlots += 3;
+								ld.maxReplacementHalls += 8;
+								ld.maxSize += new IntVector2(11, 13);
+								ld.minSize += new IntVector2(8, 7);
+								ld.maxSpecialBuilders += 5;
+								ld.minHallsToRemove += 2;
+								ld.minSpecialBuilders += 3;
+								ld.outerEdgeBuffer += 7;
+								ld.timeBonusLimit *= 2f;
+							}
+							catch
+							{
+								Debug.LogWarning($"BBTimes: Failed to correctly modify the floor. The cause is mostly due to some unfair change in the RoomGroups!");
+							}
+						}
 						continue;
 					}
 
@@ -237,6 +391,41 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(12, BBTimesManager.MaximumNumballs));
+
+						// Legacy mode
+						if (legacy)
+						{
+							try
+							{
+								ld.minSpecialRooms += 2;
+								ld.maxSpecialRooms += 3;
+								sco.additionalNPCs += 6;
+								ld.additionTurnChance += 4;
+								ld.bridgeTurnChance += 7;
+								ld.extraDoorChance = 0.95f;
+								classGroup.minRooms += 4;
+								classGroup.maxRooms += 7;
+								facultyGroup.minRooms += 6;
+								facultyGroup.maxRooms += 8;
+								officeGroup.minRooms += 2;
+								officeGroup.maxRooms += 3;
+								ld.maxHallsToRemove++;
+								ld.maxPlots += 4;
+								ld.minPlots += 3;
+								ld.maxReplacementHalls += 8;
+								ld.maxSize += new IntVector2(14, 17);
+								ld.minSize += new IntVector2(9, 10);
+								ld.maxSpecialBuilders += 5;
+								ld.minHallsToRemove += 2;
+								ld.minSpecialBuilders += 3;
+								ld.outerEdgeBuffer += 7;
+								ld.timeBonusLimit *= 2f;
+							}
+							catch
+							{
+								Debug.LogWarning($"BBTimes: Failed to correctly modify the floor. The cause is mostly due to some unfair change in the RoomGroups!");
+							}
+						}
 						continue;
 					}
 
@@ -244,10 +433,41 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 14));
+
+						// Legacy mode
+						if (legacy)
+						{
+							try
+							{
+								ld.maxSpecialRooms += 1;
+								sco.additionalNPCs += 3;
+								ld.additionTurnChance += 7;
+								ld.bridgeTurnChance += 6;
+								ld.extraDoorChance = 0.65f;
+								classGroup.maxRooms += 1;
+								facultyGroup.minRooms += 3;
+								facultyGroup.maxRooms += 4;
+								officeGroup.maxRooms += 1;
+								ld.maxHallsToRemove++;
+								ld.maxPlots += 2;
+								ld.minPlots += 1;
+								ld.maxReplacementHalls += 4;
+								ld.maxSize += new IntVector2(7, 8);
+								ld.minSize += new IntVector2(6, 5);
+								ld.maxSpecialBuilders += 2;
+								ld.minHallsToRemove += 1;
+								ld.minSpecialBuilders += 1;
+								ld.outerEdgeBuffer += 5;
+								ld.timeBonusLimit *= 1.2f;
+							}
+							catch
+							{
+								Debug.LogWarning($"BBTimes: Failed to correctly modify the floor. The cause is mostly due to some unfair change in the RoomGroups!");
+							}
+						}
 						continue;
 					}
 				}
-
 			});
 
 			GeneratorManagement.RegisterFieldTripLootChange(this, (fieldTripType, fieldTripLoot) =>
@@ -449,6 +669,27 @@ namespace BBTimes
 					// ----- *MODDED* School Textures -----
 					foreach (var holder in floordata.SchoolTextures)
 					{
+						// Hall customization here
+						if (holder.SelectionLimiters[0] == RoomCategory.Hall)
+						{
+							switch (holder.TextureType)
+							{
+								case Misc.SchoolTexture.Ceiling:
+									ld.hallCeilingTexs = ld.hallCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
+									break;
+								case Misc.SchoolTexture.Floor:
+									ld.hallFloorTexs = ld.hallFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
+									break;
+								case Misc.SchoolTexture.Wall:
+									ld.hallWallTexs = ld.hallWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
+									break;
+								default:
+									break;
+							}
+							continue;
+						}
+
+						// Modded rooms below
 						string name = EnumExtensions.GetExtendedName<RoomCategory>((int)holder.SelectionLimiters[0]);
 						var group = ld.roomGroup.FirstOrDefault(x => x.potentialRooms.Any(z => z.selection.category == holder.SelectionLimiters[0]));
 						if (group == null)
