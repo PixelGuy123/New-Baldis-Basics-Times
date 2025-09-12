@@ -30,7 +30,7 @@ namespace BBTimes.Manager
 {
 	internal static partial class BBTimesManager // basically holds the logic to create everything to the game
 	{
-		public static bool EditorExists => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.leveleditor");
+		public static bool EditorExists => Chainloader.PluginInfos.ContainsKey(Storage.guid_LevelStudio);
 		internal static BasePlugin plug;
 		internal static IEnumerator InitializeContentCreation()
 		{

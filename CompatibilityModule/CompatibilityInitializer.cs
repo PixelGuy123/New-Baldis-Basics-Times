@@ -1,4 +1,5 @@
 ﻿using BBTimes.CompatibilityModule.GrapplingHookTweaksCompats;
+using BBTimes.Plugin;
 using BepInEx.Bootstrap;
 
 namespace BBTimes.CompatibilityModule
@@ -7,7 +8,7 @@ namespace BBTimes.CompatibilityModule
 	{
 		internal static void InitializeOnLoadMods()
 		{
-			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.grapplinghooktweaks"))
+			if (Chainloader.PluginInfos.ContainsKey(Storage.guid_HookTweaks))
 				GrapplingHookTweaksCompat.Loadup();
 		}
 		internal static void InitializePostOnLoadMods()
@@ -17,7 +18,7 @@ namespace BBTimes.CompatibilityModule
 		}
 		internal static void InitializeOnAwake()
 		{
-			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.custommusics"))
+			if (Chainloader.PluginInfos.ContainsKey(Storage.guid_CustomMusics))
 				CustomMusicsCompat.Loadup();
 			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.customvendingmachines"))
 				CustomVendingMachinesCompat.Loadup();

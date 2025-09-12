@@ -37,6 +37,14 @@ namespace BBTimes.Plugin
 		DRINK_TAG = "drink";
 		public const string ChristmasSpecial_TimesTag = "Times_SpecialTags_ChristmasSpecial";
 
+		// -------------------- GUIDs ------------------
+		public const string
+		guid_Advanced = "mrsasha5.baldi.basics.plus.advanced",
+		guid_LevelStudio = "mtm101.rulerp.baldiplus.levelstudio",
+		guid_LevelLoader = "mtm101.rulerp.baldiplus.levelstudioloader",
+		guid_HookTweaks = "pixelguy.pixelmodding.baldiplus.grapplinghooktweaks",
+		guid_CustomMusics = "pixelguy.pixelmodding.baldiplus.custommusics";
+
 		// ------------------- Constant Floats ---------------------
 		public const float GaugeSprite_PixelsPerUnit = 1f;
 

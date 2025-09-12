@@ -16,7 +16,7 @@ using UnityEngine;
 namespace BBTimes.CompatibilityModule.EditorCompat
 {
 	[HarmonyPatch]
-	[ConditionalPatchMod("mtm101.rulerp.baldiplus.leveleditor")]
+	[ConditionalPatchMod(Storage.guid_LevelStudio)]
 	internal class EditorLevelPatch
 	{
 

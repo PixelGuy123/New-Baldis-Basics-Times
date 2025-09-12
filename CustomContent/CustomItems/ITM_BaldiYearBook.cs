@@ -139,7 +139,7 @@ namespace BBTimes.CustomContent.CustomItems
 			foreach (var npcMeta in NPCMetaStorage.Instance.All())
 			{
 				var npc = npcMeta.value;
-				if (!npc.Poster || !npc.Poster.baseTexture || npcBookRepresentations.ContainsKey(npc.Character))
+				if (npc.Character == Character.Null || !npc.Poster || !npc.Poster.baseTexture || npcBookRepresentations.ContainsKey(npc.Character))
 					continue;
 
 

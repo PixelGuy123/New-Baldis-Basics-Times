@@ -1,14 +1,14 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using MTM101BaldAPI.Components;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
-    public class ITM_ComicallyLargeTrumpet : Item, IItemPrefab
-    {
+	public class ITM_ComicallyLargeTrumpet : Item, IItemPrefab
+	{
 		public void SetupPrefab()
 		{
 			audMan = gameObject.CreateAudioManager(100f, 110f).MakeAudioManagerNonPositional();
@@ -17,13 +17,14 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
 		public override bool Use(PlayerManager pm)
-        {
+		{
 			if (++usingTrompets > 1)
 			{
 				Destroy(gameObject);
@@ -32,8 +33,8 @@ namespace BBTimes.CustomContent.CustomItems
 			ec = pm.ec;
 			this.pm = pm;
 			StartCoroutine(BlowAndPush());
-            return true;
-        }
+			return true;
+		}
 
 		void PushEveryone()
 		{
@@ -55,15 +56,20 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 		}
 
-		void OnDestroy() =>
+		void OnDestroy()
+		{
 			usingTrompets--;
+			if (!hasBlown && pm)
+			{
+				pm.GetCustomCam().RemoveModifier(fovMod); // Remove it entirely to prevent issues
+			}
+		}
 
 		IEnumerator BlowAndPush()
 		{
 			audMan.PlaySingle(audInhale);
-			ValueModifier val = new();
 			var cam = pm.GetCustomCam();
-			cam.SlideFOVAnimation(val, -35f, 3f);
+			cam.SlideFOVAnimation(fovMod, -35f, 3f);
 			float delay = 2f;
 
 			while (delay > 0f)
@@ -72,15 +78,16 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			var cor = cam.ShakeFOVAnimation(val, 1f, 20f, 99f, 2);
+			var cor = cam.ShakeFOVAnimation(fovMod, 1f, 20f, 99f, 2);
 			audMan.PlaySingle(audBlow);
 			PushEveryone();
 
 			while (audMan.AnyAudioIsPlaying)
 				yield return null;
 
+			hasBlown = true;
 			cam.StopCoroutine(cor);
-			cam.ReverseSlideFOVAnimation(val, 0f);
+			cam.ReverseSlideFOVAnimation(fovMod, 0f);
 
 			Destroy(gameObject);
 			yield break;
@@ -100,9 +107,11 @@ namespace BBTimes.CustomContent.CustomItems
 		internal SoundObject audBlow, audInhale;
 
 		static int usingTrompets = 0;
+		bool hasBlown = false;
 		EnvironmentController ec;
+		readonly ValueModifier fovMod = new();
 
 	}
 
-	
+
 }

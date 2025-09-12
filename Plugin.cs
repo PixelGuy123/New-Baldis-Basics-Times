@@ -30,7 +30,7 @@ namespace BBTimes
 {
 	[BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)] // let's not forget this
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.pixelinternalapi", BepInDependency.DependencyFlags.HardDependency)]
-	[BepInDependency("mtm101.rulerp.baldiplus.levelloader", BepInDependency.DependencyFlags.HardDependency)]
+	[BepInDependency(Storage.guid_LevelLoader, BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.editorcustomrooms", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.newdecors", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.custommainmenusapi", BepInDependency.DependencyFlags.HardDependency)]
@@ -40,10 +40,10 @@ namespace BBTimes
 	[BepInDependency("rost.moment.baldiplus.funsettings", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("io.github.luisrandomness.bbp_custom_posters", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.customvendingmachines", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.custommusics", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.grapplinghooktweaks", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("mrsasha5.baldi.basics.plus.advanced", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("mtm101.rulerp.baldiplus.leveleditor", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency(Storage.guid_CustomMusics, BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency(Storage.guid_HookTweaks, BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency(Storage.guid_Advanced, BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency(Storage.guid_LevelStudio, BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("pixelguy.pixelmodding.baldiplus.infinitefloors", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("mtm101.rulerp.baldiplus.endlessfloors", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("Rad.cmr.baldiplus.arcaderenovations", BepInDependency.DependencyFlags.SoftDependency)]
@@ -199,6 +199,19 @@ namespace BBTimes
 				ITM_BaldiYearbook.SetupYearbookPages();
 			});
 
+			GeneratorManagement.Register(this, GenerationModType.Finalizer, (floorName, floorNum, sco) =>
+			{
+				var lds = sco.GetCustomLevelObjects();
+				if (lds.Length == 0)
+					return;
+				foreach (var ld in lds)
+				{
+					ld.MarkAsModifiedByMod(Info);
+					ld.maxSpecialBuilders = Mathf.Min(ld.potentialStructures.Length, ld.maxSpecialBuilders); // To avoid legacy breaking F4 and F5
+					ld.minSpecialBuilders = Mathf.Min(ld.minSpecialBuilders, ld.maxSpecialBuilders);
+				}
+			});
+
 			GeneratorManagement.Register(this, GenerationModType.Base, (floorName, floorNum, sco) =>
 			{
 				var lds = sco.GetCustomLevelObjects();
@@ -231,6 +244,7 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 9));
+						ld.MarkAsModifiedByMod(Info);
 
 						// Legacy mode
 						if (legacy)
@@ -270,6 +284,7 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 12));
+						ld.MarkAsModifiedByMod(Info);
 
 						// Legacy mode
 						if (legacy)
@@ -309,6 +324,7 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(10, 13));
+						ld.MarkAsModifiedByMod(Info);
 
 						// Legacy mode
 						if (legacy)
@@ -349,14 +365,13 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(10, 15));
+						ld.MarkAsModifiedByMod(Info);
 
 						// Legacy mode
 						if (legacy)
 						{
 							try
 							{
-								ld.minSpecialRooms += 2;
-								ld.maxSpecialRooms += 3;
 								sco.additionalNPCs += 6;
 								ld.additionTurnChance += 4;
 								ld.bridgeTurnChance += 7;
@@ -391,14 +406,13 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(12, BBTimesManager.MaximumNumballs));
+						ld.MarkAsModifiedByMod(Info);
 
 						// Legacy mode
 						if (legacy)
 						{
 							try
 							{
-								ld.minSpecialRooms += 2;
-								ld.maxSpecialRooms += 3;
 								sco.additionalNPCs += 6;
 								ld.additionTurnChance += 4;
 								ld.bridgeTurnChance += 7;
@@ -433,6 +447,7 @@ namespace BBTimes
 					{
 						// Custom datas
 						ld.SetCustomModValue(Info, "Times_EnvConfig_MathMachineNumballsMinMax", new IntVector2(9, 14));
+						ld.MarkAsModifiedByMod(Info);
 
 						// Legacy mode
 						if (legacy)
@@ -505,6 +520,8 @@ namespace BBTimes
 
 				// ******************* ELEMENTS THAT DEPENDS ON SCENEOBJECT SOLELY ***********************
 
+				bool markModifiedByMod = false;
+
 				// ----- NPCs -----
 				for (int i = 0; i < floordata.NPCs.Count; i++)
 				{
@@ -515,6 +532,8 @@ namespace BBTimes
 						floordata.NPCs.RemoveAt(i--);
 						continue;
 					}
+
+					markModifiedByMod = true;
 
 					var dat = floordata.NPCs[i].selection.GetComponent<INPCPrefab>();
 					if (enableReplacementNPCsAsNormalOnes.Value || dat == null || dat.GetReplacementNPCs() == null || dat.GetReplacementNPCs().Length == 0)
@@ -536,13 +555,9 @@ namespace BBTimes
 						floordata.ShopItems.RemoveAt(i--);
 						continue;
 					}
-
+					markModifiedByMod = true;
 					sco.shopItems = sco.shopItems.AddToArray(floordata.ShopItems[i]);
 				}
-
-				// Old workaround for api 8.1.x
-				// if (floorName == BBTimesManager.END)
-				//	return;
 
 
 				// *************** ELEMENTS THAT DEPENDS IN LEVEL OBJECTS ******************
@@ -565,7 +580,10 @@ namespace BBTimes
 						}
 
 						if (floordata.Items[i].AcceptsLevelType(ld.type))
+						{
+							markModifiedByMod = true;
 							ld.potentialItems = ld.potentialItems.AddToArray(floordata.Items[i].GetWeightedSelection());
+						}
 					}
 
 					// ----- Forced Items -----
@@ -583,7 +601,10 @@ namespace BBTimes
 						}
 
 						if (floordata.ForcedItems[i].AcceptsLevelType(ld.type))
+						{
+							markModifiedByMod = true;
 							ld.forcedItems.Add(floordata.ForcedItems[i].GetWeightedSelection());
+						}
 					}
 
 					// ----- Random Events -----
@@ -597,7 +618,10 @@ namespace BBTimes
 							continue;
 						}
 						if (floordata.Events[i].AcceptsLevelType(ld.type))
+						{
+							markModifiedByMod = true;
 							ld.randomEvents.Add(floordata.Events[i].GetWeightedSelection());
+						}
 					}
 
 					// ----- Forced Object Builders -----
@@ -612,7 +636,10 @@ namespace BBTimes
 							continue;
 						}
 						if (floordata.ForcedObjectBuilders[i].AcceptsLevelType(ld.type))
+						{
+							markModifiedByMod = true;
 							ld.forcedStructures = ld.forcedStructures.AddToArray(floordata.ForcedObjectBuilders[i].GetWeightedSelection());
+						}
 					}
 
 					// ----- Weighted Object Builders -----
@@ -628,7 +655,10 @@ namespace BBTimes
 							continue;
 						}
 						if (floordata.WeightedObjectBuilders[i].AcceptsLevelType(ld.type))
+						{
+							markModifiedByMod = true;
 							ld.potentialStructures = ld.potentialStructures.AddToArray(floordata.WeightedObjectBuilders[i].GetWeightedSelection());
+						}
 					}
 
 
@@ -636,7 +666,10 @@ namespace BBTimes
 					for (int i = 0; i < floordata.RoomAssets.Count; i++)
 					{
 						if (floordata.RoomAssets[i].AcceptsLevelType(ld.type))
+						{
+							markModifiedByMod = true;
 							ld.roomGroup = ld.roomGroup.AddToArray(floordata.RoomAssets[i].GetWeightedSelection());
+						}
 					}
 
 					for (int i = 0; i < floordata.SpecialRooms.Count; i++)
@@ -647,7 +680,10 @@ namespace BBTimes
 							continue;
 
 						if (floordata.SpecialRooms[i].AcceptsLevelType(ld.type))
+						{
+							markModifiedByMod = true;
 							ld.potentialSpecialRooms = ld.potentialSpecialRooms.AddToArray(floordata.SpecialRooms[i].GetWeightedSelection());
+						}
 					}
 
 					// Only these below ignores level types, even halls.
@@ -659,6 +695,7 @@ namespace BBTimes
 					// ----- Special Halls -----
 					foreach (var fl in floordata.Halls)
 					{
+						markModifiedByMod = true;
 						if (fl.Value)
 							ld.potentialPostPlotSpecialHalls = ld.potentialPostPlotSpecialHalls.AddToArray(fl.Key);
 						else
@@ -675,12 +712,15 @@ namespace BBTimes
 							switch (holder.TextureType)
 							{
 								case Misc.SchoolTexture.Ceiling:
+									markModifiedByMod = true;
 									ld.hallCeilingTexs = ld.hallCeilingTexs.AddToArray(holder.Selection.ToWeightedTexture());
 									break;
 								case Misc.SchoolTexture.Floor:
+									markModifiedByMod = true;
 									ld.hallFloorTexs = ld.hallFloorTexs.AddToArray(holder.Selection.ToWeightedTexture());
 									break;
 								case Misc.SchoolTexture.Wall:
+									markModifiedByMod = true;
 									ld.hallWallTexs = ld.hallWallTexs.AddToArray(holder.Selection.ToWeightedTexture());
 									break;
 								default:
@@ -701,12 +741,15 @@ namespace BBTimes
 						switch (holder.TextureType)
 						{
 							case Misc.SchoolTexture.Ceiling:
+								markModifiedByMod = true;
 								group.ceilingTexture = group.ceilingTexture.AddToArray(holder.Selection.ToWeightedTexture());
 								break;
 							case Misc.SchoolTexture.Floor:
+								markModifiedByMod = true;
 								group.floorTexture = group.floorTexture.AddToArray(holder.Selection.ToWeightedTexture());
 								break;
 							case Misc.SchoolTexture.Wall:
+								markModifiedByMod = true;
 								group.wallTexture = group.wallTexture.AddToArray(holder.Selection.ToWeightedTexture());
 								break;
 							default:
@@ -714,6 +757,8 @@ namespace BBTimes
 						}
 					}
 
+					if (markModifiedByMod)
+						ld.MarkAsModifiedByMod(Info);
 				}
 
 			});

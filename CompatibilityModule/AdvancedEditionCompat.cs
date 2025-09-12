@@ -1,9 +1,9 @@
-﻿using BBTimes.Manager;
+﻿using System.Collections.Generic;
 using BaldisBasicsPlusAdvanced.API;
-using System.Collections.Generic;
+using BaldisBasicsPlusAdvanced.Game.Objects;
+using BBTimes.Manager;
 using HarmonyLib;
 using MTM101BaldAPI;
-using BaldisBasicsPlusAdvanced.Game.Objects;
 
 namespace BBTimes.CompatibilityModule
 {
@@ -20,7 +20,7 @@ namespace BBTimes.CompatibilityModule
 	}
 
 	[HarmonyPatch]
-	[ConditionalPatchMod("mrsasha5.baldi.basics.plus.advanced")]
+	[ConditionalPatchMod(Storage.guid_Advanced)]
 	internal class AdvancedPatches
 	{
 		[HarmonyPatch(typeof(AdvancedMathMachine), "GenerateProblem")]

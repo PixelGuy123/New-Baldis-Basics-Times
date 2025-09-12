@@ -162,6 +162,18 @@
             <param name="tex">The texture to use.</param>
             <returns>The collection of sprites as a 2D array</returns>
         </member>
+        <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.SpritesFromSpriteSheetCount(UnityEngine.Texture2D,System.Int32,System.Int32,System.Single,System.Int32)">
+            <summary>
+            Generates a spritesheet from the specified atlas, with the specified sprite count and size.
+            Left to right, top to bottom.
+            </summary>
+            <param name="atlas"></param>
+            <param name="spriteWidth"></param>
+            <param name="spriteHeight"></param>
+            <param name="totalSprites"></param>
+            <param name="pixelsPerUnit"></param>
+            <returns></returns>
+        </member>
         <member name="M:MTM101BaldAPI.AssetTools.AssetLoader.ToByteArray(System.IO.Stream)">
             <summary>
             Convert a stream to a byte array.
@@ -659,6 +671,55 @@
             A custom version of the LevelObject class, currently doesn't contain much else but it serves as a good base to make extending level generator functionality easy in the future.
             </summary>
         </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObject.IsModifiedByMod(BepInEx.PluginInfo)">
+            <summary>
+            Returns true if this CustomLevelObject was modified by the specified mod, with the stage being automatically set assuming this is running during the level generation modification loading stage.
+            </summary>
+            <param name="info"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObject.IsModifiedByMod(System.String)">
+            <summary>
+            Returns true if this CustomLevelObject was modified by the specified mod, with the stage being automatically set assuming this is running during the level generation modification loading stage.
+            </summary>
+            <param name="modUUID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObject.IsModifiedByModAtAll(BepInEx.PluginInfo)">
+            <summary>
+            Returns true if this CustomLevelObject was modified at all by the specified mod.
+            </summary>
+            <param name="info"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObject.IsModifiedByModAtAll(System.String)">
+            <summary>
+            Returns true if this CustomLevelObject was modified at all by the specified mod.
+            </summary>
+            <param name="modUUID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObject.IsModifiedByMod(BepInEx.PluginInfo,MTM101BaldAPI.GenerationStageFlags)">
+            <summary>
+            Returns true if the specified mod modified this CustomLevelObject at this specific stage.
+            </summary>
+            <param name="info"></param>
+            <param name="atStage"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObject.MarkAsModifiedByMod(BepInEx.PluginInfo)">
+            <summary>
+            Marks this as modified by the specified mod, with the stage being automatically set assuming this is running during the level generation modification loading stage.
+            </summary>
+            <param name="info"></param>
+        </member>
+        <member name="M:MTM101BaldAPI.CustomLevelObject.MarkAsModifiedByMod(BepInEx.PluginInfo,MTM101BaldAPI.GenerationStageFlags)">
+            <summary>
+            Marks this as modified by the specified mod at the specified stage.
+            </summary>
+            <param name="pluginInfo"></param>
+            <param name="markFlags"></param>
+        </member>
         <member name="M:MTM101BaldAPI.CustomLevelObject.MakeClone">
             <summary>
             Makes a clone of this CustomLevelObject, preserving the custom mod data.
@@ -1034,17 +1095,6 @@
             Use sparingly, in most cases you will want to use Post instead.
             </summary>
         </member>
-        <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Collections.IEnumerator,System.Boolean)">
-            <summary>
-            Registers a loading IEnumerator that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
-            The first yield return should be the amount of total amount of yield returns in the function as an int.
-            The second yield return should be the initial loading text.
-            Every yield afterwards should be a string that displays the next loading step.
-            </summary>
-            <param name="info"></param>
-            <param name="enumerator"></param>
-            <param name="post">If true, this will be called after the initial call, this is useful if you need to replace all references to something.</param>
-        </member>
         <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Collections.IEnumerator,MTM101BaldAPI.Registers.LoadingEventOrder)">
             <summary>
             Registers a loading IEnumerator that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
@@ -1056,15 +1106,6 @@
             <param name="enumerator"></param>
             <param name="order">The event in which assets will be loaded. Refer to LoadingEventOrder for more information on when each enum is invoked.</param>
         </member>
-        <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Action,System.Boolean)">
-            <summary>
-            Registers an action that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
-            Internally, it just creates an IEnumerator that calls toRegister.
-            </summary>
-            <param name="info"></param>
-            <param name="toRegister"></param>
-            <param name="post">If true, this will be called after the initial call, this is useful if you need to replace all references to something.</param>
-        </member>
         <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnAssetsLoaded(BepInEx.PluginInfo,System.Action,MTM101BaldAPI.Registers.LoadingEventOrder)">
             <summary>
             Registers an action that gets called when every asset has been loaded into memory and can be sorted through with Resources.FindObjectsOfTypeAll.
@@ -1073,14 +1114,6 @@
             <param name="info"></param>
             <param name="toRegister"></param>
             <param name="order">The event in which assets will be loaded. Refer to LoadingEventOrder for more information on when each enum is invoked.</param>
-        </member>
-        <member name="M:MTM101BaldAPI.Registers.LoadingEvents.RegisterOnLoadingScreenStart(BepInEx.PluginInfo,System.Collections.IEnumerator)">
-            <summary>
-            Registers an event that gets called at the beginning of the Loading screen, before any assets are loaded.
-            Typically, you'd want to just use your plugins Awake event, but if your mod tends to freeze the game at start up, this might be helpful to more properly convey what is going on.
-            </summary>
-            <param name="info"></param>
-            <param name="enumerator"></param>
         </member>
         <member name="F:MTM101BaldAPI.Registers.ItemFlags.None">
             <summary>
@@ -1115,6 +1148,12 @@
         <member name="F:MTM101BaldAPI.Registers.ItemFlags.HasTutorialVariant">
             <summary>
             This item has a variant in the tutorial that must be accounted for when handling MultipleUse.
+            </summary>
+        </member>
+        <member name="F:MTM101BaldAPI.Registers.ItemFlags.RuntimeItem">
+            <summary>
+            This item is a runtime item, generated during the middle of a run.
+            It means that this item will automatically be cleaned up when the run is exited.
             </summary>
         </member>
         <member name="M:MTM101BaldAPI.Registers.ItemMetaStorage.GetPointsObject(System.Int32,System.Boolean)">
@@ -1492,9 +1531,16 @@
         </member>
         <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.DisableAudioTimeScaling">
             <summary>
-            Makes the audio this NPC creates not be affected by time.
+            Makes the PropagatedAudioManager for this NPC not be affected by time.
             This is done by setting the audio manager's pitchTimeScaleType to TimeScaleType.Null.
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.SetAudioTimescaleType(TimeScaleType)">
+            <summary>
+            Changes which timescale this NPC's PropagatedAudioManager scales by.
+            </summary>
+            <param name="type"></param>
             <returns></returns>
         </member>
         <member name="M:MTM101BaldAPI.ObjectCreation.NPCBuilder`1.DisableAutoRotation">
@@ -1898,7 +1944,7 @@
         <member name="T:MTM101BaldAPI.PlusExtensions.PosterImageData">
             <summary>
             Used to store additional images to be overlayed ontop of text for posters.
-            Can be used obscure text or other purposes.
+            Can be used to obscure text or other purposes.
             </summary>
         </member>
         <member name="T:MTM101BaldAPI.PlusExtensions.PlayerMovementStatModifier">
