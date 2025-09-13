@@ -43,7 +43,7 @@ namespace BBTimes.CustomContent.Objects
 			var npcs = ec.Npcs;
 			for (int i = 0; i < npcs.Count; i++)
 			{
-				if (!npcs[i].Navigator.isActiveAndEnabled || !npcs[i].Navigator.Entity.InBounds)
+				if (!npcs[i].Navigator.isActiveAndEnabled || !npcs[i].Entity.InBounds)
 					continue;
 
 				if (map.Value(IntVector2.GetGridPosition(npcs[i].transform.position)) <= minDistanceToAlertNPCs)

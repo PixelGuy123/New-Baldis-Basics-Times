@@ -359,11 +359,16 @@ namespace BBTimes.CustomContent.NPCs
 			}
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
-			if (other.gameObject == pm.gameObject && !pm.Tagged)
-				or.behaviorStateMachine.ChangeState(new Oran_AskForItem(or, pm));
+			base.OnStateTriggerEnter(other, validCollision);
+			if (other.gameObject == pm.gameObject)
+			{
+				if (!pm.Tagged && validCollision)
+					or.behaviorStateMachine.ChangeState(new Oran_AskForItem(or, pm));
+				else
+					or.behaviorStateMachine.ChangeState(new Oran_Wondering(or, 10f));
+			}
 
 		}
 
@@ -459,10 +464,10 @@ namespace BBTimes.CustomContent.NPCs
 			}
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
-			if (other.gameObject == pm.gameObject && pm.plm.Entity.Override(or.Overrider))
+			base.OnStateTriggerEnter(other, validCollision);
+			if (other.gameObject == pm.gameObject && validCollision && pm.plm.Entity.Override(or.Overrider))
 				or.behaviorStateMachine.ChangeState(new Oran_EatenPlayer(or, pm));
 		}
 		public override void Exit()
@@ -496,7 +501,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.Update();
 			eatCooldown -= or.TimeScale * Time.deltaTime;
 			or.Gauge.SetValue(or.eatTimer, eatCooldown);
-			if (eatCooldown <= 0f || or.Navigator.Entity.InteractionDisabled || !or.Navigator.Entity.InBounds)
+			if (eatCooldown <= 0f || or.Entity.InteractionDisabled || !or.Entity.InBounds)
 			{
 				or.TakePlayerOut();
 			}

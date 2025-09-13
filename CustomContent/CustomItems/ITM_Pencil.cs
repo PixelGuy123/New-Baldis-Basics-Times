@@ -1,7 +1,7 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -15,14 +15,15 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
 
 		public override bool Use(PlayerManager pm)
-		{				
+		{
 			if (Physics.Raycast(pm.transform.position, Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.forward, out var hit, pm.pc.reach))
 			{
 				if (hit.transform.CompareTag("NPC"))
@@ -51,8 +52,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Timer(NPC tar)
 		{
-			tar.Navigator.Entity.IgnoreEntity(pm.plm.Entity, true);
-			tar.Navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
+			tar.Entity.IgnoreEntity(pm.plm.Entity, true);
+			tar.Entity.ExternalActivity.moveMods.Add(moveMod);
 
 			float cooldown = 20f;
 			while (cooldown > 0f)
@@ -61,8 +62,8 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			tar.Navigator.Entity.IgnoreEntity(pm.plm.Entity, false);
-			tar.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
+			tar.Entity.IgnoreEntity(pm.plm.Entity, false);
+			tar.Entity.ExternalActivity.moveMods.Remove(moveMod);
 
 			Destroy(gameObject);
 

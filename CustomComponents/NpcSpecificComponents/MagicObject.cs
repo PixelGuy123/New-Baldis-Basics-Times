@@ -38,12 +38,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 		{
 			if (!hidden)
 				entity.UpdateInternalMovement(direction * 45f * ec.EnvironmentTimeScale);
-			
+
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (!hidden)
+			if (validCollision && !hidden)
 			{
 				bool npc = other.CompareTag("NPC");
 				if (other.isTrigger && (other.CompareTag("Player") || npc) && (other.transform != student.transform || leftStudent))
@@ -54,24 +54,24 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 						if (n)
 						{
 							int num = Random.Range(0, ec.offices.Count);
-							n.Navigator.Entity.Teleport(ec.offices[num].RandomEntitySafeCellNoGarbage().CenterWorldPosition);
+							n.Entity.Teleport(ec.offices[num].RandomEntitySafeCellNoGarbage().CenterWorldPosition);
 							n.SentToDetention();
 						}
 					}
 					else // if it is player
 						other.GetComponent<PlayerManager>()?.SendToDetention(15f);
-					
+
 					Hide();
 					return;
 				}
 			}
 		}
-		public void EntityTriggerStay(Collider other)
+		public void EntityTriggerStay(Collider other, bool validCollision)
 		{
 		}
-		public void EntityTriggerExit(Collider other)
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
-			if (other.transform == student.transform)
+			if (validCollision && other.transform == student.transform)
 				leftStudent = true;
 		}
 

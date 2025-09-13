@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace BBTimes.CustomContent.Misc
 {
-    public class SketchEntity : NPC
-    {
+	public class SketchEntity : NPC
+	{
 		[SerializeField]
 		internal SoundObject audDoingTrouble;
 
@@ -110,7 +110,7 @@ namespace BBTimes.CustomContent.Misc
 			float npcDistance = -1f;
 			for (int i = 0; i < ske.ec.Npcs.Count; i++)
 			{
-				if (ske != ske.ec.Npcs[i] && ske.ec.Npcs[i].Navigator.isActiveAndEnabled && !ske.ec.Npcs[i].Navigator.Entity.InteractionDisabled)
+				if (ske != ske.ec.Npcs[i] && ske.ec.Npcs[i].Navigator.isActiveAndEnabled && ske.ec.Npcs[i].Entity.CanCollideWith(ske.Entity))
 				{
 					if (ske.looker.RaycastNPC(ske.ec.Npcs[i]))
 					{
@@ -146,19 +146,22 @@ namespace BBTimes.CustomContent.Misc
 		public override void Update()
 		{
 			base.Update();
-			if (target == null || target.Navigator.Entity.InteractionDisabled)
+			if (target == null || target.Entity.InteractionDisabled)
 				ske.behaviorStateMachine.ChangeState(new SketchEntity_Wander(ske));
 			else
 				tarPos.UpdatePosition(target.transform.position);
 
 		}
 
-		public override void OnStateTriggerStay(Collider other)
+		public override void OnStateTriggerStay(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerStay(other);
+			base.OnStateTriggerStay(other, validCollision);
 			if (other.gameObject == target.gameObject)
 			{
-				ske.behaviorStateMachine.ChangeState(new SketchEntity_FightNPC(ske, target));
+				if (validCollision)
+					ske.behaviorStateMachine.ChangeState(new SketchEntity_FightNPC(ske, target));
+				else
+					ske.behaviorStateMachine.ChangeState(new SketchEntity_Wander(ske));
 			}
 		}
 	}
@@ -171,7 +174,7 @@ namespace BBTimes.CustomContent.Misc
 		public override void Enter()
 		{
 			base.Enter();
-			ske.GetIntoAFight(target.Navigator.Entity);
+			ske.GetIntoAFight(target.Entity);
 		}
 
 		public override void Update()

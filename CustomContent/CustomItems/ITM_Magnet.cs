@@ -1,10 +1,10 @@
 ﻿using System.Collections;
-using UnityEngine;
-using PixelInternalAPI.Extensions;
 using System.Collections.Generic;
-using BBTimes.Extensions;
 using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -27,8 +27,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -104,9 +105,9 @@ namespace BBTimes.CustomContent.CustomItems
 			usedMagnets--;
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (other.gameObject == owner) return;
+			if (!validCollision || other.gameObject == owner) return;
 
 			var e = other.GetComponent<Entity>();
 			if (e)
@@ -116,10 +117,10 @@ namespace BBTimes.CustomContent.CustomItems
 				touchedEntities.Add(new(e, m));
 			}
 		}
-		public void EntityTriggerStay(Collider other){}
-		public void EntityTriggerExit(Collider other)
+		public void EntityTriggerStay(Collider other, bool validCollision) { }
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
-			if (other.gameObject == owner) return;
+			if (!validCollision || other.gameObject == owner) return;
 
 			var e = other.GetComponent<Entity>();
 			if (e)
@@ -156,6 +157,6 @@ namespace BBTimes.CustomContent.CustomItems
 		[SerializeField]
 		internal float maxForce = 55f;
 
-		
+
 	}
 }

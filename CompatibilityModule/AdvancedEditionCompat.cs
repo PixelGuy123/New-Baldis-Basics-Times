@@ -2,6 +2,7 @@
 using BaldisBasicsPlusAdvanced.API;
 using BaldisBasicsPlusAdvanced.Game.Objects;
 using BBTimes.Manager;
+using BBTimes.Plugin;
 using HarmonyLib;
 using MTM101BaldAPI;
 

@@ -533,12 +533,12 @@ namespace BBTimes.CustomContent.NPCs
 			dr.ApplyArray(dr.idleSprs, 0);
 			dr.Navigator.maxSpeed = currentSpeed;
 			dr.Navigator.SetSpeed(currentSpeed);
-			dr.Navigator.Entity.OnTeleport += Teleport;
+			dr.Entity.OnTeleport += Teleport;
 		}
 		public override void Exit()
 		{
 			base.Exit();
-			dr.Navigator.Entity.OnTeleport -= Teleport;
+			dr.Entity.OnTeleport -= Teleport;
 		}
 		public override void Update()
 		{
@@ -626,11 +626,18 @@ namespace BBTimes.CustomContent.NPCs
 				state.UpdatePosition(player.transform.position);
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
+			base.OnStateTriggerEnter(other, validCollision);
 			if (other.gameObject == player.gameObject)
+			{
+				if (player.Tagged || !validCollision)
+				{
+					dr.behaviorStateMachine.ChangeState(new Dribble_Idle(dr, 5f));
+					return;
+				}
 				dr.behaviorStateMachine.ChangeState(new Dribble_Inform(dr, player));
+			}
 		}
 
 		public override void DestinationEmpty()
@@ -920,14 +927,14 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(state);
 			dr.Navigator.passableObstacles.Add(PassableObstacle.Bully);
 
-			dr.Navigator.Entity.OnTeleport += Teleport;
+			dr.Entity.OnTeleport += Teleport;
 		}
 
 		public override void Exit()
 		{
 			base.Exit();
 			dr.Navigator.passableObstacles.Remove(PassableObstacle.Bully);
-			dr.Navigator.Entity.OnTeleport -= Teleport;
+			dr.Entity.OnTeleport -= Teleport;
 			ChangeNavigationState(new NavigationState_DoNothing(dr, 0));
 		}
 
@@ -938,32 +945,25 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(new NavigationState_WanderRandom(dr, 0));
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
-			if (other.isTrigger)
+			base.OnStateTriggerEnter(other, validCollision);
+			if (other.isTrigger && validCollision && other.CompareTag("NPC"))
 			{
-				if (other.CompareTag("NPC"))
-				{
-					var e = other.GetComponent<Entity>();
-					if (e)
-						dr.PunchNPC(e);
-
-				}
+				var e = other.GetComponent<Entity>();
+				if (e)
+					dr.PunchNPC(e);
 			}
 		}
 
-		public override void OnStateTriggerStay(Collider other)
+		public override void OnStateTriggerStay(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerStay(other);
-			if (other.isTrigger)
+			base.OnStateTriggerStay(other, validCollision);
+			if (other.isTrigger && other.CompareTag("Player"))
 			{
-				if (other.CompareTag("Player"))
-				{
-					var pm = other.GetComponent<PlayerManager>();
-					if (pm && pm == this.pm)
-						dr.behaviorStateMachine.ChangeState(new Dribble_ForceRun(dr, pm));
-				}
+				var pm = other.GetComponent<PlayerManager>();
+				if (pm && pm == this.pm)
+					dr.behaviorStateMachine.ChangeState(new Dribble_ForceRun(dr, pm, !validCollision));
 			}
 		}
 
@@ -1018,10 +1018,12 @@ namespace BBTimes.CustomContent.NPCs
 		bool stopStep = false;
 	}
 
-	internal class Dribble_ForceRun(Dribble dr, PlayerManager pm) : Dribble_AngrySwingingBase(dr)
+	internal class Dribble_ForceRun(Dribble dr, PlayerManager pm, bool failPickup) : Dribble_AngrySwingingBase(dr)
 	{
 		readonly private PlayerManager pm = pm;
 		private readonly int minigameRecord = dr.Streaks;
+		readonly bool failedPunishment = failPickup;
+		float endCooldown = 5f;
 
 		public override void Enter()
 		{
@@ -1034,11 +1036,13 @@ namespace BBTimes.CustomContent.NPCs
 				pm.plm.AddStamina(pm.plm.staminaMax - pm.plm.stamina, true); // Fills up stamina to the current max it has
 
 			// Setup Dribble for crazy
-			dr.Navigator.Am.moveMods.Add(dr.dribbleMoveMod);
+			if (!failedPunishment)
+			{
+				dr.Navigator.Am.moveMods.Add(dr.dribbleMoveMod);
+				dr.PunishPlayerToRun();
+			}
 
-			dr.Navigator.Entity.Teleport(dr.ec.RealRoomMid(dr.Home));
-			dr.PunishPlayerToRun();
-
+			dr.Entity.Teleport(dr.ec.RealRoomMid(dr.Home));
 			dr.audMan.FlushQueue(true);
 			dr.audMan.QueueRandomAudio(dr.audAngryCaught);
 			dr.ec.MakeNoise(dr.transform.position, 39);
@@ -1050,7 +1054,18 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 
+			if (failedPunishment)
+			{
+				endCooldown -= Time.deltaTime * dr.TimeScale;
+				if (endCooldown <= 0f)
+					DribbleGoesIdle();
+				return;
+			}
+
 			if (!pm || pm.plm.stamina <= 0f)
+				DribbleGoesIdle();
+
+			void DribbleGoesIdle()
 			{
 				dr.audMan.FlushQueue(true);
 				dr.audMan.PlaySingle(dr.audDismissed);
@@ -1062,7 +1077,8 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Exit()
 		{
 			base.Exit();
-			dr.FinishPunishment(minigameRecord);
+			if (!failedPunishment)
+				dr.FinishPunishment(minigameRecord);
 		}
 	}
 
@@ -1086,15 +1102,15 @@ namespace BBTimes.CustomContent.NPCs
 			state.UpdatePosition(pm.transform.position);
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
+			base.OnStateTriggerEnter(other, validCollision);
 			if (other.isTrigger)
 			{
 				if (other.CompareTag("Player"))
 				{
 					var pm = other.GetComponent<PlayerManager>();
-					if (pm && pm == this.pm)
+					if (pm && pm == this.pm && validCollision)
 						dr.behaviorStateMachine.ChangeState(new Dribble_PrepareToTeleportBack(dr, pm));
 				}
 			}

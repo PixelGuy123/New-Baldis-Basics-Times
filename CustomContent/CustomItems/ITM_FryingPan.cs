@@ -1,14 +1,14 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
-using BBTimes.Extensions;
-using System.Collections;
 
 namespace BBTimes.CustomContent.CustomItems
 {
 	public class ITM_FryingPan : Item, IItemPrefab
 	{
-		public void SetupPrefab() 
+		public void SetupPrefab()
 		{
 			audMan = gameObject.CreatePropagatedAudioManager(65f, 85f);
 			audHit = this.GetSound("pan_hit.wav", "BB_Hit", SoundType.Effect, Color.white);
@@ -17,7 +17,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public string Name { get; set; }
 		public string Category => "items";
-		
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -48,8 +48,8 @@ namespace BBTimes.CustomContent.CustomItems
 
 		IEnumerator Timer(NPC tar)
 		{
-			tar.Navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
-			tar.Navigator.Entity.AddForce(new(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.right * (Random.value >= 0.5f ? 1 : -1), hitForce, -hitForce * hitDecreaseFactor));
+			tar.Entity.ExternalActivity.moveMods.Add(moveMod);
+			tar.Entity.AddForce(new(Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).transform.right * (Random.value >= 0.5f ? 1 : -1), hitForce, -hitForce * hitDecreaseFactor));
 
 			float cooldown = 10f;
 			while (cooldown > 0f)
@@ -58,7 +58,7 @@ namespace BBTimes.CustomContent.CustomItems
 				yield return null;
 			}
 
-			tar.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
+			tar.Entity.ExternalActivity.moveMods.Remove(moveMod);
 
 			Destroy(gameObject);
 
@@ -79,6 +79,6 @@ namespace BBTimes.CustomContent.CustomItems
 		internal float hitDecreaseFactor = 0.95f;
 
 		readonly MovementModifier moveMod = new(Vector3.zero, 0.1f);
-	
+
 	}
 }

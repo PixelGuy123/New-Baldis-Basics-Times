@@ -158,7 +158,7 @@ namespace BBTimes.CustomContent.NPCs
 			pm.GetCustomCam().ReverseSlideFOVAnimation(new ValueModifier(), 115f, 4f);
 			_npcs.Clear();
 			_npcs.AddRange(ec.Npcs);
-			_npcs.RemoveAll(x => x == this || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Navigator.Entity || ec.CellFromPosition(x.transform.position).Null);
+			_npcs.RemoveAll(x => x == this || !x.GetMeta().flags.HasFlag(NPCFlags.Standard) || !x.Entity || ec.CellFromPosition(x.transform.position).Null);
 
 			if (_npcs.Count != 0)
 				StartCoroutine(TeleportDelay(pm, _npcs[Random.Range(0, _npcs.Count)]));
@@ -170,10 +170,10 @@ namespace BBTimes.CustomContent.NPCs
 
 		IEnumerator TeleportDelay(PlayerManager pm, NPC npc)
 		{
-			pm.plm.Entity.IgnoreEntity(npc.Navigator.Entity, true);
+			pm.plm.Entity.IgnoreEntity(npc.Entity, true);
 
 			Vector3 pos = npc.transform.position;
-			npc.Navigator.Entity.Teleport(pm.transform.position);
+			npc.Entity.Teleport(pm.transform.position);
 			pm.plm.Entity.Teleport(pos);
 
 			int halls = Random.Range(minHallucinations, maxHallucinations);
@@ -188,7 +188,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			yield return null;
 
-			pm.plm.Entity.IgnoreEntity(npc.Navigator.Entity, false);
+			pm.plm.Entity.IgnoreEntity(npc.Entity, false);
 
 			yield break;
 		}
@@ -438,14 +438,15 @@ namespace BBTimes.CustomContent.NPCs
 				mod.addend = 25f * (-1f + Random.value * 2f);
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
+			base.OnStateTriggerEnter(other, validCollision);
 			if (other.gameObject == target.gameObject)
 			{
 				w.screenAudMan.FlushQueue(true);
 				w.screenAudMan.PlaySingle(w.audTeleport);
-				w.TeleportPlayer(target);
+				if (validCollision)
+					w.TeleportPlayer(target);
 			}
 		}
 

@@ -114,10 +114,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
         void OnDestroy() =>
             targettedEntity?.ExternalActivity.moveMods.Remove(moveMod);
 
-        public void EntityTriggerEnter(Collider other) { }
+        public void EntityTriggerEnter(Collider other, bool validCollision) { }
 
-        public void EntityTriggerStay(Collider other)
+        public void EntityTriggerStay(Collider other, bool validCollision)
         {
+            if (!validCollision) return;
+
             if (other.gameObject == owner.gameObject && returning)
             {
                 Despawn();
@@ -136,7 +138,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
             }
         }
 
-        public void EntityTriggerExit(Collider other)
+        public void EntityTriggerExit(Collider other, bool validCollision)
         {
             if (other.transform == targettedEntity.transform)
                 CancelThrow();

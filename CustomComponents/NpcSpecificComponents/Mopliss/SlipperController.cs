@@ -176,11 +176,11 @@ public class SlipperEffector : MonoBehaviour, IEntityTrigger
 		Destroy(gameObject);
 	}
 
-	public void EntityTriggerEnter(Collider other) { }
-	public void EntityTriggerStay(Collider other) { }
-	public void EntityTriggerExit(Collider other)
+	public void EntityTriggerEnter(Collider other, bool validCollision) { }
+	public void EntityTriggerStay(Collider other, bool validCollision) { }
+	public void EntityTriggerExit(Collider other, bool validCollision)
 	{
-		if (other.transform == targetEntity.transform)
+		if (validCollision && other.transform == targetEntity.transform)
 		{
 			DestroyEffector();
 		}

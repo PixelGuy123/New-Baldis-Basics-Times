@@ -117,7 +117,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			}
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
 			if (_hidden || other.gameObject == dr.gameObject) return;
 			if (other.isTrigger && other.CompareTag("Player"))
@@ -139,8 +139,8 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			}
 
 		}
-		public void EntityTriggerStay(Collider other) { }
-		public void EntityTriggerExit(Collider other) { }
+		public void EntityTriggerStay(Collider other, bool validCollision) { }
+		public void EntityTriggerExit(Collider other, bool validCollision) { }
 
 		IEnumerator Timer(Entity e)
 		{

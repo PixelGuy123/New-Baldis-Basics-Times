@@ -159,9 +159,9 @@ namespace BBTimes.CustomContent.Objects
 				if (other.CompareTag("NPC"))
 				{
 					var npc = other.GetComponent<NPC>();
-					if (npc && !caughtRuleBreakers.Contains(npc.Navigator.Entity) && npc.Disobeying) // Checks whether they are still set as "caughtable"
+					if (npc && !caughtRuleBreakers.Contains(npc.Entity) && npc.Disobeying) // Checks whether they are still set as "caughtable"
 					{
-						caughtRuleBreakers.Add(npc.Navigator.Entity);
+						caughtRuleBreakers.Add(npc.Entity);
 					}
 				}
 
@@ -192,8 +192,8 @@ namespace BBTimes.CustomContent.Objects
 				if (other.CompareTag("NPC"))
 				{
 					var npc = other.GetComponent<NPC>();
-					if (npc && caughtRuleBreakers.Contains(npc.Navigator.Entity) && !npc.Disobeying) // Checks whether they are still set as "caughtable"
-						caughtRuleBreakers.Remove(npc.Navigator.Entity);
+					if (npc && caughtRuleBreakers.Contains(npc.Entity) && !npc.Disobeying) // Checks whether they are still set as "caughtable"
+						caughtRuleBreakers.Remove(npc.Entity);
 
 				}
 

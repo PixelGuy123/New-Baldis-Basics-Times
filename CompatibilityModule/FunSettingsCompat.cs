@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using BBTimes.CustomComponents;
+﻿using System.Reflection;
 using BBTimes.CustomContent.NPCs;
-using FunSettings;
+using BBTimes.Plugin;
 using HarmonyLib;
 using MTM101BaldAPI;
-using UnityEngine;
 
 namespace BBTimes.CompatibilityModule
 {
 	[HarmonyPatch]
-	[ConditionalPatchMod("rost.moment.baldiplus.funsettings")]
+	[ConditionalPatchMod(Storage.guid_ExtraFunSettings)]
 	internal static class FunSettingsCompat
 	{
 		[HarmonyTargetMethod]

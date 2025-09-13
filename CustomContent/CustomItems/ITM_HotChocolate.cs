@@ -48,7 +48,7 @@ namespace BBTimes.CustomContent.CustomItems
 			canvas.worldCamera = Singleton<CoreGameManager>.Instance.GetCamera(pm.playerNumber).canvasCam;
 
 			foreach (var npc in pm.ec.Npcs)
-				pm.plm.Entity.IgnoreEntity(npc.Navigator.Entity, true);
+				pm.plm.Entity.IgnoreEntity(npc.Entity, true);
 
 			return base.Use(pm);
 		}
@@ -82,7 +82,7 @@ namespace BBTimes.CustomContent.CustomItems
 			pm.GetCustomCam().ResetSlideFOVAnimation(camFov, fovSmoothnessChange);
 
 			foreach (var npc in pm.ec.Npcs)
-				pm.plm.Entity.IgnoreEntity(npc.Navigator.Entity, false);
+				pm.plm.Entity.IgnoreEntity(npc.Entity, false);
 
 			base.Despawn();
 		}

@@ -189,9 +189,9 @@ namespace BBTimes.CustomContent.CustomItems
 			entity.Teleport(pos);
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (pm.gameObject == other.gameObject) return;
+			if (!validCollision || pm.gameObject == other.gameObject) return;
 
 			if (other.isTrigger)
 			{
@@ -216,9 +216,9 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 		}
 
-		public void EntityTriggerStay(Collider other) { }
+		public void EntityTriggerStay(Collider other, bool validCollision) { }
 
-		public void EntityTriggerExit(Collider other) { }
+		public void EntityTriggerExit(Collider other, bool validCollision) { }
 
 		void OnDestroy()
 		{

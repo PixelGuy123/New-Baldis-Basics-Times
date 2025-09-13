@@ -197,7 +197,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			if (!target) return;
 
-			if (!chair || chair.Navigator.Entity.Frozen || (chair.transform.position - target.transform.position).magnitude > chair.pickupThreshold) // If chair ever becomes null, also stop this
+			if (!chair || chair.Entity.Frozen || (chair.transform.position - target.transform.position).magnitude > chair.pickupThreshold) // If chair ever becomes null, also stop this
 			{
 				CancelTargetGrab();
 			}
@@ -271,17 +271,15 @@ namespace BBTimes.CustomContent.NPCs
 				chair.StartCoroutine(Cooldown());
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
 			if (cooldown > 0f) return;
 
-			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
+			if (other.isTrigger && validCollision && (other.CompareTag("Player") || other.CompareTag("NPC")))
 			{
 				Entity component = other.GetComponent<Entity>();
 				if (component != null)
 					chair.CarryEntityAround(component);
-
-
 			}
 
 		}

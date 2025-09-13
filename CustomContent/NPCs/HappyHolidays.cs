@@ -189,8 +189,8 @@ namespace BBTimes.CustomContent.NPCs
 			hh.Navigator.maxSpeed = 0;
 			hh.Navigator.SetSpeed(0);
 			ChangeNavigationState(new NavigationState_DoNothing(hh, 0));
-			prevHeight = hh.Navigator.Entity.InternalHeight;
-			hh.Navigator.Entity.SetHeight(-15);
+			prevHeight = hh.Entity.InternalHeight;
+			hh.Entity.SetHeight(-15);
 		}
 
 		public override void Update()
@@ -224,7 +224,7 @@ namespace BBTimes.CustomContent.NPCs
 			if (ableOfRespawning < 0f)
 			{
 				hh.MarkAsDisabled(false);
-				hh.Navigator.Entity.SetHeight(prevHeight);
+				hh.Entity.SetHeight(prevHeight);
 				hh.behaviorStateMachine.ChangeState(new HappyHolidays_Wondering(hh));
 			}
 		}

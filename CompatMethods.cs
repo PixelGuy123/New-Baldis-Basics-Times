@@ -25,7 +25,7 @@ namespace BBTimes.Compatibility
 
 
 
-    //				TryAction("pixelguy.pixelmodding.baldiplus.customvendingmachines", (_) => CustomVendingMachines.CustomVendingMachinesPlugin.AddDataFromDirectory(System.IO.Path.Combine(BasePlugin.ModPath, "objects", "VendingMachines")));
+    //				TryAction(Storage.guid_CustomVendingMachines, (_) => CustomVendingMachines.CustomVendingMachinesPlugin.AddDataFromDirectory(System.IO.Path.Combine(BasePlugin.ModPath, "objects", "VendingMachines")));
 
     //				TryAction(Storage.guid_CustomMusics, (_) =>
     //				{

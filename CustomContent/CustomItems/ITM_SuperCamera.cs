@@ -93,7 +93,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			stuns++;
 			MovementModifier moveMod = new(Vector3.zero, 0f);
-			npc.Navigator.Entity.IgnoreEntity(pm.plm.Entity, true);
+			npc.Entity.IgnoreEntity(pm.plm.Entity, true);
 			npc.Navigator.Am.moveMods.Add(moveMod);
 			ValueModifier lookerMod = new(0f);
 			var cont = npc.GetNPCContainer();
@@ -106,7 +106,7 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 			if (npc)
 			{
-				npc.Navigator.Entity.IgnoreEntity(pm.plm.Entity, false);
+				npc.Entity.IgnoreEntity(pm.plm.Entity, false);
 				npc.Navigator.Am.moveMods.Remove(moveMod);
 				cont.RemoveLookerMod(lookerMod);
 			}

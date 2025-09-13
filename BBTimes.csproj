@@ -100,6 +100,6 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\$(OutputPath)\$(AssemblyName).dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;&#xD;&#xA;copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\New Baldi's Basics Times\$(OutputPath)\$(AssemblyName).pdb&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;" />
+    <Exec Command="copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\NewBBTimes\$(OutputPath)\$(AssemblyName).dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;&#xD;&#xA;copy /y &quot;C:\Users\JV\OneDrive\Documentos\GitHub\NewBBTimes\$(OutputPath)\$(AssemblyName).pdb&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Baldi's Basics Plus\BepInEx\plugins&quot;" />
   </Target>
 </Project>

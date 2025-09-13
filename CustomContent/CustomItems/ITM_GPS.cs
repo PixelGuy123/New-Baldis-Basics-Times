@@ -43,7 +43,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			for (int i = 0; i < pm.ec.Npcs.Count; i++)
 				if (pm.ec.Npcs[i])
-					pm.ec.map.AddArrow(pm.ec.Npcs[i].Navigator.Entity, Color.yellow);
+					pm.ec.map.AddArrow(pm.ec.Npcs[i].Entity, Color.yellow);
 
 
 			float cooldown = timerSeconds;
@@ -61,7 +61,7 @@ namespace BBTimes.CustomContent.CustomItems
 			{
 				if (pm.ec.Npcs[i])
 				{
-					int idx = pm.ec.map.arrowTargets.FindIndex(x => x == pm.ec.Npcs[i].Navigator.Entity);
+					int idx = pm.ec.map.arrowTargets.FindIndex(x => x == pm.ec.Npcs[i].Entity);
 					if (idx != -1)
 						pm.ec.map.arrowTargets[idx] = null; // The map will automatically remove it
 				}

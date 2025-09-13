@@ -273,13 +273,13 @@ namespace BBTimes.CustomContent.NPCs
 
 			for (int i = 0; i < kre.ec.Npcs.Count; i++)
 			{
-				if (kre != kre.ec.Npcs[i] && kre.ec.Npcs[i].Navigator.Entity.Velocity.magnitude > 0f && kre.ec.Npcs[i].Navigator.isActiveAndEnabled)
+				if (kre != kre.ec.Npcs[i] && kre.ec.Npcs[i].Entity.Velocity.magnitude > 0f && kre.ec.Npcs[i].Navigator.isActiveAndEnabled)
 				{
 					if (kre.looker.RaycastNPC(kre.ec.Npcs[i]))
-						kre.WatchEntity(kre.ec.Npcs[i].Navigator.Entity);
+						kre.WatchEntity(kre.ec.Npcs[i].Entity);
 
-					else if (kre.watchingEntities.Contains(kre.ec.Npcs[i].Navigator.Entity))
-						TryCancelWatch(kre.ec.Npcs[i].Navigator.Entity);
+					else if (kre.watchingEntities.Contains(kre.ec.Npcs[i].Entity))
+						TryCancelWatch(kre.ec.Npcs[i].Entity);
 				}
 			}
 		}

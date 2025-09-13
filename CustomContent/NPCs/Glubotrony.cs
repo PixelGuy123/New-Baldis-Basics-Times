@@ -187,7 +187,7 @@ namespace BBTimes.CustomContent.NPCs
 				if (isTurning)
 				{
 					isTurning = false;
-					gb.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
+					gb.Entity.ExternalActivity.moveMods.Remove(moveMod);
 				}
 			}
 			else
@@ -195,8 +195,8 @@ namespace BBTimes.CustomContent.NPCs
 				if (!isTurning)
 				{
 					isTurning = true;
-					if (!gb.Navigator.Entity.ExternalActivity.moveMods.Contains(moveMod))
-						gb.Navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
+					if (!gb.Entity.ExternalActivity.moveMods.Contains(moveMod))
+						gb.Entity.ExternalActivity.moveMods.Add(moveMod);
 				}
 			}
 

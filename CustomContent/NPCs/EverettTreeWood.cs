@@ -666,7 +666,7 @@ namespace BBTimes.CustomContent.NPCs
 				//Debug.Log($"Distance to npc ({ev.ec.Npcs[i].name}): " + distance);
 				if (distance < minDistance)
 				{
-					faultyEntity = ev.ec.Npcs[i].Navigator.Entity;
+					faultyEntity = ev.ec.Npcs[i].Entity;
 					minDistance = distance;
 					//Debug.Log("Got it!");
 				}

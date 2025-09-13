@@ -49,9 +49,9 @@ namespace BBTimes.CustomContent.CustomItems
 			return true;
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (owner == other.gameObject || !active)
+			if (!validCollision || owner == other.gameObject || !active)
 				return;
 
 			if (other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")))
@@ -75,14 +75,14 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 		}
 
-		public void EntityTriggerStay(Collider other)
+		public void EntityTriggerStay(Collider other, bool validCollision)
 		{
 
 		}
 
-		public void EntityTriggerExit(Collider other)
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
-			if (owner == other.gameObject)
+			if (validCollision && owner == other.gameObject)
 				owner = null; // left owner's 
 		}
 

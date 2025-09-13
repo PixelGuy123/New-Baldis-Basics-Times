@@ -57,9 +57,9 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 				Destroy(gameObject);
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (other.gameObject == owner || hidden)
+			if (other.gameObject == owner || hidden || !validCollision)
 				return;
 
 			if (other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
@@ -74,11 +74,11 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents
 			}
 		}
 
-		public void EntityTriggerStay(Collider other) { }
+		public void EntityTriggerStay(Collider other, bool validCollision) { }
 
-		public void EntityTriggerExit(Collider other)
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
-			if (other.gameObject == owner)
+			if (validCollision && other.gameObject == owner)
 				owner = null;
 		}
 

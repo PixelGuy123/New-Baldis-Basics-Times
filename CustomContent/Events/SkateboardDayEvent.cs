@@ -1,16 +1,16 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections.Generic;
+using BBTimes.CustomComponents;
 using BBTimes.CustomComponents.EventSpecificComponents;
 using BBTimes.Extensions;
+using MTM101BaldAPI;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
-using MTM101BaldAPI;
-using System.Collections.Generic;
 using UnityEngine;
 
 
 namespace BBTimes.CustomContent.Events
 {
-    public class SkateboardDayEvent : RandomEvent, IObjectPrefab
+	public class SkateboardDayEvent : RandomEvent, IObjectPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -32,8 +32,9 @@ namespace BBTimes.CustomContent.Events
 
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "events";
-		
+		public string Name { get; set; }
+		public string Category => "events";
+
 		// ---------------------------------------------------
 		public override void Begin()
 		{
@@ -46,7 +47,7 @@ namespace BBTimes.CustomContent.Events
 					boards.Add(s);
 
 					s.OverrideNavigator(ec.Npcs[i].Navigator);
-					s.Initialize(ec.Npcs[i].Navigator.Entity, ec);
+					s.Initialize(ec.Npcs[i].Entity, ec);
 				}
 			}
 

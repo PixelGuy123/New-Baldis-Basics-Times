@@ -5,6 +5,7 @@ using BBPlusAnimations.Patches;
 using BBTimes.CustomComponents;
 using BBTimes.CustomContent.CustomItems;
 using BBTimes.Manager;
+using BBTimes.Plugin;
 using BepInEx.Bootstrap;
 using HarmonyLib;
 using MTM101BaldAPI;
@@ -17,14 +18,14 @@ using UnityEngine;
 namespace BBTimes.CompatibilityModule.BBPlusAnimations
 {
 	[HarmonyPatch]
-	[ConditionalPatchMod("pixelguy.pixelmodding.baldiplus.newanimations")]
+	[ConditionalPatchMod(Storage.guid_AnimationsPlus)]
 	internal static class PostTimesPatchForAnimations
 	{
 		[HarmonyPatch(typeof(BasePlugin), "SetupPostAssets")]
 		[HarmonyPostfix]
 		static void Preload() // Actually load the stuff
 		{
-			var animations = (global::BBPlusAnimations.BasePlugin)Chainloader.PluginInfos["pixelguy.pixelmodding.baldiplus.newanimations"].Instance;
+			var animations = (global::BBPlusAnimations.BasePlugin)Chainloader.PluginInfos[Storage.guid_AnimationsPlus].Instance;
 			var aud = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(AssetLoader.GetModPath(animations), global::BBPlusAnimations.BasePlugin.GetAssetName("GS_Sweeping.wav"))), "Vfx_GottaSweep", SoundType.Voice, new(0, 0.6226f, 0.0614f));
 			var sweepSprs = TextureExtensions.LoadSpriteSheet(7, 1, 26f,
 					BasePlugin.ModPath, "npcs", "ClassicGottaSweep", "Textures", "anims", BBTimesManager.GetAssetName("oldSweepSweeping.png"));

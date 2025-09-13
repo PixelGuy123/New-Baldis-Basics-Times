@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using PixelInternalAPI.Extensions;
-using BBTimes.Extensions;
-using BBTimes.CustomComponents;
-using HarmonyLib;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using HarmonyLib;
 using MTM101BaldAPI;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -32,7 +32,7 @@ namespace BBTimes.CustomContent.CustomItems
 			audMan = gameObject.CreatePropagatedAudioManager(145f, 165f);
 			audAttack = new SoundObject[3];
 			for (int i = 0; i < audAttack.Length; i++)
-				audAttack[i] = this.GetSoundNoSub($"shoot{i+1}.wav", SoundType.Effect);
+				audAttack[i] = this.GetSoundNoSub($"shoot{i + 1}.wav", SoundType.Effect);
 
 			lightningPre = ObjectCreationExtensions.CreateSpriteBillboard(this.GetSprite(11.35f, "visualThunder.png")).GetComponent<RendererContainer>();
 			lightningPre.gameObject.ConvertToPrefab(true);
@@ -45,8 +45,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -65,7 +66,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 			this.ec = ec;
 			entity.Initialize(ec, pos);
-			
+
 			cooldownForActivation = delayBeforeActive;
 			stormingCooldown = Random.Range(minCooldownForStorming, maxCooldownForStorming);
 			looker = new(transform);
@@ -78,7 +79,7 @@ namespace BBTimes.CustomContent.CustomItems
 			if (!initialized || dead)
 				return;
 
-			if (!_stormActive) 
+			if (!_stormActive)
 			{
 				cooldownForActivation -= ec.EnvironmentTimeScale * Time.deltaTime;
 				if (cooldownForActivation <= 0f)
@@ -94,11 +95,11 @@ namespace BBTimes.CustomContent.CustomItems
 			{
 				if (ec.Npcs[i].Navigator.isActiveAndEnabled && looker.Raycast(ec.Npcs[i].transform, minDistanceForHitting))
 				{
-					if (!targets.Contains(ec.Npcs[i].Navigator.Entity))
-						targets.Add(ec.Npcs[i].Navigator.Entity);
+					if (!targets.Contains(ec.Npcs[i].Entity))
+						targets.Add(ec.Npcs[i].Entity);
 				}
 				else
-					targets.Remove(ec.Npcs[i].Navigator.Entity);
+					targets.Remove(ec.Npcs[i].Entity);
 			}
 
 			for (int i = 0; i < Singleton<CoreGameManager>.Instance.setPlayers; i++) // Search for players
@@ -121,14 +122,14 @@ namespace BBTimes.CustomContent.CustomItems
 					audMan.PlayRandomAudio(audAttack);
 
 				foreach (var ent in targets)
-                {
+				{
 					ent.AddForce(new((ent.transform.position - transform.position).normalized, maxForce, -maxForce * 0.8f));
 
 					var lig = Instantiate(lightningPre);
 					lig.transform.position = ent.transform.position;
 					lig.StartCoroutine(((SpriteRenderer)lig.renderers[0]).FadeOutLightning(ec, 0.5f, 2f));
 				}
-            }
+			}
 
 			lifeTimeCooldown -= ec.EnvironmentTimeScale * Time.deltaTime;
 			if (lifeTimeCooldown <= 0f)
@@ -153,7 +154,7 @@ namespace BBTimes.CustomContent.CustomItems
 				{
 					yield break;
 				}
-				
+
 				yield return null;
 			}
 		}
@@ -210,6 +211,6 @@ namespace BBTimes.CustomContent.CustomItems
 
 		[SerializeField]
 		internal float maxForce = 40f, minDistanceForHitting = 60f, minCooldownForStorming = 0.15f, maxCooldownForStorming = 0.8f, lifeTime = 30f;
-		
+
 	}
 }

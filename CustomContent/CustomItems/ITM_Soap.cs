@@ -1,9 +1,9 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using BBTimes.Manager;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -29,8 +29,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -51,9 +52,9 @@ namespace BBTimes.CustomContent.CustomItems
 			return true;
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (!canHitEntities) return;
+			if (!validCollision || !canHitEntities) return;
 
 			if (other.isTrigger)
 			{
@@ -69,9 +70,9 @@ namespace BBTimes.CustomContent.CustomItems
 				}
 			}
 		}
-		public void EntityTriggerExit(Collider other) 
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
-			if (target && target.gameObject == other.gameObject)
+			if (validCollision && target && target.gameObject == other.gameObject)
 			{
 				target.ExternalActivity.moveMods.Remove(moveMod);
 				target = null;
@@ -79,7 +80,7 @@ namespace BBTimes.CustomContent.CustomItems
 				canHitEntities = false;
 			}
 		}
-		public void EntityTriggerStay(Collider other)
+		public void EntityTriggerStay(Collider other, bool validCollision)
 		{
 			if (!canCarry) return;
 
@@ -144,12 +145,12 @@ namespace BBTimes.CustomContent.CustomItems
 
 			if (time <= 0f)
 				Destroy(gameObject);
-			
+
 		}
 
 		void OnDestroy() =>
 			target?.ExternalActivity.moveMods.Remove(moveMod);
-		
+
 
 		bool canCarry = false, canHitEntities = false;
 		float time = 60f, speed = Random.Range(68f, 78f);

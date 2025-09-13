@@ -20,11 +20,11 @@ namespace BBTimes.CompatibilityModule
 		{
 			if (Chainloader.PluginInfos.ContainsKey(Storage.guid_CustomMusics))
 				CustomMusicsCompat.Loadup();
-			if (Chainloader.PluginInfos.ContainsKey("pixelguy.pixelmodding.baldiplus.customvendingmachines"))
+			if (Chainloader.PluginInfos.ContainsKey(Storage.guid_CustomVendingMachines))
 				CustomVendingMachinesCompat.Loadup();
-			if (Chainloader.PluginInfos.ContainsKey("io.github.uncertainluei.baldiplus.customposters"))
+			if (Chainloader.PluginInfos.ContainsKey(Storage.guid_CustomPosters))
 				CustomPostersCompat.Loadup();
-			if (Chainloader.PluginInfos.ContainsKey("baldi.basics.plus.advanced.mod"))
+			if (Chainloader.PluginInfos.ContainsKey(Storage.guid_Advanced))
 				AdvancedEditionCompat.Loadup();
 		}
 	}

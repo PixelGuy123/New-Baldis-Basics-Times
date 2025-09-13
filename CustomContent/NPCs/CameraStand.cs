@@ -267,7 +267,7 @@ namespace BBTimes.CustomContent.NPCs
 
 			if (cells.Count > 0)
 			{
-				cs.Navigator.Entity.Teleport(cells[Random.Range(0, cells.Count)].CenterWorldPosition);
+				cs.Entity.Teleport(cells[Random.Range(0, cells.Count)].CenterWorldPosition);
 			}
 
 		}
@@ -335,7 +335,7 @@ namespace BBTimes.CustomContent.NPCs
 					foreach (var npc in cs.ec.Npcs) // Blind everyone around as well
 					{
 						if (npc != cs && !npc.Blinded && npc.Navigator.isActiveAndEnabled && cs.looker.RaycastNPC(npc))
-							cs.TakePicture(npc.Navigator.Entity);
+							cs.TakePicture(npc.Entity);
 					}
 				}
 

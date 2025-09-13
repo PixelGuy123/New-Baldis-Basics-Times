@@ -27,20 +27,18 @@ namespace BBTimes.CustomComponents
 			};
 		}
 
-		public void EntityTriggerStay(Collider other)
-		{
+		public void EntityTriggerStay(Collider other, bool validCollision) { }
 
-		}
-
-		public void EntityTriggerExit(Collider other)
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
-			if (other.gameObject == pix.gameObject)
+			if (validCollision && other.gameObject == pix.gameObject)
 				ignorePix = false;
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (!flying || (other.gameObject == pix.gameObject && ignorePix)) return;
+			if (!validCollision || !flying || (other.gameObject == pix.gameObject && ignorePix)) return;
+
 			bool wasPlayer = other.CompareTag("Player");
 			if (other.isTrigger && (other.CompareTag("NPC") || wasPlayer))
 			{

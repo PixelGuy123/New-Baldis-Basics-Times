@@ -113,10 +113,10 @@ namespace BBTimes.CustomContent.NPCs
 			pran.PlayIdleMusic();
 			ChangeNavigationState(new NavigationState_WanderRandom(pran, 0));
 		}
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
-			if (cooldown <= 0f && other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
+			base.OnStateTriggerEnter(other, validCollision);
+			if (validCollision && cooldown <= 0f && other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
 				pran.behaviorStateMachine.ChangeState(new Pran_DanceWithMe(pran, other.GetComponent<Entity>()));
 		}
 		public override void Update()
@@ -153,15 +153,19 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
-			if (!target || (!pran.musicAudMan.QueuedAudioIsPlaying && !pran.audMan.AnyAudioIsPlaying))
+			if (!target)
 			{
-				if (target)
+				bool canCollideWithPran = target.CanCollideWith(pran.Entity);
+				if (!pran.audMan.AnyAudioIsPlaying || !canCollideWithPran)
 				{
-					pran.ThrowEntity(target, throwDir);
-					target.ExternalActivity.moveMods.Remove(stayMod);
+					if (target && canCollideWithPran)
+					{
+						pran.ThrowEntity(target, throwDir);
+						target.ExternalActivity.moveMods.Remove(stayMod);
+					}
+					pran.behaviorStateMachine.ChangeState(new Pran_Wondering(pran, 15f));
+					return;
 				}
-				pran.behaviorStateMachine.ChangeState(new Pran_Wondering(pran, 15f));
-				return;
 			}
 			rotatingReference = rotatingReference.RotateAroundAxis(Vector3.up, Time.deltaTime * pran.TimeScale * 254f);
 			var dist = rotatingReference * 5f + pran.transform.position - target.transform.position;

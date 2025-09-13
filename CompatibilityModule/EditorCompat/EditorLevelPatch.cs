@@ -5,6 +5,7 @@ using BaldiLevelEditor;
 using BBTimes.CustomContent.NPCs;
 using BBTimes.Extensions;
 using BBTimes.Manager;
+using BBTimes.Plugin;
 using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;

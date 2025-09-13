@@ -63,7 +63,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 		protected virtual void OnEntityStay(Entity entity) { }
 		protected virtual void OnEntityExit(Entity entity) { }
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
 			if (owner == other.gameObject)
 				return;
@@ -77,7 +77,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 			}
 		}
 
-		public void EntityTriggerExit(Collider other)
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
 			if (owner == other.gameObject)
 				owner = null;
@@ -90,7 +90,7 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 			}
 		}
 
-		public void EntityTriggerStay(Collider other)
+		public void EntityTriggerStay(Collider other, bool validCollision)
 		{
 			if (owner == other.gameObject)
 				return;
@@ -175,6 +175,12 @@ namespace BBTimes.CustomComponents.NpcSpecificComponents.ScienceTeacher
 
 			if (height <= -heightForcedOffset)
 				TurnIntoPuddle();
+		}
+
+		private void OnDestroy()
+		{
+			if (!despawned)
+				Despawned(); // Calls it immediately to remove any effects
 		}
 
 		float verticalSpeed, height, cooldown;

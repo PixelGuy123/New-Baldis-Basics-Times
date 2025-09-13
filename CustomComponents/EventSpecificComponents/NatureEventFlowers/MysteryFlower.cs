@@ -7,7 +7,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		protected override void TriggerEnterNPC(NPC npc)
 		{
 			base.TriggerEnterNPC(npc);
-			npc.Navigator.Entity.Teleport(ec.RandomCell(false, false, true).CenterWorldPosition);
+			npc.Entity.Teleport(ec.RandomCell(false, false, true).CenterWorldPosition);
 			Teleport();
 		}
 

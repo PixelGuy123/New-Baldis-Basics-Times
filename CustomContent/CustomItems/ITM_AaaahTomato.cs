@@ -53,7 +53,7 @@ namespace BBTimes.CustomContent.CustomItems
 			if (triggered || owner == other.gameObject || !other.isTrigger) return;
 
 			var npc = other.GetComponent<NPC>();
-			if (npc != null && (npc.IsAPrincipal() || !npc.Navigator.Entity.Grounded))
+			if (npc != null && (npc.IsAPrincipal() || !npc.Entity.Grounded))
 				return;
 
 			triggered = true;

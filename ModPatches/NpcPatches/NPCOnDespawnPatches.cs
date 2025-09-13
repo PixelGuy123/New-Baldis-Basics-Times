@@ -14,7 +14,7 @@ namespace BBTimes.ModPatches.NpcPatches
 			if (type == typeof(Beans)) // beans
 			{
 				var gum = ((Beans)__instance).gum;
-				gum.Reset(); // Removes any move mod
+				gum.Reset(__instance.Entity); // Removes any move mod
 				gum.gauge?.Deactivate(); // Prevent gauge getting stuck
 				Destroy(gum.gameObject);
 				return;

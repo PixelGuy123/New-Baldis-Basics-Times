@@ -6,8 +6,8 @@ namespace BBTimes.Extensions.ObjectCreationExtensions
 	{
 		public static void MakeCharacterChalklesLike(this NPC npc) // Basically how Chalkles does, that way, nothing can affect it (nothing!!)
 		{
-			npc.Navigator.Entity.enabled = false;
-			npc.Navigator.Entity.colliderRadius = 0f;
+			npc.Entity.enabled = false;
+			npc.Entity.colliderRadius = 0f;
 			npc.Navigator.enabled = false;
 			var colliders = npc.GetComponents<Collider>();
 			for (int i = 0; i < colliders.Length; i++)
@@ -30,8 +30,8 @@ namespace BBTimes.Extensions.ObjectCreationExtensions
 				col.height = 8f;
 				col.enabled = false;
 				col.isTrigger = true;
-				npc.Navigator.Entity.collider = col;
-				npc.Navigator.Entity.trigger = col;
+				npc.Entity.collider = col;
+				npc.Entity.trigger = col;
 			}
 		}
 	}

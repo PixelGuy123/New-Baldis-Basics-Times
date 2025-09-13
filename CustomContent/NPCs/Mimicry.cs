@@ -264,7 +264,7 @@ namespace BBTimes.CustomContent.NPCs
 		public void JumpscareNPC(NPC npc)
 		{
 			Undisguise(true);
-			StartCoroutine(AffectSomeone(npc.Navigator.Entity, null));
+			StartCoroutine(AffectSomeone(npc.Entity, null));
 		}
 		IEnumerator LaughterDelay()
 		{
@@ -421,7 +421,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			mimi.DisguiseAsRandomItem();
-			mimi.Navigator.Entity.SetFrozen(true);
+			mimi.Entity.SetFrozen(true);
 			ChangeNavigationState(new NavigationState_DoNothing(mimi, 0));
 		}
 
@@ -451,7 +451,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Exit()
 		{
 			base.Exit();
-			mimi.Navigator.Entity.SetFrozen(false);
+			mimi.Entity.SetFrozen(false);
 		}
 	}
 

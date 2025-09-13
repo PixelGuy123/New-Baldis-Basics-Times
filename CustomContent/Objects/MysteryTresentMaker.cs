@@ -186,7 +186,7 @@ namespace BBTimes.CustomContent.Objects
 						var n = npcs[Random.Range(0, npcs.Count)];
 
 						int num = Random.Range(0, ec.offices.Count);
-						n.Navigator.Entity.Teleport(ec.offices[num].RandomEntitySafeCellNoGarbage().CenterWorldPosition);
+						n.Entity.Teleport(ec.offices[num].RandomEntitySafeCellNoGarbage().CenterWorldPosition);
 						n.SentToDetention();
 
 						flag = true;
@@ -198,7 +198,7 @@ namespace BBTimes.CustomContent.Objects
 						if (npcs.Count == 0)
 							break;
 
-						npcs[Random.Range(0, npcs.Count)].Navigator.Entity.Teleport(transform.position);
+						npcs[Random.Range(0, npcs.Count)].Entity.Teleport(transform.position);
 						flag = true;
 						break;
 

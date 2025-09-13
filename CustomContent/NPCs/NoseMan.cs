@@ -108,7 +108,7 @@ namespace BBTimes.CustomContent.NPCs
 					float force = sneezeForce - offset.magnitude * sneezeDistanceFactor;
 
 					if (force >= 5f)
-						ec.Npcs[i].Navigator.Entity.AddForce(new(offset.normalized, force, -force * 0.21f));
+						ec.Npcs[i].Entity.AddForce(new(offset.normalized, force, -force * 0.21f));
 				}
 			}
 
@@ -189,7 +189,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Enter();
 			nos.Hide(true);
-			nos.Navigator.Entity.Teleport(target.transform.position);
+			nos.Entity.Teleport(target.transform.position);
 		}
 
 		public override void Update()
@@ -212,7 +212,7 @@ namespace BBTimes.CustomContent.NPCs
 				if (frameDelay <= 0)
 				{
 					frameDelay = 1f;
-					nos.Navigator.Entity.Teleport(target.transform.position);
+					nos.Entity.Teleport(target.transform.position);
 				}
 			}
 		}

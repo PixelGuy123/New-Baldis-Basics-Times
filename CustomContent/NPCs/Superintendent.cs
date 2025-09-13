@@ -287,7 +287,7 @@ namespace BBTimes.CustomContent.NPCs
 					if (npc != s && npc.Navigator.isActiveAndEnabled)
 					{
 						var meta = npc.GetMeta();
-						if ((meta == null || meta.tags.Contains("student")) && npc.Navigator.Entity.CurrentRoom && !Superintendent.allowedRooms.Contains(npc.Navigator.Entity.CurrentRoom.category) && s.looker.RaycastNPC(npc))
+						if ((meta == null || meta.tags.Contains("student")) && npc.Entity.CurrentRoom && !Superintendent.allowedRooms.Contains(npc.Entity.CurrentRoom.category) && s.looker.RaycastNPC(npc))
 						{
 							s.AddNpc(npc);
 
@@ -350,11 +350,11 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(new NavigationState_WanderRounds(s, 0));
 		}
 
-		public override void OnStateTriggerStay(Collider other)
+		public override void OnStateTriggerStay(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerStay(other);
-			if (other.gameObject == pm.gameObject && s.TryOverrideEntity(pm.plm.Entity))
-				s.behaviorStateMachine.ChangeState(new Superintendent_DragEntityToClass(s, pm.plm.Entity, pm));
+			base.OnStateTriggerStay(other, validCollision);
+			if (other.gameObject == pm.gameObject && (!validCollision || s.TryOverrideEntity(pm.plm.Entity)))
+				s.behaviorStateMachine.ChangeState(new Superintendent_DragEntityToClass(s, pm.plm.Entity, validCollision, pm));
 
 		}
 
@@ -402,11 +402,11 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(new NavigationState_WanderRounds(s, 0));
 		}
 
-		public override void OnStateTriggerStay(Collider other)
+		public override void OnStateTriggerStay(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerStay(other);
-			if (other.gameObject == target.gameObject && s.TryOverrideEntity(target.Navigator.Entity))
-				s.behaviorStateMachine.ChangeState(new Superintendent_DragEntityToClass(s, target.Navigator.Entity, npc: target));
+			base.OnStateTriggerStay(other, validCollision);
+			if (other.gameObject == target.gameObject && (!validCollision || s.TryOverrideEntity(target.Entity)))
+				s.behaviorStateMachine.ChangeState(new Superintendent_DragEntityToClass(s, target.Entity, validCollision, npc: target));
 
 		}
 
@@ -417,11 +417,12 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-	internal class Superintendent_DragEntityToClass(Superintendent s, Entity e, PlayerManager pm = null, NPC npc = null) : Superintendent_Statebase(s)
+	internal class Superintendent_DragEntityToClass(Superintendent s, Entity e, bool canDrag, PlayerManager pm = null, NPC npc = null) : Superintendent_Statebase(s)
 	{
 		readonly Entity e = e;
 		readonly PlayerManager pm = pm;
 		readonly NPC tarNpc = npc;
+		readonly bool ableOfDragging = canDrag;
 
 		readonly RoomController room = s.GetCandidateRoom();
 		NavigationState_TargetPosition tarPos;
@@ -438,12 +439,7 @@ namespace BBTimes.CustomContent.NPCs
 		{
 			base.Update();
 			if (!s.Drag(e))
-			{
-				if (pm)
-					s.behaviorStateMachine.ChangeState(new Superintendent_TargetPlayer(s, pm));
-				else
-					s.behaviorStateMachine.ChangeState(new Superintendent_TargetNPC(s, tarNpc));
-			}
+				SwitchToTarget();
 		}
 
 		public override void DestinationEmpty()
@@ -451,6 +447,11 @@ namespace BBTimes.CustomContent.NPCs
 			base.DestinationEmpty();
 			if (s.ec.CellFromPosition(s.transform.position).TileMatches(room))
 			{
+				if (!ableOfDragging) // If he reaches the room, but couldn't drag the target, he needs to go back
+				{
+					SwitchToTarget();
+					return;
+				}
 				for (int i = 0; i < room.doors.Count; i++)
 				{
 					room.doors[i].Shut();
@@ -469,6 +470,14 @@ namespace BBTimes.CustomContent.NPCs
 			tarPos.priority = 0;
 			s.Release();
 			s.StopOrNot(false);
+		}
+
+		void SwitchToTarget()
+		{
+			if (pm)
+				s.behaviorStateMachine.ChangeState(new Superintendent_TargetPlayer(s, pm));
+			else
+				s.behaviorStateMachine.ChangeState(new Superintendent_TargetNPC(s, tarNpc));
 		}
 	}
 }

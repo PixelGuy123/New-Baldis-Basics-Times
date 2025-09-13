@@ -1,12 +1,12 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
+using BBTimes.Extensions;
+using BBTimes.Manager;
+using MTM101BaldAPI;
+using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using PixelInternalAPI.Classes;
-using BBTimes.Extensions;
-using MTM101BaldAPI;
-using BBTimes.Manager;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -99,7 +99,7 @@ namespace BBTimes.CustomContent.CustomItems
 		{
 			active = true;
 			currentCharge = 0f;
-			
+
 
 			// Charge phase
 			audMan.QueueAudio(chargeSound);
@@ -144,9 +144,9 @@ namespace BBTimes.CustomContent.CustomItems
 			);
 		}
 
-		[SerializeField] 
+		[SerializeField]
 		private SlingshotProjectile projectilePre;
-		[SerializeField] 
+		[SerializeField]
 		private float minStrength = 15f, maxStrength = 80f, maxChargeDuration = 2.5f, slightShotShowUpSlideDuration = 0.3f, startCanvasPos = 450;
 		[SerializeField]
 		private SoundObject chargeSound, shootSound;
@@ -182,19 +182,19 @@ namespace BBTimes.CustomContent.CustomItems
 			StartCoroutine(GravitytLoop());
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (hasHit || !other.isTrigger || other.gameObject == owner || !other.TryGetComponent<Entity>(out var e))
+			if (!validCollision || hasHit || !other.isTrigger || other.gameObject == owner || !other.TryGetComponent<Entity>(out var e))
 				return;
 
 			pmOwner?.RuleBreak("Bullying", bullyingLinger);
 			StartCoroutine(Hit(e));
 		}
 
-		public void EntityTriggerStay(Collider other) { }
-		public void EntityTriggerExit(Collider other) 
+		public void EntityTriggerStay(Collider other, bool validCollision) { }
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
-			if (other.gameObject == owner)
+			if (validCollision && other.gameObject == owner)
 				owner = null;
 		}
 

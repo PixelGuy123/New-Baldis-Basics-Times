@@ -370,9 +370,11 @@ namespace BBTimes.CustomContent.NPCs
 			ChangeNavigationState(new NavigationState_WanderRandom(stunly, 0));
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
+			base.OnStateTriggerEnter(other, validCollision);
+			if (!validCollision) return;
+
 			bool isPlayer = other.CompareTag("Player");
 			if ((other.CompareTag("NPC") && stunly.looker.PlayerInSight()) || isPlayer)
 			{

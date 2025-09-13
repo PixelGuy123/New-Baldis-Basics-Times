@@ -12,7 +12,6 @@ using BBTimes.Extensions;
 using BBTimes.Manager;
 using BBTimes.Manager.InternalClasses;
 using BBTimes.Manager.InternalClasses.LevelTypeWeights;
-using BBTimes.Misc.SelectionHolders;
 using BBTimes.ModPatches.EnvironmentPatches;
 using BBTimes.Plugin;
 using BepInEx;
@@ -28,25 +27,24 @@ using UnityEngine;
 
 namespace BBTimes
 {
-	[BepInDependency("mtm101.rulerp.bbplus.baldidevapi", BepInDependency.DependencyFlags.HardDependency)] // let's not forget this
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.pixelinternalapi", BepInDependency.DependencyFlags.HardDependency)]
+	[BepInDependency(Storage.guid_Mtm101API, BepInDependency.DependencyFlags.HardDependency)] // let's not forget this
+	[BepInDependency(Storage.guid_PixelIntAPI, BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency(Storage.guid_LevelLoader, BepInDependency.DependencyFlags.HardDependency)]
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.editorcustomrooms", BepInDependency.DependencyFlags.HardDependency)]
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.newdecors", BepInDependency.DependencyFlags.HardDependency)]
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.custommainmenusapi", BepInDependency.DependencyFlags.HardDependency)]
+	[BepInDependency(Storage.guid_DecorationsPlus, BepInDependency.DependencyFlags.HardDependency)]
+	[BepInDependency(Storage.guid_CustomMainMenusAPI, BepInDependency.DependencyFlags.HardDependency)]
 
 	// Soft dependencies / has exclusive compatibility with
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.newanimations", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("rost.moment.baldiplus.funsettings", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("io.github.luisrandomness.bbp_custom_posters", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.customvendingmachines", BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency(Storage.guid_AnimationsPlus, BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency(Storage.guid_ExtraFunSettings, BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency(Storage.guid_CustomPosters, BepInDependency.DependencyFlags.SoftDependency)]
+	[BepInDependency(Storage.guid_CustomVendingMachines, BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency(Storage.guid_CustomMusics, BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency(Storage.guid_HookTweaks, BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency(Storage.guid_Advanced, BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency(Storage.guid_LevelStudio, BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("pixelguy.pixelmodding.baldiplus.infinitefloors", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("mtm101.rulerp.baldiplus.endlessfloors", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInDependency("Rad.cmr.baldiplus.arcaderenovations", BepInDependency.DependencyFlags.SoftDependency)]
+	// [BepInDependency("pixelguy.pixelmodding.baldiplus.infinitefloors", BepInDependency.DependencyFlags.SoftDependency)] not even here anymore
+	// [BepInDependency("mtm101.rulerp.baldiplus.endlessfloors", BepInDependency.DependencyFlags.SoftDependency)]
+	// [BepInDependency("Rad.cmr.baldiplus.arcaderenovations", BepInDependency.DependencyFlags.SoftDependency)]
 
 
 	[BepInPlugin(ModInfo.PLUGIN_GUID, ModInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
@@ -129,8 +127,8 @@ namespace BBTimes
 		disableOutside, disableHighCeilings, disableRedEndingCutscene,
 		enableBigRooms, enableReplacementNPCsAsNormalOnes, enableYoutuberMode, forceChristmasMode, disableArcadeRennovationsSupport, disableSchoolhouseEscape, enableUnbalancedLegacyMode;
 		internal List<string> disabledCharacters = [], disabledItems = [], disabledEvents = [], disabledBuilders = [];
-		internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") ||
-			Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
+		// internal bool HasInfiniteFloors => Chainloader.PluginInfos.ContainsKey("mtm101.rulerp.baldiplus.endlessfloors") ||
+		//	Chainloader.PluginInfos.ContainsKey("Rad.cmr.baldiplus.arcaderenovations");
 
 		private void Awake()
 		{
@@ -828,8 +826,8 @@ namespace BBTimes
 			if (Storage.IsChristmas)
 				tags.Add("Times_Specials_Christmas");
 
-			if (plug.HasInfiniteFloors && plug.disableArcadeRennovationsSupport.Value)
-				tags.Add("Times_Config_DisableArcadeRennovationsSupport");
+			// if (plug.HasInfiniteFloors && plug.disableArcadeRennovationsSupport.Value)
+			//	tags.Add("Times_Config_DisableArcadeRennovationsSupport");
 
 			return [.. tags];
 		}

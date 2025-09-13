@@ -1,19 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Collections;
 using System.Collections.Generic;
 using BBTimes.CustomComponents;
-using UnityEngine.UI;
-using BBTimes.Extensions;
-using PixelInternalAPI.Extensions;
-using BBTimes.Manager;
-using System.Collections;
 using BBTimes.CustomComponents.EventSpecificComponents.FrozenEvent;
-using PixelInternalAPI.Classes;
+using BBTimes.Extensions;
+using BBTimes.Manager;
 using BBTimes.Plugin;
+using PixelInternalAPI.Classes;
+using PixelInternalAPI.Extensions;
+using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace BBTimes.CustomContent.Events
 {
-    public class FrozenEvent : RandomEvent, IObjectPrefab
+	public class FrozenEvent : RandomEvent, IObjectPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -68,8 +68,9 @@ namespace BBTimes.CustomContent.Events
 			driftPre.gameObject.AddBoxCollider(Vector3.up * 5f, new(4.9f, 10f, 4.9f), true);
 		}
 		public void SetupPrefabPost() { }
-		public string Name { get; set; } public string Category => "events";
-		
+		public string Name { get; set; }
+		public string Category => "events";
+
 		// ---------------------------------------------------
 
 		public override void Begin()
@@ -83,7 +84,7 @@ namespace BBTimes.CustomContent.Events
 				{
 					var mod = new MovementModifier(Vector3.zero, 1f);
 					moveMods.Add(new(ec.Npcs[i], mod));
-					ec.Npcs[i].Navigator.Entity.ExternalActivity.moveMods.Add(mod);
+					ec.Npcs[i].Entity.ExternalActivity.moveMods.Add(mod);
 				}
 			}
 			foreach (var player in ec.Players)
@@ -221,7 +222,7 @@ namespace BBTimes.CustomContent.Events
 					x.Value.movementMultiplier = Mathf.Clamp(x.Value.movementMultiplier, 0.1f, maxVel);
 				}
 
-				
+
 				var co = canvasToDespawn[i].color;
 				co.a = maxVel - x.Value.movementMultiplier + (1f - maxVel);
 				canvasToDespawn[i].color = co;
@@ -235,7 +236,7 @@ namespace BBTimes.CustomContent.Events
 			for (int i = 0; i < moveMods.Count; i++)
 			{
 				if (moveMods[i].Key)
-					moveMods[i].Key.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMods[i].Value);
+					moveMods[i].Key.Entity.ExternalActivity.moveMods.Remove(moveMods[i].Value);
 			}
 
 			pMoveMods.ForEach(x => x.Key.Pm.Am.moveMods.Remove(x.Value));

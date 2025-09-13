@@ -1,8 +1,8 @@
-﻿using BBTimes.CustomComponents;
+﻿using System.Collections;
+using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using System.Collections;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
@@ -67,7 +67,7 @@ namespace BBTimes.CustomContent.CustomItems
 
 		public string Name { get; set; }
 		public string Category => "items";
-		
+
 		public ItemObject ItmObj { get; set; }
 
 
@@ -153,7 +153,7 @@ namespace BBTimes.CustomContent.CustomItems
 							factorReference = i + 1;
 
 					bitePower *= defaultIncreasingFactor * factorReference;
-					Debug.Log("MOLAR: updated bite power: " + bitePower);
+					// Debug.Log("MOLAR: updated bite power: " + bitePower);
 
 					if (++rounds >= maxRounds)
 						break; // Breaks out of While loop
@@ -219,17 +219,17 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 		}
 
-		public void EntityTriggerEnter(Collider other) { }
+		public void EntityTriggerEnter(Collider other, bool validCollision) { }
 
-		public void EntityTriggerExit(Collider other) 
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
-			if (owner == other.gameObject)
+			if (validCollision && owner == other.gameObject)
 				owner = null;
 		}
 
-		public void EntityTriggerStay(Collider other)
+		public void EntityTriggerStay(Collider other, bool validCollision)
 		{
-			if (biting || !active && owner == other.gameObject) return;
+			if (!validCollision || biting || !active && owner == other.gameObject) return;
 
 			if (other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
 			{

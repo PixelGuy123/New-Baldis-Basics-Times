@@ -1,16 +1,16 @@
 ﻿
+using System.Collections.Generic;
 using BBTimes.CustomComponents;
 using BBTimes.Extensions;
 using HarmonyLib;
 using MTM101BaldAPI.Components;
 using MTM101BaldAPI.Registers;
 using PixelInternalAPI.Extensions;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BBTimes.CustomContent.NPCs
 {
-    public class Faker : NPC, INPCPrefab
+	public class Faker : NPC, INPCPrefab
 	{
 		public void SetupPrefab()
 		{
@@ -54,8 +54,9 @@ namespace BBTimes.CustomContent.NPCs
 			}
 			soundsToEmit = [.. sds];
 		}
-		public string Name { get; set; } public string Category => "npcs";
-		
+		public string Name { get; set; }
+		public string Category => "npcs";
+
 		public NPC Npc { get; set; }
 		[SerializeField] Character[] replacementNPCs; public Character[] GetReplacementNPCs() => replacementNPCs; public void SetReplacementNPCs(params Character[] chars) => replacementNPCs = chars;
 		public int ReplacementWeight { get; set; }
@@ -73,7 +74,7 @@ namespace BBTimes.CustomContent.NPCs
 			base.VirtualUpdate();
 			if (!audMan.QueuedAudioIsPlaying && IsActive)
 				PlayRandomAudio();
-			
+
 		}
 
 		public void PlayRandomAudio()
@@ -96,7 +97,7 @@ namespace BBTimes.CustomContent.NPCs
 			else
 				ec.RemoveTimeScale(mod);
 		}
-			 
+
 
 		internal bool IsActive { get; set; } = false;
 
@@ -124,8 +125,9 @@ namespace BBTimes.CustomContent.NPCs
 	{
 		float despawnCooldown = 60f;
 
-		protected bool CanDespawn { 
-			get => _canDespawn; 
+		protected bool CanDespawn
+		{
+			get => _canDespawn;
 			set
 			{
 				if (value)
@@ -140,7 +142,7 @@ namespace BBTimes.CustomContent.NPCs
 					_despawns = 0;
 					_canDespawn = false;
 				}
-			} 
+			}
 		}
 		bool _canDespawn = true;
 		int _despawns = 0;
@@ -165,14 +167,14 @@ namespace BBTimes.CustomContent.NPCs
 			base.Enter();
 			f.IsActive = false;
 			f.audMan.FlushQueue(true);
-			f.Navigator.Entity.Enable(false);
+			f.Entity.Enable(false);
 			f.Navigator.speed = 0;
 			f.Navigator.SetSpeed(0);
 			ChangeNavigationState(new NavigationState_DoNothing(f, 0));
-			prevHeight = f.Navigator.Entity.InternalHeight;
-			f.Navigator.Entity.SetHeight(-15);
+			prevHeight = f.Entity.InternalHeight;
+			f.Entity.SetHeight(-15);
 			var cells = f.ec.mainHall.AllTilesNoGarbage(false, false);
-			f.Navigator.Entity.Teleport(cells[Random.Range(0, cells.Count)].CenterWorldPosition);
+			f.Entity.Teleport(cells[Random.Range(0, cells.Count)].CenterWorldPosition);
 		}
 		public override void Update()
 		{
@@ -188,10 +190,10 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Exit()
 		{
 			base.Exit();
-			f.Navigator.Entity.Enable(true);
+			f.Entity.Enable(true);
 			f.Navigator.speed = 25;
 			f.Navigator.SetSpeed(25);
-			f.Navigator.Entity.SetHeight(prevHeight);
+			f.Entity.SetHeight(prevHeight);
 		}
 
 		public override void InPlayerSight(PlayerManager player)
@@ -221,7 +223,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void InPlayerSight(PlayerManager player)
 		{
 			base.InPlayerSight(player);
-			
+
 			if (!players.ContainsKey(player))
 			{
 				var val = new ValueModifier();
@@ -247,7 +249,7 @@ namespace BBTimes.CustomContent.NPCs
 
 		void TakeFovOut(PlayerManager player, bool removeFromDic = true)
 		{
-			
+
 			player.Am.moveMods.Remove(moveMod);
 			var cam = player.GetCustomCam();
 			var k = players[player];
@@ -256,7 +258,7 @@ namespace BBTimes.CustomContent.NPCs
 			cam.ResetSlideFOVAnimation(k.Key);
 			if (removeFromDic)
 				players.Remove(player);
-			
+
 		}
 
 		public override void Exit()
@@ -368,13 +370,13 @@ namespace BBTimes.CustomContent.NPCs
 			if (sighted <= 0)
 				f.ApplyScale(false);
 		}
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
+			base.OnStateTriggerEnter(other, validCollision);
 			if (sighted <= 0 && other.isTrigger && other.gameObject == pm.gameObject)
 			{
-				pm.itm.RemoveRandomItem();
-				f.PlayRandomAudio();
+				if (validCollision)
+					pm.itm.RemoveRandomItem();
 				f.ChangeRandomState();
 			}
 		}

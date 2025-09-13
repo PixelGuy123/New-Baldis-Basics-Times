@@ -344,10 +344,10 @@ namespace BBTimes.CustomContent.NPCs
 					inkCooldown -= art.TimeScale * Time.deltaTime;
 			}
 
-			public override void OnStateTriggerEnter(Collider other)
+			public override void OnStateTriggerEnter(Collider other, bool validCollision)
 			{
-				base.OnStateTriggerEnter(other);
-				if (inkCooldown <= 0f && other.isTrigger)
+				base.OnStateTriggerEnter(other, validCollision);
+				if (inkCooldown <= 0f && other.isTrigger && validCollision)
 				{
 					var isPlayer = other.CompareTag("Player");
 					if (isPlayer || other.CompareTag("NPC"))

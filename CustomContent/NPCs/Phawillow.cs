@@ -200,14 +200,22 @@ namespace BBTimes.CustomContent.NPCs
 				pTar.UpdatePosition(player.transform.position);
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
+			base.OnStateTriggerEnter(other, validCollision);
 			if (other.gameObject == pm.gameObject)
-				wi.behaviorStateMachine.ChangeState(new Phawillow_TargetItem
-					(wi,
-					pm.itm.RemoveRandomItemAndReturnIt()
-					));
+			{
+				if (validCollision)
+				{
+					wi.behaviorStateMachine.ChangeState(new Phawillow_TargetItem
+						(wi,
+						pm.itm.RemoveRandomItemAndReturnIt()
+						));
+					return;
+				}
+
+				wi.behaviorStateMachine.ChangeState(new Phawillow_Wandering(wi, 5f));
+			}
 
 		}
 

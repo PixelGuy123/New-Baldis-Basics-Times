@@ -7,7 +7,7 @@ namespace BBTimes.CustomComponents.EventSpecificComponents.NatureEventFlowers
 		protected override void TriggerEnterNPC(NPC npc)
 		{
 			base.TriggerEnterNPC(npc);
-			Push(npc.Navigator.Entity);
+			Push(npc.Entity);
 		}
 
 		protected override void TriggerEnterPlayer(PlayerManager pm)

@@ -77,16 +77,16 @@ namespace BBTimes.CustomContent.CustomItems
 			canTeleport = true;
 		}
 
-		public void EntityTriggerEnter(Collider other) { }
+		public void EntityTriggerEnter(Collider other, bool validCollision) { }
 
-		public void EntityTriggerStay(Collider other)
+		public void EntityTriggerStay(Collider other, bool validCollision)
 		{
-			if (canTeleport && other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")) && other.TryGetComponent<Entity>(out var e))
+			if (validCollision && canTeleport && other.isTrigger && (other.CompareTag("Player") || other.CompareTag("NPC")) && other.TryGetComponent<Entity>(out var e))
 			{
 				TeleportEntity(e);
 			}
 		}
-		public void EntityTriggerExit(Collider other) { }
+		public void EntityTriggerExit(Collider other, bool validCollision) { }
 
 		void TeleportEntity(Entity e)
 		{

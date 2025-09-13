@@ -43,7 +43,15 @@ namespace BBTimes.Plugin
 		guid_LevelStudio = "mtm101.rulerp.baldiplus.levelstudio",
 		guid_LevelLoader = "mtm101.rulerp.baldiplus.levelstudioloader",
 		guid_HookTweaks = "pixelguy.pixelmodding.baldiplus.grapplinghooktweaks",
-		guid_CustomMusics = "pixelguy.pixelmodding.baldiplus.custommusics";
+		guid_CustomMusics = "pixelguy.pixelmodding.baldiplus.custommusics",
+		guid_CustomVendingMachines = "pixelguy.pixelmodding.baldiplus.customvendingmachines",
+		guid_CustomPosters = "io.github.uncertainluei.baldiplus.customposters",
+		guid_Mtm101API = "mtm101.rulerp.bbplus.baldidevapi",
+		guid_PixelIntAPI = "pixelguy.pixelmodding.baldiplus.pixelinternalapi",
+		guid_ExtraFunSettings = "rost.moment.baldiplus.funsettings",
+		guid_AnimationsPlus = "pixelguy.pixelmodding.baldiplus.newanimations",
+		guid_DecorationsPlus = "pixelguy.pixelmodding.baldiplus.newdecors",
+		guid_CustomMainMenusAPI = "pixelguy.pixelmodding.baldiplus.custommainmenusapi";
 
 		// ------------------- Constant Floats ---------------------
 		public const float GaugeSprite_PixelsPerUnit = 1f;

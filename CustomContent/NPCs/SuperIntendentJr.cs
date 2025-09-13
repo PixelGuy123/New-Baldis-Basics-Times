@@ -16,7 +16,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Enter()
 		{
 			base.Enter();
-			npc.Navigator.Entity.ExternalActivity.moveMods.Add(moveMod);
+			npc.Entity.ExternalActivity.moveMods.Add(moveMod);
 			npc.Navigator.FindPath(tar.CenterWorldPosition);
 		}
 		public override void DestinationEmpty()
@@ -43,7 +43,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Exit()
 		{
 			base.Exit();
-			npc.Navigator.Entity.ExternalActivity.moveMods.Remove(moveMod);
+			npc.Entity.ExternalActivity.moveMods.Remove(moveMod);
 		}
 
 		public void End()

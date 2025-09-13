@@ -111,7 +111,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 				schoolBaldi.SlapNormal();
 				baldiSlap = schoolBaldi.spriteRenderer[0].sprite;
 
-				schoolBaldi.Navigator.Entity.SetActive(false); // We won't be using original Baldi anymore, but a copy of it
+				schoolBaldi.Entity.SetActive(false); // We won't be using original Baldi anymore, but a copy of it
 			}
 			else
 				explorerMode = true; // Enable the cardboard Baldi cutscene
@@ -932,7 +932,7 @@ namespace BBTimes.ModPatches.EnvironmentPatches
 			const float fovInitialStart = 65f;
 			const float framerate = 24.85f;
 
-			var baldiEntity = baldi.Navigator.Entity;
+			var baldiEntity = baldi.Entity;
 			baldiEntity.SetVisible(false);
 
 			var animatedBaldi = Object.Instantiate(placeholderBaldi);

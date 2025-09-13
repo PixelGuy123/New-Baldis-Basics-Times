@@ -290,10 +290,10 @@ namespace BBTimes.CustomContent.NPCs
 			chm.Walk(true);
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
-			if (other.isTrigger)
+			base.OnStateTriggerEnter(other, validCollision);
+			if (other.isTrigger && validCollision)
 			{
 				var isPlayer = other.CompareTag("Player");
 				if (other.CompareTag("NPC") || isPlayer)

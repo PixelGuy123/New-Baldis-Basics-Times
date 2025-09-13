@@ -29,7 +29,7 @@ namespace BBTimes.CustomContent.CustomItems
 				var math = hit.transform.GetComponentInParent<MathMachine>();
 				if (math && !math.IsCompleted)
 				{
-					math.Completed(pm.playerNumber, true, math);
+					math.Completed(pm.playerNumber, true);
 					math.NumberDropped(pm.playerNumber);
 					success = true;
 				}

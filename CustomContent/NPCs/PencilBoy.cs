@@ -221,9 +221,10 @@ namespace BBTimes.CustomContent.NPCs
 		protected PencilBoy boy = boy;
 	}
 
-	internal class PencilBoy_Wander(PencilBoy boy) : PencilBoy_StateBase(boy) // Copypaste for Playtime lol
+	internal class PencilBoy_Wander(PencilBoy boy, float distractedCooldown = 0f) : PencilBoy_StateBase(boy) // Copypaste for Playtime lol
 	{
 		float wanderCooldown = 3f;
+		float distractedCooldown = distractedCooldown;
 		bool followingPlayer = false;
 
 		public override void Enter()
@@ -236,15 +237,19 @@ namespace BBTimes.CustomContent.NPCs
 
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
+			base.OnStateTriggerEnter(other, validCollision);
 			if (other.CompareTag("Player"))
 			{
+				if (!validCollision)
+				{
+					boy.behaviorStateMachine.ChangeState(new PencilBoy_Wander(boy, 10f));
+					return;
+				}
 				PlayerManager component = other.GetComponent<PlayerManager>();
 				if (!component.Tagged)
 					boy.StabSatisfied(component, false);
-
 			}
 		}
 		public override void DestinationEmpty()
@@ -256,7 +261,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerSighted(PlayerManager player)
 		{
 			base.PlayerSighted(player);
-			if (!player.Tagged)
+			if (!player.Tagged && distractedCooldown <= 0f)
 			{
 				boy.SeePlayer(player);
 				followingPlayer = true;
@@ -267,7 +272,7 @@ namespace BBTimes.CustomContent.NPCs
 		public override void PlayerInSight(PlayerManager player)
 		{
 			base.PlayerInSight(player);
-			if (!player.Tagged)
+			if (!player.Tagged && distractedCooldown <= 0f)
 				boy.PersuePlayer(player);
 
 		}
@@ -286,6 +291,9 @@ namespace BBTimes.CustomContent.NPCs
 		public override void Update()
 		{
 			base.Update();
+			if (distractedCooldown > 0f)
+				distractedCooldown -= boy.TimeScale * Time.deltaTime;
+
 			if (!followingPlayer)
 			{
 				wanderCooldown -= boy.TimeScale * Time.deltaTime;
@@ -319,10 +327,10 @@ namespace BBTimes.CustomContent.NPCs
 			}
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
-			if (other.CompareTag("Player"))
+			base.OnStateTriggerEnter(other, validCollision);
+			if (other.CompareTag("Player") && validCollision)
 			{
 				PlayerManager component = other.GetComponent<PlayerManager>();
 				if (!component.Tagged)

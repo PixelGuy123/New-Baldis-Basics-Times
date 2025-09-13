@@ -273,11 +273,13 @@ namespace BBTimes.CustomContent.NPCs
 				bot.behaviorStateMachine.ChangeState(new DetentionBot_Wandering(bot));
 		}
 
-		public override void OnStateTriggerStay(Collider other)
+		public override void OnStateTriggerStay(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerStay(other);
+			base.OnStateTriggerStay(other, validCollision);
 			if (other.gameObject == pm.gameObject)
-				bot.behaviorStateMachine.ChangeState(new DetentionBot_CarryEntity(bot, pm.plm.Entity, pm));
+			{
+				bot.behaviorStateMachine.ChangeState(new DetentionBot_CarryEntity(bot, pm.plm.Entity, !validCollision, pm));
+			}
 		}
 
 		public override void Exit()
@@ -312,11 +314,11 @@ namespace BBTimes.CustomContent.NPCs
 				navPm.UpdatePosition(troubleMaker.transform.position);
 		}
 
-		public override void OnStateTriggerStay(Collider other)
+		public override void OnStateTriggerStay(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerStay(other);
+			base.OnStateTriggerStay(other, validCollision);
 			if (other.gameObject == troubleMaker.gameObject)
-				bot.behaviorStateMachine.ChangeState(new DetentionBot_CarryEntity(bot, troubleMaker.Navigator.Entity, npc: troubleMaker));
+				bot.behaviorStateMachine.ChangeState(new DetentionBot_CarryEntity(bot, troubleMaker.Entity, !validCollision, npc: troubleMaker));
 		}
 
 		public override void Exit()
@@ -326,25 +328,29 @@ namespace BBTimes.CustomContent.NPCs
 		}
 	}
 
-	internal class DetentionBot_CarryEntity(DetentionBot bot, Entity entity, PlayerManager pm = null, NPC npc = null) : DetentionBot_StateBase(bot)
+	internal class DetentionBot_CarryEntity(DetentionBot bot, Entity entity, bool falseCarry, PlayerManager pm = null, NPC npc = null) : DetentionBot_StateBase(bot)
 	{
 		NavigationState_TargetPosition tarPos;
 		readonly RoomController office = bot.PickRandomOffice;
 		readonly Entity entity = entity;
 		readonly PlayerManager pm = pm;
 		readonly NPC tarNpc = npc;
+		readonly bool falseCarry = falseCarry; // If True, DetentionBot attempts to drag, but won't actually apply any movement change
 
 		public override void Enter()
 		{
 			base.Enter();
 			bot.CarryingTroubleMaker();
-			bot.ReleaseOrNot(entity, false);
+
+			if (!falseCarry)
+				bot.ReleaseOrNot(entity, false);
+
 			tarPos = new NavigationState_TargetPosition(bot, 63, office.RandomEntitySafeCellNoGarbage().FloorWorldPosition);
 			ChangeNavigationState(tarPos);
 
 			if (tarNpc && !tarNpc.Navigator.isActiveAndEnabled) // If not enabled, it implies Detention Bot will be permanently stuck, so it'll forcefully teleport the entity
 			{
-				bot.Navigator.Entity.Teleport(tarPos.destination);
+				bot.Entity.Teleport(tarPos.destination);
 				entity.Teleport(tarPos.destination);
 				tarNpc.SentToDetention();
 			}
@@ -358,12 +364,13 @@ namespace BBTimes.CustomContent.NPCs
 				tarPos.UpdatePosition(office.RandomEntitySafeCellNoGarbage().FloorWorldPosition);
 				ChangeNavigationState(tarPos);
 			}
-			else
+			else if (!falseCarry) // It shouldn't drag to detention if the player is not even on the same plane
 			{
 				entity.Teleport(bot.transform.position);
 				tarNpc?.SentToDetention();
 				bot.behaviorStateMachine.ChangeState(new DetentionBot_Lecture(bot));
 			}
+			else AlarmBot(); // Alarm the bot, if it cannot carry properly
 
 		}
 		public override void Update()
@@ -377,18 +384,21 @@ namespace BBTimes.CustomContent.NPCs
 
 
 			if (!bot.Drag(entity))
-			{
-				bot.AlarmTroubleMakerEscaping();
-				bot.behaviorStateMachine.ChangeState(pm ? new DetentionBot_GoAfterPlayer(bot, pm) : new DetentionBot_GoAfterNPC(bot, tarNpc));
-			}
+				AlarmBot();
 		}
 
 		public override void Exit()
 		{
 			base.Exit();
 			tarPos.priority = 0;
-			if (entity)
+			if (entity && !falseCarry)
 				bot.ReleaseOrNot(entity, true);
+		}
+
+		void AlarmBot()
+		{
+			bot.AlarmTroubleMakerEscaping();
+			bot.behaviorStateMachine.ChangeState(pm ? new DetentionBot_GoAfterPlayer(bot, pm) : new DetentionBot_GoAfterNPC(bot, tarNpc));
 		}
 	}
 

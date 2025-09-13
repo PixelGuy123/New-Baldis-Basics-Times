@@ -29,7 +29,7 @@ namespace BBTimes.CustomContent.RoomFunctions
 		void KickNPC(NPC npc)
 		{
 			var chosenKickDoor = room.doors[Random.Range(0, room.doors.Count)];
-			npc.Navigator.Entity.Teleport(chosenKickDoor.bTile.FloorWorldPosition);
+			npc.Entity.Teleport(chosenKickDoor.bTile.FloorWorldPosition);
 		}
 		public void UnlockEverything()
 		{

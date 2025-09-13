@@ -198,10 +198,10 @@ namespace BBTimes.CustomContent.NPCs
 				le.behaviorStateMachine.ChangeState(new Leapy_Idle(le));
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
-			if (other.isTrigger && (other.CompareTag("NPC") || other.CompareTag("Player")))
+			base.OnStateTriggerEnter(other, validCollision);
+			if (other.isTrigger && validCollision && (other.CompareTag("NPC") || other.CompareTag("Player")))
 			{
 				var e = other.GetComponent<Entity>();
 				if (e)

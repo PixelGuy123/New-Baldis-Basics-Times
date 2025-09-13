@@ -261,14 +261,14 @@ namespace BBTimes.Manager
 				new() { key = "Vfx_BAL_BalMainMenuSpeech_Christmas_2", time = 7.146f },
 				];
 			}
-			else if (plug.HasInfiniteFloors)
-			{
-				selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("endlessFloors.png"))), 1f);
-				speechMenu = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_InfFloorSpeech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
-				speechMenu.additionalKeys = [
-					new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_1", time = 5.144f },
-					];
-			}
+			// else if (plug.HasInfiniteFloors)
+			// {
+			// 	selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("endlessFloors.png"))), 1f);
+			// 	speechMenu = ObjectCreators.CreateSoundObject(AssetLoader.AudioClipFromFile(Path.Combine(MiscPath, AudioFolder, "BAL_InfFloorSpeech.wav")), "Vfx_BAL_BalMainMenuSpeech_1", SoundType.Voice, Color.green);
+			// 	speechMenu.additionalKeys = [
+			// 		new() { key = "Vfx_BAL_BalMainMenuSpeech_InfFloors_1", time = 5.144f },
+			// 		];
+			// }
 			else
 			{
 				selectedSprite = AssetLoader.SpriteFromTexture2D(AssetLoader.TextureFromFile(Path.Combine(MiscPath, TextureFolder, GetAssetName("mainMenu.png"))), 1f);

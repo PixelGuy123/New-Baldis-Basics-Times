@@ -156,7 +156,7 @@ namespace BBTimes.CustomContent.CustomItems
 			// Make npcs blue lol
 			activeCoroutines++;
 			npc.Navigator.Am.moveMods.Add(moveMod);
-			npc.Navigator.Entity.IgnoreEntity(pm.plm.Entity, true);
+			npc.Entity.IgnoreEntity(pm.plm.Entity, true);
 			Color ogColor = npc.spriteRenderer[0].color;
 			npc.spriteRenderer[0].color = Color.blue;
 
@@ -171,7 +171,7 @@ namespace BBTimes.CustomContent.CustomItems
 			{
 				touchedNPCs.Remove(npc);
 				npc.Navigator.Am.moveMods.Remove(moveMod);
-				npc.Navigator.Entity.IgnoreEntity(pm.plm.Entity, false);
+				npc.Entity.IgnoreEntity(pm.plm.Entity, false);
 				npc.spriteRenderer[0].color = ogColor;
 			}
 

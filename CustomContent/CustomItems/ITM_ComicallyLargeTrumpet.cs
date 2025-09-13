@@ -44,7 +44,7 @@ namespace BBTimes.CustomContent.CustomItems
 				{
 					float force = pushForce - (Vector3.Distance(entity.transform.position, pm.transform.position) * pushDistance);
 					if (force > 0f)
-						entity.Navigator.Entity.AddForce(new((entity.transform.position - pm.transform.position).normalized, force, -force * pushForceDecrement));
+						entity.Entity.AddForce(new((entity.transform.position - pm.transform.position).normalized, force, -force * pushForceDecrement));
 				}
 			}
 

@@ -92,9 +92,9 @@ namespace BBTimes.CustomContent.CustomItems
 			renderer.sprite = spriteAnim[Mathf.FloorToInt(frame)];
 		}
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (hasHit || other.gameObject == target) return;
+			if (!validCollision || hasHit || other.gameObject == target) return;
 			bool isnpc = other.CompareTag("NPC"), isPlayer = other.CompareTag("Player");
 			if (other.isTrigger && (isnpc || isPlayer))
 			{
@@ -122,12 +122,12 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 
 		}
-		public void EntityTriggerStay(Collider other)
+		public void EntityTriggerStay(Collider other, bool validCollision)
 		{
 		}
-		public void EntityTriggerExit(Collider other)
+		public void EntityTriggerExit(Collider other, bool validCollision)
 		{
-			if (other.gameObject == target)
+			if (validCollision && other.gameObject == target)
 				target = null;
 		}
 

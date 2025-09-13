@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using BBTimes.CustomComponents;
+using BBTimes.Extensions;
 using PixelInternalAPI.Classes;
 using PixelInternalAPI.Extensions;
-using BBTimes.Extensions;
+using UnityEngine;
 
 namespace BBTimes.CustomContent.CustomItems
 {
@@ -32,8 +32,9 @@ namespace BBTimes.CustomContent.CustomItems
 		}
 		public void SetupPrefabPost() { }
 
-		public string Name { get; set; } public string Category => "items";
-		
+		public string Name { get; set; }
+		public string Category => "items";
+
 		public ItemObject ItmObj { get; set; }
 
 		public override bool Use(PlayerManager pm)
@@ -50,14 +51,15 @@ namespace BBTimes.CustomContent.CustomItems
 			ec = pm.ec;
 			entity.Initialize(pm.ec, transform.position);
 
-			entity.OnEntityMoveInitialCollision += (hit) => {
+			entity.OnEntityMoveInitialCollision += (hit) =>
+			{
 				if (flying && hit.transform.gameObject.layer != 2)
 				{
 					flying = false;
 					entity.SetFrozen(true);
 
 					transform.rotation = Quaternion.LookRotation(hit.normal * -1f, Vector3.up);
-	
+
 					audMan.FlushQueue(true);
 					audMan.PlaySingle(aud_splash);
 					HitSomething(hit);
@@ -73,9 +75,9 @@ namespace BBTimes.CustomContent.CustomItems
 		void HitSomething(RaycastHit hit) { } // Easy way to patch the gum when hitting a wall (BB+ Animations lol)
 #pragma warning restore IDE0060
 
-		public void EntityTriggerEnter(Collider other)
+		public void EntityTriggerEnter(Collider other, bool validCollision)
 		{
-			if (other.gameObject == owner || !flying) return;
+			if (!validCollision || other.gameObject == owner || !flying) return;
 
 			if (other.isTrigger && other.CompareTag("NPC")) // Might affect players soon. But I don't plan on doing that now
 			{
@@ -101,13 +103,8 @@ namespace BBTimes.CustomContent.CustomItems
 			}
 		}
 
-		public void EntityTriggerStay(Collider other)
-		{
-		}
-
-		public void EntityTriggerExit(Collider other)
-		{
-		}
+		public void EntityTriggerStay(Collider other, bool validCollision) { }
+		public void EntityTriggerExit(Collider other, bool validCollision) { }
 
 		private IEnumerator Timer(Entity target)
 		{

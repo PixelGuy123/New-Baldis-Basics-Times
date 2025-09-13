@@ -322,10 +322,10 @@ namespace BBTimes.CustomContent.NPCs
 			activeCooldown = Random.Range(qu.activeCooldownMin, qu.activeCooldownMax);
 		}
 
-		public override void OnStateTriggerEnter(Collider other)
+		public override void OnStateTriggerEnter(Collider other, bool validCollision)
 		{
-			base.OnStateTriggerEnter(other);
-			if (other.isTrigger)
+			base.OnStateTriggerEnter(other, validCollision);
+			if (other.isTrigger && validCollision)
 			{
 				if (other.CompareTag("Player"))
 				{
@@ -345,7 +345,7 @@ namespace BBTimes.CustomContent.NPCs
 					var npc = other.GetComponent<NPC>();
 					if (npc && !qu.AffectedNPC(npc))
 					{
-						npc.Navigator.Entity.AddForce(new(Quaternion.AngleAxis(Random.Range(-0.7854f, 0.7854f), Vector3.up) * (qu.Navigator.NextPoint - qu.transform.position).normalized,
+						npc.Entity.AddForce(new(Quaternion.AngleAxis(Random.Range(-0.7854f, 0.7854f), Vector3.up) * (qu.Navigator.NextPoint - qu.transform.position).normalized,
 							qu.Navigator.Speed, -qu.Navigator.Speed * 0.85f)); // 0.7854 radians = 45° degrees
 						qu.BlindNPC(npc);
 					}
@@ -388,7 +388,7 @@ namespace BBTimes.CustomContent.NPCs
 			waitCooldown -= qu.TimeScale * Time.deltaTime;
 			if (waitCooldown <= 0f)
 			{
-				qu.Navigator.Entity.Teleport(qu.GetRandomTeleportCell());
+				qu.Entity.Teleport(qu.GetRandomTeleportCell());
 				qu.behaviorStateMachine.ChangeState(new Quiker_Active(qu));
 			}
 		}
